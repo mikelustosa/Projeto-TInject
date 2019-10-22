@@ -11,7 +11,8 @@ uses
   //units adicionais obrigatórias
   uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, uTInject,
-  Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.WinXCtrls, System.NetEncoding;
+  Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.WinXCtrls, System.NetEncoding,
+  Vcl.Imaging.jpeg;
 
   //############ ATENÇÃO AQUI ####################
   //Constantes obrigatórias para controle do destroy do TChromium
@@ -48,11 +49,11 @@ type
     InjectWhatsapp1: TInjectWhatsapp;
     OpenDialog1: TOpenDialog;
     Button1: TButton;
-    Label4: TLabel;
     Button2: TButton;
     listaAddContatos: TListView;
     sw_grupos: TToggleSwitch;
     Label3: TLabel;
+    Label8: TLabel;
     procedure Chromium1BeforeClose(Sender: TObject; const browser: ICefBrowser);
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -197,12 +198,13 @@ var
   i, nPercorreArray: integer;
   var Item: TListItem;
 begin
-  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
-  begin
-    application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
-    abort;
-  end;
+//  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
+//  begin
+//    application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
+//    abort;
+//  end;
 
+  listaContatos.Clear;
   InjectWhatsapp1.getContacts;
 end;
 

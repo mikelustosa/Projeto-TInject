@@ -16,7 +16,7 @@ uses
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
   Vcl.Buttons, Vcl.Imaging.pngimage,
 
-  Rest.Json, uClasses, uTInject;
+  Rest.Json, uClasses, uTInject, Vcl.Imaging.jpeg;
 
   var
    vContacts :Array of String;
@@ -36,6 +36,7 @@ type
     Panel1: TPanel;
     Image2: TImage;
     Image1: TImage;
+    Label1: TLabel;
     procedure Timer1Timer(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
     procedure Chromium1AfterCreated(Sender: TObject;
@@ -225,6 +226,7 @@ var
     JsonBase.Parse(TEncoding.UTF8.GetBytes(string(Text)), 0); //POG, ocorre de ter objeto com ultima propriedade/value finalizado com virguro, nao deveria existir...
     //memo2.Lines.Add('{"result": ' + messageText +'}');
   end;
+
 
 //  procedure UnRead;
 //  var
