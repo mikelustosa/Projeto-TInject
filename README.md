@@ -1,9 +1,7 @@
 # TInject-whatsapp-delphi
 Componente TInject para criação de chatBots com delphi<br></br><br></br>
 
-INSTRUÇÕES PARA USO --><br></br>
-
-É NECESSÁRIO:<br></br><br></br>
+INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
 
 Tutorial de instalação no youtube:<br>
 https://youtu.be/iJAKU8A8fmc
