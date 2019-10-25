@@ -54,6 +54,8 @@ type
     sw_grupos: TToggleSwitch;
     Label3: TLabel;
     Label8: TLabel;
+    listaChats: TListView;
+    Button3: TButton;
     procedure Chromium1BeforeClose(Sender: TObject; const browser: ICefBrowser);
     procedure FormShow(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
@@ -88,6 +90,8 @@ type
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure InjectWhatsapp1GetContactList(Sender: TObject);
+    procedure InjectWhatsapp1GetChatList(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
 
   protected
 
@@ -109,11 +113,14 @@ type
     ChromiumStarted: Boolean;
     vExtension, vBase64, vFileName: string;
     vBase64File: TBase64Encoding;
+    procedure CarregarContatos;
+    procedure CarregarChats;
   public
     { Public declarations }
     vBase64Str, vFileNameURL: string;
     i: integer;
     procedure AddContactList(ANumber: String);
+    procedure AddChatList(ANumber: String);
   end;
 
 var
@@ -125,6 +132,19 @@ uses
   uCEFApplication, uCefMiscFunctions, u_servicesWhats;
 
 {$R *.dfm}
+
+procedure Tfrm_principal.AddChatList(ANumber: String);
+var
+  Item: TListItem;
+begin
+  Item := listaChats.Items.Add;
+  if Length(ANumber) < 12 then
+     ANumber := '55' + ANumber;
+  item.Caption := ANumber;
+  item.SubItems.Add(item.Caption+'SubItem 1');
+  item.SubItems.Add(item.Caption+'SubItem 2');
+  item.ImageIndex := 2;
+end;
 
 procedure Tfrm_principal.AddContactList(ANumber: String);
 var
@@ -192,20 +212,13 @@ begin
 end;
 
 procedure Tfrm_principal.Button2Click(Sender: TObject);
-var
-  vRetorno: TStringList;
-  line: String;
-  i, nPercorreArray: integer;
-  var Item: TListItem;
 begin
-//  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
-//  begin
-//    application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
-//    abort;
-//  end;
+  CarregarContatos;
+end;
 
-  listaContatos.Clear;
-  InjectWhatsapp1.getContacts;
+procedure Tfrm_principal.Button3Click(Sender: TObject);
+begin
+  CarregarChats;
 end;
 
 procedure Tfrm_principal.Button4Click(Sender: TObject);
@@ -268,6 +281,16 @@ begin
 
   InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
   application.MessageBox('Mensage enviada com sucesso!','TInject', mb_iconAsterisk + mb_ok);
+end;
+
+procedure Tfrm_principal.CarregarChats;
+begin
+  InjectWhatsapp1.getAllChats;
+end;
+
+procedure Tfrm_principal.CarregarContatos;
+begin
+  InjectWhatsapp1.getAllContacts;
 end;
 
 procedure Tfrm_principal.Chromium1AfterCreated(Sender: TObject;
@@ -351,22 +374,36 @@ begin
   timer1.Enabled := true;
 end;
 
+procedure Tfrm_principal.InjectWhatsapp1GetChatList(Sender: TObject);
+var
+  AChat: TChatClass;
+begin
+  listaChats.Clear;
+
+  for AChat in InjectWhatsapp1.AllChats.result do
+  begin
+    AddChatList('('+ AChat.unreadCount.ToString + ') '
+               + AChat.name
+               + ' - ' + AChat.id);
+  end;
+end;
+
 procedure Tfrm_principal.InjectWhatsapp1GetContactList(Sender: TObject);
 var
   AContact: TContactClass;
 begin
-  if sw_grupos.isON = false then
+  listaContatos.Clear;
+
+  for AContact in InjectWhatsapp1.AllContacts.result do
   begin
-    for AContact in InjectWhatsapp1.AllContacts.result do
-      AddContactList(AContact.id + ' ' +AContact.name);
-  end else
+    if sw_grupos.isON then
     begin
-      for AContact in InjectWhatsapp1.AllContacts.result do
-        if (AContact.name = '') or (AContact.name.IsEmpty = true) then
-        begin
-          AddContactList(AContact.id);
-        end;
-    end;
+     if (AContact.name = '') or (AContact.name.IsEmpty = true) then
+       AddContactList(AContact.id)
+    end
+    else
+        AddContactList(AContact.id + ' ' +AContact.name);
+  end;
 end;
 
 procedure Tfrm_principal.Timer1Timer(Sender: TObject);

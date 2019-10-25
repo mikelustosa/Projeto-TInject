@@ -18,9 +18,9 @@ object frm_principal: Tfrm_principal
   PixelsPerInch = 96
   TextHeight = 13
   object Image2: TImage
-    Left = 396
+    Left = 620
     Top = 241
-    Width = 484
+    Width = 260
     Height = 336
     Align = alClient
     Center = True
@@ -2056,10 +2056,8 @@ object frm_principal: Tfrm_principal
       0140050014005001400500140050014005001400500140050014005001400500
       140050014005007FFFD9}
     Proportional = True
-    ExplicitLeft = 248
-    ExplicitTop = 400
-    ExplicitWidth = 105
-    ExplicitHeight = 105
+    ExplicitLeft = 608
+    ExplicitWidth = 272
   end
   object Panel1: TPanel
     Left = 0
@@ -10487,12 +10485,12 @@ object frm_principal: Tfrm_principal
       Left = 399
       Top = 25
       Width = 234
-      Height = 205
+      Height = 174
       Caption = 'Configura'#231#245'es'
       TabOrder = 5
       object Label6: TLabel
-        Left = 10
-        Top = 88
+        Left = 8
+        Top = 70
         Width = 68
         Height = 13
         Caption = 'Random delay'
@@ -10513,32 +10511,32 @@ object frm_principal: Tfrm_principal
         ParentFont = False
       end
       object Label7: TLabel
-        Left = 10
-        Top = 37
+        Left = 8
+        Top = 19
         Width = 55
         Height = 13
         Caption = 'Show delay'
       end
       object Label3: TLabel
-        Left = 10
-        Top = 157
+        Left = 11
+        Top = 123
         Width = 160
         Height = 13
         Caption = 'Listar apenas contatos de grupos'
       end
       object TrackBar1: TTrackBar
-        Left = 5
-        Top = 101
+        Left = 3
+        Top = 83
         Width = 225
-        Height = 45
+        Height = 38
         Max = 10000
         SelStart = 10000
         TabOrder = 0
         OnChange = TrackBar1Change
       end
       object sw_delay: TToggleSwitch
-        Left = 10
-        Top = 56
+        Left = 8
+        Top = 38
         Width = 72
         Height = 20
         DisabledColor = clRed
@@ -10548,8 +10546,8 @@ object frm_principal: Tfrm_principal
         OnClick = sw_delayClick
       end
       object sw_grupos: TToggleSwitch
-        Left = 10
-        Top = 176
+        Left = 11
+        Top = 142
         Width = 72
         Height = 20
         DisabledColor = clRed
@@ -10580,6 +10578,17 @@ object frm_principal: Tfrm_principal
       Images = ImageList1
       TabOrder = 7
       OnClick = Button2Click
+    end
+    object Button3: TButton
+      Left = 399
+      Top = 205
+      Width = 218
+      Height = 25
+      Caption = 'Listar bate papos abertos'
+      ImageIndex = 0
+      Images = ImageList1
+      TabOrder = 8
+      OnClick = Button3Click
     end
   end
   object Memo1: TMemo
@@ -10629,6 +10638,24 @@ object frm_principal: Tfrm_principal
     TabOrder = 3
     ViewStyle = vsSmallIcon
   end
+  object listaChats: TListView
+    AlignWithMargins = True
+    Left = 399
+    Top = 244
+    Width = 218
+    Height = 330
+    Align = alLeft
+    Columns = <>
+    LargeImages = ImageList1
+    ReadOnly = True
+    RowSelect = True
+    SmallImages = ImageList1
+    StateImages = ImageList1
+    TabOrder = 4
+    ViewStyle = vsSmallIcon
+    ExplicitLeft = 183
+    ExplicitTop = 247
+  end
   object ImageList1: TImageList
     ColorDepth = cdDefault
     DrawingStyle = dsTransparent
@@ -10677,6 +10704,7 @@ object frm_principal: Tfrm_principal
     Config.SyncContacts = False
     Config.ShowRandom = False
     OnGetContactList = InjectWhatsapp1GetContactList
+    OnGetChatList = InjectWhatsapp1GetChatList
     Left = 664
     Top = 168
   end

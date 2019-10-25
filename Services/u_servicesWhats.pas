@@ -65,10 +65,6 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Image1Click(Sender: TObject);
-    procedure Chromium1Jsdialog(Sender: TObject; const browser: ICefBrowser;
-      const originUrl: ustring; dialogType: TCefJsDialogType; const messageText,
-      defaultPromptText: ustring; const callback: ICefJsDialogCallback;
-      out suppressMessage, Result: Boolean);
     procedure Chromium1ConsoleMessage(Sender: TObject;
       const browser: ICefBrowser; level: Cardinal; const message,
       source: ustring; line: Integer; out Result: Boolean);
@@ -87,7 +83,10 @@ type
     procedure BrowserDestroyMsg(var aMessage : TMessage); message CEF_DESTROY;
   private
     { Private declarations }
-  procedure ProcessingRequestConsole(var Json: TJSONObject);
+    procedure LogConsoleMessage(const AMessage: String);
+    procedure ProcessingRequestConsole(var Json: TJSONObject);
+    procedure SetAllContacts(JsonText: String);
+    procedure SetAllChats(JsonText: String);
 
   public
     { Public declarations }
@@ -98,13 +97,18 @@ type
     procedure Send(vNum, vText:string);
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
     function caractersWhats(vText: string): string;
-    function GetContacts(): string;
+    procedure GetAllContacts;
+    procedure GetAllChats;
+
   end;
 
 var
   frm_servicesWhats: Tfrm_servicesWhats;
 
 implementation
+
+uses
+  System.IOUtils;
 
 {$R *.dfm}
 
@@ -217,145 +221,46 @@ procedure Tfrm_servicesWhats.Chromium1ConsoleMessage(Sender: TObject;
   const browser: ICefBrowser; level: Cardinal; const message, source: ustring;
   line: Integer; out Result: Boolean);
 var
-  JsonBase: TJSONObject;
-  text: string;
-  procedure PrepareJson;
-  begin
-    Text := '{"result": ' + message +'}';
-    JsonBase := TJSONObject.Create;
-    JsonBase.Parse(TEncoding.UTF8.GetBytes(string(Text)), 0); //POG, ocorre de ter objeto com ultima propriedade/value finalizado com virguro, nao deveria existir...
-    //memo2.Lines.Add('{"result": ' + messageText +'}');
-  end;
-
-
-//  procedure UnRead;
-//  var
-//    RetornoUnReadMessages : TRetornoUnReadMessages;
-//  begin
-//    RetornoUnReadMessages := TRetornoUnReadMessages.FromJsonString( JsonBase.ToString );
-//    ShowMessage(RetornoUnReadMessages.Result[0].contact.name);
-//  end;
-
-  procedure AllContact;
-  begin
-    if Assigned( _Inject ) then
-    begin
-     try
-      //Destroi caso já instanciado
-      if Assigned(_Inject.AllContacts) then
+  AResponse: TResponseConsoleMessage;
+begin
+  //LogConsoleMessage(String(message));
+  try
+    try
+      AResponse := TResponseConsoleMessage.FromJsonString( message );
+      if assigned(AResponse) then
       begin
-         _Inject.AllContacts.Free;
+        LogConsoleMessage( AResponse.Result );
+
+        if AResponse.Name = 'getAllContacts' then
+           SetAllContacts( AResponse.Result );
+
+        if AResponse.Name = 'getAllChats' then
+           SetAllChats( AResponse.Result );
       end;
-
-      //Instancia novo objeto com base no retono json
-      _Inject.AllContacts := TRetornoAllContacts.FromJsonString( JsonBase.ToString );
-
-      //Dispara Notify
-      if Assigned( _Inject.OnGetContactList ) then
+    except
+      on E:Exception do
       begin
-        _Inject.OnGetContactList(Self);
+        Application.MessageBox(PChar(E.Message),'TInject', mb_iconError + mb_ok);
+        raise;
       end;
-
-
-       except on e:exception do
-       begin
-         application.MessageBox('JSON inválido.','TInject', mb_iconError + mb_ok);
-       end;
-
-     end;
     end;
+  finally
+    //...
   end;
-
-begin
-  PrepareJson;
-  if Assigned(JsonBase) then
-  begin
-    //UnRead;
-    AllContact;
-  end;
-
-  //Evitar apresentar a mensagem.
- // suppressMessage := True;
 end;
 
-procedure Tfrm_servicesWhats.Chromium1Jsdialog(Sender: TObject;
-  const browser: ICefBrowser; const originUrl: ustring;
-  dialogType: TCefJsDialogType; const messageText, defaultPromptText: ustring;
-  const callback: ICefJsDialogCallback; out suppressMessage, Result: Boolean);
-var
-  JsonBase: TJSONObject;
-//Rotina transferida para onConsoleMessage --->>>
-
-//  procedure PrepareJson;
-//  begin
-//    //Text := '{"result": ' + messageText +'}';
-//    JsonBase := TJSONObject.Create;
-//    JsonBase.Parse(TEncoding.UTF8.GetBytes(string(messageText)), 0); //POG, ocorre de ter objeto com ultima propriedade/value finalizado com virguro, nao deveria existir...
-//    //JsonBase.Parse(TEncoding.UTF8.GetBytes(string(memo2.Text)), 0); //POG, ocorre de ter objeto com ultima propriedade/value finalizado com virguro, nao deveria existir...
-//
-//    //memo2.Lines.Add('{"result": ' + messageText +'}');
-//  end;
-//
-////  procedure UnRead;
-////  var
-////    RetornoUnReadMessages : TRetornoUnReadMessages;
-////  begin
-////    RetornoUnReadMessages := TRetornoUnReadMessages.FromJsonString( JsonBase.ToString );
-////    ShowMessage(RetornoUnReadMessages.Result[0].contact.name);
-////  end;
-//
-//  procedure AllContact;
-//  begin
-//    if Assigned( _Inject ) then
-//    begin
-//     try
-//      //Destroi caso já instanciado
-//      if Assigned(_Inject.AllContacts) then
-//      begin
-//         _Inject.AllContacts.Free;
-//      end;
-//
-//      //Instancia novo objeto com base no retono json
-//      _Inject.AllContacts := TRetornoAllContacts.FromJsonString( JsonBase.ToString );
-//
-//      //Dispara Notify
-//      if Assigned( _Inject.OnGetContactList ) then
-//      begin
-//        _Inject.OnGetContactList(Self);
-//      end;
-//
-//
-//       except on e:exception do
-//       begin
-//         application.MessageBox('JSON inválido.','TInject', mb_iconError + mb_ok);
-//       end;
-//
-//     end;
-//    end;
-//  end;
-
+procedure Tfrm_servicesWhats.GetAllContacts;
+const
+  JS = 'window.WAPI.getAllContacts();';
 begin
-//  PrepareJson;
-//  if Assigned(JsonBase) then
-//  begin
-//    //UnRead;
-//    AllContact;
-//  end;
-//
-//  //Evitar apresentar a mensagem.
-//  suppressMessage := True;
+  Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
 
-//Função que retorna os contatos do whatsapp
-function Tfrm_servicesWhats.GetContacts(): string;
-var
-  JS: string;
+procedure Tfrm_servicesWhats.GetAllChats;
+const
+  JS = 'window.WAPI.getAllChats();';
 begin
-  //  if vControl = true then
-  begin
-    JS := 'window.WAPI.getAllContacts();';
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-  end;
+  Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
 
 procedure Tfrm_servicesWhats.Chromium1LoadEnd(Sender: TObject;
@@ -429,6 +334,14 @@ end;
 procedure Tfrm_servicesWhats.Image1Click(Sender: TObject);
 begin
   frm_servicesWhats.Hide;
+end;
+
+procedure Tfrm_servicesWhats.LogConsoleMessage(const AMessage: String);
+begin
+  TFile.AppendAllText(
+    ExtractFilePath(Application.ExeName) + 'ConsoleMessage.log',
+    AMessage,
+    TEncoding.ASCII);
 end;
 
 procedure Tfrm_servicesWhats.ProcessingRequestConsole(var Json: TJSONObject);
@@ -581,6 +494,40 @@ begin
   end;
 
   freeAndNil(vBase64);
+end;
+
+procedure Tfrm_servicesWhats.SetAllContacts(JsonText: String);
+begin
+  if not Assigned( _Inject ) then
+     Exit;
+
+  with _Inject do
+  begin
+    if Assigned(AllContacts) then
+       AllContacts.Free;
+    AllContacts := TRetornoAllContacts.FromJsonString( JsonText );
+
+     //Dispara Notify
+     if Assigned( OnGetContactList ) then
+        OnGetContactList(Self);
+  end;
+end;
+
+procedure Tfrm_servicesWhats.SetAllChats(JsonText: String);
+begin
+  if not Assigned( _Inject ) then
+     Exit;
+
+  with _Inject do
+  begin
+    if Assigned(AllChats) then
+       AllChats.Free;
+    AllChats := TRetornoAllChats.FromJsonString( JsonText );
+
+     //Dispara Notify
+     if Assigned( OnGetChatList ) then
+        OnGetChatList(Self);
+  end;
 end;
 
 procedure Tfrm_servicesWhats.Send(vNum, vText: string);

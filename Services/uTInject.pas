@@ -39,13 +39,14 @@ type
 
 
   TInjectWhatsapp = class(TComponent)
-
   private
     { Private declarations }
   protected
     { Protected declarations }
     FAllContacts: TRetornoAllContacts;
+    FAllChats: TRetornoAllChats;
     FOnGetContactList : TNotifyEvent;
+    FOnGetChatList: TNotifyEvent;
     FOnGetNewMessage  : TNotifyEvent;
     FOnGetStatus      : TNotifyEvent;
     FContacts: String;
@@ -57,15 +58,18 @@ type
     procedure send(vNum, vMess: string);
     procedure sendBase64(vBase64, vNum, vFileName, vMess: string);
     procedure fileToBase64(vFile: string);
-    function GetContacts: String;
+    procedure GetAllContacts;
+    procedure GetAllChats;
     function GetStatus: Boolean;
     function GetUnReadMessages: String;
     property AllContacts: TRetornoAllContacts read FAllContacts write FAllContacts;
+    property AllChats: TRetornoAllChats read FAllChats write FAllChats;
     property Auth: boolean read FAuth write FAuth;
   published
     { Published declarations }
     property Config: TMySubComp read FMySubComp1;
     property OnGetContactList: TNotifyEvent read FOnGetContactList write FOnGetContactList;
+    property OnGetChatList: TNotifyEvent read FOnGetChatList write FOnGetChatList;
     property OnGetNewMessage: TNotifyEvent read FOnGetNewMessage write FOnGetNewMessage;
     property OnGetStatus: TNotifyEvent read FOnGetStatus write FOnGetStatus;
   end;
@@ -121,25 +125,14 @@ begin
   uBase64.FileToBase64(vFile);
 end;
 
-function TInjectWhatsapp.GetContacts: String;
+procedure TInjectWhatsapp.GetAllContacts;
 begin
-  FActivityContactsThread := TThread.CreateAnonymousThread(procedure
-      var vGetDelay: integer;
-      begin
-        try
-          TThread.Synchronize(nil, procedure
-          begin
-            if Assigned(frm_servicesWhats) then
-            begin
-              frm_servicesWhats.GetContacts;
-            end;
-          end);
+  frm_servicesWhats.GetAllContacts;
+end;
 
-          finally
-        end;
-      end);
-  FActivityContactsThread.FreeOnTerminate := False;
-  FActivityContactsThread.Start;
+procedure TInjectWhatsapp.GetAllChats;
+begin
+  frm_servicesWhats.GetAllChats;
 end;
 
 function TInjectWhatsapp.GetStatus: Boolean;

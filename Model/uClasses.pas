@@ -6,6 +6,17 @@ uses Generics.Collections, Rest.Json;
 
 type
 
+TResponseConsoleMessage = class
+private
+  FName: String;
+  FResult: String;
+public
+  property Name: String read FName;
+  property Result: String read FResult;
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TResponseConsoleMessage;
+end;
+
 TParticipantsClass = class
 private
   FId: String;
@@ -114,12 +125,22 @@ public
   class function FromJsonString(AJsonString: string): TLastReceivedKeyClass;
 end;
 
-TResultUnReadMessages = class
+TPresenceClass = class
+private
+  FId: String;
+public
+  property id: String read FId write FId;
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TPresenceClass;
+end;
+
+TChatClass = class
 private
   FArchive: Boolean;
   FContact: TContactClass;
   FGroupMetadata: TGroupMetadataClass;
   FId: String;
+  FIsAnnounceGrpRestrict: Boolean;
   FIsGroup: Boolean;
   FIsReadOnly: Boolean;
   FKind: String;
@@ -130,6 +151,7 @@ private
   FNotSpam: Boolean;
   FPendingMsgs: Boolean;
   FPin: Extended;
+  FPresence: TPresenceClass;
   FT: Extended;
   FUnreadCount: Extended;
 public
@@ -137,6 +159,7 @@ public
   property contact: TContactClass read FContact write FContact;
   property groupMetadata: TGroupMetadataClass read FGroupMetadata write FGroupMetadata;
   property id: String read FId write FId;
+  property isAnnounceGrpRestrict: Boolean read FIsAnnounceGrpRestrict write FIsAnnounceGrpRestrict;
   property isGroup: Boolean read FIsGroup write FIsGroup;
   property isReadOnly: Boolean read FIsReadOnly write FIsReadOnly;
   property kind: String read FKind write FKind;
@@ -147,22 +170,23 @@ public
   property notSpam: Boolean read FNotSpam write FNotSpam;
   property pendingMsgs: Boolean read FPendingMsgs write FPendingMsgs;
   property pin: Extended read FPin write FPin;
+  property presence: TPresenceClass read FPresence write FPresence;
   property t: Extended read FT write FT;
   property unreadCount: Extended read FUnreadCount write FUnreadCount;
   constructor Create;
   destructor Destroy; override;
   function ToJsonString: string;
-  class function FromJsonString(AJsonString: string): TResultUnReadMessages;
+  class function FromJsonString(AJsonString: string): TChatClass;
 end;
 
-TRetornoUnReadMessages = class
+TRetornoAllChats = class
 private
-  FResult: TArray<TResultUnReadMessages>;
+  FResult: TArray<TChatClass>;
 public
-  property result: TArray<TResultUnReadMessages> read FResult write FResult;
+  property result: TArray<TChatClass> read FResult write FResult;
   destructor Destroy; override;
   function ToJsonString: string;
-  class function FromJsonString(AJsonString: string): TRetornoUnReadMessages;
+  class function FromJsonString(AJsonString: string): TRetornoAllChats;
 end;
 
 TRetornoAllContacts = class
@@ -176,6 +200,32 @@ public
 end;
 
 implementation
+
+uses
+  System.JSON, System.SysUtils;
+
+{ TResponseConsoleMessage }
+
+class function TResponseConsoleMessage.FromJsonString(
+  AJsonString: string): TResponseConsoleMessage;
+var
+  AJsonObj: TJSONValue;
+begin
+  Result := nil;
+
+  AJsonObj := TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(AJsonString),0);
+  try
+    if Assigned( AJsonObj ) then
+       Result := TJson.JsonToObject<TResponseConsoleMessage>(AJsonString);
+  finally
+    AJsonObj.Free;
+  end;
+end;
+
+function TResponseConsoleMessage.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
 
 {TParticipantsClass}
 
@@ -263,9 +313,23 @@ begin
   result := TJson.JsonToObject<TLastReceivedKeyClass>(AJsonString)
 end;
 
+{TPresenceClass}
+
+
+function TPresenceClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+class function TPresenceClass.FromJsonString(AJsonString: string): TPresenceClass;
+begin
+  result := TJson.JsonToObject<TPresenceClass>(AJsonString)
+end;
+
+
 {TResultClass}
 
-constructor TResultUnReadMessages.Create;
+constructor TChatClass.Create;
 begin
   inherited;
   FLastReceivedKey := TLastReceivedKeyClass.Create();
@@ -273,7 +337,7 @@ begin
   FGroupMetadata := TGroupMetadataClass.Create();
 end;
 
-destructor TResultUnReadMessages.Destroy;
+destructor TChatClass.Destroy;
 begin
   FLastReceivedKey.free;
   FContact.free;
@@ -281,21 +345,21 @@ begin
   inherited;
 end;
 
-function TResultUnReadMessages.ToJsonString: string;
+function TChatClass.ToJsonString: string;
 begin
   result := TJson.ObjectToJsonString(self);
 end;
 
-class function TResultUnReadMessages.FromJsonString(AJsonString: string): TResultUnReadMessages;
+class function TChatClass.FromJsonString(AJsonString: string): TChatClass;
 begin
-  result := TJson.JsonToObject<TResultUnReadMessages>(AJsonString)
+  result := TJson.JsonToObject<TChatClass>(AJsonString)
 end;
 
 {TRetornoClass}
 
-destructor TRetornoUnReadMessages.Destroy;
+destructor TRetornoAllChats.Destroy;
 var
-  LresultItem: TResultUnReadMessages;
+  LresultItem: TChatClass;
 begin
 
  for LresultItem in FResult do
@@ -304,14 +368,14 @@ begin
   inherited;
 end;
 
-function TRetornoUnReadMessages.ToJsonString: string;
+function TRetornoAllChats.ToJsonString: string;
 begin
   result := TJson.ObjectToJsonString(self);
 end;
 
-class function TRetornoUnReadMessages.FromJsonString(AJsonString: string): TRetornoUnReadMessages;
+class function TRetornoAllChats.FromJsonString(AJsonString: string): TRetornoAllChats;
 begin
-  result := TJson.JsonToObject<TRetornoUnReadMessages>(AJsonString)
+  result := TJson.JsonToObject<TRetornoAllChats>(AJsonString)
 end;
 
 {TRetornoAllContacts}
