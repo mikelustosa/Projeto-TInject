@@ -56,8 +56,10 @@ type
     Label8: TLabel;
     listaChats: TListView;
     Button3: TButton;
-    procedure Chromium1BeforeClose(Sender: TObject; const browser: ICefBrowser);
+    procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure Chromium1BeforeClose(Sender: TObject; const browser: ICefBrowser);
     procedure Timer1Timer(Sender: TObject);
     procedure Chromium1AfterCreated(Sender: TObject;
       const browser: ICefBrowser);
@@ -80,7 +82,6 @@ type
     procedure Chromium1LoadEnd(Sender: TObject; const browser: ICefBrowser;
       const frame: ICefFrame; httpStatusCode: Integer);
     procedure Button5Click(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure TrackBar1Change(Sender: TObject);
     procedure sw_delayClick(Sender: TObject);
     procedure whatsOnClick(Sender: TObject);
@@ -132,6 +133,21 @@ uses
   uCEFApplication, uCefMiscFunctions, u_servicesWhats;
 
 {$R *.dfm}
+
+procedure Tfrm_principal.FormCreate(Sender: TObject);
+begin
+  InjectWhatsapp1.startWhatsapp;
+end;
+
+procedure Tfrm_principal.FormShow(Sender: TObject);
+begin
+  timer1.Enabled := true;
+end;
+
+procedure Tfrm_principal.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+    application.Terminate;
+end;
 
 procedure Tfrm_principal.AddChatList(ANumber: String);
 var
@@ -364,16 +380,6 @@ begin
   Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
 end;
 
-procedure Tfrm_principal.FormClose(Sender: TObject; var Action: TCloseAction);
-begin
-    application.Terminate;
-end;
-
-procedure Tfrm_principal.FormShow(Sender: TObject);
-begin
-  timer1.Enabled := true;
-end;
-
 procedure Tfrm_principal.InjectWhatsapp1GetChatList(Sender: TObject);
 var
   AChat: TChatClass;
@@ -441,12 +447,12 @@ end;
 
 procedure Tfrm_principal.whatsOffClick(Sender: TObject);
 begin
-  InjectWhatsapp1.startWhatsapp;
+  InjectWhatsapp1.ShowWebApp;
 end;
 
 procedure Tfrm_principal.whatsOnClick(Sender: TObject);
 begin
-  InjectWhatsapp1.startWhatsapp;
+  InjectWhatsapp1.ShowWebApp;
 end;
 
 end.

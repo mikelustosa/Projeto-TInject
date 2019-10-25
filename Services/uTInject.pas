@@ -20,6 +20,7 @@ type
   TMySubComp = class(TComponent)
 
   public
+    FAutoStart: Boolean;
     FAutoInject     :Boolean;
     FAutoDelay      :Integer;
     FSyncContacts   :Boolean;
@@ -31,6 +32,7 @@ type
     procedure SetShowRandom(const Value: Boolean);
 
   published
+    property AutoStart: Boolean read FAutoStart write FAutoStart default False;
     property AutoInject   :Boolean read FAutoInject   write SetAutoInject;
     property AutoDelay    :integer read FAutoDelay    write SetAutoDelay;
     property SyncContacts :Boolean read FSyncContacts write SetSyncContacts;
@@ -55,6 +57,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     procedure startWhatsapp();
+    procedure ShowWebApp;
     procedure send(vNum, vMess: string);
     procedure sendBase64(vBase64, vNum, vFileName, vMess: string);
     procedure fileToBase64(vFile: string);
@@ -118,6 +121,9 @@ begin
   FMySubComp1 := TMySubComp.Create(self);
   FMySubComp1.Name := 'AutoInject';
   FMySubComp1.SetSubComponent(true);
+
+  if Config.AutoStart then
+     startWhatsapp;
 end;
 
 procedure TInjectWhatsapp.fileToBase64(vFile: string);
@@ -270,16 +276,18 @@ begin
   FActivitySendBase64Thread.Start;
 end;
 
+procedure TInjectWhatsapp.ShowWebApp;
+begin
+  startWhatsapp;
+  frm_servicesWhats.Show;
+end;
+
 procedure TInjectWhatsapp.startWhatsapp;
 begin
   if not Assigned(frm_servicesWhats) then
   begin
-   frm_servicesWhats       := Tfrm_servicesWhats.Create(self);
-   frm_servicesWhats._inject := Self;
-   frm_servicesWhats.Show;
-  end else
-  begin
-    frm_servicesWhats.Show;
+   frm_servicesWhats         := Tfrm_servicesWhats.Create(self);
+   frm_servicesWhats._Inject := Self;
   end;
 end;
 

@@ -14,6 +14,7 @@ object frm_principal: Tfrm_principal
   Position = poOwnerFormCenter
   WindowState = wsMaximized
   OnClose = FormClose
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -10653,8 +10654,6 @@ object frm_principal: Tfrm_principal
     StateImages = ImageList1
     TabOrder = 4
     ViewStyle = vsSmallIcon
-    ExplicitLeft = 183
-    ExplicitTop = 247
   end
   object ImageList1: TImageList
     ColorDepth = cdDefault
@@ -10699,6 +10698,7 @@ object frm_principal: Tfrm_principal
     Top = 104
   end
   object InjectWhatsapp1: TInjectWhatsapp
+    Config.AutoStart = True
     Config.AutoInject = True
     Config.AutoDelay = 0
     Config.SyncContacts = False

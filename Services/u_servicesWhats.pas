@@ -319,6 +319,8 @@ begin
   FClosing  := False;
   Chromium1.DefaultURL := 'https://web.whatsapp.com/';
   vAuth := false;
+
+  if not(Chromium1.CreateBrowser(CEFWindowParent1)) then Timer1.Enabled := True;
 end;
 
 procedure Tfrm_servicesWhats.FormDestroy(Sender: TObject);
@@ -328,7 +330,7 @@ end;
 
 procedure Tfrm_servicesWhats.FormShow(Sender: TObject);
 begin
-  if not(Chromium1.CreateBrowser(CEFWindowParent1)) then Timer1.Enabled := True;
+  //if not(Chromium1.CreateBrowser(CEFWindowParent1)) then Timer1.Enabled := True;
 end;
 
 procedure Tfrm_servicesWhats.Image1Click(Sender: TObject);
