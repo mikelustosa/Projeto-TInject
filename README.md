@@ -21,7 +21,7 @@ https://youtu.be/iJAKU8A8fmc
 <br><br>
 7-Dê um Compile e depois dê um build
 <br><br>
-8-Abrar o arquivo demo Tinject.dproj
+8-Abra o arquivo demo Tinject.dproj
 <br></br><br></br>
 
 O componente está 65% concluído. <br><br>Recurso que falta: Capturar o *log do console* do componente TChromium e gerar um *JSON* para tratamento das mensagens recebidas pelo WhatsApp.
