@@ -432,7 +432,8 @@ begin
     for AMessage in AChat.messages do
         ShowMessage( PChar( 'Chat: ' + AChat.name
                           + sLineBreak
-                          + 'Contato: ' + Trim(AMessage.Sender.pushName + ' (' + AMessage.Sender.formattedName + ')')
+                          + 'Contato: ' + Trim(AMessage.Sender.pushName
+                                        + ' (' + AMessage.Sender.formattedName + ')')
                           + sLineBreak + sLineBreak
                           + AMessage.body ) );
   end;
