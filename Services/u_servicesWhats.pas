@@ -224,13 +224,23 @@ procedure Tfrm_servicesWhats.Chromium1ConsoleMessage(Sender: TObject;
   line: Integer; out Result: Boolean);
 var
   AResponse: TResponseConsoleMessage;
+
+  function PrettyJSON(JsonString: String):String;
+  var
+    AObj: TJSONObject;
+  begin
+    AObj := TJSONObject.ParseJSONValue(JsonString) as TJSONObject;
+    result:=TJSON.Format(AObj);
+    AObj.Free;
+  end;
 begin
   try
     try
       AResponse := TResponseConsoleMessage.FromJsonString( message );
       if assigned(AResponse) then
       begin
-        LogConsoleMessage( AResponse.Result );
+        //LogConsoleMessage( AResponse.Result );
+        LogConsoleMessage( PrettyJSON(AResponse.Result) );
 
         if AResponse.Name = 'getAllContacts' then
            SetAllContacts( AResponse.Result );
