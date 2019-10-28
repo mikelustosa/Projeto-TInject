@@ -1,5 +1,5 @@
 //TInject Criado por Mike W. Lustosa
-//Códido aberto à comunidade Delphi
+//CÃ³dido aberto Ã  comunidade Delphi
 //mikelustosa@gmail.com
 
 unit uTInject;
@@ -65,7 +65,7 @@ procedure Register;
 implementation
 
 uses
-  u_autenticaWhats;
+  u_servicesWhats;
 
 
 procedure Register;
@@ -126,7 +126,7 @@ begin
           begin
             if Assigned(frm_autenticaWhats) then
             begin
-              frm_autenticaWhats.GetContacts;
+              frm_servicesWhats.GetContacts;
             end;
           end);
 
@@ -163,7 +163,7 @@ begin
           begin
             if Assigned(frm_autenticaWhats) then
             begin
-              frm_autenticaWhats.GetUnReadMessages;
+              frm_servicesWhats.GetUnReadMessages;
             end;
           end);
 
@@ -201,7 +201,7 @@ begin
           begin
             if Assigned(frm_autenticaWhats) then
             begin
-              frm_autenticaWhats.Send('55'+vNum+'@c.us', vMess);
+              frm_servicesWhats.Send('55'+vNum+'@c.us', vMess);
             end;
           end);
 
@@ -237,7 +237,7 @@ begin
           begin
             if Assigned(frm_autenticaWhats) then
             begin
-              frm_autenticaWhats.sendBase64(vBase64,'55'+vNum+'@c.us', vFileName, vMess);
+              frm_servicesWhats.sendBase64(vBase64,'55'+vNum+'@c.us', vFileName, vMess);
             end;
           end);
 
@@ -261,14 +261,14 @@ end;
 
 procedure TInjectWhatsapp.startWhatsapp;
 begin
-  if not Assigned(frm_autenticaWhats) then
+  if not Assigned(frm_servicesWhats) then
   begin
-   frm_autenticaWhats       := Tfrm_autenticaWhats.Create(self);
-   frm_autenticaWhats._inject := Self;
-   frm_autenticaWhats.Show;
+   frm_servicesWhats       := Tfrm_servicesWhats.Create(self);
+   frm_servicesWhats._inject := Self;
+   frm_servicesWhats.Show;
   end else
   begin
-    frm_autenticaWhats.Show;
+    frm_servicesWhats.Show;
   end;
 end;
 
