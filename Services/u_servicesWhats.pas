@@ -87,6 +87,7 @@ type
     procedure ProcessingRequestConsole(var Json: TJSONObject);
     procedure SetAllContacts(JsonText: String);
     procedure SetAllChats(JsonText: String);
+    procedure SetUnReadMessages(JsonText: String);
 
   public
     { Public declarations }
@@ -99,6 +100,7 @@ type
     function caractersWhats(vText: string): string;
     procedure GetAllContacts;
     procedure GetAllChats;
+    procedure GetUnreadMessages;
 
   end;
 
@@ -223,7 +225,6 @@ procedure Tfrm_servicesWhats.Chromium1ConsoleMessage(Sender: TObject;
 var
   AResponse: TResponseConsoleMessage;
 begin
-  //LogConsoleMessage(String(message));
   try
     try
       AResponse := TResponseConsoleMessage.FromJsonString( message );
@@ -236,6 +237,9 @@ begin
 
         if AResponse.Name = 'getAllChats' then
            SetAllChats( AResponse.Result );
+
+        if AResponse.Name = 'getUnreadMessages' then
+           SetUnreadMessages( AResponse.Result );
       end;
     except
       on E:Exception do
@@ -252,6 +256,13 @@ end;
 procedure Tfrm_servicesWhats.GetAllContacts;
 const
   JS = 'window.WAPI.getAllContacts();';
+begin
+  Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+end;
+
+procedure Tfrm_servicesWhats.GetUnreadMessages;
+const
+  JS = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
 begin
   Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
@@ -515,6 +526,26 @@ begin
   end;
 end;
 
+procedure Tfrm_servicesWhats.SetUnReadMessages(JsonText: String);
+var
+  AChats: TChatList;
+begin
+  if not Assigned( _Inject ) then
+     Exit;
+
+  AChats := TChatList.FromJsonString( JsonText );
+  try
+    with _Inject do
+    begin
+      //Dispara Notify
+      if Assigned( OnGetUnReadMessages ) then
+         OnGetUnReadMessages( AChats );
+    end;
+  finally
+    AChats.Free;
+  end;
+end;
+
 procedure Tfrm_servicesWhats.SetAllChats(JsonText: String);
 begin
   if not Assigned( _Inject ) then
@@ -524,7 +555,7 @@ begin
   begin
     if Assigned(AllChats) then
        AllChats.Free;
-    AllChats := TRetornoAllChats.FromJsonString( JsonText );
+    AllChats := TChatList.FromJsonString( JsonText );
 
      //Dispara Notify
      if Assigned( OnGetChatList ) then

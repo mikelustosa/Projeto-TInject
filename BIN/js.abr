@@ -576,6 +576,8 @@ window.WAPI.processMessageObj = function (messageObj, includeMe, includeNotifica
     } else if (messageObj.id.fromMe === false || includeMe) {
         return WAPI._serializeMessageObj(messageObj);
     }
+	
+	SetConsoleMessage("processMessageObj",JSON.stringify( messageObj ));
     return;
 };
 
@@ -882,7 +884,7 @@ window.WAPI.getUnreadMessages = function (includeMe, includeNotifications, use_u
         done(output);
     }
 	
-	window.alert( JSON.stringify(output));
+	SetConsoleMessage("getUnreadMessages", JSON.stringify(output));
     return output;
 };
 

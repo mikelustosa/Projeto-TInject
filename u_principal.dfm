@@ -19,9 +19,9 @@ object frm_principal: Tfrm_principal
   PixelsPerInch = 96
   TextHeight = 13
   object Image2: TImage
-    Left = 620
+    Left = 652
     Top = 241
-    Width = 260
+    Width = 228
     Height = 336
     Align = alClient
     Center = True
@@ -2072,21 +2072,21 @@ object frm_principal: Tfrm_principal
       241)
     object Label1: TLabel
       Left = 3
-      Top = 147
+      Top = 6
       Width = 90
       Height = 13
       Caption = 'N'#250'mero de destino'
     end
     object Label2: TLabel
       Left = 3
-      Top = 13
+      Top = 52
       Width = 72
       Height = 13
       Caption = 'Sua mensagem'
     end
     object Image1: TImage
-      Left = 98
-      Top = 136
+      Left = 183
+      Top = 12
       Width = 31
       Height = 34
       Picture.Data = {
@@ -10436,8 +10436,8 @@ object frm_principal: Tfrm_principal
     end
     object ed_num: TEdit
       Left = 3
-      Top = 166
-      Width = 166
+      Top = 25
+      Width = 174
       Height = 21
       TabOrder = 0
       TextHint = 'ddd+n'#250'mero'
@@ -10450,30 +10450,30 @@ object frm_principal: Tfrm_principal
       Caption = 'Adicionar contato'
       ImageIndex = 0
       Images = ImageList1
-      TabOrder = 1
+      TabOrder = 2
       OnClick = Button5Click
     end
     object Button6: TButton
-      Left = 246
-      Top = 30
+      Left = 183
+      Top = 74
       Width = 147
       Height = 25
       Caption = 'Enviar apenas texto'
       ImageIndex = 0
       Images = ImageList1
-      TabOrder = 2
+      TabOrder = 3
       OnClick = Button6Click
     end
     object mem_message: TMemo
       Left = 3
-      Top = 32
-      Width = 227
+      Top = 71
+      Width = 174
       Height = 100
-      TabOrder = 3
+      TabOrder = 1
     end
     object Button4: TButton
-      Left = 246
-      Top = 69
+      Left = 183
+      Top = 105
       Width = 147
       Height = 25
       Caption = 'Anexar um arquivo'
@@ -10559,8 +10559,8 @@ object frm_principal: Tfrm_principal
       end
     end
     object Button1: TButton
-      Left = 246
-      Top = 108
+      Left = 183
+      Top = 136
       Width = 147
       Height = 25
       Caption = 'Enviar  texto e arquivo'
@@ -10570,9 +10570,9 @@ object frm_principal: Tfrm_principal
       OnClick = Button1Click
     end
     object Button2: TButton
-      Left = 175
+      Left = 183
       Top = 205
-      Width = 218
+      Width = 210
       Height = 25
       Caption = 'Listar contatos do aparelho'
       ImageIndex = 0
@@ -10590,6 +10590,17 @@ object frm_principal: Tfrm_principal
       Images = ImageList1
       TabOrder = 8
       OnClick = Button3Click
+    end
+    object Button7: TButton
+      Left = 183
+      Top = 177
+      Width = 147
+      Height = 25
+      Caption = 'Mensagens N'#227'o lidas'
+      ImageIndex = 0
+      Images = ImageList1
+      TabOrder = 9
+      OnClick = Button7Click
     end
   end
   object Memo1: TMemo
@@ -10622,6 +10633,7 @@ object frm_principal: Tfrm_principal
     StateImages = ImageList1
     TabOrder = 2
     ViewStyle = vsSmallIcon
+    OnDblClick = listaContatosDblClick
   end
   object listaAddContatos: TListView
     AlignWithMargins = True
@@ -10643,7 +10655,7 @@ object frm_principal: Tfrm_principal
     AlignWithMargins = True
     Left = 399
     Top = 244
-    Width = 218
+    Width = 250
     Height = 330
     Align = alLeft
     Columns = <>
@@ -10654,6 +10666,7 @@ object frm_principal: Tfrm_principal
     StateImages = ImageList1
     TabOrder = 4
     ViewStyle = vsSmallIcon
+    OnDblClick = listaChatsDblClick
   end
   object ImageList1: TImageList
     ColorDepth = cdDefault
@@ -10705,6 +10718,7 @@ object frm_principal: Tfrm_principal
     Config.ShowRandom = False
     OnGetContactList = InjectWhatsapp1GetContactList
     OnGetChatList = InjectWhatsapp1GetChatList
+    OnGetUnReadMessages = InjectWhatsapp1GetUnReadMessages
     Left = 664
     Top = 168
   end

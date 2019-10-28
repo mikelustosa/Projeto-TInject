@@ -6,6 +6,11 @@ uses Generics.Collections, Rest.Json;
 
 type
 
+//forware
+TChatClass = class;   //forward
+TLabelsClass = class; //forward
+TSenderClass = class; //forward
+
 TResponseConsoleMessage = class
 private
   FName: String;
@@ -16,6 +21,37 @@ public
   function ToJsonString: string;
   class function FromJsonString(AJsonString: string): TResponseConsoleMessage;
 end;
+
+TMediaDataClass = class
+private
+  //Teste: String;
+public
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TMediaDataClass;
+end;
+
+TChatstatesClass = class
+private
+  FTeste: String;
+public
+  property teste: String read FTeste write FTeste;
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TChatstatesClass;
+end;
+
+TPresenceClass = class
+private
+  FChatstates: TArray<TChatstatesClass>;
+  FId: String;
+public
+  property chatstates: TArray<TChatstatesClass> read FChatstates write FChatstates;
+  property id: String read FId write FId;
+  destructor Destroy; override;
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TPresenceClass;
+end;
+
+
 
 TParticipantsClass = class
 private
@@ -125,13 +161,78 @@ public
   class function FromJsonString(AJsonString: string): TLastReceivedKeyClass;
 end;
 
-TPresenceClass = class
+TMentionedJidListClass = class
 private
-  FId: String;
+  FTeste: String;
 public
-  property id: String read FId write FId;
+  property teste: String read FTeste write FTeste;
   function ToJsonString: string;
-  class function FromJsonString(AJsonString: string): TPresenceClass;
+  class function FromJsonString(AJsonString: string): TMentionedJidListClass;
+end;
+
+TMessagesClass = class
+private
+  FAck: Extended;
+  FBody: String;
+  FBroadcast: Boolean;
+  FChat: TChatClass;
+  FChatId: String;
+  FContent: String;
+  FFrom: String;
+  FId: String;
+  FInvis: Boolean;
+  FIsForwarded: Boolean;
+  FIsGroupMsg: Boolean;
+  FIsMMS: Boolean;
+  FIsMedia: Boolean;
+  FIsNewMsg: Boolean;
+  FIsNotification: Boolean;
+  FIsPSA: Boolean;
+  FLabels: TArray<TLabelsClass>;
+  FMediaData: TMediaDataClass;
+  FMentionedJidList: TArray<TMentionedJidListClass>;
+  FNotifyName: String;
+  FRecvFresh: Boolean;
+  FSelf: String;
+  FSender: TSenderClass;
+  FStar: Boolean;
+  FT: Extended;
+  FTimestamp: Extended;
+  FTo: String;
+  FType: String;
+public
+  property ack: Extended read FAck write FAck;
+  property body: String read FBody write FBody;
+  property broadcast: Boolean read FBroadcast write FBroadcast;
+  property chat: TChatClass read FChat write FChat;
+  property chatId: String read FChatId write FChatId;
+  property content: String read FContent write FContent;
+  property from: String read FFrom write FFrom;
+  property id: String read FId write FId;
+  property invis: Boolean read FInvis write FInvis;
+  property isForwarded: Boolean read FIsForwarded write FIsForwarded;
+  property isGroupMsg: Boolean read FIsGroupMsg write FIsGroupMsg;
+  property isMMS: Boolean read FIsMMS write FIsMMS;
+  property isMedia: Boolean read FIsMedia write FIsMedia;
+  property isNewMsg: Boolean read FIsNewMsg write FIsNewMsg;
+  property isNotification: Boolean read FIsNotification write FIsNotification;
+  property isPSA: Boolean read FIsPSA write FIsPSA;
+  property labels: TArray<TLabelsClass> read FLabels write FLabels;
+  property mediaData: TMediaDataClass read FMediaData write FMediaData;
+  property mentionedJidList: TArray<TMentionedJidListClass> read FMentionedJidList write FMentionedJidList;
+  property notifyName: String read FNotifyName write FNotifyName;
+  property recvFresh: Boolean read FRecvFresh write FRecvFresh;
+  property self: String read FSelf write FSelf;
+  property sender: TSenderClass read FSender write FSender;
+  property star: Boolean read FStar write FStar;
+  property t: Extended read FT write FT;
+  property timestamp: Extended read FTimestamp write FTimestamp;
+  property toMessage: String read FTo write FTo;
+  property &type: String read FType write FType;
+  constructor Create;
+  destructor Destroy; override;
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TMessagesClass;
 end;
 
 TChatClass = class
@@ -145,6 +246,7 @@ private
   FIsReadOnly: Boolean;
   FKind: String;
   FLastReceivedKey: TLastReceivedKeyClass;
+  FMessages: TArray<TMessagesClass>;
   FModifyTag: Extended;
   FMuteExpiration: Extended;
   FName: String;
@@ -164,6 +266,7 @@ public
   property isReadOnly: Boolean read FIsReadOnly write FIsReadOnly;
   property kind: String read FKind write FKind;
   property lastReceivedKey: TLastReceivedKeyClass read FLastReceivedKey write FLastReceivedKey;
+  property messages: TArray<TMessagesClass> read FMessages write FMessages;
   property modifyTag: Extended read FModifyTag write FModifyTag;
   property muteExpiration: Extended read FMuteExpiration write FMuteExpiration;
   property name: String read FName write FName;
@@ -179,14 +282,14 @@ public
   class function FromJsonString(AJsonString: string): TChatClass;
 end;
 
-TRetornoAllChats = class
+TChatList = class
 private
   FResult: TArray<TChatClass>;
 public
   property result: TArray<TChatClass> read FResult write FResult;
   destructor Destroy; override;
   function ToJsonString: string;
-  class function FromJsonString(AJsonString: string): TRetornoAllChats;
+  class function FromJsonString(AJsonString: string): TChatList;
 end;
 
 TRetornoAllContacts = class
@@ -197,6 +300,52 @@ public
   destructor Destroy; override;
   function ToJsonString: string;
   class function FromJsonString(AJsonString: string): TRetornoAllContacts;
+end;
+
+TLabelsClass = class
+private
+  FTeste: String;
+public
+  property teste: String read FTeste write FTeste;
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TLabelsClass;
+end;
+
+TSenderClass = class
+private
+  FFormattedName: String;
+  FId: String;
+  FIsBusiness: Boolean;
+  FIsEnterprise: Boolean;
+  FIsMe: Boolean;
+  FIsMyContact: Boolean;
+  FIsPSA: Boolean;
+  FIsUser: Boolean;
+  FIsWAContact: Boolean;
+  FLabels: TArray<TLabelsClass>;
+  FProfilePicThumbObj: TProfilePicThumbObjClass;
+  FPushname: String;
+  FStatusMute: Boolean;
+  FType: String;
+public
+  property formattedName: String read FFormattedName write FFormattedName;
+  property id: String read FId write FId;
+  property isBusiness: Boolean read FIsBusiness write FIsBusiness;
+  property isEnterprise: Boolean read FIsEnterprise write FIsEnterprise;
+  property isMe: Boolean read FIsMe write FIsMe;
+  property isMyContact: Boolean read FIsMyContact write FIsMyContact;
+  property isPSA: Boolean read FIsPSA write FIsPSA;
+  property isUser: Boolean read FIsUser write FIsUser;
+  property isWAContact: Boolean read FIsWAContact write FIsWAContact;
+  property labels: TArray<TLabelsClass> read FLabels write FLabels;
+  property profilePicThumbObj: TProfilePicThumbObjClass read FProfilePicThumbObj write FProfilePicThumbObj;
+  property pushname: String read FPushname write FPushname;
+  property statusMute: Boolean read FStatusMute write FStatusMute;
+  property &type: String read FType write FType;
+  constructor Create;
+  destructor Destroy; override;
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TSenderClass;
 end;
 
 implementation
@@ -225,6 +374,55 @@ end;
 function TResponseConsoleMessage.ToJsonString: string;
 begin
   result := TJson.ObjectToJsonString(self);
+end;
+
+{TMediaDataClass}
+
+
+function TMediaDataClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+class function TMediaDataClass.FromJsonString(AJsonString: string): TMediaDataClass;
+begin
+  result := TJson.JsonToObject<TMediaDataClass>(AJsonString)
+end;
+
+{TChatstatesClass}
+
+
+function TChatstatesClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+class function TChatstatesClass.FromJsonString(AJsonString: string): TChatstatesClass;
+begin
+  result := TJson.JsonToObject<TChatstatesClass>(AJsonString)
+end;
+
+{TPresenceClass}
+
+destructor TPresenceClass.Destroy;
+var
+  LchatstatesItem: TChatstatesClass;
+begin
+
+ for LchatstatesItem in FChatstates do
+   LchatstatesItem.free;
+
+  inherited;
+end;
+
+function TPresenceClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+class function TPresenceClass.FromJsonString(AJsonString: string): TPresenceClass;
+begin
+  result := TJson.JsonToObject<TPresenceClass>(AJsonString)
 end;
 
 {TParticipantsClass}
@@ -313,20 +511,6 @@ begin
   result := TJson.JsonToObject<TLastReceivedKeyClass>(AJsonString)
 end;
 
-{TPresenceClass}
-
-
-function TPresenceClass.ToJsonString: string;
-begin
-  result := TJson.ObjectToJsonString(self);
-end;
-
-class function TPresenceClass.FromJsonString(AJsonString: string): TPresenceClass;
-begin
-  result := TJson.JsonToObject<TPresenceClass>(AJsonString)
-end;
-
-
 {TResultClass}
 
 constructor TChatClass.Create;
@@ -338,7 +522,13 @@ begin
 end;
 
 destructor TChatClass.Destroy;
+var
+  LmessagesItem: TMessagesClass;
 begin
+
+  for LmessagesItem in FMessages do
+      LmessagesItem.free;
+
   FLastReceivedKey.free;
   FContact.free;
   FGroupMetadata.free;
@@ -357,7 +547,7 @@ end;
 
 {TRetornoClass}
 
-destructor TRetornoAllChats.Destroy;
+destructor TChatList.Destroy;
 var
   LresultItem: TChatClass;
 begin
@@ -368,14 +558,14 @@ begin
   inherited;
 end;
 
-function TRetornoAllChats.ToJsonString: string;
+function TChatList.ToJsonString: string;
 begin
   result := TJson.ObjectToJsonString(self);
 end;
 
-class function TRetornoAllChats.FromJsonString(AJsonString: string): TRetornoAllChats;
+class function TChatList.FromJsonString(AJsonString: string): TChatList;
 begin
-  result := TJson.JsonToObject<TRetornoAllChats>(AJsonString)
+  result := TJson.JsonToObject<TChatList>(AJsonString)
 end;
 
 {TRetornoAllContacts}
@@ -400,6 +590,103 @@ class function TRetornoAllContacts.FromJsonString(AJsonString: string): TRetorno
 begin
   result := TJson.JsonToObject<TRetornoAllContacts>(AJsonString, [TJsonOption.joIgnoreEmptyStrings])
 end;
+
+{TLabelsClass}
+
+function TLabelsClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+class function TLabelsClass.FromJsonString(AJsonString: string): TLabelsClass;
+begin
+  result := TJson.JsonToObject<TLabelsClass>(AJsonString)
+end;
+
+{TSenderClass}
+
+constructor TSenderClass.Create;
+begin
+  inherited;
+  FProfilePicThumbObj := TProfilePicThumbObjClass.Create();
+end;
+
+destructor TSenderClass.Destroy;
+var
+  LlabelsItem: TLabelsClass;
+begin
+
+ for LlabelsItem in FLabels do
+   LlabelsItem.free;
+
+  FProfilePicThumbObj.free;
+  inherited;
+end;
+
+function TSenderClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+class function TSenderClass.FromJsonString(AJsonString: string): TSenderClass;
+begin
+  result := TJson.JsonToObject<TSenderClass>(AJsonString)
+end;
+
+{TMentionedJidListClass}
+
+
+function TMentionedJidListClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+class function TMentionedJidListClass.FromJsonString(AJsonString: string): TMentionedJidListClass;
+begin
+  result := TJson.JsonToObject<TMentionedJidListClass>(AJsonString)
+end;
+
+{TMessagesClass}
+
+constructor TMessagesClass.Create;
+begin
+  inherited;
+  FSender := TSenderClass.Create();
+  FChat := TChatClass.Create();
+  FMediaData := TMediaDataClass.Create();
+end;
+
+destructor TMessagesClass.Destroy;
+var
+  LmentionedJidListItem: TMentionedJidListClass;
+  LlabelsItem: TLabelsClass;
+begin
+
+ for LmentionedJidListItem in FMentionedJidList do
+   LmentionedJidListItem.free;
+ for LlabelsItem in FLabels do
+   LlabelsItem.free;
+
+  FSender.free;
+  FChat.free;
+  FMediaData.free;
+  inherited;
+end;
+
+function TMessagesClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+class function TMessagesClass.FromJsonString(AJsonString: string): TMessagesClass;
+begin
+  result := TJson.JsonToObject<TMessagesClass>(AJsonString)
+
+  //After.... Value to Property Alter Name reserved ("to" -> "toMessage")
+  //result.toMessage := GetValue("to")
+end;
+
+
 
 end.
 

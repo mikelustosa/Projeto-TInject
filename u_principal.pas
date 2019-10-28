@@ -56,6 +56,7 @@ type
     Label8: TLabel;
     listaChats: TListView;
     Button3: TButton;
+    Button7: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -93,6 +94,10 @@ type
     procedure InjectWhatsapp1GetContactList(Sender: TObject);
     procedure InjectWhatsapp1GetChatList(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
+    procedure InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
+    procedure listaChatsDblClick(Sender: TObject);
+    procedure listaContatosDblClick(Sender: TObject);
 
   protected
 
@@ -299,6 +304,11 @@ begin
   application.MessageBox('Mensage enviada com sucesso!','TInject', mb_iconAsterisk + mb_ok);
 end;
 
+procedure Tfrm_principal.Button7Click(Sender: TObject);
+begin
+  InjectWhatsapp1.GetUnReadMessages;
+end;
+
 procedure Tfrm_principal.CarregarChats;
 begin
   InjectWhatsapp1.getAllChats;
@@ -410,6 +420,32 @@ begin
     else
         AddContactList(AContact.id + ' ' +AContact.name);
   end;
+end;
+
+procedure Tfrm_principal.InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
+var
+  AChat: TChatClass;
+  AMessage: TMessagesClass;
+begin
+  for AChat in Chats.result do
+  begin
+    for AMessage in AChat.messages do
+        ShowMessage( PChar( 'Chat: ' + AChat.name
+                          + sLineBreak
+                          + 'Contato: ' + Trim(AMessage.Sender.pushName + ' (' + AMessage.Sender.formattedName + ')')
+                          + sLineBreak + sLineBreak
+                          + AMessage.body ) );
+  end;
+end;
+
+procedure Tfrm_principal.listaChatsDblClick(Sender: TObject);
+begin
+  ed_num.Text := InjectWhatsapp1.AllChats.result[ listaChats.Selected.Index ].id;
+end;
+
+procedure Tfrm_principal.listaContatosDblClick(Sender: TObject);
+begin
+  ed_num.Text := InjectWhatsapp1.AllContacts.result[ listaContatos.Selected.Index ].id;
 end;
 
 procedure Tfrm_principal.Timer1Timer(Sender: TObject);

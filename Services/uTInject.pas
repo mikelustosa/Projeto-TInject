@@ -16,6 +16,8 @@ uses
     FActivitySendThread       : TThread;
     FActivitySendBase64Thread : TThread;
 type
+  {Events}
+  TGetUnReadMessages = procedure(Chats: TChatList) of object;
 
   TMySubComp = class(TComponent)
 
@@ -46,10 +48,11 @@ type
   protected
     { Protected declarations }
     FAllContacts: TRetornoAllContacts;
-    FAllChats: TRetornoAllChats;
+    FAllChats: TChatList;
     FOnGetContactList : TNotifyEvent;
     FOnGetChatList: TNotifyEvent;
     FOnGetNewMessage  : TNotifyEvent;
+    FOnGetUnReadMessages: TGetUnReadMessages;
     FOnGetStatus      : TNotifyEvent;
     FContacts: String;
     FMySubComp1: TMySubComp;
@@ -66,7 +69,7 @@ type
     function GetStatus: Boolean;
     function GetUnReadMessages: String;
     property AllContacts: TRetornoAllContacts read FAllContacts write FAllContacts;
-    property AllChats: TRetornoAllChats read FAllChats write FAllChats;
+    property AllChats: TChatList read FAllChats write FAllChats;
     property Auth: boolean read FAuth write FAuth;
   published
     { Published declarations }
@@ -74,6 +77,7 @@ type
     property OnGetContactList: TNotifyEvent read FOnGetContactList write FOnGetContactList;
     property OnGetChatList: TNotifyEvent read FOnGetChatList write FOnGetChatList;
     property OnGetNewMessage: TNotifyEvent read FOnGetNewMessage write FOnGetNewMessage;
+    property OnGetUnReadMessages: TGetUnReadMessages read FOnGetUnReadMessages write FOnGetUnReadMessages;
     property OnGetStatus: TNotifyEvent read FOnGetStatus write FOnGetStatus;
   end;
   var resultado : integer;
@@ -180,7 +184,7 @@ begin
           begin
             if Assigned(frm_servicesWhats) then
             begin
-              //frm_servicesWhats.GetUnReadMessages;
+              frm_servicesWhats.GetUnReadMessages;
             end;
           end);
 
@@ -203,6 +207,8 @@ begin
 end;
 
 procedure TInjectWhatsapp.send(vNum, vMess: string);
+var
+  AId: String;
 begin
   inherited;
   FActivitySendThread := TThread.CreateAnonymousThread(procedure
@@ -218,7 +224,11 @@ begin
           begin
             if Assigned(frm_servicesWhats) then
             begin
-              frm_servicesWhats.Send('55'+vNum+'@c.us', vMess);
+              AId := vNum;
+              if Pos(vNum,'@') = -1 then
+                 AId := '55'+vNum+'@c.us';
+
+              frm_servicesWhats.Send(AId, vMess);
             end;
           end);
 
