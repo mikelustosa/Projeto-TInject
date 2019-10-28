@@ -1,5 +1,5 @@
 //TInject Criado por Mike W. Lustosa
-//CÛdido aberto ‡ comunidade Delphi
+//C√≥dido aberto √† comunidade Delphi
 //mikelustosa@gmail.com
 
 unit u_servicesWhats;
@@ -11,7 +11,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, uCEFChromium,
   uCEFWinControl, uCEFWindowParent,
 
-  //units adicionais obrigatÛrias
+  //units adicionais obrigat√≥rias
   uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium, uCEFApplication,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
   Vcl.Buttons, Vcl.Imaging.pngimage,
@@ -69,7 +69,7 @@ type
       const browser: ICefBrowser; level: Cardinal; const message,
       source: ustring; line: Integer; out Result: Boolean);
   protected
-   // Vari·veis para controlar quando podemos destruir o formul·rio com seguranÁa
+   // Vari√°veis para controlar quando podemos destruir o formul√°rio com seguran√ßa
     FCanClose : boolean;  // Defina como True em TChromium.OnBeforeClose
     FClosing  : boolean;  // Defina como True no evento CloseQuery.
 
@@ -84,7 +84,6 @@ type
   private
     { Private declarations }
     procedure LogConsoleMessage(const AMessage: String);
-    procedure ProcessingRequestConsole(var Json: TJSONObject);
     procedure SetAllContacts(JsonText: String);
     procedure SetAllChats(JsonText: String);
     procedure SetUnReadMessages(JsonText: String);
@@ -187,8 +186,8 @@ end;
 procedure Tfrm_servicesWhats.Chromium1AfterCreated(Sender: TObject;
   const browser: ICefBrowser);
 begin
-  { Agora que o navegador est· totalmente inicializado, podemos enviar uma mensagem para
-    o formul·rio principal para carregar a p·gina inicial da web.}
+  { Agora que o navegador est√° totalmente inicializado, podemos enviar uma mensagem para
+    o formul√°rio principal para carregar a p√°gina inicial da web.}
   //PostMessage(Handle, CEFBROWSER_CREATED, 0, 0);
   PostMessage(Handle, CEF_AFTERCREATED, 0, 0);
 end;
@@ -287,7 +286,7 @@ end;
 procedure Tfrm_servicesWhats.Chromium1LoadEnd(Sender: TObject;
   const browser: ICefBrowser; const frame: ICefFrame; httpStatusCode: Integer);
 begin
- //Injeto o cÛdigo para verificar se est· logado
+ //Injeto o c√≥digo para verificar se est√° logado
  // JS := 'WAPI.isLoggedIn();';
  // if Chromium1.Browser <> nil then
  //     Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
@@ -365,132 +364,6 @@ begin
     ExtractFilePath(Application.ExeName) + 'ConsoleMessage.log',
     AMessage,
     TEncoding.ASCII);
-end;
-
-procedure Tfrm_servicesWhats.ProcessingRequestConsole(var Json: TJSONObject);
-type
-  TypeRequest = (
-    rcMonitoring,
-    rcContacts,
-    rcUpdateMedia,
-    rcValidateContact,
-    rcQrCode,
-    rcStatus,
-    rcQrCodeUpdate,
-    rcStatusContatct,
-    rcBroadcasts,
-    rcGroups,
-    rcGroupParticpants,
-    rcInvalid
-  );
-  function RequestConsole(Request: string): TypeRequest;
-  begin
-    Request := StringReplace(Request, '"', '', [rfReplaceAll, rfIgnoreCase]).Trim();
-    Request := StringReplace(Request, '\', '', [rfReplaceAll, rfIgnoreCase]).Trim();
-
-    if Request = '/monitoring' then
-      Result := rcMonitoring
-    else
-    if Request = '/contacts' then
-      Result := rcContacts
-    else
-    if Request = '/updatemedia' then
-       Result := rcUpdateMedia
-    else
-    if Request = '/contactexist' then
-       Result := rcValidateContact
-    else
-    if Request = '/status' then
-       Result := rcStatus
-    else
-    if Request = '/qrcodechanged' then
-       Result := rcQrCodeUpdate
-    else
-    if Request = '/contactonline' then
-       Result := rcStatusContatct
-    else
-    if Request = '/broadcasts' then
-       Result := rcBroadcasts
-    else
-    if Request = '/groups' then
-       Result := rcGroups
-    else
-    if Request = '/groupparticipants' then
-       Result := rcGroupParticpants
-    else
-      Result := rcInvalid;
-  end;
-begin
-  Json.ToJSON;
-  if Json.Values['href'] = nil then
-  begin
-    Json.Free;
-    Json := nil;
-    Exit;
-  end;
-
-  case RequestConsole(Json.Values['href'].ToString) of
-    rcInvalid:
-    begin
-      Json.Free;
-      Json := nil;
-      Exit;
-    end;
-    rcMonitoring:
-    begin
-//     if Json.Values['messages'].ToString <> '[]' then
-//     begin
-//      FSServiceProcessMessage.Messages(Json);
-//     end;
-//     if Json.Values['monitoring_phone'].ToString <> 'null' then
-//     begin
-//      FSServiceStatusPhone.MonitoringStatusPhone(Json);
-//     end;
-//    end;
-//    rcContacts:
-//    begin
-//     FSShowViewListContacts(Json);
-//    end;
-//    rcUpdateMedia:
-//    begin
-//     FSServiceProcessMessage.UpdateMediaChat(Json);
-//    end;
-//    rcValidateContact:
-//    begin
-//     FSContactsVerifyAccount.SetStatusAccountNumber(Json);
-//    end;
-//    rcStatus:
-//    begin
-//     with TServiceStatus.New() do
-//     begin
-//      EventStatus := FEventStatus;
-//      ProcessStatus(Json);
-//      ChromiumStarted := True;
-//     end;
-//    end;
-//    rcQrCodeUpdate:
-//    begin
-//     FEventQrCodeUpdate(Json.GetValue('qr_code_url', '').Trim());
-//    end;
-//    rcStatusContatct:
-//    begin
-//     FEventStatusContact(Json.GetValue('status', '').Trim());
-//    end;
-//    rcBroadcasts:
-//    begin
-//     FEventBroadcasts(Json.Values['list'].ToString);
-//    end;
-//    rcGroups:
-//    begin
-//     FEventGroups(Json.Values['list'].ToString);
-//    end;
-//    rcGroupParticpants:
-//    begin
-//     FEventGroupParticipants(Json.Values['list'].ToString);
-//    end;
-  end;
-end;
-
 end;
 
 procedure Tfrm_servicesWhats.SendBase64(vBase64, vNum, vFileName, vText: string);
@@ -618,7 +491,7 @@ begin
         while (not eof(arq)) do
         begin
           readln(arq, linha);
-          //LÍ linha do arquivo
+          //L√™ linha do arquivo
           memo_js.Lines.Add(linha);
         end;
         CloseFile(arq);
