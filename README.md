@@ -1,5 +1,5 @@
-# TInject-whatsapp-delphi
-Componente TInject para criação de chatBots com delphi<br></br><br></br>
+# Componente TInject
+Componente para criação de chatBots com delphi e o whatsapp<br></br><br></br>
 
 INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
 
@@ -7,7 +7,7 @@ Tutorial de instalação no youtube:<br>
 https://youtu.be/iJAKU8A8fmc
 
 
-1-Clonar o repositório TInject-whatsapp-delphi
+1-Clonar o repositório Projeto-TInject
 <br></br>
 2-Baixar e instalar o CEF4Delphi em: https://drive.google.com/file/d/11cjHyJ9JYjnbQQI-gufJfDVLjJDHKhv3/view?usp=sharing
 <br></br>
