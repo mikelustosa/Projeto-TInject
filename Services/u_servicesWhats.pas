@@ -1,4 +1,4 @@
-//TInject Criado por Mike W. Lustosa
+﻿//TInject Criado por Mike W. Lustosa
 //Códido aberto à comunidade Delphi
 //mikelustosa@gmail.com
 
@@ -87,6 +87,7 @@ type
     procedure SetAllContacts(JsonText: String);
     procedure SetAllChats(JsonText: String);
     procedure SetUnReadMessages(JsonText: String);
+    procedure SetSendMessageToIDText(JsonText: String);
 
   public
     { Public declarations }
@@ -100,7 +101,6 @@ type
     procedure GetAllContacts;
     procedure GetAllChats;
     procedure GetUnreadMessages;
-
   end;
 
 var
@@ -249,6 +249,9 @@ begin
 
         if AResponse.Name = 'getUnreadMessages' then
            SetUnreadMessages( AResponse.Result );
+
+        if AResponse.Name = 'sendMessageToID' then
+           SetSendMessageToIDText( AResponse.Result );
       end;
     except
       on E:Exception do
@@ -406,6 +409,29 @@ begin
      //Dispara Notify
      if Assigned( OnGetContactList ) then
         OnGetContactList(Self);
+  end;
+end;
+
+procedure Tfrm_servicesWhats.SetSendMessageToIDText(JsonText: String);
+var
+  AChatRetorno: TJSONObject;
+  AChat: TChatClass;
+begin
+  if not Assigned( _Inject ) then
+     Exit;
+
+  AChatRetorno := TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(JsonText), 0) as TJSONObject;
+  AChat := TChatClass.FromJsonString( AChatRetorno.GetValue('result').ToString );
+  try
+    with _Inject do
+    begin
+      //Dispara Notify
+      if Assigned( OnAfterSendMessage ) then
+         OnAfterSendMessage( AChat );
+    end;
+  finally
+    AChatRetorno.Free;
+    AChat.Free;
   end;
 end;
 

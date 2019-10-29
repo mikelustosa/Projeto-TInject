@@ -98,6 +98,7 @@ type
     procedure InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
     procedure listaChatsDblClick(Sender: TObject);
     procedure listaContatosDblClick(Sender: TObject);
+    procedure InjectWhatsapp1AfterSendMessage(Chat: TChatClass);
 
   protected
 
@@ -301,7 +302,6 @@ begin
   end;
 
   InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
-  application.MessageBox('Mensage enviada com sucesso!','TInject', mb_iconAsterisk + mb_ok);
 end;
 
 procedure Tfrm_principal.Button7Click(Sender: TObject);
@@ -388,6 +388,11 @@ procedure Tfrm_principal.Chromium1OpenUrlFromTab(Sender: TObject;
 begin
   //Bloqueia popup do windows e novas abas
   Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
+end;
+
+procedure Tfrm_principal.InjectWhatsapp1AfterSendMessage(Chat: TChatClass);
+begin
+  Application.MessageBox(PChar('Mensagem enviada para: ' + Chat.Name),'TInject', mb_iconAsterisk + mb_ok);
 end;
 
 procedure Tfrm_principal.InjectWhatsapp1GetChatList(Sender: TObject);

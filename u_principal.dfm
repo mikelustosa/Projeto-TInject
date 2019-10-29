@@ -10719,6 +10719,7 @@ object frm_principal: Tfrm_principal
     OnGetContactList = InjectWhatsapp1GetContactList
     OnGetChatList = InjectWhatsapp1GetChatList
     OnGetUnReadMessages = InjectWhatsapp1GetUnReadMessages
+    OnAfterSendMessage = InjectWhatsapp1AfterSendMessage
     Left = 664
     Top = 168
   end

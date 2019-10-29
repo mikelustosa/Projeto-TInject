@@ -18,6 +18,7 @@ uses
 type
   {Events}
   TGetUnReadMessages = procedure(Chats: TChatList) of object;
+  TChatEvent = procedure(Chat: TChatClass) of object;
 
   TMySubComp = class(TComponent)
 
@@ -53,6 +54,7 @@ type
     FOnGetChatList: TNotifyEvent;
     FOnGetNewMessage  : TNotifyEvent;
     FOnGetUnReadMessages: TGetUnReadMessages;
+    FOnAfterSendMessage: TChatEvent;
     FOnGetStatus      : TNotifyEvent;
     FContacts: String;
     FMySubComp1: TMySubComp;
@@ -78,6 +80,7 @@ type
     property OnGetChatList: TNotifyEvent read FOnGetChatList write FOnGetChatList;
     property OnGetNewMessage: TNotifyEvent read FOnGetNewMessage write FOnGetNewMessage;
     property OnGetUnReadMessages: TGetUnReadMessages read FOnGetUnReadMessages write FOnGetUnReadMessages;
+    property OnAfterSendMessage: TChatEvent read FOnAfterSendMessage write FOnAfterSendMessage;
     property OnGetStatus: TNotifyEvent read FOnGetStatus write FOnGetStatus;
   end;
   var resultado : integer;
@@ -225,7 +228,7 @@ begin
             if Assigned(frm_servicesWhats) then
             begin
               AId := vNum;
-              if Pos(vNum,'@') = -1 then
+              if Pos('@',AId) = 0 then
                  AId := '55'+vNum+'@c.us';
 
               frm_servicesWhats.Send(AId, vMess);

@@ -689,16 +689,20 @@ window.WAPI.sendMessageToID = function (id, message, done) {
         }
         window.getContact(id).then(contact => {
             if (contact.status === 404) {
+				SetConsoleMessage("sendMessageToID",JSON.stringify(true));
                 done(true);
             } else {
                 Store.Chat.find(contact.jid).then(chat => {
                     chat.sendMessage(message);
+					SetConsoleMessage("sendMessageToID",JSON.stringify(chat));
                     return true;
                 }).catch(reject => {
                     if (WAPI.sendMessage(id, message)) {
-                        done(true);
+						SetConsoleMessage("sendMessageToID",JSON.stringify(chat));
+                        done(true);						
                         return true;
                     }else{
+						SetConsoleMessage("sendMessageToID",JSON.stringify(false));
                         done(false);
                         return false;
                     }
