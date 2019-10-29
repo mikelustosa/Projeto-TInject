@@ -228,8 +228,8 @@ begin
   if vBase64File <> nil then
   begin
     InjectWhatsapp1.sendBase64(vBase64Str, ed_num.Text, vFileName, mem_message.Text);
-    vBase64File := nil;
-    application.MessageBox('Arquivo enviado com sucesso!','TInject whatsapp', mb_iconAsterisk + mb_ok);
+    vBase64File.Free;
+    //application.MessageBox('Arquivo enviado com sucesso!','TInject whatsapp', mb_iconAsterisk + mb_ok);
   end;
 end;
 

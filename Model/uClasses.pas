@@ -161,17 +161,22 @@ public
   class function FromJsonString(AJsonString: string): TLastReceivedKeyClass;
 end;
 
-TMentionedJidListClass = class
-private
-  FTeste: String;
-public
-  property teste: String read FTeste write FTeste;
-  function ToJsonString: string;
-  class function FromJsonString(AJsonString: string): TMentionedJidListClass;
-end;
-
 TMessagesClass = class
 private
+  FCaption: String;
+  FClientUrl: String;
+  FDirectPath: String;
+  FMimetype: String;
+  FFilehash: String;
+  FUploadhash: String;
+  FSize: Extended;
+  FMediaKey: String;
+  FMediaKeyTimestamp: String;
+  FWidth: Extended;
+  FHeight: Extended;
+  FEphemeralStartTimestamp: Extended;
+  FFilename: String;
+  FPageCount: Extended;
   FAck: Extended;
   FBody: String;
   FBroadcast: Boolean;
@@ -190,7 +195,7 @@ private
   FIsPSA: Boolean;
   FLabels: TArray<TLabelsClass>;
   FMediaData: TMediaDataClass;
-  FMentionedJidList: TArray<TMentionedJidListClass>;
+  FMentionedJidList: TArray<String>;
   FNotifyName: String;
   FRecvFresh: Boolean;
   FSelf: String;
@@ -201,6 +206,20 @@ private
   FTo: String;
   FType: String;
 public
+  property caption: String read FCaption write FCaption;
+  property clientUrl: String read FClientUrl write FClientUrl;
+  property directPath: String read FDirectPath write FDirectPath;
+  property mimetype: String read FMimetype write FMimetype;
+  property filehash: String read FFilehash write FFilehash;
+  property uploadhash: String read FUploadhash write FUploadhash;
+  property size: Extended read FSize write FSize;
+  property mediaKey: String read FMediaKey write FMediaKey;
+  property mediaKeyTimestamp: String read FMediaKeyTimestamp write FMediaKeyTimestamp;
+  property width: Extended read FWidth write FWidth;
+  property height: Extended read FHeight write FHeight;
+  property ephemeralStartTimestamp: Extended read FEphemeralStartTimestamp write FEphemeralStartTimestamp;
+  property filename: String read FFilename write FFilename;
+  property pageCount: Extended read FPageCount write FPageCount;
   property ack: Extended read FAck write FAck;
   property body: String read FBody write FBody;
   property broadcast: Boolean read FBroadcast write FBroadcast;
@@ -219,7 +238,7 @@ public
   property isPSA: Boolean read FIsPSA write FIsPSA;
   property labels: TArray<TLabelsClass> read FLabels write FLabels;
   property mediaData: TMediaDataClass read FMediaData write FMediaData;
-  property mentionedJidList: TArray<TMentionedJidListClass> read FMentionedJidList write FMentionedJidList;
+  property mentionedJidList: TArray<String> read FMentionedJidList write FMentionedJidList;
   property notifyName: String read FNotifyName write FNotifyName;
   property recvFresh: Boolean read FRecvFresh write FRecvFresh;
   property self: String read FSelf write FSelf;
@@ -237,6 +256,7 @@ end;
 
 TChatClass = class
 private
+  FMsgs: TArray<TMessagesClass>;
   FArchive: Boolean;
   FContact: TContactClass;
   FGroupMetadata: TGroupMetadataClass;
@@ -257,6 +277,7 @@ private
   FT: Extended;
   FUnreadCount: Extended;
 public
+  property msgs: TArray<TMessagesClass> read FMsgs write FMsgs;
   property archive: Boolean read FArchive write FArchive;
   property contact: TContactClass read FContact write FContact;
   property groupMetadata: TGroupMetadataClass read FGroupMetadata write FGroupMetadata;
@@ -529,6 +550,9 @@ begin
   for LmessagesItem in FMessages do
       LmessagesItem.free;
 
+  for LmessagesItem in FMsgs do
+      LmessagesItem.free;
+
   FLastReceivedKey.free;
   FContact.free;
   FGroupMetadata.free;
@@ -633,19 +657,6 @@ begin
   result := TJson.JsonToObject<TSenderClass>(AJsonString)
 end;
 
-{TMentionedJidListClass}
-
-
-function TMentionedJidListClass.ToJsonString: string;
-begin
-  result := TJson.ObjectToJsonString(self);
-end;
-
-class function TMentionedJidListClass.FromJsonString(AJsonString: string): TMentionedJidListClass;
-begin
-  result := TJson.JsonToObject<TMentionedJidListClass>(AJsonString)
-end;
-
 {TMessagesClass}
 
 constructor TMessagesClass.Create;
@@ -658,12 +669,8 @@ end;
 
 destructor TMessagesClass.Destroy;
 var
-  LmentionedJidListItem: TMentionedJidListClass;
   LlabelsItem: TLabelsClass;
 begin
-
- for LmentionedJidListItem in FMentionedJidList do
-   LmentionedJidListItem.free;
  for LlabelsItem in FLabels do
    LlabelsItem.free;
 

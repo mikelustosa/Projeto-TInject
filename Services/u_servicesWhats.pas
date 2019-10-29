@@ -250,7 +250,9 @@ begin
         if AResponse.Name = 'getUnreadMessages' then
            SetUnreadMessages( AResponse.Result );
 
-        if AResponse.Name = 'sendMessageToID' then
+        if (AResponse.Name = 'sendMessageToID')
+        or (AResponse.Name = 'sendImage')
+        then
            SetSendMessageToIDText( AResponse.Result );
       end;
     except
@@ -378,21 +380,19 @@ var
 begin
   vText := caractersWhats(vText);
   removeCaracter(vFileName);
+
   Base64File:= TStringList.Create;
-  Base64File.Text := vBase64;
-  for i := 0 to Base64File.Count -1  do
-  begin
-    vLine := vLine + Base64File[i];
+  try
+    Base64File.Text := vBase64;
+    for i := 0 to Base64File.Count -1  do
+        vLine := vLine + Base64File[i];
+  finally
+    Base64File.Free;
   end;
-  vBase64 := vLine;
-  JS := 'window.WAPI.sendImage("'+Trim(vBase64)+'","'+Trim(vNum)+'", "'+Trim(vFileName)+'", "'+Trim(vText)+'")';
 
+  JS := 'window.WAPI.sendImage("'+Trim(vLine)+'","'+Trim(vNum)+'", "'+Trim(vFileName)+'", "'+Trim(vText)+'")';
   if Chromium1.Browser <> nil then
-  begin
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-  end;
-
-  freeAndNil(vBase64);
+     Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
 
 procedure Tfrm_servicesWhats.SetAllContacts(JsonText: String);

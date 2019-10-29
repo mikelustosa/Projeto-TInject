@@ -1197,6 +1197,7 @@ return Store.Chat.find(idUser).then((chat) => {
         media.sendToChat(chat, { caption: caption });
         if (done !== undefined) done(true);
     });
+	SetConsoleMessage("sendImage",JSON.stringify(chat));
 });
 }
 
