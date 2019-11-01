@@ -1,5 +1,5 @@
 //TInject Criado por Mike W. Lustosa
-//Códido aberto à comunidade Delphi
+//CÃ³dido aberto Ã  comunidade Delphi
 //mikelustosa@gmail.com
 
 unit uTInject;
@@ -304,7 +304,7 @@ procedure TInjectWhatsapp.startWhatsapp;
 begin
   if not Assigned(frm_servicesWhats) then
   begin
-   frm_servicesWhats         := Tfrm_servicesWhats.Create(self);
+   frm_servicesWhats         := Tfrm_servicesWhats.Create(nil);
    frm_servicesWhats._Inject := Self;
   end;
 end;
