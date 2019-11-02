@@ -2,7 +2,7 @@ unit uClasses;
 
 interface
 
-uses Generics.Collections, Rest.Json;
+uses Generics.Collections, Rest.Json, u_view_qrcode;
 
 type
 
@@ -10,6 +10,32 @@ type
 TChatClass = class;   //forward
 TLabelsClass = class; //forward
 TSenderClass = class; //forward
+
+
+{ResultQRCodeClass}
+TResultQRCodeClass = class
+private
+  FAQrCode: String;
+public
+  property AQrCode: String read FAQrCode write FAQrCode;
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TResultQRCodeClass;
+
+end;
+
+{QRCodeClass Root}
+TQrCodeClass = class
+private
+  FName: String;
+  FResult: TResultQRCodeClass;
+public
+  property name: String read FName write FName;
+  property result: TResultQRCodeClass read FResult write FResult;
+  constructor Create;
+  destructor Destroy; override;
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TQrCodeClass;
+end;
 
 TResponseConsoleMessage = class
 private
@@ -161,22 +187,17 @@ public
   class function FromJsonString(AJsonString: string): TLastReceivedKeyClass;
 end;
 
+TMentionedJidListClass = class
+private
+  FTeste: String;
+public
+  property teste: String read FTeste write FTeste;
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TMentionedJidListClass;
+end;
+
 TMessagesClass = class
 private
-  FCaption: String;
-  FClientUrl: String;
-  FDirectPath: String;
-  FMimetype: String;
-  FFilehash: String;
-  FUploadhash: String;
-  FSize: Extended;
-  FMediaKey: String;
-  FMediaKeyTimestamp: String;
-  FWidth: Extended;
-  FHeight: Extended;
-  FEphemeralStartTimestamp: Extended;
-  FFilename: String;
-  FPageCount: Extended;
   FAck: Extended;
   FBody: String;
   FBroadcast: Boolean;
@@ -195,7 +216,7 @@ private
   FIsPSA: Boolean;
   FLabels: TArray<TLabelsClass>;
   FMediaData: TMediaDataClass;
-  FMentionedJidList: TArray<String>;
+  FMentionedJidList: TArray<TMentionedJidListClass>;
   FNotifyName: String;
   FRecvFresh: Boolean;
   FSelf: String;
@@ -206,20 +227,6 @@ private
   FTo: String;
   FType: String;
 public
-  property caption: String read FCaption write FCaption;
-  property clientUrl: String read FClientUrl write FClientUrl;
-  property directPath: String read FDirectPath write FDirectPath;
-  property mimetype: String read FMimetype write FMimetype;
-  property filehash: String read FFilehash write FFilehash;
-  property uploadhash: String read FUploadhash write FUploadhash;
-  property size: Extended read FSize write FSize;
-  property mediaKey: String read FMediaKey write FMediaKey;
-  property mediaKeyTimestamp: String read FMediaKeyTimestamp write FMediaKeyTimestamp;
-  property width: Extended read FWidth write FWidth;
-  property height: Extended read FHeight write FHeight;
-  property ephemeralStartTimestamp: Extended read FEphemeralStartTimestamp write FEphemeralStartTimestamp;
-  property filename: String read FFilename write FFilename;
-  property pageCount: Extended read FPageCount write FPageCount;
   property ack: Extended read FAck write FAck;
   property body: String read FBody write FBody;
   property broadcast: Boolean read FBroadcast write FBroadcast;
@@ -238,7 +245,7 @@ public
   property isPSA: Boolean read FIsPSA write FIsPSA;
   property labels: TArray<TLabelsClass> read FLabels write FLabels;
   property mediaData: TMediaDataClass read FMediaData write FMediaData;
-  property mentionedJidList: TArray<String> read FMentionedJidList write FMentionedJidList;
+  property mentionedJidList: TArray<TMentionedJidListClass> read FMentionedJidList write FMentionedJidList;
   property notifyName: String read FNotifyName write FNotifyName;
   property recvFresh: Boolean read FRecvFresh write FRecvFresh;
   property self: String read FSelf write FSelf;
@@ -256,7 +263,6 @@ end;
 
 TChatClass = class
 private
-  FMsgs: TArray<TMessagesClass>;
   FArchive: Boolean;
   FContact: TContactClass;
   FGroupMetadata: TGroupMetadataClass;
@@ -277,7 +283,6 @@ private
   FT: Extended;
   FUnreadCount: Extended;
 public
-  property msgs: TArray<TMessagesClass> read FMsgs write FMsgs;
   property archive: Boolean read FArchive write FArchive;
   property contact: TContactClass read FContact write FContact;
   property groupMetadata: TGroupMetadataClass read FGroupMetadata write FGroupMetadata;
@@ -369,10 +374,43 @@ public
   class function FromJsonString(AJsonString: string): TSenderClass;
 end;
 
+
 implementation
 
 uses
-  System.JSON, System.SysUtils;
+  System.JSON, System.SysUtils, Vcl.Dialogs;
+
+{TResultQRCodeClass}
+
+function TResultQRCodeClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+class function TResultQRCodeClass.FromJsonString(AJsonString: string): TResultQRCodeClass;
+begin
+  result := TJson.JsonToObject<TResultQRCodeClass>(AJsonString)
+end;
+
+
+{TQrCodeClass}
+
+constructor TQrCodeClass.Create;
+begin
+  inherited;
+  FResult := TResultQRCodeClass.Create();
+end;
+
+destructor TQrCodeClass.Destroy;
+begin
+  FResult.free;
+  inherited;
+end;
+
+function TQrCodeClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
 
 { TResponseConsoleMessage }
 
@@ -550,9 +588,6 @@ begin
   for LmessagesItem in FMessages do
       LmessagesItem.free;
 
-  for LmessagesItem in FMsgs do
-      LmessagesItem.free;
-
   FLastReceivedKey.free;
   FContact.free;
   FGroupMetadata.free;
@@ -657,6 +692,19 @@ begin
   result := TJson.JsonToObject<TSenderClass>(AJsonString)
 end;
 
+{TMentionedJidListClass}
+
+
+function TMentionedJidListClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+class function TMentionedJidListClass.FromJsonString(AJsonString: string): TMentionedJidListClass;
+begin
+  result := TJson.JsonToObject<TMentionedJidListClass>(AJsonString)
+end;
+
 {TMessagesClass}
 
 constructor TMessagesClass.Create;
@@ -669,8 +717,12 @@ end;
 
 destructor TMessagesClass.Destroy;
 var
+  LmentionedJidListItem: TMentionedJidListClass;
   LlabelsItem: TLabelsClass;
 begin
+
+ for LmentionedJidListItem in FMentionedJidList do
+   LmentionedJidListItem.free;
  for LlabelsItem in FLabels do
    LlabelsItem.free;
 
@@ -693,6 +745,14 @@ begin
   //result.toMessage := GetValue("to")
 end;
 
+
+
+{ TQrCodeClass }
+
+class function TQrCodeClass.FromJsonString(AJsonString: string): TQrCodeClass;
+begin
+  result := TJson.JsonToObject<TQrCodeClass>(AJsonString)
+end;
 
 
 end.

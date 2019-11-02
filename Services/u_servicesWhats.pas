@@ -14,9 +14,7 @@ uses
   //units adicionais obrigatórias
   uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium, uCEFApplication,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
-  Vcl.Buttons, Vcl.Imaging.pngimage,
-
-  Rest.Json, uClasses, uTInject, Vcl.Imaging.jpeg;
+  Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json, uClasses, uTInject, u_view_qrcode, Vcl.Imaging.jpeg;
 
   var
    vContacts :Array of String;
@@ -87,12 +85,13 @@ type
     procedure SetAllContacts(JsonText: String);
     procedure SetAllChats(JsonText: String);
     procedure SetUnReadMessages(JsonText: String);
-    procedure SetSendMessageToIDText(JsonText: String);
+    procedure SetQrCode(JsonText: String);
 
   public
     { Public declarations }
     _Inject: TInjectWhatsapp;
     JS1: string;
+    _Qrcode: string;
     i: integer;
     vAuth: boolean;
     procedure Send(vNum, vText:string);
@@ -101,6 +100,8 @@ type
     procedure GetAllContacts;
     procedure GetAllChats;
     procedure GetUnreadMessages;
+    procedure monitorQRCode;
+    procedure loadQRCode(st: string);
   end;
 
 var
@@ -223,6 +224,8 @@ procedure Tfrm_servicesWhats.Chromium1ConsoleMessage(Sender: TObject;
   line: Integer; out Result: Boolean);
 var
   AResponse: TResponseConsoleMessage;
+const
+  JSMonitor = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
 
   function PrettyJSON(JsonString: String):String;
   var
@@ -234,12 +237,13 @@ var
   end;
 begin
   try
+   //Chromium1.Browser.MainFrame.ExecuteJavaScript(JSMonitor, 'about:blank', 0);
     try
       AResponse := TResponseConsoleMessage.FromJsonString( message );
       if assigned(AResponse) then
       begin
         //LogConsoleMessage( AResponse.Result );
-        LogConsoleMessage( PrettyJSON(AResponse.Result) );
+        //LogConsoleMessage( PrettyJSON(AResponse.Result) );
 
         if AResponse.Name = 'getAllContacts' then
            SetAllContacts( AResponse.Result );
@@ -250,10 +254,8 @@ begin
         if AResponse.Name = 'getUnreadMessages' then
            SetUnreadMessages( AResponse.Result );
 
-        if (AResponse.Name = 'sendMessageToID')
-        or (AResponse.Name = 'sendImage')
-        then
-           SetSendMessageToIDText( AResponse.Result );
+        if AResponse.name = 'getQrCode' then
+           SetQrCode( message )
       end;
     except
       on E:Exception do
@@ -290,7 +292,7 @@ end;
 
 procedure Tfrm_servicesWhats.Chromium1LoadEnd(Sender: TObject;
   const browser: ICefBrowser; const frame: ICefFrame; httpStatusCode: Integer);
-begin
+  begin
  //Injeto o código para verificar se está logado
  // JS := 'WAPI.isLoggedIn();';
  // if Chromium1.Browser <> nil then
@@ -363,12 +365,25 @@ begin
   frm_servicesWhats.Hide;
 end;
 
+procedure Tfrm_servicesWhats.loadQRCode(st: string);
+begin
+  if assigned(frm_servicesWhats) then
+    frm_view_qrcode.loadQRCode(st);
+end;
+
 procedure Tfrm_servicesWhats.LogConsoleMessage(const AMessage: String);
 begin
   TFile.AppendAllText(
     ExtractFilePath(Application.ExeName) + 'ConsoleMessage.log',
     AMessage,
     TEncoding.ASCII);
+end;
+
+procedure Tfrm_servicesWhats.monitorQRCode;
+const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
+begin
+  if Chromium1.Browser <> nil then
+    frm_servicesWhats.Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
 end;
 
 procedure Tfrm_servicesWhats.SendBase64(vBase64, vNum, vFileName, vText: string);
@@ -380,19 +395,21 @@ var
 begin
   vText := caractersWhats(vText);
   removeCaracter(vFileName);
-
   Base64File:= TStringList.Create;
-  try
-    Base64File.Text := vBase64;
-    for i := 0 to Base64File.Count -1  do
-        vLine := vLine + Base64File[i];
-  finally
-    Base64File.Free;
+  Base64File.Text := vBase64;
+  for i := 0 to Base64File.Count -1  do
+  begin
+    vLine := vLine + Base64File[i];
+  end;
+  vBase64 := vLine;
+  JS := 'window.WAPI.sendImage("'+Trim(vBase64)+'","'+Trim(vNum)+'", "'+Trim(vFileName)+'", "'+Trim(vText)+'")';
+
+  if Chromium1.Browser <> nil then
+  begin
+    Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
   end;
 
-  JS := 'window.WAPI.sendImage("'+Trim(vLine)+'","'+Trim(vNum)+'", "'+Trim(vFileName)+'", "'+Trim(vText)+'")';
-  if Chromium1.Browser <> nil then
-     Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+  freeAndNil(vBase64);
 end;
 
 procedure Tfrm_servicesWhats.SetAllContacts(JsonText: String);
@@ -412,26 +429,28 @@ begin
   end;
 end;
 
-procedure Tfrm_servicesWhats.SetSendMessageToIDText(JsonText: String);
-var
-  AChatRetorno: TJSONObject;
-  AChat: TChatClass;
+procedure Tfrm_servicesWhats.SetQrCode(JsonText: String);
+var AQrCode: TQrCodeClass;
+var code: string;
 begin
   if not Assigned( _Inject ) then
      Exit;
 
-  AChatRetorno := TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(JsonText), 0) as TJSONObject;
-  AChat := TChatClass.FromJsonString( AChatRetorno.GetValue('result').ToString );
-  try
-    with _Inject do
+  with _Inject do
+  begin
+    code :=  copy(JsonText, 42, 4);
+    if (code = 'http') or (code = '/img') then
     begin
-      //Dispara Notify
-      if Assigned( OnAfterSendMessage ) then
-         OnAfterSendMessage( AChat );
+      frm_view_qrcode.Timer1.Enabled := false;
+      frm_view_qrcode.close;
+      exit
     end;
-  finally
-    AChatRetorno.Free;
-    AChat.Free;
+    AQrCode := TQrCodeClass.FromJsonString( JsonText );
+    _Qrcode := AQrCode.result.AQrCode;
+
+    //Dispara Notify
+    if Assigned( OnGetQrCode ) then
+       OnGetQrCode(Self);
   end;
 end;
 

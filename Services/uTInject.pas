@@ -1,5 +1,5 @@
 //TInject Criado por Mike W. Lustosa
-//CÃ³dido aberto Ã  comunidade Delphi
+//Códido aberto à comunidade Delphi
 //mikelustosa@gmail.com
 
 unit uTInject;
@@ -7,7 +7,7 @@ unit uTInject;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uClasses;
+  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uClasses, u_view_qrcode;
 
   var
     vDelay: integer;
@@ -18,12 +18,11 @@ uses
 type
   {Events}
   TGetUnReadMessages = procedure(Chats: TChatList) of object;
-  TChatEvent = procedure(Chat: TChatClass) of object;
 
   TMySubComp = class(TComponent)
 
   public
-    FAutoStart: Boolean;
+    FAutoStart      : Boolean;
     FAutoInject     :Boolean;
     FAutoDelay      :Integer;
     FSyncContacts   :Boolean;
@@ -48,20 +47,23 @@ type
     { Private declarations }
   protected
     { Protected declarations }
-    FAllContacts: TRetornoAllContacts;
-    FAllChats: TChatList;
-    FOnGetContactList : TNotifyEvent;
-    FOnGetChatList: TNotifyEvent;
-    FOnGetNewMessage  : TNotifyEvent;
-    FOnGetUnReadMessages: TGetUnReadMessages;
-    FOnAfterSendMessage: TChatEvent;
-    FOnGetStatus      : TNotifyEvent;
-    FContacts: String;
-    FMySubComp1: TMySubComp;
-    FAuth: boolean;
+    FResult               : TQrCodeClass;
+    FAllContacts          : TRetornoAllContacts;
+    FAllChats             : TChatList;
+    FOnGetContactList     : TNotifyEvent;
+    FOnGetQrCode          : TNotifyEvent;
+    FOnGetChatList        : TNotifyEvent;
+    FOnGetNewMessage      : TNotifyEvent;
+    FOnGetUnReadMessages  : TGetUnReadMessages;
+    FOnGetStatus          : TNotifyEvent;
+    FContacts             : String;
+    FMySubComp1           : TMySubComp;
+    FAuth                 : boolean;
   public
     constructor Create(AOwner: TComponent); override;
-    procedure startWhatsapp();
+    procedure startQrCode;
+    procedure monitorQrCode;
+    procedure startWhatsapp;
     procedure ShowWebApp;
     procedure send(vNum, vMess: string);
     procedure sendBase64(vBase64, vNum, vFileName, vMess: string);
@@ -71,17 +73,18 @@ type
     function GetStatus: Boolean;
     function GetUnReadMessages: String;
     property AllContacts: TRetornoAllContacts read FAllContacts write FAllContacts;
+    property AQrCode: TQrCodeClass read FResult write FResult;
     property AllChats: TChatList read FAllChats write FAllChats;
     property Auth: boolean read FAuth write FAuth;
   published
     { Published declarations }
-    property Config: TMySubComp read FMySubComp1;
-    property OnGetContactList: TNotifyEvent read FOnGetContactList write FOnGetContactList;
-    property OnGetChatList: TNotifyEvent read FOnGetChatList write FOnGetChatList;
-    property OnGetNewMessage: TNotifyEvent read FOnGetNewMessage write FOnGetNewMessage;
-    property OnGetUnReadMessages: TGetUnReadMessages read FOnGetUnReadMessages write FOnGetUnReadMessages;
-    property OnAfterSendMessage: TChatEvent read FOnAfterSendMessage write FOnAfterSendMessage;
-    property OnGetStatus: TNotifyEvent read FOnGetStatus write FOnGetStatus;
+    property Config               : TMySubComp read FMySubComp1;
+    property OnGetContactList     : TNotifyEvent read FOnGetContactList write FOnGetContactList;
+    property OnGetQrCode          : TNotifyEvent read FOnGetQrCode write FOnGetQrCode;
+    property OnGetChatList        : TNotifyEvent read FOnGetChatList write FOnGetChatList;
+    property OnGetNewMessage      : TNotifyEvent read FOnGetNewMessage write FOnGetNewMessage;
+    property OnGetUnReadMessages  : TGetUnReadMessages read FOnGetUnReadMessages write FOnGetUnReadMessages;
+    property OnGetStatus          : TNotifyEvent read FOnGetStatus write FOnGetStatus;
   end;
   var resultado : integer;
 procedure Register;
@@ -209,11 +212,16 @@ begin
   FActivityGetMessagesThread.Start;
 end;
 
+procedure TInjectWhatsapp.monitorQrCode;
+begin
+  frm_servicesWhats.monitorQRCode;
+end;
+
 procedure TInjectWhatsapp.send(vNum, vMess: string);
 var
   AId: String;
 begin
-  inherited;
+  //inherited;
   FActivitySendThread := TThread.CreateAnonymousThread(procedure
       var vGetDelay: integer;
       begin
@@ -227,11 +235,16 @@ begin
           begin
             if Assigned(frm_servicesWhats) then
             begin
-              AId := vNum;
-              if Pos('@',AId) = 0 then
-                 AId := '55'+vNum+'@c.us';
-
-              frm_servicesWhats.Send(AId, vMess);
+              if (length(vNum) = 10) or (length(vNum) = 11) then
+              begin
+                frm_servicesWhats.Send('55'+vNum+'@c.us', vMess);
+              end else
+              begin
+                AId := vNum;
+                if Pos(vNum,'@') = -1 then
+                  AId := '55'+vNum+'@c.us';
+                  frm_servicesWhats.Send(AId, vMess);
+              end;
             end;
           end);
 
@@ -254,8 +267,6 @@ begin
 end;
 
 procedure TInjectWhatsapp.sendBase64(vBase64, vNum, vFileName, vMess: string);
-var
-  AId: String;
 begin
   inherited;
   FActivitySendBase64Thread := TThread.CreateAnonymousThread(procedure
@@ -269,10 +280,7 @@ begin
           begin
             if Assigned(frm_servicesWhats) then
             begin
-              AId := vNum;
-              if Pos('@',AId) = 0 then
-                 AId := '55'+vNum+'@c.us';
-              frm_servicesWhats.sendBase64(vBase64,AId, vFileName, vMess);
+              frm_servicesWhats.sendBase64(vBase64,'55'+vNum+'@c.us', vFileName, vMess);
             end;
           end);
 
@@ -298,6 +306,16 @@ procedure TInjectWhatsapp.ShowWebApp;
 begin
   startWhatsapp;
   frm_servicesWhats.Show;
+end;
+
+procedure TInjectWhatsapp.startQrCode;
+begin
+  if not Assigned(frm_view_qrcode) then
+  begin
+   frm_view_qrcode         := Tfrm_view_qrcode.Create(nil);
+   frm_view_qrcode.Show;
+   //frm_servicesWhats._Inject := Self;
+  end;
 end;
 
 procedure TInjectWhatsapp.startWhatsapp;

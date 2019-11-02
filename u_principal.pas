@@ -12,7 +12,12 @@ uses
   uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, uTInject,
   Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.WinXCtrls, System.NetEncoding,
-  Vcl.Imaging.jpeg;
+  Vcl.Imaging.jpeg, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
+  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
+  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.UI.Intf, FireDAC.Stan.Def,
+  FireDAC.Stan.Pool, FireDAC.Phys, FireDAC.Phys.MSSQL, FireDAC.Phys.MSSQLDef,
+  FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client, FireDAC.Comp.DataSet,
+  FireDAC.Comp.UI;
 
   //############ ATENÇÃO AQUI ####################
   //Constantes obrigatórias para controle do destroy do TChromium
@@ -28,7 +33,6 @@ type
     Label2: TLabel;
     ed_num: TEdit;
     Memo1: TMemo;
-    Button5: TButton;
     listaContatos: TListView;
     ImageList1: TImageList;
     Image1: TImage;
@@ -50,13 +54,16 @@ type
     OpenDialog1: TOpenDialog;
     Button1: TButton;
     Button2: TButton;
-    listaAddContatos: TListView;
     sw_grupos: TToggleSwitch;
     Label3: TLabel;
     Label8: TLabel;
     listaChats: TListView;
     Button3: TButton;
     Button7: TButton;
+    memo_unReadMessagen: TMemo;
+    Button8: TButton;
+    Label4: TLabel;
+    Image3: TImage;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -82,7 +89,6 @@ type
       userGesture: Boolean; out Result: Boolean);
     procedure Chromium1LoadEnd(Sender: TObject; const browser: ICefBrowser;
       const frame: ICefFrame; httpStatusCode: Integer);
-    procedure Button5Click(Sender: TObject);
     procedure TrackBar1Change(Sender: TObject);
     procedure sw_delayClick(Sender: TObject);
     procedure whatsOnClick(Sender: TObject);
@@ -98,7 +104,8 @@ type
     procedure InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
     procedure listaChatsDblClick(Sender: TObject);
     procedure listaContatosDblClick(Sender: TObject);
-    procedure InjectWhatsapp1AfterSendMessage(Chat: TChatClass);
+    procedure Button8Click(Sender: TObject);
+    procedure InjectWhatsapp1GetQrCode(Sender: TObject);
 
   protected
 
@@ -117,17 +124,29 @@ type
 
   private
     { Private declarations }
+    idMessageLocal, idMessageGlobal: string;
+    vSessao, vSessao2: integer;
     ChromiumStarted: Boolean;
-    vExtension, vBase64, vFileName: string;
+    vExtension, vBase64, vFileName, IDMessage: string;
     vBase64File: TBase64Encoding;
     procedure CarregarContatos;
     procedure CarregarChats;
   public
     { Public declarations }
+    var arrayFila:          array [0..1] of string;
+    var arraySessao:        array [0..1] of string;
+    var arrayTimer:         array [0..1] of string;
+    var arrayFilaEspera:    array [0..1] of string;
+    JS1, JS2, contato, mensagem, clienteAtendimento:string;
+    cMsg, vNomeContato, vTelefoneContato: string;
+    //vSessao: integer;
+    nOpcao: string;
+    pContato2: string;
     vBase64Str, vFileNameURL: string;
     i: integer;
     procedure AddContactList(ANumber: String);
     procedure AddChatList(ANumber: String);
+    function  VerificaPalavraChave(pMensagem, pContato, pTelefone, idMsg: String) : Boolean;
   end;
 
 var
@@ -136,12 +155,13 @@ var
 implementation
 
 uses
-  uCEFApplication, uCefMiscFunctions, u_servicesWhats;
+  uCEFApplication, uCefMiscFunctions, u_servicesWhats, System.StrUtils;
 
 {$R *.dfm}
 
 procedure Tfrm_principal.FormCreate(Sender: TObject);
 begin
+  idMessageGlobal := 'start';
   InjectWhatsapp1.startWhatsapp;
 end;
 
@@ -228,8 +248,8 @@ begin
   if vBase64File <> nil then
   begin
     InjectWhatsapp1.sendBase64(vBase64Str, ed_num.Text, vFileName, mem_message.Text);
-    vBase64File.Free;
-    //application.MessageBox('Arquivo enviado com sucesso!','TInject whatsapp', mb_iconAsterisk + mb_ok);
+    vBase64File := nil;
+    application.MessageBox('Arquivo enviado com sucesso!','TInject whatsapp', mb_iconAsterisk + mb_ok);
   end;
 end;
 
@@ -281,18 +301,6 @@ begin
   end;
 end;
 
-procedure Tfrm_principal.Button5Click(Sender: TObject);
-var JS: string;
-var Item: TListItem;
-begin
-  Item := listaAddContatos.Items.Add;
-  item.Caption := '55'+ed_num.Text;
-  item.SubItems.Add(item.Caption+'SubItem 1');
-  item.SubItems.Add(item.Caption+'SubItem 2');
-  item.ImageIndex := 0;
-  ed_num.Text := '';
-end;
-
 procedure Tfrm_principal.Button6Click(Sender: TObject);
 begin
   if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
@@ -302,11 +310,17 @@ begin
   end;
 
   InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
+  application.MessageBox('Mensage enviada com sucesso!','TInject', mb_iconAsterisk + mb_ok);
 end;
 
 procedure Tfrm_principal.Button7Click(Sender: TObject);
 begin
   InjectWhatsapp1.GetUnReadMessages;
+end;
+
+procedure Tfrm_principal.Button8Click(Sender: TObject);
+begin
+  InjectWhatsapp1.startQrCode;
 end;
 
 procedure Tfrm_principal.CarregarChats;
@@ -390,11 +404,6 @@ begin
   Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
 end;
 
-procedure Tfrm_principal.InjectWhatsapp1AfterSendMessage(Chat: TChatClass);
-begin
-  Application.MessageBox(PChar('Mensagem enviada para: ' + Chat.Name),'TInject', mb_iconAsterisk + mb_ok);
-end;
-
 procedure Tfrm_principal.InjectWhatsapp1GetChatList(Sender: TObject);
 var
   AChat: TChatClass;
@@ -427,21 +436,65 @@ begin
   end;
 end;
 
+procedure Tfrm_principal.InjectWhatsapp1GetQrCode(Sender: TObject);
+begin
+  frm_servicesWhats.loadQRCode(frm_servicesWhats._Qrcode);
+end;
+
 procedure Tfrm_principal.InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
 var
   AChat: TChatClass;
   AMessage: TMessagesClass;
+  contato, telefone: string;
+  vFind: boolean;
+  i, j, f, k: integer;
 begin
-  for AChat in Chats.result do
-  begin
-    for AMessage in AChat.messages do
-        ShowMessage( PChar( 'Chat: ' + AChat.name
-                          + sLineBreak
-                          + 'Contato: ' + Trim(AMessage.Sender.pushName
-                                        + ' (' + AMessage.Sender.formattedName + ')')
-                          + sLineBreak + sLineBreak
-                          + AMessage.body ) );
-  end;
+  //ROTINA COM PROBLEMA DE TRAVAMENTO >>>>>>
+  //ROTINA COM PROBLEMA DE TRAVAMENTO >>>>>>
+  //ROTINA COM PROBLEMA DE TRAVAMENTO >>>>>>
+
+    vFind := false;
+    for AChat in Chats.result do
+    begin
+      for AMessage in AChat.messages do
+      begin
+          if AMessage.sender.isMe = false then
+          begin
+            memo_unReadMessagen.Clear;
+            memo_unReadMessagen.Lines.Add(PChar( 'Contato: ' + Trim(AMessage.Sender.pushName)));
+            memo_unReadMessagen.Lines.Add(PChar( 'Chat Id: ' + AChat.presence.id));
+            memo_unReadMessagen.Lines.Add(PChar( 'Fone: ' + contato));
+            //memo_unReadMessagen.Lines.Add(PChar( 'LastReceivedKey: ' + AMessage.chat.lastReceivedKey.ToJsonString));
+            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.body));
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.ack.ToString));
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.id));
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chatId));
+
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.t.ToString));
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.GetHashCode.ToString));
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.t.ToString));
+            memo_unReadMessagen.Lines.Add(PChar( 'ID Message: ' + AMessage.t.ToString));
+            telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
+            contato   := AMessage.Sender.pushName;
+            idMessageLocal := AMessage.t.ToString;
+
+
+            //Verifico a palavra recebida para mandar uma resposta automática
+            VerificaPalavraChave(AMessage.body, contato, telefone, idMessageLocal);
+           end;
+        end;
+
+
+      //
+//          ShowMessage( PChar( 'Chat: ' + AChat.name
+//                            + sLineBreak
+//                            + 'Contato: ' + Trim(AMessage.Sender.pushName
+//                                          + ' (' + AMessage.Sender.formattedName + ')')
+//                            + sLineBreak + sLineBreak
+//                            + AMessage.body ) );
+    end;
+ // end;
+
 end;
 
 procedure Tfrm_principal.listaChatsDblClick(Sender: TObject);
@@ -485,6 +538,102 @@ procedure Tfrm_principal.TrackBar1Change(Sender: TObject);
 begin
   lbl_track.Caption := intToStr(TrackBar1.Position);
   InjectWhatsapp1.Config.AutoDelay := TrackBar1.Position;
+end;
+
+function Tfrm_principal.VerificaPalavraChave(pMensagem, pContato, pTelefone, idMsg: String): Boolean;
+begin
+  vNomeContato := pContato;
+
+  if ( POS('MUITO OBRIGADO', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('OBG', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('OBRIGADO', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('OBRIGADA', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('VALEU', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('VALEU MANO', AnsiUpperCase(pMensagem) ) > 0) or
+     ( POS('VALEU MESMO', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('XAU', AnsiUpperCase(pMensagem) ) > 0 ) then
+  begin
+    mensagem := 'Eu que agradeço! Até breve!.\n\nwww.softmaisbrasil.com.br';
+    InjectWhatsapp1.send(pTelefone, mensagem);
+    exit;
+  end else
+  if ( POS('LINDA', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('GOSTOSO', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('SEXO', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('TESÃO', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('VOCÊ É CASADA?', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('É CASADO?', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('TEM NAMORADA?', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('VOCÊ NAMORA?', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('TENS NAMORADA?', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('GOSTEI DE VOCÊ', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('VC CASADO?', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('VC NAMORA?', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('SEXY', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('GOZAR', AnsiUpperCase(pMensagem) ) > 0 ) then
+  begin
+    mensagem := 'Hum...'+pContato + '...Assim fico sem jeito rsrs! Mas o assunto aqui é *profissional* tá bom?';
+    InjectWhatsapp1.send(pTelefone, mensagem);
+    mensagem := 'Vamos tentar novamente ok?\n\n';
+    InjectWhatsapp1.send(pTelefone, mensagem);
+    exit;
+  end  else
+  if ( POS('IDIOTA', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('LADRÃO', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('GAY', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('VIADO', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('BICHA', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('BESTA', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('CU', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('VAI TOMAR NO CÚ', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('TE FODE', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('VAI TOMAR NO CU', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('VAI DAR O CU', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('VAI DAR TEU CU', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('FILHO DA PUTA', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('FILHO DE RAPARIGA', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('TE FODE CARALHO', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('FRANGO', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('FRANGO SAFADO', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('PUTO', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('VAI TE FODER', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('PUTA', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('VAI TE FUDER', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('SAPATONA', AnsiUpperCase(pMensagem) ) > 0 ) then
+  begin
+    if (AnsiUpperCase(pMensagem) = 'VOCÊ É CASADA?') then
+    begin
+      mensagem := pContato + ', *NÃO* sou casada. O foco é seu *atendimento* ok?';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      exit;
+    end;
+
+    mensagem := pContato + ', *NÃO* use palavras desse nível. Respeite para ser respeitado ok?';
+    InjectWhatsapp1.send(pTelefone, mensagem);
+    mensagem := 'Vamos tentar novamente ok?\n\n';
+    InjectWhatsapp1.send(pTelefone, mensagem);
+    mensagem := 'Bem vindo(a) ao chatBot demo do *TJInect*\n\n';
+    InjectWhatsapp1.send(pTelefone, mensagem);
+    exit;
+  end else
+  if ( POS('OLA', AnsiUpperCase(pMensagem)) > 0 ) or ( POS('OLÁ', AnsiUpperCase(pMensagem)) > 0 ) or
+     ( POS('BRONCA', AnsiUpperCase(pMensagem)) > 0 ) or ( POS('SHOW', AnsiUpperCase(pMensagem)) > 0 ) or
+     ( POS('DURMA COM UMA BRONCA DESSA', AnsiUpperCase(pMensagem)) > 0 ) or ( POS('É BRONCA!', AnsiUpperCase(pMensagem)) > 0 ) or
+     ( POS('OI', AnsiUpperCase(pMensagem)) > 0 ) then
+  begin
+      mensagem := '👨🏻‍🍳 Olá *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*\n\nDemo componente *TInject*';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      idMessageGlobal := idMsg;
+      mensagem := 'Bem vindo(a) ao chatBot demo do *TJInect*\n\n';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      exit;
+  end
+  else if ( POS('BOM DIA', AnsiUpperCase(pMensagem)) > 0 ) or ( POS('BOA TARDE', AnsiUpperCase(pMensagem)) > 0 ) or
+          ( POS('BOA NOITE', AnsiUpperCase(pMensagem)) > 0 ) then
+  begin
+    if (AnsiUpperCase(pMensagem) = 'BOM DIA') then
+    begin
+      mensagem := 'Bom dia *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      mensagem := 'Bem vindo(a) ao demo do *TJInect*\n\n';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      exit;
+    end else
+    if (AnsiUpperCase(pMensagem) = 'BOA TARDE') then
+    begin
+      mensagem := 'Boa tarde *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      mensagem := 'Bem vindo(a) ao demo do *TJInect*\n\n';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      exit;
+    end else
+    if (AnsiUpperCase(pMensagem) = 'BOA NOITE') then
+    begin
+      mensagem := 'Boa noite *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      mensagem := 'Bem vindo(a) ao demo do *TJInect*\n\n';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      exit;
+    end;
+  end;
 end;
 
 procedure Tfrm_principal.whatsOffClick(Sender: TObject);
