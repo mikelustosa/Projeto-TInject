@@ -150,6 +150,7 @@ private
   FName: String;
   FProfilePicThumbObj: TProfilePicThumbObjClass;
   FStatusMute: Boolean;
+  FLabels: TArray<TLabelsClass>;
   FType: String;
 public
   property formattedName: String read FFormattedName write FFormattedName;
@@ -165,6 +166,7 @@ public
   property name: String read FName write FName;
   property profilePicThumbObj: TProfilePicThumbObjClass read FProfilePicThumbObj write FProfilePicThumbObj;
   property statusMute: Boolean read FStatusMute write FStatusMute;
+  property labels: TArray<TLabelsClass> read FLabels write FLabels;
   property &type: String read FType write FType;
   constructor Create;
   destructor Destroy; override;
@@ -756,4 +758,3 @@ end;
 
 
 end.
-
