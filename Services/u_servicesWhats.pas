@@ -1,4 +1,4 @@
-﻿//TInject Criado por Mike W. Lustosa
+//TInject Criado por Mike W. Lustosa
 //Códido aberto à comunidade Delphi
 //mikelustosa@gmail.com
 
@@ -96,6 +96,7 @@ type
     vAuth: boolean;
     procedure Send(vNum, vText:string);
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
+    function ConvertBase64(vFile: string): string;
     function caractersWhats(vText: string): string;
     procedure GetAllContacts;
     procedure GetAllChats;
@@ -110,7 +111,7 @@ var
 implementation
 
 uses
-  System.IOUtils;
+  System.IOUtils, System.NetEncoding;
 
 {$R *.dfm}
 
@@ -224,8 +225,6 @@ procedure Tfrm_servicesWhats.Chromium1ConsoleMessage(Sender: TObject;
   line: Integer; out Result: Boolean);
 var
   AResponse: TResponseConsoleMessage;
-const
-  JSMonitor = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
 
   function PrettyJSON(JsonString: String):String;
   var
@@ -236,24 +235,28 @@ const
     AObj.Free;
   end;
 begin
-  try
-   //Chromium1.Browser.MainFrame.ExecuteJavaScript(JSMonitor, 'about:blank', 0);
     try
       AResponse := TResponseConsoleMessage.FromJsonString( message );
       if assigned(AResponse) then
       begin
-        //LogConsoleMessage( AResponse.Result );
-        //LogConsoleMessage( PrettyJSON(AResponse.Result) );
 
         if AResponse.Name = 'getAllContacts' then
+        begin
+           LogConsoleMessage( PrettyJSON(AResponse.Result) );
            SetAllContacts( AResponse.Result );
+        end;
 
         if AResponse.Name = 'getAllChats' then
+        begin
+           LogConsoleMessage( PrettyJSON(AResponse.Result) );
            SetAllChats( AResponse.Result );
+        end;
 
         if AResponse.Name = 'getUnreadMessages' then
+        begin
+           LogConsoleMessage( PrettyJSON(AResponse.Result) );
            SetUnreadMessages( AResponse.Result );
-
+        end;
         if AResponse.name = 'getQrCode' then
            SetQrCode( message )
       end;
@@ -264,9 +267,6 @@ begin
         raise;
       end;
     end;
-  finally
-    //...
-  end;
 end;
 
 procedure Tfrm_servicesWhats.GetAllContacts;
@@ -317,6 +317,21 @@ begin
   begin
     vAuth := true;
     //_Inject.Auth := true
+  end;
+end;
+
+
+function Tfrm_servicesWhats.ConvertBase64(vFile: string): string;
+var
+  vFilestream: TMemoryStream;
+  vBase64File: TBase64Encoding;
+begin
+  try
+    vBase64File := TBase64Encoding.Create;
+    vFilestream := TMemoryStream.Create;
+    vFilestream.LoadFromFile(vFile);
+   finally
+    result :=  vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
   end;
 end;
 
@@ -380,7 +395,8 @@ begin
 end;
 
 procedure Tfrm_servicesWhats.monitorQRCode;
-const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
+
+const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
 begin
   if Chromium1.Browser <> nil then
     frm_servicesWhats.Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
