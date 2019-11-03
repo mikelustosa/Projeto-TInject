@@ -1,4 +1,4 @@
-﻿unit u_principal;
+unit u_principal;
 
 interface
 
@@ -452,7 +452,6 @@ begin
   //ROTINA COM PROBLEMA DE TRAVAMENTO >>>>>>
   //ROTINA COM PROBLEMA DE TRAVAMENTO >>>>>>
   //ROTINA COM PROBLEMA DE TRAVAMENTO >>>>>>
-
     vFind := false;
     for AChat in Chats.result do
     begin
@@ -480,21 +479,14 @@ begin
 
 
             //Verifico a palavra recebida para mandar uma resposta automática
-            VerificaPalavraChave(AMessage.body, contato, telefone, idMessageLocal);
+            if idMessageLocal <> idMessageGlobal then
+            begin
+              VerificaPalavraChave(AMessage.body, contato, telefone, idMessageLocal);
+              idMessageGlobal := idMessageLocal;
+            end;
            end;
         end;
-
-
-      //
-//          ShowMessage( PChar( 'Chat: ' + AChat.name
-//                            + sLineBreak
-//                            + 'Contato: ' + Trim(AMessage.Sender.pushName
-//                                          + ' (' + AMessage.Sender.formattedName + ')')
-//                            + sLineBreak + sLineBreak
-//                            + AMessage.body ) );
     end;
- // end;
-
 end;
 
 procedure Tfrm_principal.listaChatsDblClick(Sender: TObject);
@@ -549,8 +541,11 @@ begin
      ( POS('VALEU', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('VALEU MANO', AnsiUpperCase(pMensagem) ) > 0) or
      ( POS('VALEU MESMO', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('XAU', AnsiUpperCase(pMensagem) ) > 0 ) then
   begin
-    mensagem := 'Eu que agradeço! Até breve!.\n\nwww.softmaisbrasil.com.br';
+    mensagem := 'Eu que agradeço '+pContato+'! Até breve!.\n\nwww.softmaisbrasil.com.br';
     InjectWhatsapp1.send(pTelefone, mensagem);
+    sleep(1000);
+    vBase64Str := 'data:image/jpg;base64,'+frm_servicesWhats.convertBase64('C:\Users\Dell-Mike\Pictures\TInject.jpeg');
+    InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, 'Imagem', '*Volte sempre!*');
     exit;
   end else
   if ( POS('LINDA', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('GOSTOSO', AnsiUpperCase(pMensagem) ) > 0 ) or
@@ -563,7 +558,11 @@ begin
   begin
     mensagem := 'Hum...'+pContato + '...Assim fico sem jeito rsrs! Mas o assunto aqui é *profissional* tá bom?';
     InjectWhatsapp1.send(pTelefone, mensagem);
+    sleep(1000);
     mensagem := 'Vamos tentar novamente ok?\n\n';
+    InjectWhatsapp1.send(pTelefone, mensagem);
+    sleep(1000);
+    mensagem := '👨🏼‍💻Você está no chatBot demo do *TJInject*!';
     InjectWhatsapp1.send(pTelefone, mensagem);
     exit;
   end  else
@@ -576,44 +575,73 @@ begin
      ( POS('FILHO DA PUTA', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('FILHO DE RAPARIGA', AnsiUpperCase(pMensagem) ) > 0 ) or
      ( POS('TE FODE CARALHO', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('FRANGO', AnsiUpperCase(pMensagem) ) > 0 ) or
      ( POS('FRANGO SAFADO', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('PUTO', AnsiUpperCase(pMensagem) ) > 0 ) or
-     ( POS('VAI TE FODER', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('PUTA', AnsiUpperCase(pMensagem) ) > 0 ) or
+     ( POS('VAI SE FODER', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('PUTA', AnsiUpperCase(pMensagem) ) > 0 ) or
      ( POS('VAI TE FUDER', AnsiUpperCase(pMensagem) ) > 0 ) or ( POS('SAPATONA', AnsiUpperCase(pMensagem) ) > 0 ) then
   begin
+    if (AnsiUpperCase(pMensagem) = 'VAI SE FODER') then
+    begin
+      mensagem := pContato + ', *Que coisa feia!* Pode *parar* ok?. O foco é seu *atendimento*!';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      sleep(1000);
+      mensagem := 'Vamos tentar só mais *uma* vez..\n\n';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      sleep(1000);
+      mensagem := '👨🏼‍💻Você está no chatBot demo do *TJInject*!';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      exit;
+    end;
+
     if (AnsiUpperCase(pMensagem) = 'VOCÊ É CASADA?') then
     begin
       mensagem := pContato + ', *NÃO* sou casada. O foco é seu *atendimento* ok?';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      sleep(1000);
+      mensagem := 'Vamos tentar novamente ok?\n\n';
+      InjectWhatsapp1.send(pTelefone, mensagem);
+      sleep(1000);
+      mensagem := '👨🏼‍💻Você está no chatBot demo do *TJInject*!';
       InjectWhatsapp1.send(pTelefone, mensagem);
       exit;
     end;
 
     mensagem := pContato + ', *NÃO* use palavras desse nível. Respeite para ser respeitado ok?';
     InjectWhatsapp1.send(pTelefone, mensagem);
+    sleep(1000);
     mensagem := 'Vamos tentar novamente ok?\n\n';
     InjectWhatsapp1.send(pTelefone, mensagem);
-    mensagem := 'Bem vindo(a) ao chatBot demo do *TJInect*\n\n';
+    sleep(1000);
+    mensagem := '👨🏼‍💻Você está no chatBot demo do *TJInject*!';
     InjectWhatsapp1.send(pTelefone, mensagem);
     exit;
   end else
-  if ( POS('OLA', AnsiUpperCase(pMensagem)) > 0 ) or ( POS('OLÁ', AnsiUpperCase(pMensagem)) > 0 ) or
-     ( POS('BRONCA', AnsiUpperCase(pMensagem)) > 0 ) or ( POS('SHOW', AnsiUpperCase(pMensagem)) > 0 ) or
-     ( POS('DURMA COM UMA BRONCA DESSA', AnsiUpperCase(pMensagem)) > 0 ) or ( POS('É BRONCA!', AnsiUpperCase(pMensagem)) > 0 ) or
-     ( POS('OI', AnsiUpperCase(pMensagem)) > 0 ) then
+
+  if ( POS('OI', AnsiUpperCase(pMensagem)) > 0 ) or ( POS('OLÁ', AnsiUpperCase(pMensagem)) > 0 ) or
+          ( POS('OLA', AnsiUpperCase(pMensagem)) > 0 ) then
   begin
-      mensagem := '👨🏻‍🍳 Olá *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*\n\nDemo componente *TInject*';
-      InjectWhatsapp1.send(pTelefone, mensagem);
-      idMessageGlobal := idMsg;
-      mensagem := 'Bem vindo(a) ao chatBot demo do *TJInect*\n\n';
-      InjectWhatsapp1.send(pTelefone, mensagem);
-      exit;
-  end
-  else if ( POS('BOM DIA', AnsiUpperCase(pMensagem)) > 0 ) or ( POS('BOA TARDE', AnsiUpperCase(pMensagem)) > 0 ) or
+    mensagem := 'Olá *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*';
+    InjectWhatsapp1.send(pTelefone, mensagem);
+    sleep(1000);
+    mensagem := '👨🏼‍💻Você está no chatBot demo do *TJInject*!';
+    InjectWhatsapp1.send(pTelefone, mensagem);
+    exit;
+  end else
+  if ( POS('MORRE DIABO', AnsiUpperCase(pMensagem)) > 0 )  then
+  begin
+    mensagem := pContato + '... Vou orar por você viu! aff...';
+    InjectWhatsapp1.send(pTelefone, mensagem);
+    mensagem := '👨🏼‍💻Você está no chatBot demo do *TJInject*!';
+    InjectWhatsapp1.send(pTelefone, mensagem);
+    exit;
+  end else
+  if ( POS('BOM DIA', AnsiUpperCase(pMensagem)) > 0 ) or ( POS('BOA TARDE', AnsiUpperCase(pMensagem)) > 0 ) or
           ( POS('BOA NOITE', AnsiUpperCase(pMensagem)) > 0 ) then
   begin
     if (AnsiUpperCase(pMensagem) = 'BOM DIA') then
     begin
       mensagem := 'Bom dia *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*';
       InjectWhatsapp1.send(pTelefone, mensagem);
-      mensagem := 'Bem vindo(a) ao demo do *TJInect*\n\n';
+      sleep(1000);
+      mensagem := '👨🏼‍💻Você está no chatBot demo do *TJInject*!';
       InjectWhatsapp1.send(pTelefone, mensagem);
       exit;
     end else
@@ -621,7 +649,8 @@ begin
     begin
       mensagem := 'Boa tarde *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*';
       InjectWhatsapp1.send(pTelefone, mensagem);
-      mensagem := 'Bem vindo(a) ao demo do *TJInect*\n\n';
+      sleep(1000);
+      mensagem := '👨🏼‍💻Você está no chatBot demo do *TJInject*!';
       InjectWhatsapp1.send(pTelefone, mensagem);
       exit;
     end else
@@ -629,7 +658,8 @@ begin
     begin
       mensagem := 'Boa noite *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*';
       InjectWhatsapp1.send(pTelefone, mensagem);
-      mensagem := 'Bem vindo(a) ao demo do *TJInect*\n\n';
+      sleep(1000);
+      mensagem := '👨🏼‍💻Você está no chatBot demo do *TJInject*!';
       InjectWhatsapp1.send(pTelefone, mensagem);
       exit;
     end;
