@@ -130,7 +130,7 @@ begin
    end;
 end;
 
-Function removeCaracter(texto : String) : String;
+function removeCaracter(texto : String) : String;
 Begin
 
   While pos('-', Texto) <> 0 Do
@@ -143,7 +143,7 @@ Begin
     delete(Texto,pos(',', Texto),1);
 
   Result := Texto;
-End;
+end;
 
 function Tfrm_servicesWhats.caractersWhats(vText: string): string;
 begin
