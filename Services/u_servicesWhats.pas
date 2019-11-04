@@ -150,6 +150,7 @@ begin
   vText := StringReplace(vText, sLineBreak,'\n',[rfReplaceAll]);
   vText := StringReplace((vText), #13,'',[rfReplaceAll]);
   vText := StringReplace((vText), '"','\"',[rfReplaceAll]);
+  vText := StringReplace((vText), #$A, '', [rfReplaceAll]);
   Result := vText;
 end;
 
@@ -396,7 +397,8 @@ begin
 end;
 
 procedure Tfrm_servicesWhats.monitorQRCode;
-const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
+
+const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
 begin
   if Chromium1.Browser <> nil then
     frm_servicesWhats.Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
