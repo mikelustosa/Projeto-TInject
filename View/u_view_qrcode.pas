@@ -57,13 +57,13 @@ begin
     LInput.Position := 0;
     TNetEncoding.Base64.Decode( LInput, LOutput );
     LOutput.Position := 0;
-    Image1.Picture.LoadFromStream(LOutput);
+    if LOutput.size > 0 then
+      Image1.Picture.LoadFromStream(LOutput);
 
   finally
    LInput.Free;
    LOutput.Free;
   end;
-
 end;
 
 procedure Tfrm_view_qrcode.Timer1Timer(Sender: TObject);

@@ -96,6 +96,7 @@ type
     vAuth: boolean;
     procedure Send(vNum, vText:string);
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
+    function ConvertBase64(vFile: string): string;
     function caractersWhats(vText: string): string;
     procedure GetAllContacts;
     procedure GetAllChats;
@@ -110,7 +111,7 @@ var
 implementation
 
 uses
-  System.IOUtils;
+  System.IOUtils, System.NetEncoding;
 
 {$R *.dfm}
 
@@ -129,7 +130,7 @@ begin
    end;
 end;
 
-Function removeCaracter(texto : String) : String;
+function removeCaracter(texto : String) : String;
 Begin
 
   While pos('-', Texto) <> 0 Do
@@ -142,13 +143,14 @@ Begin
     delete(Texto,pos(',', Texto),1);
 
   Result := Texto;
-End;
+end;
 
 function Tfrm_servicesWhats.caractersWhats(vText: string): string;
 begin
- vText := StringReplace(vText, sLineBreak,'\n',[rfReplaceAll]);
- vText := StringReplace((vText), #13,'',[rfReplaceAll]);
- Result := vText;
+  vText := StringReplace(vText, sLineBreak,'\n',[rfReplaceAll]);
+  vText := StringReplace((vText), #13,'',[rfReplaceAll]);
+  vText := StringReplace((vText), '"','\"',[rfReplaceAll]);
+  Result := vText;
 end;
 
 procedure Tfrm_servicesWhats.BrowserDestroyMsg(var aMessage : TMessage);
@@ -224,8 +226,6 @@ procedure Tfrm_servicesWhats.Chromium1ConsoleMessage(Sender: TObject;
   line: Integer; out Result: Boolean);
 var
   AResponse: TResponseConsoleMessage;
-const
-  JSMonitor = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
 
   function PrettyJSON(JsonString: String):String;
   var
@@ -236,24 +236,28 @@ const
     AObj.Free;
   end;
 begin
-  try
-   //Chromium1.Browser.MainFrame.ExecuteJavaScript(JSMonitor, 'about:blank', 0);
     try
       AResponse := TResponseConsoleMessage.FromJsonString( message );
       if assigned(AResponse) then
       begin
-        //LogConsoleMessage( AResponse.Result );
-        //LogConsoleMessage( PrettyJSON(AResponse.Result) );
 
         if AResponse.Name = 'getAllContacts' then
+        begin
+           LogConsoleMessage( PrettyJSON(AResponse.Result) );
            SetAllContacts( AResponse.Result );
+        end;
 
         if AResponse.Name = 'getAllChats' then
+        begin
+           LogConsoleMessage( PrettyJSON(AResponse.Result) );
            SetAllChats( AResponse.Result );
+        end;
 
         if AResponse.Name = 'getUnreadMessages' then
+        begin
+           LogConsoleMessage( PrettyJSON(AResponse.Result) );
            SetUnreadMessages( AResponse.Result );
-
+        end;
         if AResponse.name = 'getQrCode' then
            SetQrCode( message )
       end;
@@ -264,9 +268,6 @@ begin
         raise;
       end;
     end;
-  finally
-    //...
-  end;
 end;
 
 procedure Tfrm_servicesWhats.GetAllContacts;
@@ -317,6 +318,21 @@ begin
   begin
     vAuth := true;
     //_Inject.Auth := true
+  end;
+end;
+
+
+function Tfrm_servicesWhats.ConvertBase64(vFile: string): string;
+var
+  vFilestream: TMemoryStream;
+  vBase64File: TBase64Encoding;
+begin
+  try
+    vBase64File := TBase64Encoding.Create;
+    vFilestream := TMemoryStream.Create;
+    vFilestream.LoadFromFile(vFile);
+   finally
+    result :=  vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
   end;
 end;
 

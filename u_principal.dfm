@@ -6768,7 +6768,7 @@ object frm_principal: Tfrm_principal
     end
     object Button6: TButton
       Left = 183
-      Top = 71
+      Top = 102
       Width = 210
       Height = 25
       Caption = 'Enviar apenas texto'
@@ -6781,12 +6781,12 @@ object frm_principal: Tfrm_principal
       Left = 3
       Top = 71
       Width = 174
-      Height = 125
+      Height = 118
       TabOrder = 1
     end
     object Button4: TButton
       Left = 183
-      Top = 105
+      Top = 133
       Width = 210
       Height = 25
       Caption = 'Anexar um arquivo'
@@ -6873,7 +6873,7 @@ object frm_principal: Tfrm_principal
     end
     object Button1: TButton
       Left = 183
-      Top = 138
+      Top = 164
       Width = 210
       Height = 25
       Caption = 'Enviar  texto e arquivo'
@@ -6904,26 +6904,15 @@ object frm_principal: Tfrm_principal
       TabOrder = 7
       OnClick = Button3Click
     end
-    object Button7: TButton
-      Left = 183
-      Top = 171
-      Width = 210
-      Height = 25
-      Caption = 'Mensagens N'#227'o lidas'
-      ImageIndex = 0
-      Images = ImageList1
-      TabOrder = 8
-      OnClick = Button7Click
-    end
     object Button8: TButton
       Left = 183
-      Top = 23
+      Top = 71
       Width = 210
       Height = 25
       Caption = 'Autenticar com QRCode'
       ImageIndex = 0
       Images = ImageList1
-      TabOrder = 9
+      TabOrder = 8
       OnClick = Button8Click
     end
   end
