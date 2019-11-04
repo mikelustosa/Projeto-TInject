@@ -534,11 +534,8 @@ begin
   begin
     mensagem := '👩🏼‍💼Eu que agradeço '+pContato+'! Até breve!.\n\nwww.softmaisbrasil.com.br';
     InjectWhatsapp1.send(pTelefone, mensagem);
-<<<<<<< HEAD
     //sleep(2000);
-=======
     sleep(2000);
->>>>>>> 39dc63882170becbc41e516e14a86cc66b547245
     vBase64Str := 'data:image/jpg;base64,'+frm_servicesWhats.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\TInject.jpeg');
     InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, 'Imagem', '*Volte sempre!*');
     exit;
