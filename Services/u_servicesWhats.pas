@@ -149,6 +149,7 @@ function Tfrm_servicesWhats.caractersWhats(vText: string): string;
 begin
  vText := StringReplace(vText, sLineBreak,'\n',[rfReplaceAll]);
  vText := StringReplace((vText), #13,'',[rfReplaceAll]);
+ vText := StringReplace((vText), '"','\"',[rfReplaceAll]);
  Result := vText;
 end;
 
