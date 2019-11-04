@@ -1,4 +1,4 @@
-//TInject Criado por Mike W. Lustosa
+﻿//TInject Criado por Mike W. Lustosa
 //Códido aberto à comunidade Delphi
 //mikelustosa@gmail.com
 
@@ -238,12 +238,16 @@ begin
               if (length(vNum) = 10) or (length(vNum) = 11) then
               begin
                 frm_servicesWhats.Send('55'+vNum+'@c.us', vMess);
+                frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
               end else
               begin
                 AId := vNum;
                 if Pos(vNum,'@') = -1 then
+                begin
                   AId := '55'+vNum+'@c.us';
                   frm_servicesWhats.Send(AId, vMess);
+                  frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
+                end;
               end;
             end;
           end);

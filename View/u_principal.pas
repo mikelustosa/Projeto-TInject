@@ -463,20 +463,27 @@ begin
             memo_unReadMessagen.Lines.Add(PChar( 'Fone: ' + contato));
             //memo_unReadMessagen.Lines.Add(PChar( 'LastReceivedKey: ' + AMessage.chat.lastReceivedKey.ToJsonString));
             memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.body));
-            //memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.ack.ToString));
-            //memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.id));
-            //memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chatId));
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.ack.ToString));
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.id));
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chatId));
 
-            //memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.t.ToString));
-            //memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.GetHashCode.ToString));
-            //memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.t.ToString));
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.t.ToString));
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.GetHashCode.ToString));
+//            memo_unReadMessagen.Lines.Add(PChar( 'Mensagem: ' + AMessage.chat.t.ToString));
             memo_unReadMessagen.Lines.Add(PChar( 'ID Message: ' + AMessage.t.ToString));
             telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
             contato   := AMessage.Sender.pushName;
+            idMessageLocal := AMessage.t.ToString;
 
-            VerificaPalavraChave(AMessage.body, contato, telefone, idMessageLocal);
-          end;
-      end;
+
+            //Verifico a palavra recebida para mandar uma resposta automática
+            if idMessageLocal <> idMessageGlobal then
+            begin
+              VerificaPalavraChave(AMessage.body, contato, telefone, idMessageLocal);
+              idMessageGlobal := idMessageLocal;
+            end;
+           end;
+        end;
     end;
 end;
 
@@ -534,7 +541,7 @@ begin
   begin
     mensagem := '👩🏼‍💼Eu que agradeço '+pContato+'! Até breve!.\n\nwww.softmaisbrasil.com.br';
     InjectWhatsapp1.send(pTelefone, mensagem);
-    //sleep(2000);
+    sleep(2000);
     vBase64Str := 'data:image/jpg;base64,'+frm_servicesWhats.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\TInject.jpeg');
     InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, 'Imagem', '*Volte sempre!*');
     exit;
@@ -549,10 +556,10 @@ begin
   begin
     mensagem := 'Hum...'+pContato + '...Assim fico sem jeito rsrs! Mas o assunto aqui é *profissional* tá bom?';
     InjectWhatsapp1.send(pTelefone, mensagem);
-    //sleep(2000);
+    sleep(2000);
     mensagem := 'Vamos tentar novamente ok?\n\n';
     InjectWhatsapp1.send(pTelefone, mensagem);
-    //sleep(1000);
+    sleep(1000);
     mensagem := '🙍🏼‍♀Você está no chatBot demo do *TJInject*!';
     InjectWhatsapp1.send(pTelefone, mensagem);
     exit;
@@ -573,10 +580,10 @@ begin
     begin
       mensagem := '🤦🏼‍♀'+ pContato + ', *Que coisa feia!* Pode *parar* ok?. O foco é seu *atendimento*!';
       InjectWhatsapp1.send(pTelefone, mensagem);
-      //sleep(2000);
+      sleep(2000);
       mensagem := '🤷🏼‍♀ Vamos tentar só mais *uma* vez..\n\n';
       InjectWhatsapp1.send(pTelefone, mensagem);
-      //sleep(1000);
+      sleep(1000);
       mensagem := '🙍🏼‍♀Você está no chatBot demo do *TJInject*!';
       InjectWhatsapp1.send(pTelefone, mensagem);
       exit;
@@ -586,10 +593,10 @@ begin
     begin
       mensagem := '🤷🏼‍♀'+pContato + ', *NÃO* sou casada. O foco é seu *atendimento* ok?';
       InjectWhatsapp1.send(pTelefone, mensagem);
-      //sleep(1000);
+      sleep(1000);
       mensagem := 'Vamos tentar novamente ok?\n\n';
       InjectWhatsapp1.send(pTelefone, mensagem);
-      //sleep(1000);
+      sleep(1000);
       mensagem := '🙍🏼‍♀Você está no chatBot demo do *TJInject*!';
       InjectWhatsapp1.send(pTelefone, mensagem);
       exit;
@@ -597,10 +604,10 @@ begin
 
     mensagem := pContato + ', *NÃO* use palavras desse nível. Respeite para ser respeitado ok?';
     InjectWhatsapp1.send(pTelefone, mensagem);
-    //sleep(1000);
+    sleep(1000);
     mensagem := '🤷🏼‍♀ Vamos tentar novamente ok?\n\n';
     InjectWhatsapp1.send(pTelefone, mensagem);
-    //sleep(1000);
+    sleep(1000);
     mensagem := '🙍🏼‍♀Você está no chatBot demo do *TJInject*!';
     InjectWhatsapp1.send(pTelefone, mensagem);
     exit;
@@ -611,7 +618,7 @@ begin
   begin
     mensagem := '🙋🏼‍♀ Olá *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*';
     InjectWhatsapp1.send(pTelefone, mensagem);
-    //sleep(1000);
+    sleep(1000);
     mensagem := '🙍🏼‍♀Você está no chatBot demo do *TJInject*!';
     InjectWhatsapp1.send(pTelefone, mensagem);
     exit;
@@ -620,7 +627,7 @@ begin
   begin
     mensagem := pContato + ', 🌤 Em Recife, a previsão é de tempo parcialmente nublado com _máximas_ de *34º* e _mínimas_ de *29º*.';
     InjectWhatsapp1.send(pTelefone, mensagem);
-    //sleep(1000);
+    sleep(1000);
     mensagem := '🙍🏼‍♀Você está no chatBot demo do *TJInject*!';
     InjectWhatsapp1.send(pTelefone, mensagem);
     exit;
@@ -629,7 +636,7 @@ begin
   begin
     mensagem := '🙋🏼‍♀'+pContato + '... Vou orar por você viu! aff...';
     InjectWhatsapp1.send(pTelefone, mensagem);
-    //sleep(2000);
+    sleep(2000);
     mensagem := '🙍🏼‍♀Você está no chatBot demo do *TJInject*!';
     InjectWhatsapp1.send(pTelefone, mensagem);
     exit;
@@ -641,7 +648,7 @@ begin
     begin
       mensagem := '🙋🏼‍♀ Bom dia *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*';
       InjectWhatsapp1.send(pTelefone, mensagem);
-      //sleep(1000);
+      sleep(1000);
       mensagem := '🙍🏼‍♀Você está no chatBot demo do *TJInject*!';
       InjectWhatsapp1.send(pTelefone, mensagem);
       exit;
@@ -650,7 +657,7 @@ begin
     begin
       mensagem := '🙋🏼‍♀ Boa tarde *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*';
       InjectWhatsapp1.send(pTelefone, mensagem);
-      //sleep(1000);
+      sleep(1000);
       mensagem := '🙍🏼‍♀Você está no chatBot demo do *TJInject*!';
       InjectWhatsapp1.send(pTelefone, mensagem);
       exit;
@@ -659,7 +666,7 @@ begin
     begin
       mensagem := '🙋🏼‍♀ Boa noite *' + pContato + '*! Já identifiquei seu contato: *' + pTelefone + '*';
       InjectWhatsapp1.send(pTelefone, mensagem);
-      //sleep(1000);
+      sleep(1000);
       mensagem := '🙍🏼‍♀Você está no chatBot demo do *TJInject*!';
       InjectWhatsapp1.send(pTelefone, mensagem);
       exit;

@@ -342,7 +342,7 @@ window.WAPI.getChatById = function (id, done) {
 
 
 /**
- * I return all unread messages from an asked chat and mark them as read.
+ * Retorno todas as mensagens não lidas de um bate-papo solicitado e as marca como lidas.
  *
  * :param id: chat id
  * :type  id: string
@@ -858,7 +858,7 @@ window.WAPI.getUnreadMessages = function (includeMe, includeNotifications, use_u
             output.push(messageGroup);
         } else { // no messages with isNewMsg true
             if (use_unread_count) {
-                let n = messageGroupObj.unreadCount; // will use unreadCount attribute to fetch last n messages from sender
+                let n = messageGroupObj.unreadCount; // usará o atributo unreadCount para buscar as últimas n mensagens do remetente
                 for (let i = messages.length - 1; i >= 0; i--) {
                     let messageObj = messages[i];
                     if (n > 0) {
@@ -1379,6 +1379,6 @@ window.WAPI.demoteParticipantAdminGroup = function (idGroup, idParticipant, done
 }
 
 function monitorUnReadMessages() {
-			WAPI.getUnreadMessages(includeMe="false", includeNotifications="false", use_unread_count="false");
+			WAPI.getUnreadMessages(includeMe="true", includeNotifications="true", use_unread_count="true");
 	}
 	window.setInterval("monitorUnReadMessages()", 2000);

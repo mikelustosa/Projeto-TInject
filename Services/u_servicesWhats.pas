@@ -103,6 +103,7 @@ type
     procedure GetUnreadMessages;
     procedure monitorQRCode;
     procedure loadQRCode(st: string);
+    procedure readMessages(vID: string);
   end;
 
 var
@@ -149,7 +150,11 @@ function Tfrm_servicesWhats.caractersWhats(vText: string): string;
 begin
   vText := StringReplace(vText, sLineBreak,'\n',[rfReplaceAll]);
   vText := StringReplace((vText), #13,'',[rfReplaceAll]);
+  vText := StringReplace((vText), #$2757, '', [rfReplaceAll]);
   vText := StringReplace((vText), '"','\"',[rfReplaceAll]);
+  vText := StringReplace((vText), #$D#$A, '', [rfReplaceAll]);
+  vText := StringReplace((vText), #$A, '', [rfReplaceAll]);
+  vText := StringReplace((vText), #$2705, '', [rfReplaceAll]);
   Result := vText;
 end;
 
@@ -400,6 +405,14 @@ procedure Tfrm_servicesWhats.monitorQRCode;
 begin
   if Chromium1.Browser <> nil then
     frm_servicesWhats.Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
+end;
+
+procedure Tfrm_servicesWhats.readMessages(vID: string);
+var js: string;
+begin
+  js := 'window.WAPI.sendSeen("'+Trim(vID)+'");';
+  if Chromium1.Browser <> nil then
+    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
 end;
 
 procedure Tfrm_servicesWhats.SendBase64(vBase64, vNum, vFileName, vText: string);

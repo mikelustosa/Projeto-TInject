@@ -104,12 +104,12 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
+        <DCCReference Include="Services\UnitCEFHandlerSessionChromium.pas"/>
+        <DCCReference Include="Services\UnitCEFLoadHandlerChromium.pas"/>
         <DCCReference Include="u_principal.pas">
             <Form>frm_principal</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="Services\UnitCEFHandlerSessionChromium.pas"/>
-        <DCCReference Include="Services\UnitCEFLoadHandlerChromium.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
