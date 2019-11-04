@@ -103,7 +103,7 @@ type
     procedure GetUnreadMessages;
     procedure monitorQRCode;
     procedure loadQRCode(st: string);
-    procedure readMessages(vID: string);
+    procedure ReadMessages(vID: string);
   end;
 
 var
@@ -150,11 +150,8 @@ function Tfrm_servicesWhats.caractersWhats(vText: string): string;
 begin
   vText := StringReplace(vText, sLineBreak,'\n',[rfReplaceAll]);
   vText := StringReplace((vText), #13,'',[rfReplaceAll]);
-  vText := StringReplace((vText), #$2757, '', [rfReplaceAll]);
   vText := StringReplace((vText), '"','\"',[rfReplaceAll]);
-  vText := StringReplace((vText), #$D#$A, '', [rfReplaceAll]);
   vText := StringReplace((vText), #$A, '', [rfReplaceAll]);
-  vText := StringReplace((vText), #$2705, '', [rfReplaceAll]);
   Result := vText;
 end;
 
@@ -407,17 +404,17 @@ begin
     frm_servicesWhats.Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
 end;
 
-procedure Tfrm_servicesWhats.readMessages(vID: string);
-var js: string;
+procedure Tfrm_servicesWhats.ReadMessages(vID: string);
+var
+  js: string;
 begin
-  js := 'window.WAPI.sendSeen("'+Trim(vID)+'");';
   if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
+    js := 'window.WAPI.sendSeen("'+Trim(vID)+'")';
 end;
 
 procedure Tfrm_servicesWhats.SendBase64(vBase64, vNum, vFileName, vText: string);
 var
- JS: string;
+ js: string;
  Base64File: TStringList;
  i: integer;
  vLine: string;
@@ -431,11 +428,11 @@ begin
     vLine := vLine + Base64File[i];
   end;
   vBase64 := vLine;
-  JS := 'window.WAPI.sendImage("'+Trim(vBase64)+'","'+Trim(vNum)+'", "'+Trim(vFileName)+'", "'+Trim(vText)+'")';
+  js := 'window.WAPI.sendImage("'+Trim(vBase64)+'","'+Trim(vNum)+'", "'+Trim(vFileName)+'", "'+Trim(vText)+'")';
 
   if Chromium1.Browser <> nil then
   begin
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
   end;
 
   freeAndNil(vBase64);
@@ -579,4 +576,3 @@ begin
 end;
 
 end.
-
