@@ -886,6 +886,7 @@ window.WAPI.getUnreadMessages = function (includeMe, includeNotifications, use_u
     }
     if (done !== undefined) {
         done(output);
+		
     }
 	
 	SetConsoleMessage("getUnreadMessages", JSON.stringify(output));
@@ -1378,6 +1379,6 @@ window.WAPI.demoteParticipantAdminGroup = function (idGroup, idParticipant, done
 }
 
 function monitorUnReadMessages() {
-			WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");
+			WAPI.getUnreadMessages(includeMe="false", includeNotifications="false", use_unread_count="false");
 	}
 	window.setInterval("monitorUnReadMessages()", 2000);
