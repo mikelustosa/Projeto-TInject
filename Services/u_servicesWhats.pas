@@ -1,4 +1,4 @@
-﻿//TInject Criado por Mike W. Lustosa
+//TInject Criado por Mike W. Lustosa
 //Códido aberto à comunidade Delphi
 //mikelustosa@gmail.com
 
@@ -103,6 +103,7 @@ type
     procedure GetUnreadMessages;
     procedure monitorQRCode;
     procedure loadQRCode(st: string);
+    procedure ReadMessages(vID: string);
   end;
 
 var
@@ -404,9 +405,17 @@ begin
     frm_servicesWhats.Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
 end;
 
+procedure Tfrm_servicesWhats.ReadMessages(vID: string);
+var
+  js: string;
+begin
+  if Chromium1.Browser <> nil then
+    js := 'window.WAPI.sendSeen("'+Trim(vID)+'")';
+end;
+
 procedure Tfrm_servicesWhats.SendBase64(vBase64, vNum, vFileName, vText: string);
 var
- JS: string;
+ js: string;
  Base64File: TStringList;
  i: integer;
  vLine: string;
@@ -420,11 +429,11 @@ begin
     vLine := vLine + Base64File[i];
   end;
   vBase64 := vLine;
-  JS := 'window.WAPI.sendImage("'+Trim(vBase64)+'","'+Trim(vNum)+'", "'+Trim(vFileName)+'", "'+Trim(vText)+'")';
+  js := 'window.WAPI.sendImage("'+Trim(vBase64)+'","'+Trim(vNum)+'", "'+Trim(vFileName)+'", "'+Trim(vText)+'")';
 
   if Chromium1.Browser <> nil then
   begin
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
   end;
 
   freeAndNil(vBase64);
@@ -568,4 +577,3 @@ begin
 end;
 
 end.
-
