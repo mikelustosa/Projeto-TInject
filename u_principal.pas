@@ -450,9 +450,6 @@ var
   vFind: boolean;
   i, j, f, k: integer;
 begin
-  //ROTINA COM PROBLEMA DE TRAVAMENTO >>>>>>
-  //ROTINA COM PROBLEMA DE TRAVAMENTO >>>>>>
-  //ROTINA COM PROBLEMA DE TRAVAMENTO >>>>>>
     vFind := false;
     for AChat in Chats.result do
     begin
@@ -544,8 +541,7 @@ begin
   begin
     mensagem := '👩🏼‍💼Eu que agradeço '+pContato+'! Até breve!.\n\nwww.softmaisbrasil.com.br';
     InjectWhatsapp1.send(pTelefone, mensagem);
-    sleep(1000);
-    //vBase64Str := 'data:image/jpg;base64,'+frm_servicesWhats.convertBase64('C:\Users\Dell-Mike\Pictures\TInject.jpeg');
+    sleep(2000);
     vBase64Str := 'data:image/jpg;base64,'+frm_servicesWhats.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\TInject.jpeg');
     InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, 'Imagem', '*Volte sempre!*');
     exit;
