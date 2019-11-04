@@ -3,6 +3,8 @@ Componente para criação de chatBots com delphi e o whatsapp<br></br><br></br>
 
 INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
 
+Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br></br>
+
 Tutorial de instalação no youtube:<br>
 https://youtu.be/iJAKU8A8fmc
 
@@ -24,7 +26,7 @@ https://youtu.be/iJAKU8A8fmc
 8-Abra o arquivo demo Tinject.dproj
 <br></br><br></br>
 
-O componente está 65% concluído. <br><br>Recurso que falta: Capturar o *log do console* do componente TChromium e gerar um *JSON* para tratamento das mensagens recebidas pelo WhatsApp.
+O componente está 80% concluído. <br><br>Recurso que falta: Capturar o *log do console* do componente TChromium e gerar um *JSON* para tratamento das mensagens recebidas pelo WhatsApp.
 <br><br>
 
 *Nota 1: O TInject é de código aberto, e não possui *nenhum outro componente* de terceiro além do TChromium vinculado ao código, nem muito menos utilização de *licenças* ou afins de outros componentes. Baixem os *fontes* para comprovar.
