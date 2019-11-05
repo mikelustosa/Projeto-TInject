@@ -13,7 +13,7 @@ https://youtu.be/iJAKU8A8fmc
 <br></br>
 2-Baixar e instalar o CEF4Delphi em: https://drive.google.com/file/d/11cjHyJ9JYjnbQQI-gufJfDVLjJDHKhv3/view?usp=sharing
 <br></br>
-3-Baixar a pasta BIN em: https://drive.google.com/file/d/11vkyayF3ryluH_hvYvWq9fe-TxViBlnG/view?usp=sharing
+3-Baixar a pasta BIN em: https://drive.google.com/open?id=1bNh7kRfj8xSMkMibuAqFjx1V7l3y3r6b
 <br></br>
 4-Copiar todo o conteúdo baixado da pasta BIN no passo 3 para a pasta BIN na raiz do projeto (Caso não exista a pasta BIN em seu projeto Crie)
 <br></br>
