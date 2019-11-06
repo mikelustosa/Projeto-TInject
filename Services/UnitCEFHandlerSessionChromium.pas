@@ -10,7 +10,7 @@
 // For more information about CEF4Delphi visit :
 //         https://www.briskbard.com/index.php?lang=en&pageid=cef
 //
-//        Copyright © 2019 Salvador Diaz Fau. All rights reserved.
+//        Copyright Â© 2019 Salvador Diaz Fau. All rights reserved.
 //
 // ************************************************************************
 // ************ vvvv Original license and comments below vvvv *************
@@ -50,10 +50,8 @@ interface
 implementation
 
 procedure HandlerSessionKey(var SessionKey:string);
-var sk: string;
 begin
-  sk := 'anderson-5527981350945-234fda79eb5f668bb2ef847cf2a4e426b9e089b2';
- FHandlerSessionKey(sk);//SessionKey);
+ FHandlerSessionKey(SessionKey);
 end;
 
 end.
