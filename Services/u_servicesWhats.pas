@@ -398,7 +398,8 @@ begin
 end;
 
 procedure Tfrm_servicesWhats.monitorQRCode;
-const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
+
+const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
 begin
   if Chromium1.Browser <> nil then
     frm_servicesWhats.Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
@@ -408,8 +409,9 @@ procedure Tfrm_servicesWhats.ReadMessages(vID: string);
 var
   js: string;
 begin
+  js := 'window.WAPI.sendSeen("'+Trim(vID)+'")';
   if Chromium1.Browser <> nil then
-    js := 'window.WAPI.sendSeen("'+Trim(vID)+'")';
+    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
 end;
 
 procedure Tfrm_servicesWhats.SendBase64(vBase64, vNum, vFileName, vText: string);

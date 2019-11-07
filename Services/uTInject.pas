@@ -1,4 +1,4 @@
-﻿//TInject Criado por Mike W. Lustosa
+//TInject Criado por Mike W. Lustosa
 //Códido aberto à comunidade Delphi
 //mikelustosa@gmail.com
 
@@ -23,10 +23,10 @@ type
 
   public
     FAutoStart      : Boolean;
-    FAutoInject     :Boolean;
-    FAutoDelay      :Integer;
-    FSyncContacts   :Boolean;
-    FShowRandom     :Boolean;
+    FAutoInject     : Boolean;
+    FAutoDelay      : Integer;
+    FSyncContacts   : Boolean;
+    FShowRandom     : Boolean;
   private
     procedure SetAutoInject(const Value: Boolean);
     procedure SetAutoDelay(const Value: integer);
@@ -221,7 +221,6 @@ procedure TInjectWhatsapp.send(vNum, vMess: string);
 var
   AId: String;
 begin
-  //inherited;
   FActivitySendThread := TThread.CreateAnonymousThread(procedure
       var vGetDelay: integer;
       begin
@@ -237,18 +236,14 @@ begin
             begin
               if (length(vNum) = 10) or (length(vNum) = 11) then
               begin
-                frm_servicesWhats.Send('55'+vNum+'@c.us', vMess);
                 frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
+                frm_servicesWhats.Send('55'+vNum+'@c.us', vMess);
               end else
-              begin
-                AId := vNum;
-                if Pos(vNum,'@') = -1 then
                 begin
-                  AId := '55'+vNum+'@c.us';
-                  frm_servicesWhats.Send(AId, vMess);
+                  AId := vNum;
                   frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
+                  frm_servicesWhats.Send(AId, vMess);
                 end;
-              end;
             end;
           end);
 
@@ -318,7 +313,6 @@ begin
   begin
    frm_view_qrcode         := Tfrm_view_qrcode.Create(nil);
    frm_view_qrcode.Show;
-   //frm_servicesWhats._Inject := Self;
   end;
 end;
 
