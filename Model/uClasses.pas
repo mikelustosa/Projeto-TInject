@@ -246,7 +246,7 @@ public
   property star: Boolean read FStar write FStar;
   property t: Extended read FT write FT;
   property timestamp: Extended read FTimestamp write FTimestamp;
-  property toMessage: String read FTo write FTo;
+  property &to: String read FTo write FTo;
   property &type: String read FType write FType;
   constructor Create;
   destructor Destroy; override;
@@ -716,9 +716,6 @@ end;
 class function TMessagesClass.FromJsonString(AJsonString: string): TMessagesClass;
 begin
   result := TJson.JsonToObject<TMessagesClass>(AJsonString)
-
-  //After.... Value to Property Alter Name reserved ("to" -> "toMessage")
-  //result.toMessage := GetValue("to")
 end;
 
 
