@@ -1,4 +1,4 @@
-//TInject Criado por Mike W. Lustosa
+﻿//TInject Criado por Mike W. Lustosa
 //Códido aberto à comunidade Delphi
 //mikelustosa@gmail.com
 
@@ -11,6 +11,7 @@ uses
 
   var
     vDelay: integer;
+    vAutoDelete : boolean;
     FActivityContactsThread   : TThread;
     FActivityGetMessagesThread: TThread;
     FActivitySendThread       : TThread;
@@ -23,22 +24,22 @@ type
 
   public
     FAutoStart      : Boolean;
-    FAutoInject     : Boolean;
+    FAutoDelete     : Boolean;
     FAutoDelay      : Integer;
     FSyncContacts   : Boolean;
     FShowRandom     : Boolean;
   private
-    procedure SetAutoInject(const Value: Boolean);
+    procedure SetAutoDelete(const Value: Boolean);
     procedure SetAutoDelay(const Value: integer);
     procedure SetSyncContacts(const Value: Boolean);
     procedure SetShowRandom(const Value: Boolean);
 
   published
-    property AutoStart: Boolean read FAutoStart write FAutoStart default False;
-    property AutoInject   :Boolean read FAutoInject   write SetAutoInject;
-    property AutoDelay    :integer read FAutoDelay    write SetAutoDelay;
-    property SyncContacts :Boolean read FSyncContacts write SetSyncContacts;
-    property ShowRandom   :Boolean read FShowRandom   write SetShowRandom;
+    property AutoStart    : Boolean read FAutoStart write FAutoStart default False;
+    property AutoDelete   : Boolean read FAutoDelete   write SetAutoDelete;
+    property AutoDelay    : integer read FAutoDelay    write SetAutoDelay;
+    property SyncContacts : Boolean read FSyncContacts write SetSyncContacts;
+    property ShowRandom   : Boolean read FShowRandom   write SetShowRandom;
   end;
 
 
@@ -60,7 +61,85 @@ type
     FMySubComp1           : TMySubComp;
     FAuth                 : boolean;
   public
+    const emoticonSorridente       = '😄';
+    const emoticonSorridenteLingua = '😝';
+    const emoticonImpressionado    = '😱';
+    const emoticonIrritado         = '😤';
+    const emoticonTriste           = '😢';
+    const emoticonApaixonado       = '😍';
+    const emoticonPapaiNoel        = '🎅';
+    const emoticonViolao           = '🎸';
+    const emoticonChegada          = '🏁';
+    const emoticonFutebol          = '⚽';
+    const emoticonNaMosca          = '🎯';
+    const emoticonDinheiro         = '💵';
+    const emoticonEnviarCel        = '📲';
+    const emoticonEnviar           = '📩';
+    const emoticonFone             = '📞';
+    const emoticonOnibus           = '🚍';
+    const emoticonAviao            = '✈';
+    const emoticonLegal            = '👍🏻';
+    const emoticonApertoDeMao      = '🤝🏻';
+    const emoticonPazEAmor         = '✌🏻';
+    const emoticonSono             = '😴';
+    const emoticonPalmas           = '👏🏻';
+    const emoticonLoiraFazerOq     = '🤷‍♀' ;
+    const emoticonLoiraMaoNoRosto  = '🤦‍♀' ;
+    const emoticonMacarrao         = '🍜';
+    const emoticonAtendenteH       = '👨🏼‍💼';
+    const emoticonAtendenteM       = '👩🏼‍💼';
+    const emoticonPizza            = '🍕';
+    const emoticonBebida           = '🥃';
+    const emoticonRestaurante      = '🍽';
+    const emoticonJoystick         = '🎮';
+    const emoticonMoto             = '🏍';
+    const emoticonCarro            = '🚘';
+    const emoticonABarco           = '🚢';
+    const emoticonHospital         = '🏥';
+    const emoticonIgreja           = '⛪';
+    const emoticonCartao           = '💳';
+    const emoticonTuboEnsaio       = '🧪';
+    const emoticonPilula           = '💊';
+    const emoticonSacolaCompras    = '🛍';
+    const emoticonCarrinhoCompras  = '🛒';
+    const emoticonAmpulheta        = '⏳';
+    const emoticonPresente         = '🎁';
+    const emoticonEmail            = '📧';
+    const emoticonAgendaAzul       = '📘';
+    const emoticonAgendaVerde      = '📗';
+    const emoticonAgendaVermelha   = '📕';
+    const emoticonClipPapel        = '📎';
+    const emoticonCanetaAzul       = '🖊';
+    const emoticonLapis            = '✏';
+    const emoticonLapisEPapel      = '📝';
+    const emoticonCadeadoEChave    = '🔐';
+    const emoticonLupa             = '🔎';
+    const emoticonCorarao          = '❤';
+    const emoticonCheck            = '✅';
+    const emoticonCheck2           = '✔';
+    const emoticonAtencao          = '⚠';
+    const emoticonZero             = '0⃣';
+    const emoticonUm               = '1⃣';
+    const emoticonDois             = '2⃣';
+    const emoticonTres             = '3⃣';
+    const emoticonQuatro           = '4⃣';
+    const emoticonCinco            = '5⃣';
+    const emoticonSeis             = '6⃣';
+    const emoticonSete             = '7⃣';
+    const emoticonOito             = '8⃣';
+    const emoticonNove             = '9⃣';
+    const emoticonDez              = '🔟';
+    const emoticonAterisco         = '*⃣';
+    const emoticonSetaDireita      = '➡';
+    const emoticonSetaEsquerda     = '⬅';
+    const emoticonRelogio          = '🕒';
+    const emoticonConversa         = '💬';
+    const emoticonApontaCima       = '👆🏻';
+    const emoticonApontaBaixo      = '👇🏻';
+    const emoticonPanelaComComida  = '🥘';
+
     constructor Create(AOwner: TComponent); override;
+    procedure ReadMessages(vID: string);
     procedure startQrCode;
     procedure monitorQrCode;
     procedure startWhatsapp;
@@ -102,9 +181,10 @@ end;
 
 { TInjectWhatsapp }
 
-procedure TMySubComp.SetAutoInject(const Value: Boolean);
+procedure TMySubComp.SetAutoDelete(const Value: Boolean);
 begin
-  FAutoInject := Value;
+  FAutoDelete := Value;
+  vAutoDelete := FAutoDelete;
 end;
 
 procedure TMySubComp.SetShowRandom(const Value: Boolean);
@@ -215,6 +295,19 @@ end;
 procedure TInjectWhatsapp.monitorQrCode;
 begin
   frm_servicesWhats.monitorQRCode;
+end;
+
+procedure TInjectWhatsapp.ReadMessages(vID: string);
+begin
+  if vAutoDelete = true then
+  begin
+    if assigned(frm_servicesWhats) then
+      frm_servicesWhats.ReadMessagesAndDelete(vID);
+  end else if vAutoDelete = false then
+  begin
+    if assigned(frm_servicesWhats) then
+      frm_servicesWhats.ReadMessages(vID);
+  end;
 end;
 
 procedure TInjectWhatsapp.send(vNum, vMess: string);

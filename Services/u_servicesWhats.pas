@@ -104,6 +104,7 @@ type
     procedure monitorQRCode;
     procedure loadQRCode(st: string);
     procedure ReadMessages(vID: string);
+    procedure ReadMessagesAndDelete(vID: string);
   end;
 
 var
@@ -398,19 +399,34 @@ begin
 end;
 
 procedure Tfrm_servicesWhats.monitorQRCode;
-
-const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
+const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
 begin
   if Chromium1.Browser <> nil then
-    frm_servicesWhats.Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
+    Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
 end;
 
+//Apenas marca como lida a mensagem
 procedure Tfrm_servicesWhats.ReadMessages(vID: string);
 var
   js: string;
 begin
   js := 'window.WAPI.sendSeen("'+Trim(vID)+'")';
-  if Chromium1.Browser <> nil then
+    if Chromium1.Browser <> nil then
+    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
+end;
+
+//Marca como lida e deleta a conversa
+procedure Tfrm_servicesWhats.ReadMessagesAndDelete(vID: string);
+var
+  js: string;
+begin
+  js := 'window.WAPI.sendSeen("'+Trim(vID)+'")';
+    if Chromium1.Browser <> nil then
+    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
+
+
+  js := 'window.WAPI.deleteConversation("'+Trim(vID)+'")';
+    if Chromium1.Browser <> nil then
     Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
 end;
 

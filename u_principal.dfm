@@ -12,16 +12,15 @@ object frm_principal: Tfrm_principal
   Font.Style = []
   OldCreateOrder = False
   Position = poOwnerFormCenter
-  WindowState = wsMaximized
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Image2: TImage
-    Left = 652
+    Left = 908
     Top = 241
-    Width = 228
+    Width = 112
     Height = 336
     Align = alClient
     Center = True
@@ -6797,21 +6796,21 @@ object frm_principal: Tfrm_principal
     end
     object GroupBox1: TGroupBox
       Left = 399
-      Top = 25
+      Top = 9
       Width = 250
-      Height = 174
+      Height = 190
       Caption = 'Configura'#231#245'es'
       TabOrder = 4
       object Label6: TLabel
         Left = 8
-        Top = 70
+        Top = 78
         Width = 68
         Height = 13
         Caption = 'Random delay'
       end
       object lbl_track: TLabel
         Left = 152
-        Top = 49
+        Top = 57
         Width = 90
         Height = 29
         Alignment = taRightJustify
@@ -6832,15 +6831,15 @@ object frm_principal: Tfrm_principal
         Caption = 'Show delay'
       end
       object Label3: TLabel
-        Left = 11
-        Top = 123
-        Width = 160
+        Left = 115
+        Top = 19
+        Width = 108
         Height = 13
-        Caption = 'Listar apenas contatos de grupos'
+        Caption = 'S'#243' contatos de grupos'
       end
       object TrackBar1: TTrackBar
         Left = 3
-        Top = 83
+        Top = 91
         Width = 246
         Height = 38
         Max = 10000
@@ -6860,8 +6859,8 @@ object frm_principal: Tfrm_principal
         OnClick = sw_delayClick
       end
       object sw_grupos: TToggleSwitch
-        Left = 11
-        Top = 142
+        Left = 115
+        Top = 38
         Width = 72
         Height = 20
         DisabledColor = clRed
@@ -6869,6 +6868,17 @@ object frm_principal: Tfrm_principal
         TabOrder = 2
         ThumbColor = 16744448
         OnClick = sw_delayClick
+      end
+      object chk_apagarMsg: TCheckBox
+        Left = 8
+        Top = 140
+        Width = 201
+        Height = 17
+        Caption = 'Apagar as mensagens ao receber'
+        Checked = True
+        State = cbChecked
+        TabOrder = 3
+        OnClick = chk_apagarMsgClick
       end
     end
     object Button1: TButton
@@ -6917,11 +6927,12 @@ object frm_principal: Tfrm_principal
     end
   end
   object Memo1: TMemo
-    Left = 880
-    Top = 241
-    Width = 140
-    Height = 336
-    Align = alRight
+    AlignWithMargins = True
+    Left = 911
+    Top = 244
+    Width = 106
+    Height = 330
+    Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -13
@@ -6933,9 +6944,9 @@ object frm_principal: Tfrm_principal
   end
   object listaContatos: TListView
     AlignWithMargins = True
-    Left = 183
+    Left = 399
     Top = 244
-    Width = 210
+    Width = 250
     Height = 330
     Align = alLeft
     Columns = <>
@@ -6950,7 +6961,7 @@ object frm_principal: Tfrm_principal
   end
   object listaChats: TListView
     AlignWithMargins = True
-    Left = 399
+    Left = 655
     Top = 244
     Width = 250
     Height = 330
@@ -6969,7 +6980,7 @@ object frm_principal: Tfrm_principal
     AlignWithMargins = True
     Left = 3
     Top = 244
-    Width = 174
+    Width = 390
     Height = 330
     Align = alLeft
     TabOrder = 4
@@ -7014,12 +7025,12 @@ object frm_principal: Tfrm_principal
     Interval = 4000
     OnTimer = Timer1Timer
     Left = 672
-    Top = 104
+    Top = 80
   end
   object InjectWhatsapp1: TInjectWhatsapp
     Config.AutoStart = True
-    Config.AutoInject = True
-    Config.AutoDelay = 2000
+    Config.AutoDelete = True
+    Config.AutoDelay = 0
     Config.SyncContacts = False
     Config.ShowRandom = False
     OnGetContactList = InjectWhatsapp1GetContactList
@@ -7031,7 +7042,7 @@ object frm_principal: Tfrm_principal
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Imagens|*jpg;*.jpg;*.bmp;*.png;*.pdf;*.mp4;*.mp3;*.rar'
-    Left = 592
-    Top = 32
+    Left = 216
+    Top = 24
   end
 end

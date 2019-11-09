@@ -189,6 +189,15 @@ public
   class function FromJsonString(AJsonString: string): TLastReceivedKeyClass;
 end;
 
+TMentionedJidListClass = class
+private
+  FTeste: String;
+public
+  property teste: String read FTeste write FTeste;
+  function ToJsonString: string;
+  class function FromJsonString(AJsonString: string): TMentionedJidListClass;
+end;
+
 TMessagesClass = class
 private
   FAck: Extended;
@@ -209,7 +218,7 @@ private
   FIsPSA: Boolean;
   FLabels: TArray<TLabelsClass>;
   FMediaData: TMediaDataClass;
-  FMentionedJidList: TArray<String>;
+  FMentionedJidList: TArray<TMentionedJidListClass>;
   FNotifyName: String;
   FRecvFresh: Boolean;
   FSelf: String;
@@ -238,7 +247,7 @@ public
   property isPSA: Boolean read FIsPSA write FIsPSA;
   property labels: TArray<TLabelsClass> read FLabels write FLabels;
   property mediaData: TMediaDataClass read FMediaData write FMediaData;
-  property mentionedJidList: TArray<String> read FMentionedJidList write FMentionedJidList;
+  property mentionedJidList: TArray<TMentionedJidListClass> read FMentionedJidList write FMentionedJidList;
   property notifyName: String read FNotifyName write FNotifyName;
   property recvFresh: Boolean read FRecvFresh write FRecvFresh;
   property self: String read FSelf write FSelf;
@@ -246,7 +255,7 @@ public
   property star: Boolean read FStar write FStar;
   property t: Extended read FT write FT;
   property timestamp: Extended read FTimestamp write FTimestamp;
-  property &to: String read FTo write FTo;
+  property toMessage: String read FTo write FTo;
   property &type: String read FType write FType;
   constructor Create;
   destructor Destroy; override;
@@ -685,6 +694,19 @@ begin
   result := TJson.JsonToObject<TSenderClass>(AJsonString)
 end;
 
+{TMentionedJidListClass}
+
+
+function TMentionedJidListClass.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+class function TMentionedJidListClass.FromJsonString(AJsonString: string): TMentionedJidListClass;
+begin
+  result := TJson.JsonToObject<TMentionedJidListClass>(AJsonString)
+end;
+
 {TMessagesClass}
 
 constructor TMessagesClass.Create;
@@ -697,8 +719,12 @@ end;
 
 destructor TMessagesClass.Destroy;
 var
+  LmentionedJidListItem: TMentionedJidListClass;
   LlabelsItem: TLabelsClass;
 begin
+
+ for LmentionedJidListItem in FMentionedJidList do
+   LmentionedJidListItem.free;
  for LlabelsItem in FLabels do
    LlabelsItem.free;
 
@@ -716,6 +742,9 @@ end;
 class function TMessagesClass.FromJsonString(AJsonString: string): TMessagesClass;
 begin
   result := TJson.JsonToObject<TMessagesClass>(AJsonString)
+
+  //After.... Value to Property Alter Name reserved ("to" -> "toMessage")
+  //result.toMessage := GetValue("to")
 end;
 
 
