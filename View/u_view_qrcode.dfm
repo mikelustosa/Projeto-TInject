@@ -31,7 +31,7 @@ object frm_view_qrcode: Tfrm_view_qrcode
   end
   object Timer1: TTimer
     Enabled = False
-    Interval = 2000
+    Interval = 3000
     OnTimer = Timer1Timer
     Left = 96
     Top = 48

@@ -9,8 +9,6 @@ uses
   {$ENDIF }
   uCEFApplication,
   uCEFConstants,
-  UnitCEFHandlerSessionChromium in 'Services\UnitCEFHandlerSessionChromium.pas',
-  UnitCEFLoadHandlerChromium in 'Services\UnitCEFLoadHandlerChromium.pas',
   u_principal in 'u_principal.pas' {frm_principal};
 
 {$R *.res}

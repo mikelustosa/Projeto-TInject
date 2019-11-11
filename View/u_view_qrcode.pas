@@ -69,10 +69,19 @@ end;
 procedure Tfrm_view_qrcode.Timer1Timer(Sender: TObject);
 var _inject : TInjectWhatsapp;
 begin
- if assigned( _inject ) then
+  if assigned( _inject ) then
   _inject.monitorQrCode;
 
-  if image1.Picture.Bitmap <> nil then
+  if image1.Picture.Graphic = nil then
+  begin
+    frm_view_qrcode.Caption := 'TInject - Carregando QRCode.';
+    sleep(300);
+    frm_view_qrcode.Caption := 'TInject - Carregando QRCode..';
+    sleep(300);
+    frm_view_qrcode.Caption := 'TInject - Carregando QRCode...';
+  end;
+
+  if not (image1.Picture.Graphic = nil) then
   begin
     frm_view_qrcode.Caption := 'TInject - Aponte seu celular agora!';
   end;

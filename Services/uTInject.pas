@@ -404,6 +404,7 @@ procedure TInjectWhatsapp.startQrCode;
 begin
   if not Assigned(frm_view_qrcode) then
   begin
+   startWhatsapp;
    frm_view_qrcode         := Tfrm_view_qrcode.Create(nil);
    frm_view_qrcode.Show;
   end;

@@ -11,7 +11,7 @@ uses
   //############ ATENÇÃO AQUI ####################
   //############ ATENÇÃO AQUI ####################
   //units adicionais obrigatórias
-  uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
+  uCEFApplication, uCefMiscFunctions, uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, uTInject,
   Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.WinXCtrls, System.NetEncoding,
   Vcl.Imaging.jpeg, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
@@ -19,7 +19,7 @@ uses
   FireDAC.Stan.Async, FireDAC.DApt, FireDAC.UI.Intf, FireDAC.Stan.Def,
   FireDAC.Stan.Pool, FireDAC.Phys, FireDAC.Phys.MSSQL, FireDAC.Phys.MSSQLDef,
   FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client, FireDAC.Comp.DataSet,
-  FireDAC.Comp.UI;
+  FireDAC.Comp.UI, Vcl.AppEvnts;
 
   //############ ATENÇÃO AQUI ####################
   //############ ATENÇÃO AQUI ####################
@@ -69,6 +69,9 @@ type
     Label4: TLabel;
     Image3: TImage;
     chk_apagarMsg: TCheckBox;
+    Label9: TLabel;
+    TrayIcon1: TTrayIcon;
+    ApplicationEvents1: TApplicationEvents;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -91,6 +94,9 @@ type
     procedure Button8Click(Sender: TObject);
     procedure InjectWhatsapp1GetQrCode(Sender: TObject);
     procedure chk_apagarMsgClick(Sender: TObject);
+    procedure TrayIcon1Click(Sender: TObject);
+    procedure ApplicationEvents1Minimize(Sender: TObject);
+    procedure btn_clearClick(Sender: TObject);
 
   protected
 
@@ -116,13 +122,22 @@ type
     procedure CarregarChats;
   public
     { Public declarations }
-    JS1, JS2, contato, mensagem:string;
-    cMsg, vNomeContato, vTelefoneContato: string;
-    vBase64Str, vFileNameURL: string;
-    i: integer;
+    nOpcao                                : string;
+    JS1, JS2, contato , fone              : string;
+    vBase64Str, vFileNameURL              : string;
+
+    //Video aula
+    mensagem                              : string;
+    arrayFila                             : array [0..1] of string;
+    arraySessao                           : array [0..1] of string;
+    arrayTimer                            : array [0..1] of string;
+    arrayFilaEspera                       : array [0..1] of string;
+    function  VerificaPalavraChave( pMensagem, pSessao, pTelefone, pContato : String ) : Boolean;
+    //Video aula
+
     procedure AddContactList(ANumber: String);
     procedure AddChatList(ANumber: String);
-    function  VerificaPalavraChave( pMensagem, pSessao, pTelefone, pContato : String ) : Boolean;
+
   end;
 
 var
@@ -131,14 +146,32 @@ var
 implementation
 
 uses
-  uCEFApplication, uCefMiscFunctions, u_servicesWhats, System.StrUtils;
+  u_servicesWhats, System.StrUtils;
 
 {$R *.dfm}
+
+function DiaSemana(Data:TDateTime): String;
+{Retorna dia da semana}
+var
+  NoDia : Integer;
+  DiaDaSemana : array [1..7] of String[13];
+begin
+{ Dias da Semana }
+  DiaDasemana [1]:= 'Domingo';
+  DiaDasemana [2]:= 'Segunda-feira';
+  DiaDasemana [3]:= 'Terça-feira';
+  DiaDasemana [4]:= 'Quarta-feira';
+  DiaDasemana [5]:= 'Quinta-feira';
+  DiaDasemana [6]:= 'Sexta-feira';
+  DiaDasemana [7]:= 'Sábado';
+  NoDia:=DayOfWeek(Data);
+  DiaSemana:=DiaDasemana[NoDia];
+end;
 
 procedure Tfrm_principal.FormCreate(Sender: TObject);
 begin
   idMessageGlobal := 'start';
-  InjectWhatsapp1.startWhatsapp;
+  //InjectWhatsapp1.startWhatsapp;
 end;
 
 procedure Tfrm_principal.FormShow(Sender: TObject);
@@ -177,7 +210,37 @@ begin
   item.ImageIndex := 0;
 end;
 
-Procedure Tfrm_principal.WMMove(var aMessage : TWMMove);
+procedure Tfrm_principal.ApplicationEvents1Minimize(Sender: TObject);
+begin
+  self.Hide();
+  self.WindowState := wsMinimized;
+  trayIcon1.Visible := true;
+  TrayIcon1.Animate := True;
+  TrayIcon1.ShowBalloonHint;
+end;
+
+procedure Tfrm_principal.btn_clearClick(Sender: TObject);
+var i, j, f, controle: integer;
+begin
+  controle := 1;
+  for i := 0 to  length(arrayTimer) -1 do
+  begin
+    if arrayTimer[i] <> '' then
+    begin
+      if (time - strToTime(arrayTimer[i])) >= strToTime('00:00:10') then
+      begin
+        mensagem := 'Seu número *'+arrayFila[i]+'* foi removido da fila de atendimento.\n\nFoi namorar, perdeu o lugar! 🤷‍♂';
+        injectWhatsapp1.send(arrayFila[i], mensagem);
+        arrayFila[i]    := '';
+        arraySessao[i]  := '';
+        arrayTimer[i]   := '';
+        controle := 0;
+      end;
+    end;
+  end;
+end;
+
+procedure Tfrm_principal.WMMove(var aMessage : TWMMove);
 begin
   inherited;
 end;
@@ -308,6 +371,7 @@ begin
   injectWhatsapp1.Config.FAutoDelete := false;
 end;
 
+
 procedure Tfrm_principal.InjectWhatsapp1GetChatList(Sender: TObject);
 var
   AChat: TChatClass;
@@ -342,7 +406,7 @@ end;
 
 procedure Tfrm_principal.InjectWhatsapp1GetQrCode(Sender: TObject);
 begin
-  frm_servicesWhats.loadQRCode(frm_servicesWhats._Qrcode);
+//  frm_servicesWhats.loadQRCode(frm_servicesWhats._Qrcode);
 end;
 
 procedure Tfrm_principal.InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
@@ -418,39 +482,29 @@ begin
   InjectWhatsapp1.Config.AutoDelay := TrackBar1.Position;
 end;
 
+procedure Tfrm_principal.TrayIcon1Click(Sender: TObject);
+begin
+  TrayIcon1.Visible := False;
+  Show();
+  WindowState := wsNormal;
+  Application.BringToFront();
+end;
+
 function Tfrm_principal.VerificaPalavraChave(pMensagem, pSessao, pTelefone,
   pContato: String): Boolean;
-var
-  vSessaoF, k, j, i : integer;
-var
-  vMessageLocal     : string;
 begin
-  Result := False;
-  vNomeContato := pContato;
-
-  if ( POS('OLA', AnsiUpperCase(pMensagem)) > 0 )       or  ( POS('OLÁ', AnsiUpperCase(pMensagem)) > 0 ) or
-     ( POS('BOA TARDE', AnsiUpperCase(pMensagem)) > 0 ) or  ( POS('BOM DIA', AnsiUpperCase(pMensagem)) > 0 ) or
-     ( POS('BOA NOITE', AnsiUpperCase(pMensagem)) > 0 ) or  ( POS('OI', AnsiUpperCase(pMensagem)) > 0 ) then
-  begin
-      mensagem :=
-      'Olá *'+vNomeContato+'!*\n'+
-      'Bem vindo(a) ao restaurante *DON*! 🍽\n\n'+
-      'O que gostaria de pedir hoje? Escolha uma opção:\n\n'+
-      InjectWhatsapp1.emoticonPizza             +'1-Pizza *grande* um sabor\n'+
-      InjectWhatsapp1.emoticonPizza             +'2-Pizza *grande* dois sabores\n'+
-      InjectWhatsapp1.emoticonPizza             +'3-Pizza *média* um sabor\n'+
-      InjectWhatsapp1.emoticonPizza             +'4-Pizza *média* dois sabores\n'+
-      InjectWhatsapp1.emoticonPanelaComComida   +'5-Picadinho\n'+
-      InjectWhatsapp1.emoticonPanelaComComida   +'6-Milanesa do DON\n'+
-      InjectWhatsapp1.emoticonPanelaComComida   +'7-DON América\n'+
-      InjectWhatsapp1.emoticonPanelaComComida   +'8-Frango em tiras\n'+
-      InjectWhatsapp1.emoticonPanelaComComida   +'9-Tirinhas aceboladas\n'+
-      InjectWhatsapp1.emoticonPanelaComComida   +'10-Frango grelhado\n'+
-      InjectWhatsapp1.emoticonBebida            +'11-Bebidas';
-      vBase64Str := 'data:image/jpg;base64,'    +frm_servicesWhats.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\cardapio.jpg');
-      InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, '', mensagem);
-      exit;
-    end;
+  if  ( POS('OLA', AnsiUpperCase(pMensagem))        > 0 ) or ( POS('OLÁ', AnsiUpperCase(pMensagem))       > 0 ) or
+      ( POS('BOM DIA', AnsiUpperCase(pMensagem))    > 0 ) or ( POS('BOA TARDE', AnsiUpperCase(pMensagem)) > 0 ) or
+      ( POS('BOA NOITE', AnsiUpperCase(pMensagem))  > 0 ) or ( POS('INÍCIO', AnsiUpperCase(pMensagem))    > 0 ) or
+      ( POS('INICIO', AnsiUpperCase(pMensagem))     > 0 ) or ( POS('OI', AnsiUpperCase(pMensagem))        > 0 )then
+          begin
+            mensagem :=
+            InjectWhatsapp1.emoticonAtendenteH+ 'Olá *'+pContato+'!*\n\n'+
+            'Você está no auto atendimento da\n*Softmais Sistemas do Brasil*\n\n';
+            vBase64Str := 'data:image/png;base64,' +frm_servicesWhats.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\softmais.png');
+            InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, '', mensagem);
+            exit;
+          end;
 end;
 
 procedure Tfrm_principal.whatsOffClick(Sender: TObject);

@@ -6757,6 +6757,19 @@ object frm_principal: Tfrm_principal
         AF2A552A0DA78CC3B7F7137C76183C75B46A9CAF166021B5C46EF27FFDF7F61F
         10B6C9EAE7EF94610000000049454E44AE426082}
     end
+    object Label9: TLabel
+      Left = 192
+      Top = 28
+      Width = 121
+      Height = 19
+      Caption = 'ChatBot Softmais'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
     object ed_num: TEdit
       Left = 3
       Top = 28
@@ -6875,8 +6888,6 @@ object frm_principal: Tfrm_principal
         Width = 201
         Height = 17
         Caption = 'Apagar as mensagens ao receber'
-        Checked = True
-        State = cbChecked
         TabOrder = 3
         OnClick = chk_apagarMsgClick
       end
@@ -7029,7 +7040,7 @@ object frm_principal: Tfrm_principal
   end
   object InjectWhatsapp1: TInjectWhatsapp
     Config.AutoStart = True
-    Config.AutoDelete = True
+    Config.AutoDelete = False
     Config.AutoDelay = 0
     Config.SyncContacts = False
     Config.ShowRandom = False
@@ -7042,7 +7053,17 @@ object frm_principal: Tfrm_principal
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Imagens|*jpg;*.jpg;*.bmp;*.png;*.pdf;*.mp4;*.mp3;*.rar'
-    Left = 216
+    Left = 304
+    Top = 24
+  end
+  object TrayIcon1: TTrayIcon
+    OnClick = TrayIcon1Click
+    Left = 696
+    Top = 24
+  end
+  object ApplicationEvents1: TApplicationEvents
+    OnMinimize = ApplicationEvents1Minimize
+    Left = 776
     Top = 24
   end
 end
