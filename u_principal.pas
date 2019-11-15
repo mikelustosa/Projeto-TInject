@@ -14,12 +14,7 @@ uses
   uCEFApplication, uCefMiscFunctions, uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, uTInject,
   Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.WinXCtrls, System.NetEncoding,
-  Vcl.Imaging.jpeg, FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param,
-  FireDAC.Stan.Error, FireDAC.DatS, FireDAC.Phys.Intf, FireDAC.DApt.Intf,
-  FireDAC.Stan.Async, FireDAC.DApt, FireDAC.UI.Intf, FireDAC.Stan.Def,
-  FireDAC.Stan.Pool, FireDAC.Phys, FireDAC.Phys.MSSQL, FireDAC.Phys.MSSQLDef,
-  FireDAC.VCLUI.Wait, Data.DB, FireDAC.Comp.Client, FireDAC.Comp.DataSet,
-  FireDAC.Comp.UI, Vcl.AppEvnts;
+  Vcl.Imaging.jpeg, Vcl.AppEvnts;
 
   //############ ATENÇÃO AQUI ####################
   //############ ATENÇÃO AQUI ####################
@@ -37,8 +32,6 @@ type
     Label1: TLabel;
     Label2: TLabel;
     ed_num: TEdit;
-    Memo1: TMemo;
-    listaContatos: TListView;
     ImageList1: TImageList;
     Image1: TImage;
     Button6: TButton;
@@ -61,17 +54,21 @@ type
     Button2: TButton;
     sw_grupos: TToggleSwitch;
     Label3: TLabel;
-    Label8: TLabel;
     listaChats: TListView;
     Button3: TButton;
-    memo_unReadMessagen: TMemo;
-    Button8: TButton;
     Label4: TLabel;
     Image3: TImage;
     chk_apagarMsg: TCheckBox;
     Label9: TLabel;
     TrayIcon1: TTrayIcon;
     ApplicationEvents1: TApplicationEvents;
+    Timer2: TTimer;
+    lbl_diaSemana: TLabel;
+    listaContatos: TListView;
+    Panel2: TPanel;
+    Image4: TImage;
+    memo_unReadMessagen: TMemo;
+    Image5: TImage;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -91,12 +88,12 @@ type
     procedure InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
     procedure listaChatsDblClick(Sender: TObject);
     procedure listaContatosDblClick(Sender: TObject);
-    procedure Button8Click(Sender: TObject);
-    procedure InjectWhatsapp1GetQrCode(Sender: TObject);
     procedure chk_apagarMsgClick(Sender: TObject);
     procedure TrayIcon1Click(Sender: TObject);
     procedure ApplicationEvents1Minimize(Sender: TObject);
     procedure btn_clearClick(Sender: TObject);
+    procedure Timer2Timer(Sender: TObject);
+    procedure Image5Click(Sender: TObject);
 
   protected
 
@@ -128,10 +125,10 @@ type
 
     //Video aula
     mensagem                              : string;
-    arrayFila                             : array [0..1] of string;
-    arraySessao                           : array [0..1] of string;
-    arrayTimer                            : array [0..1] of string;
-    arrayFilaEspera                       : array [0..1] of string;
+    arrayFila                             : array [0..0] of string;
+    arraySessao                           : array [0..0] of string;
+    arrayTimer                            : array [0..0] of string;
+    arrayFilaEspera                       : array [0..0] of string;
     function  VerificaPalavraChave( pMensagem, pSessao, pTelefone, pContato : String ) : Boolean;
     //Video aula
 
@@ -171,12 +168,13 @@ end;
 procedure Tfrm_principal.FormCreate(Sender: TObject);
 begin
   idMessageGlobal := 'start';
-  //InjectWhatsapp1.startWhatsapp;
+  InjectWhatsapp1.startWhatsapp;
 end;
 
 procedure Tfrm_principal.FormShow(Sender: TObject);
 begin
   timer1.Enabled := true;
+  lbl_diaSemana.Caption := diaSemana(date);
 end;
 
 procedure Tfrm_principal.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -229,7 +227,7 @@ begin
     begin
       if (time - strToTime(arrayTimer[i])) >= strToTime('00:00:10') then
       begin
-        mensagem := 'Seu número *'+arrayFila[i]+'* foi removido da fila de atendimento.\n\nFoi namorar, perdeu o lugar! 🤷‍♂';
+        mensagem := 'Seu número *'+arrayFila[i]+'* foi removido da fila de atendimento.\n\n*Obrigado* por entrar em _contato_ e até breve!';
         injectWhatsapp1.send(arrayFila[i], mensagem);
         arrayFila[i]    := '';
         arraySessao[i]  := '';
@@ -348,11 +346,6 @@ begin
   InjectWhatsapp1.GetUnReadMessages;
 end;
 
-procedure Tfrm_principal.Button8Click(Sender: TObject);
-begin
-  InjectWhatsapp1.startQrCode;
-end;
-
 procedure Tfrm_principal.CarregarChats;
 begin
   InjectWhatsapp1.getAllChats;
@@ -371,6 +364,11 @@ begin
   injectWhatsapp1.Config.FAutoDelete := false;
 end;
 
+
+procedure Tfrm_principal.Image5Click(Sender: TObject);
+begin
+  InjectWhatsapp1.startQrCode;
+end;
 
 procedure Tfrm_principal.InjectWhatsapp1GetChatList(Sender: TObject);
 var
@@ -404,11 +402,6 @@ begin
   end;
 end;
 
-procedure Tfrm_principal.InjectWhatsapp1GetQrCode(Sender: TObject);
-begin
-//  frm_servicesWhats.loadQRCode(frm_servicesWhats._Qrcode);
-end;
-
 procedure Tfrm_principal.InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
 var
   AChat: TChatClass;
@@ -423,12 +416,12 @@ begin
           begin
             if AMessage.isGroupMsg = false then //Não exibe mensages de grupos
             begin
-              //memo_unReadMessagen.Clear;
-              memo_unReadMessagen.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
-              memo_unReadMessagen.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
-              memo_unReadMessagen.Lines.Add(PChar( 'Mensagem    : ' + AMessage.body));
-              memo_unReadMessagen.Lines.Add(PChar( 'ID Message  : ' + AMessage.t.ToString));
-              memo_unReadMessagen.Lines.Add('__________________________________');
+              memo_unReadMessagen.Clear;
+              //memo_unReadMessagen.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
+              //memo_unReadMessagen.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
+              memo_unReadMessagen.Lines.Add(PChar(AMessage.body));
+              //memo_unReadMessagen.Lines.Add(PChar( 'ID Message  : ' + AMessage.t.ToString));
+              //memo_unReadMessagen.Lines.Add('__________________________________');
               telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
               contato   := AMessage.Sender.pushName;
               injectWhatsapp1.ReadMessages(AChat.id);
@@ -465,6 +458,11 @@ begin
   end;
 end;
 
+procedure Tfrm_principal.Timer2Timer(Sender: TObject);
+begin
+ lbl_diaSemana.Caption := diaSemana(date);
+end;
+
 procedure Tfrm_principal.sw_delayClick(Sender: TObject);
 begin
   if sw_delay.IsOn then
@@ -493,18 +491,25 @@ end;
 function Tfrm_principal.VerificaPalavraChave(pMensagem, pSessao, pTelefone,
   pContato: String): Boolean;
 begin
-  if  ( POS('OLA', AnsiUpperCase(pMensagem))        > 0 ) or ( POS('OLÁ', AnsiUpperCase(pMensagem))       > 0 ) or
+   if ( POS('OLA', AnsiUpperCase(pMensagem))        > 0 ) or ( POS('OLÁ', AnsiUpperCase(pMensagem))       > 0 ) or
       ( POS('BOM DIA', AnsiUpperCase(pMensagem))    > 0 ) or ( POS('BOA TARDE', AnsiUpperCase(pMensagem)) > 0 ) or
       ( POS('BOA NOITE', AnsiUpperCase(pMensagem))  > 0 ) or ( POS('INÍCIO', AnsiUpperCase(pMensagem))    > 0 ) or
+      ( POS('HELLO', AnsiUpperCase(pMensagem))      > 0 ) or ( POS('HI', AnsiUpperCase(pMensagem))        > 0 ) or
       ( POS('INICIO', AnsiUpperCase(pMensagem))     > 0 ) or ( POS('OI', AnsiUpperCase(pMensagem))        > 0 )then
-          begin
-            mensagem :=
-            InjectWhatsapp1.emoticonAtendenteH+ 'Olá *'+pContato+'!*\n\n'+
-            'Você está no auto atendimento da\n*Softmais Sistemas do Brasil*\n\n';
-            vBase64Str := 'data:image/png;base64,' +frm_servicesWhats.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\softmais.png');
-            InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, '', mensagem);
-            exit;
-          end;
+      begin
+        mensagem :=
+        InjectWhatsapp1.emoticonAtendenteH+ 'Olá *'+pContato+'!*\n\n'+
+        'Você está no auto atendimento do *TInject*!\n\n'+
+        'Digite um número:\n\n'+
+        InjectWhatsapp1.emoticonUm             +' Suporte\n\n'+
+        InjectWhatsapp1.emoticonDois           +' Consultar CEP\n\n'+
+        InjectWhatsapp1.emoticonTres           +' Financeiro\n\n'+
+        InjectWhatsapp1.emoticonQuatro         +' Horários de atendimento\n\n';
+        vBase64Str := 'data:image/png;base64,' +frm_servicesWhats.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\softmais.png');
+        InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, '', mensagem);
+        exit;
+      end;
+   exit;
 end;
 
 procedure Tfrm_principal.whatsOffClick(Sender: TObject);

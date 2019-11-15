@@ -402,11 +402,14 @@ end;
 
 procedure TInjectWhatsapp.startQrCode;
 begin
-  if not Assigned(frm_view_qrcode) then
+  startWhatsapp;
+  if Assigned(frm_servicesWhats) then
   begin
-   startWhatsapp;
-   frm_view_qrcode         := Tfrm_view_qrcode.Create(nil);
-   frm_view_qrcode.Show;
+    if not Assigned(frm_view_qrcode) then
+    begin
+      frm_view_qrcode         := Tfrm_view_qrcode.Create(nil);
+      frm_view_qrcode.Show;
+    end;
   end;
 end;
 

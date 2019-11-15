@@ -491,7 +491,8 @@ begin
     end;
     AQrCode := TQrCodeClass.FromJsonString( JsonText );
     _Qrcode := AQrCode.result.AQrCode;
-    frm_view_qrCode.loadQRCode(_Qrcode);
+    frm_view_qrcode.loadQRCode(_Qrcode);
+    frm_view_qrcode.Image2.visible := false;
 
     //Dispara Notify
     if Assigned( OnGetQrCode ) then
