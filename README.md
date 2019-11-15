@@ -26,7 +26,7 @@ https://youtu.be/iJAKU8A8fmc
 8-Abra o arquivo demo Tinject.dproj
 <br></br><br></br>
 
-O componente está 85% concluído. <br><br>Melhorar a estabilidade na respostas automáticas das mensagens.
+<br><br>Melhorar a estabilidade na respostas automáticas das mensagens.
 <br><br>
 
 *Nota 1: O TInject é de código aberto, e não possui *nenhum outro componente* de terceiro além do TChromium vinculado ao código, nem muito menos utilização de *licenças* ou afins de outros componentes. Baixem os *fontes* para comprovar.
