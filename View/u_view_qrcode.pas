@@ -69,7 +69,7 @@ begin
     TNetEncoding.Base64.Decode( LInput, LOutput );
     LOutput.Position := 0;
     if LOutput.size > 0 then
-    //by Aurino Inoatechi 19/11/2019
+    //by Aurino Inovatechi 19/11/2019
     {$IFDEF VER330}
     //Delphi 10.3
       Image1.Picture.LoadFromStream(LOutput);
