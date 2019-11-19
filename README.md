@@ -3,7 +3,7 @@ Componente para criação de chatBots com delphi e o whatsapp<br></br><br></br>
 
 INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
 
-Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br></br>
+Compatibilidade testada nas versões do Delphi: Seattle, Berlin, Tokyo e Rio.<br></br>
 
 Tutorial de instalação no youtube:<br>
 https://youtu.be/iJAKU8A8fmc
