@@ -359,6 +359,8 @@ begin
 end;
 
 procedure TInjectWhatsapp.sendBase64(vBase64, vNum, vFileName, vMess: string);
+var
+  AId: String;
 begin
   inherited;
   FActivitySendBase64Thread := TThread.CreateAnonymousThread(procedure
@@ -372,7 +374,17 @@ begin
           begin
             if Assigned(frm_servicesWhats) then
             begin
-              frm_servicesWhats.sendBase64(vBase64,'55'+vNum+'@c.us', vFileName, vMess);
+              if (length(vNum) = 10) or (length(vNum) = 11) then
+              begin
+                frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
+                frm_servicesWhats.sendBase64(vBase64,'55'+vNum+'@c.us', vFileName, vMess);
+              end else
+                begin
+                  AId := vNum;
+                  frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
+                  frm_servicesWhats.Send(AId, vMess);
+                  frm_servicesWhats.sendBase64(vBase64, AId, vFileName, vMess);
+                end;
             end;
           end);
 

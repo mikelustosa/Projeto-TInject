@@ -7094,86 +7094,68 @@ object frm_principal: Tfrm_principal
     object GroupBox1: TGroupBox
       Left = 423
       Top = 9
-      Width = 250
+      Width = 242
       Height = 190
       Caption = 'Configura'#231#245'es'
       TabOrder = 4
-      object Label6: TLabel
-        Left = 8
-        Top = 78
-        Width = 68
-        Height = 13
-        Caption = 'Random delay'
-      end
       object lbl_track: TLabel
-        Left = 152
-        Top = 57
+        Left = 144
+        Top = 125
         Width = 90
-        Height = 29
+        Height = 20
         Alignment = taRightJustify
         AutoSize = False
         Caption = '0'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = 12615680
-        Font.Height = -27
+        Font.Height = -19
         Font.Name = 'Tahoma'
         Font.Style = []
         ParentFont = False
       end
-      object Label7: TLabel
-        Left = 8
-        Top = 19
-        Width = 55
+      object Label8: TLabel
+        Left = 12
+        Top = 107
+        Width = 105
         Height = 13
-        Caption = 'Show delay'
-      end
-      object Label3: TLabel
-        Left = 115
-        Top = 19
-        Width = 108
-        Height = 13
-        Caption = 'S'#243' contatos de grupos'
-      end
-      object TrackBar1: TTrackBar
-        Left = 3
-        Top = 91
-        Width = 246
-        Height = 38
-        Max = 10000
-        SelStart = 10000
-        TabOrder = 0
-        OnChange = TrackBar1Change
-      end
-      object sw_delay: TToggleSwitch
-        Left = 8
-        Top = 38
-        Width = 72
-        Height = 20
-        DisabledColor = clRed
-        FrameColor = 16744448
-        TabOrder = 1
-        ThumbColor = 16744448
-        OnClick = sw_delayClick
-      end
-      object sw_grupos: TToggleSwitch
-        Left = 115
-        Top = 38
-        Width = 72
-        Height = 20
-        DisabledColor = clRed
-        FrameColor = 16744448
-        TabOrder = 2
-        ThumbColor = 16744448
-        OnClick = sw_delayClick
+        Caption = 'Random delay milisec:'
       end
       object chk_apagarMsg: TCheckBox
-        Left = 8
-        Top = 140
+        Left = 12
+        Top = 68
         Width = 201
         Height = 17
         Caption = 'Apagar as mensagens ao receber'
-        TabOrder = 3
+        TabOrder = 0
         OnClick = chk_apagarMsgClick
+      end
+      object chk_delay: TCheckBox
+        Left = 12
+        Top = 22
+        Width = 165
+        Height = 17
+        Caption = 'Show random delay'
+        TabOrder = 1
+        OnClick = chk_delayClick
+      end
+      object chk_grupos: TCheckBox
+        Left = 12
+        Top = 45
+        Width = 149
+        Height = 17
+        Caption = 'S'#243' contatos de grupos'
+        TabOrder = 2
+      end
+      object Edit1: TEdit
+        Left = 12
+        Top = 126
+        Width = 101
+        Height = 21
+        Alignment = taRightJustify
+        TabOrder = 3
+        Text = '0'
+        OnKeyDown = Edit1KeyDown
+        OnKeyPress = Edit1KeyPress
       end
     end
     object Button1: TButton
@@ -7242,7 +7224,7 @@ object frm_principal: Tfrm_principal
     StateImages = ImageList1
     TabOrder = 2
     ViewStyle = vsSmallIcon
-    OnDblClick = listaChatsDblClick
+    OnDblClick = listaContatosDblClick
   end
   object Panel2: TPanel
     AlignWithMargins = True
@@ -7585,8 +7567,8 @@ object frm_principal: Tfrm_principal
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Imagens|*jpg;*.jpg;*.bmp;*.png;*.pdf;*.mp4;*.mp3;*.rar'
-    Left = 464
-    Top = 24
+    Left = 568
+    Top = 16
   end
   object TrayIcon1: TTrayIcon
     OnClick = TrayIcon1Click

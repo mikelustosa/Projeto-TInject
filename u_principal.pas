@@ -43,17 +43,11 @@ type
     Timer1: TTimer;
     Label5: TLabel;
     GroupBox1: TGroupBox;
-    Label6: TLabel;
-    TrackBar1: TTrackBar;
     lbl_track: TLabel;
-    sw_delay: TToggleSwitch;
-    Label7: TLabel;
     InjectWhatsapp1: TInjectWhatsapp;
     OpenDialog1: TOpenDialog;
     Button1: TButton;
     Button2: TButton;
-    sw_grupos: TToggleSwitch;
-    Label3: TLabel;
     listaChats: TListView;
     Button3: TButton;
     Label4: TLabel;
@@ -69,11 +63,14 @@ type
     Image4: TImage;
     memo_unReadMessagen: TMemo;
     Image5: TImage;
+    chk_delay: TCheckBox;
+    chk_grupos: TCheckBox;
+    Label8: TLabel;
+    Edit1: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Timer1Timer(Sender: TObject);
-    procedure TrackBar1Change(Sender: TObject);
     procedure sw_delayClick(Sender: TObject);
     procedure whatsOnClick(Sender: TObject);
     procedure whatsOffClick(Sender: TObject);
@@ -94,6 +91,9 @@ type
     procedure btn_clearClick(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
     procedure Image5Click(Sender: TObject);
+    procedure Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure Edit1KeyPress(Sender: TObject; var Key: Char);
+    procedure chk_delayClick(Sender: TObject);
 
   protected
 
@@ -365,6 +365,26 @@ begin
 end;
 
 
+procedure Tfrm_principal.chk_delayClick(Sender: TObject);
+begin
+  if chk_delay.Checked = true then
+    InjectWhatsapp1.Config.ShowRandom := true else
+    InjectWhatsapp1.Config.ShowRandom := false
+end;
+
+procedure Tfrm_principal.Edit1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  injectWhatsapp1.Config.AutoDelay := strToInt(edit1.Text);
+  lbl_track.Caption := edit1.Text;
+end;
+
+procedure Tfrm_principal.Edit1KeyPress(Sender: TObject; var Key: Char);
+begin
+  if ((key in ['0'..'9'] = false) and (word(key) <> vk_back)) then
+    key := #0;
+end;
+
 procedure Tfrm_principal.Image5Click(Sender: TObject);
 begin
   InjectWhatsapp1.startQrCode;
@@ -392,7 +412,7 @@ begin
 
   for AContact in InjectWhatsapp1.AllContacts.result do
   begin
-    if sw_grupos.isON then
+    if chk_grupos.Checked = true then
     begin
      if (AContact.name = '') or (AContact.name.IsEmpty = true) then
        AddContactList(AContact.id)
@@ -465,19 +485,13 @@ end;
 
 procedure Tfrm_principal.sw_delayClick(Sender: TObject);
 begin
-  if sw_delay.IsOn then
+  if chk_delay.Checked = true then
   begin
     InjectWhatsapp1.Config.ShowRandom := true;
   end else
   begin
     InjectWhatsapp1.Config.ShowRandom := false;
   end;
-end;
-
-procedure Tfrm_principal.TrackBar1Change(Sender: TObject);
-begin
-  lbl_track.Caption := intToStr(TrackBar1.Position);
-  InjectWhatsapp1.Config.AutoDelay := TrackBar1.Position;
 end;
 
 procedure Tfrm_principal.TrayIcon1Click(Sender: TObject);
