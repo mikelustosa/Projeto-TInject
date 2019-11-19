@@ -86,12 +86,13 @@ type
     procedure SetAllChats(JsonText: String);
     procedure SetUnReadMessages(JsonText: String);
     procedure SetQrCode(JsonText: String);
+    procedure loadWEBQRCode(st: string);
 
   public
     { Public declarations }
     _Inject: TInjectWhatsapp;
     JS1: string;
-    _Qrcode: string;
+    _Qrcode, WEBQrCode: string;
     i: integer;
     vAuth: boolean;
     procedure Send(vNum, vText:string);
@@ -473,6 +474,30 @@ begin
   end;
 end;
 
+procedure Tfrm_servicesWhats.loadWEBQRCode(st: string);
+var
+  LInput: TMemoryStream;
+  LOutput: TMemoryStream;
+  stl: TStringList;
+begin
+  try
+    LInput := TMemoryStream.Create;
+    LOutput := TMemoryStream.Create;
+    stl := TStringList.Create;
+    stl.Add(copy(st, 23, length(st)));
+    stl.SaveToStream(LInput);
+
+    LInput.Position := 0;
+    TNetEncoding.Base64.Decode( LInput, LOutput );
+    LOutput.Position := 0;
+    if LOutput.size > 0 then
+      WEBQrCode := st;
+  finally
+   LInput.Free;
+   LOutput.Free;
+  end;
+end;
+
 procedure Tfrm_servicesWhats.SetQrCode(JsonText: String);
 var AQrCode: TQrCodeClass;
 var code: string;
@@ -491,8 +516,16 @@ begin
     end;
     AQrCode := TQrCodeClass.FromJsonString( JsonText );
     _Qrcode := AQrCode.result.AQrCode;
-    frm_view_qrcode.loadQRCode(_Qrcode);
-    frm_view_qrcode.Image2.visible := false;
+
+    if assigned(frm_view_qrcode) then
+    begin
+      frm_view_qrcode.loadQRCode(_Qrcode);
+      frm_view_qrcode.Image2.visible := false;
+    end else
+    begin
+      //Caso seja solicitação via API REST
+      loadWEBQRCode(_Qrcode);
+    end;
 
     //Dispara Notify
     if Assigned( OnGetQrCode ) then

@@ -20,7 +20,9 @@ type
 
   public
     { Public declarations }
+    qrCode: string;
     procedure loadQRCode(st: string);
+
   end;
 
 var
@@ -67,12 +69,22 @@ begin
     TNetEncoding.Base64.Decode( LInput, LOutput );
     LOutput.Position := 0;
     if LOutput.size > 0 then
-        Image1.Picture.LoadFromStream(LOutput);
+    //by Aurino Inoatechi 19/11/2019
+    {$IFDEF VER330}
+    //Delphi 10.3
+      Image1.Picture.LoadFromStream(LOutput);
+    {$ENDIF}
 
+    {$IFDEF VER310}
+    // Delphi 10.1
+      Image1.Picture.Bitmap.LoadFromStream(LOutput);
+    {$ENDIF}
   finally
    LInput.Free;
    LOutput.Free;
   end;
+
+  qrCode := st;
 end;
 
 procedure Tfrm_view_qrcode.Timer1Timer(Sender: TObject);
@@ -81,8 +93,7 @@ begin
  if assigned( _inject ) then
   _inject.monitorQrCode;
 
-  if not Image1.Picture.Bitmap.Empty    then
-  //if image1.Picture.Bitmap <> nil then
+  if Image1.Picture.Graphic <> nil    then
   begin
     frm_view_qrcode.Caption := 'TInject - Aponte seu celular agora!';
   end;
