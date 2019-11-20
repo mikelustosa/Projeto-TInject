@@ -30,7 +30,6 @@ type
     Chromium1: TChromium;
     Timer1: TTimer;
     Timer2: TTimer;
-    memo_js: TMemo;
     Panel1: TPanel;
     Image2: TImage;
     Image1: TImage;
@@ -81,6 +80,7 @@ type
     procedure BrowserDestroyMsg(var aMessage : TMessage); message CEF_DESTROY;
   private
     { Private declarations }
+    procedure ExecuteJS(JS: String);
     procedure LogConsoleMessage(const AMessage: String);
     procedure SetAllContacts(JsonText: String);
     procedure SetAllChats(JsonText: String);
@@ -106,6 +106,8 @@ type
     procedure loadQRCode(st: string);
     procedure ReadMessages(vID: string);
     procedure ReadMessagesAndDelete(vID: string);
+    procedure StartMonitor(Secontes: Integer);
+    procedure StopMonitor;
   end;
 
 var
@@ -340,6 +342,12 @@ begin
   end;
 end;
 
+procedure Tfrm_servicesWhats.ExecuteJS(JS: String);
+begin
+  if Chromium1.Browser <> nil then
+     Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+end;
+
 procedure Tfrm_servicesWhats.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
@@ -393,17 +401,15 @@ end;
 
 procedure Tfrm_servicesWhats.LogConsoleMessage(const AMessage: String);
 begin
-  TFile.AppendAllText(
-    ExtractFilePath(Application.ExeName) + 'ConsoleMessage.log',
-    AMessage,
-    TEncoding.ASCII);
+  TFile.AppendAllText( ExtractFilePath(Application.ExeName) + 'ConsoleMessage.log'
+    ,AMessage, TEncoding.ASCII);
 end;
 
 procedure Tfrm_servicesWhats.monitorQRCode;
 const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
 begin
   if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
+     ExecuteJS(JSQrCode);
 end;
 
 //Apenas marca como lida a mensagem
@@ -412,8 +418,7 @@ var
   js: string;
 begin
   js := 'window.WAPI.sendSeen("'+Trim(vID)+'")';
-    if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
+  ExecuteJS(js);
 end;
 
 //Marca como lida e deleta a conversa
@@ -422,13 +427,10 @@ var
   js: string;
 begin
   js := 'window.WAPI.sendSeen("'+Trim(vID)+'")';
-    if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
-
+    ExecuteJS(js);
 
   js := 'window.WAPI.deleteConversation("'+Trim(vID)+'")';
-    if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
+    ExecuteJS(js);
 end;
 
 procedure Tfrm_servicesWhats.SendBase64(vBase64, vNum, vFileName, vText: string);
@@ -447,12 +449,9 @@ begin
     vLine := vLine + Base64File[i];
   end;
   vBase64 := vLine;
-  js := 'window.WAPI.sendImage("'+Trim(vBase64)+'","'+Trim(vNum)+'", "'+Trim(vFileName)+'", "'+Trim(vText)+'")';
 
-  if Chromium1.Browser <> nil then
-  begin
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
-  end;
+  js := 'window.WAPI.sendImage("'+Trim(vBase64)+'","'+Trim(vNum)+'", "'+Trim(vFileName)+'", "'+Trim(vText)+'")';
+  ExecuteJS(js);
 
   freeAndNil(vBase64);
 end;
@@ -553,6 +552,16 @@ begin
   end;
 end;
 
+procedure Tfrm_servicesWhats.StartMonitor(Secontes: Integer);
+begin
+  ExecuteJS('startMonitor(intervalSecontes=' + IntToStr( 2 ) + ')');
+end;
+
+procedure Tfrm_servicesWhats.StopMonitor;
+begin
+  ExecuteJS('stopMonitor()');
+end;
+
 procedure Tfrm_servicesWhats.SetAllChats(JsonText: String);
 begin
   if not Assigned( _Inject ) then
@@ -572,15 +581,12 @@ end;
 
 procedure Tfrm_servicesWhats.Send(vNum, vText: string);
 var
- JS: string;
+  JS: string;
 begin
- vText := caractersWhats(vText);
+  vText := caractersWhats(vText);
 
- JS := 'window.WAPI.sendMessageToID("'+Trim(vNum)+'","'+Trim(vText)+'")';
-
- if Chromium1.Browser <> nil then
-      Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-
+  JS := 'window.WAPI.sendMessageToID("'+Trim(vNum)+'","'+Trim(vText)+'")';
+  ExecuteJS(JS);
 end;
 
 procedure Tfrm_servicesWhats.Timer1Timer(Sender: TObject);
@@ -592,40 +598,49 @@ end;
 
 procedure Tfrm_servicesWhats.Timer2Timer(Sender: TObject);
 var
-  arq: TextFile;
-  linha: string;
-  JS: string;
-  i: integer;
+  AFileName: String;
+  AJSText: TStringList;
+  AJS: string;
+const
+  cFileName = 'js.abr';
 begin
-  //Rotina para leitura e inject do arquivo js.abr ---- 12/10/2019 Mike
+  Timer2.Enabled := False;
+  try
     if vAuth = true then
     begin
-      AssignFile(arq, ExtractFilePath(Application.ExeName) + 'js.abr');
-      // desativa a diretiva de Input
-      Reset(arq);
-      // Abre o arquivo texto para leitura
-      // ativa a diretiva de Input
-      if (IOResult <> 0) then
+
+      //Buscar arquivo de carga JS
+      AFileName := ExtractFilePath(Application.ExeName) + cFileName;
+      if not FileExists( AFileName ) then
       begin
-        showmessage('Erro na leitura do arquivo js.abr. Verifique se o arquivo existe.');
-      end
-      else
-      begin
-        // verifica se o ponteiro de arquivo atingiu a marca de final de arquivo
-        while (not eof(arq)) do
-        begin
-          readln(arq, linha);
-          //Lê linha do arquivo
-          memo_js.Lines.Add(linha);
-        end;
-        CloseFile(arq);
+        Application.MessageBox(PChar('Arquivo não encontrado!'
+                                    + sLineBreak + sLineBreak
+                                    + AFileName)
+          ,'Atenção',MB_OK + MB_ICONEXCLAMATION);
+        Exit;
       end;
+
       //injeta o JS principal
-      JS := memo_js.Text;
-      Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-      timer2.Enabled := false;
+      AJSText := TStringList.Create;
+      try
+        AJSText.LoadFromFile(AFileName);
+        ExecuteJS( AJSText.Text );
+      finally
+        AJSText.Free;
+      end;
+
+      //Auto monitorar mensagens não lidas
+      if _Inject.Config.AutoMonitor then
+      begin
+        _Inject.StartMonitor;
+      end;
 
     end;
+  finally
+    //Se ainda não autenticou, mantem o timer ligado
+    //Se autenticou, desliga o timer para não executar novamente a carga do JS base
+    Timer2.Enabled := not vAuth;
+  end;
 end;
 
 end.

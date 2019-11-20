@@ -7059,6 +7059,9 @@ object frm_principal: Tfrm_principal
       Top = 28
       Width = 190
       Height = 21
+      Hint = 'DDD+Numero (550012341234) ou ID Chat(550012341234@c.us)'
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
       TextHint = 'ddd+n'#250'mero'
     end
@@ -7099,9 +7102,9 @@ object frm_principal: Tfrm_principal
       Caption = 'Configura'#231#245'es'
       TabOrder = 4
       object lbl_track: TLabel
-        Left = 144
-        Top = 125
-        Width = 90
+        Left = 119
+        Top = 158
+        Width = 58
         Height = 20
         Alignment = taRightJustify
         AutoSize = False
@@ -7115,23 +7118,23 @@ object frm_principal: Tfrm_principal
       end
       object Label8: TLabel
         Left = 12
-        Top = 107
+        Top = 139
         Width = 105
         Height = 13
         Caption = 'Random delay milisec:'
       end
       object chk_apagarMsg: TCheckBox
         Left = 12
-        Top = 68
+        Top = 88
         Width = 201
         Height = 17
         Caption = 'Apagar as mensagens ao receber'
-        TabOrder = 0
+        TabOrder = 3
         OnClick = chk_apagarMsgClick
       end
       object chk_delay: TCheckBox
         Left = 12
-        Top = 22
+        Top = 42
         Width = 165
         Height = 17
         Caption = 'Show random delay'
@@ -7140,7 +7143,7 @@ object frm_principal: Tfrm_principal
       end
       object chk_grupos: TCheckBox
         Left = 12
-        Top = 45
+        Top = 65
         Width = 149
         Height = 17
         Caption = 'S'#243' contatos de grupos'
@@ -7148,14 +7151,48 @@ object frm_principal: Tfrm_principal
       end
       object Edit1: TEdit
         Left = 12
-        Top = 126
+        Top = 158
         Width = 101
         Height = 21
         Alignment = taRightJustify
-        TabOrder = 3
+        TabOrder = 6
         Text = '0'
         OnKeyDown = Edit1KeyDown
         OnKeyPress = Edit1KeyPress
+      end
+      object chk_Monitor: TCheckBox
+        Left = 12
+        Top = 111
+        Width = 165
+        Height = 17
+        Caption = 'Monitorar mensagens n'#227'o lidas'
+        TabOrder = 4
+        OnClick = chk_MonitorClick
+      end
+      object spnTimeMonitor: TSpinEdit
+        Left = 190
+        Top = 106
+        Width = 47
+        Height = 22
+        Hint = 'Monitor - Intervalo de segundos'
+        MaxValue = 0
+        MinValue = 0
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 5
+        Value = 0
+        OnChange = spnTimeMonitorChange
+      end
+      object chk_AutoStart: TCheckBox
+        Left = 12
+        Top = 19
+        Width = 165
+        Height = 17
+        Caption = 'Auto Iniciar'
+        Checked = True
+        Enabled = False
+        State = cbChecked
+        TabOrder = 0
       end
     end
     object Button1: TButton
@@ -7548,6 +7585,7 @@ object frm_principal: Tfrm_principal
   end
   object InjectWhatsapp1: TInjectWhatsapp
     Config.AutoStart = True
+    Config.SecontesMonitor = 0
     Config.AutoDelete = False
     Config.AutoDelay = 0
     Config.SyncContacts = False

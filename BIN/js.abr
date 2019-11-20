@@ -6,6 +6,26 @@ function SetConsoleMessage(jsName, resultValue) {
   console.log( JSON.stringify(Obj) );
 }
 
+var intervalMonitor;
+
+function startMonitor(intervalSecontes=0) {
+	if (intervalSecontes >= 1) {
+		//Imediatelly
+		monitorUnReadMessages();  
+
+		//Loop time
+		intervalMonitor = window.setInterval(monitorUnReadMessages, intervalSecontes * 1000);
+  }
+}
+
+function stopMonitor() {
+  window.clearInterval(intervalMonitor)
+}
+
+function monitorUnReadMessages() {
+			WAPI.getUnreadMessages(includeMe="true", includeNotifications="true", use_unread_count="true");
+	}
+
 if (!window.Store) {
     (function () {
         function getStore(modules) {
@@ -1377,8 +1397,3 @@ window.WAPI.demoteParticipantAdminGroup = function (idGroup, idParticipant, done
         done(true); return true;
     })
 }
-
-function monitorUnReadMessages() {
-			WAPI.getUnreadMessages(includeMe="true", includeNotifications="true", use_unread_count="true");
-	}
-	window.setInterval("monitorUnReadMessages()", 2000);

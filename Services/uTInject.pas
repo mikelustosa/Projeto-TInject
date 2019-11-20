@@ -24,6 +24,8 @@ type
 
   public
     FAutoStart      : Boolean;
+    FAutoMonitor    : Boolean;
+    FSecontesMonitor: Integer;
     FAutoDelete     : Boolean;
     FAutoDelay      : Integer;
     FSyncContacts   : Boolean;
@@ -33,9 +35,13 @@ type
     procedure SetAutoDelay(const Value: integer);
     procedure SetSyncContacts(const Value: Boolean);
     procedure SetShowRandom(const Value: Boolean);
+    procedure SetAutoMonitor(const Value: boolean);
+    procedure SetSecontesMonitor(const Value: Integer);
 
   published
-    property AutoStart    : Boolean read FAutoStart write FAutoStart default False;
+    property AutoStart    : Boolean read FAutoStart    write FAutoStart            default False;
+    property AutoMonitor  : boolean read FAutoMonitor  write SetAutoMonitor          default False;
+    property SecontesMonitor: Integer read FSecontesMonitor write SetSecontesMonitor default 5;
     property AutoDelete   : Boolean read FAutoDelete   write SetAutoDelete;
     property AutoDelay    : integer read FAutoDelay    write SetAutoDelay;
     property SyncContacts : Boolean read FSyncContacts write SetSyncContacts;
@@ -60,7 +66,8 @@ type
     FOnGetStatus          : TNotifyEvent;
     FContacts             : String;
     FMySubComp1           : TMySubComp;
-    FAuth                 : boolean;
+    FAuth                 : Boolean;
+    FMonitoring           : Boolean;
   public
     const emoticonSorridente       = '😄';
     const emoticonSorridenteLingua = '😝';
@@ -144,6 +151,8 @@ type
     procedure startQrCode;
     procedure monitorQrCode;
     procedure startWhatsapp;
+    procedure StartMonitor;
+    procedure StopMonitor;
     procedure ShowWebApp;
     procedure send(vNum, vMess: string);
     procedure sendBase64(vBase64, vNum, vFileName, vMess: string);
@@ -156,6 +165,7 @@ type
     property AQrCode: TQrCodeClass read FResult write FResult;
     property AllChats: TChatList read FAllChats write FAllChats;
     property Auth: boolean read FAuth write SetAuth;
+    property Monitoring: Boolean read FMonitoring default False;
   published
     { Published declarations }
     property Config               : TMySubComp read FMySubComp1;
@@ -188,6 +198,22 @@ begin
   vAutoDelete := FAutoDelete;
 end;
 
+procedure TMySubComp.SetAutoMonitor(const Value: boolean);
+begin
+  FAutoMonitor := Value;
+  if SecontesMonitor < 1 then
+     SecontesMonitor := 5; //Default Value;
+end;
+
+procedure TMySubComp.SetSecontesMonitor(const Value: Integer);
+begin
+  FSecontesMonitor := Value;
+
+  //Não permitir que fique zero ou negativo.
+  if Value < 1 then
+     FSecontesMonitor := 1;
+end;
+
 procedure TMySubComp.SetShowRandom(const Value: Boolean);
 begin
   FShowRandom := value;
@@ -208,7 +234,7 @@ end;
 
 constructor TInjectWhatsapp.Create(AOwner: TComponent);
 begin
-  inherited;
+  inherited Create(AOwner);
   FMySubComp1 := TMySubComp.Create(self);
   FMySubComp1.Name := 'AutoInject';
   FMySubComp1.SetSubComponent(true);
@@ -420,6 +446,28 @@ procedure TInjectWhatsapp.ShowWebApp;
 begin
   startWhatsapp;
   frm_servicesWhats.Show;
+end;
+
+procedure TInjectWhatsapp.StartMonitor;
+begin
+  if FMonitoring then Exit;
+
+  if Assigned(frm_servicesWhats) then
+  begin
+    FMonitoring := not Monitoring;
+    frm_servicesWhats.StartMonitor( Config.SecontesMonitor );
+  end;
+end;
+
+procedure TInjectWhatsapp.StopMonitor;
+begin
+  if not FMonitoring then Exit;
+
+  if Assigned(frm_servicesWhats) then
+  begin
+    FMonitoring := not Monitoring;
+    frm_servicesWhats.StopMonitor;
+  end;
 end;
 
 procedure TInjectWhatsapp.startQrCode;
