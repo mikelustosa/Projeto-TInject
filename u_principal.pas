@@ -40,7 +40,6 @@ type
     Image2: TImage;
     whatsOff: TImage;
     whatsOn: TImage;
-    Timer1: TTimer;
     Label5: TLabel;
     GroupBox1: TGroupBox;
     lbl_track: TLabel;
@@ -70,7 +69,6 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure Timer1Timer(Sender: TObject);
     procedure sw_delayClick(Sender: TObject);
     procedure whatsOnClick(Sender: TObject);
     procedure whatsOffClick(Sender: TObject);
@@ -94,6 +92,7 @@ type
     procedure Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
     procedure chk_delayClick(Sender: TObject);
+    procedure InjectWhatsapp1GetStatus(Sender: TObject);
 
   protected
 
@@ -173,7 +172,6 @@ end;
 
 procedure Tfrm_principal.FormShow(Sender: TObject);
 begin
-  timer1.Enabled := true;
   lbl_diaSemana.Caption := diaSemana(date);
 end;
 
@@ -422,6 +420,12 @@ begin
   end;
 end;
 
+procedure Tfrm_principal.InjectWhatsapp1GetStatus(Sender: TObject);
+begin
+  whatsOn.Visible  := InjectWhatsapp1.Auth;
+  whatsOff.Visible := not InjectWhatsapp1.Auth;
+end;
+
 procedure Tfrm_principal.InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
 var
   AChat: TChatClass;
@@ -460,22 +464,6 @@ end;
 procedure Tfrm_principal.listaContatosDblClick(Sender: TObject);
 begin
   ed_num.Text := InjectWhatsapp1.AllContacts.result[ listaContatos.Selected.Index ].id;
-end;
-
-procedure Tfrm_principal.Timer1Timer(Sender: TObject);
-begin
-  if Assigned(frm_servicesWhats) then
-  begin
-    if frm_servicesWhats.vAuth = true then
-    begin
-      whatsOn.Visible := true;
-      whatsOff.Visible := false;
-    end else
-    begin
-      whatsOff.Visible := true;
-      whatsOn.Visible := false;
-    end;
-  end;
 end;
 
 procedure Tfrm_principal.Timer2Timer(Sender: TObject);

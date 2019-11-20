@@ -45,6 +45,7 @@ type
 
   TInjectWhatsapp = class(TComponent)
   private
+    procedure SetAuth(const Value: boolean);
     { Private declarations }
   protected
     { Protected declarations }
@@ -154,7 +155,7 @@ type
     property AllContacts: TRetornoAllContacts read FAllContacts write FAllContacts;
     property AQrCode: TQrCodeClass read FResult write FResult;
     property AllChats: TChatList read FAllChats write FAllChats;
-    property Auth: boolean read FAuth write FAuth;
+    property Auth: boolean read FAuth write SetAuth;
   published
     { Published declarations }
     property Config               : TMySubComp read FMySubComp1;
@@ -253,6 +254,8 @@ begin
 //      end);
 //  FActivityStatusThread.FreeOnTerminate := False;
 //  FActivityStatusThread.Start;
+
+  Result := FAuth;
 end;
 
 function TInjectWhatsapp.GetUnReadMessages: String;
@@ -404,6 +407,13 @@ begin
       end);
   FActivitySendBase64Thread.FreeOnTerminate := False;
   FActivitySendBase64Thread.Start;
+end;
+
+procedure TInjectWhatsapp.SetAuth(const Value: boolean);
+begin
+  FAuth := Value;
+  if Assigned( OnGetStatus ) then
+     OnGetStatus( Self );
 end;
 
 procedure TInjectWhatsapp.ShowWebApp;

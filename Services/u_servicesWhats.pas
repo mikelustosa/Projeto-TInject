@@ -321,7 +321,7 @@ begin
   if i > 3 then
   begin
     vAuth := true;
-    //_Inject.Auth := true
+    _Inject.Auth := true
   end;
 end;
 

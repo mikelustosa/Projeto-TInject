@@ -7546,13 +7546,6 @@ object frm_principal: Tfrm_principal
       E00FFFFFFE010000F83FFFFFFE03000000000000000000000000000000000000
       000000000000}
   end
-  object Timer1: TTimer
-    Enabled = False
-    Interval = 4000
-    OnTimer = Timer1Timer
-    Left = 672
-    Top = 80
-  end
   object InjectWhatsapp1: TInjectWhatsapp
     Config.AutoStart = True
     Config.AutoDelete = False
@@ -7562,6 +7555,7 @@ object frm_principal: Tfrm_principal
     OnGetContactList = InjectWhatsapp1GetContactList
     OnGetChatList = InjectWhatsapp1GetChatList
     OnGetUnReadMessages = InjectWhatsapp1GetUnReadMessages
+    OnGetStatus = InjectWhatsapp1GetStatus
     Left = 664
     Top = 168
   end
