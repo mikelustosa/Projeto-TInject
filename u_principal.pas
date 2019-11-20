@@ -69,6 +69,7 @@ type
     chk_Monitor: TCheckBox;
     spnTimeMonitor: TSpinEdit;
     chk_AutoStart: TCheckBox;
+    Label3: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -389,8 +390,16 @@ end;
 procedure Tfrm_principal.chk_MonitorClick(Sender: TObject);
 begin
   case chk_Monitor.Checked of
-    True : InjectWhatsapp1.StartMonitor;
-    False: InjectWhatsapp1.StopMonitor;
+    True :
+    begin
+     InjectWhatsapp1.StartMonitor;
+     spnTimeMonitor.Enabled := true;
+    end;
+    False:
+    begin
+      InjectWhatsapp1.StopMonitor;
+      spnTimeMonitor.Enabled := false;
+    end;
   end;
 end;
 
