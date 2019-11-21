@@ -71,12 +71,17 @@ begin
     if LOutput.size > 0 then
     //by Aurino Inovatechi 19/11/2019
     {$IFDEF VER330}
-    //Delphi 10.3
+    //Delphi 10.3 RIO
       Image1.Picture.LoadFromStream(LOutput);
     {$ENDIF}
 
     {$IFDEF VER310}
-    // Delphi 10.1
+    // Delphi 10.1 Berlin
+      Image1.Picture.Bitmap.LoadFromStream(LOutput);
+    {$ENDIF}
+
+    {$IFDEF VER300}
+    // Delphi 10 seattle
       Image1.Picture.Bitmap.LoadFromStream(LOutput);
     {$ENDIF}
   finally
