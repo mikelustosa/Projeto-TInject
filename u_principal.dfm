@@ -6745,9 +6745,9 @@ object frm_principal: Tfrm_principal
     object Label9: TLabel
       Left = 709
       Top = 57
-      Width = 102
+      Width = 161
       Height = 19
-      Caption = 'ChatBot Demo'
+      Caption = 'ChatBot Demo By Mike'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -16
@@ -7059,9 +7059,6 @@ object frm_principal: Tfrm_principal
       Top = 28
       Width = 190
       Height = 21
-      Hint = 'DDD+Numero (550012341234) ou ID Chat(550012341234@c.us)'
-      ParentShowHint = False
-      ShowHint = True
       TabOrder = 0
       TextHint = 'ddd+n'#250'mero'
     end
@@ -7095,17 +7092,18 @@ object frm_principal: Tfrm_principal
       OnClick = Button4Click
     end
     object GroupBox1: TGroupBox
-      Left = 399
+      Left = 423
       Top = 9
-      Width = 305
+      Width = 242
       Height = 190
       Caption = 'Configura'#231#245'es'
       TabOrder = 4
       object lbl_track: TLabel
-        Left = 123
-        Top = 156
-        Width = 102
+        Left = 144
+        Top = 125
+        Width = 90
         Height = 20
+        Alignment = taRightJustify
         AutoSize = False
         Caption = '0'
         Font.Charset = DEFAULT_CHARSET
@@ -7117,36 +7115,23 @@ object frm_principal: Tfrm_principal
       end
       object Label8: TLabel
         Left = 12
-        Top = 139
+        Top = 107
         Width = 105
         Height = 13
         Caption = 'Random delay milisec:'
       end
-      object Label3: TLabel
-        Left = 239
-        Top = 94
-        Width = 52
-        Height = 11
-        Caption = 'Milisegundos'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -9
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-      end
       object chk_apagarMsg: TCheckBox
         Left = 12
-        Top = 88
+        Top = 68
         Width = 201
         Height = 17
         Caption = 'Apagar as mensagens ao receber'
-        TabOrder = 3
+        TabOrder = 0
         OnClick = chk_apagarMsgClick
       end
       object chk_delay: TCheckBox
         Left = 12
-        Top = 42
+        Top = 22
         Width = 165
         Height = 17
         Caption = 'Show random delay'
@@ -7155,7 +7140,7 @@ object frm_principal: Tfrm_principal
       end
       object chk_grupos: TCheckBox
         Left = 12
-        Top = 65
+        Top = 45
         Width = 149
         Height = 17
         Caption = 'S'#243' contatos de grupos'
@@ -7163,49 +7148,14 @@ object frm_principal: Tfrm_principal
       end
       object Edit1: TEdit
         Left = 12
-        Top = 158
+        Top = 126
         Width = 101
         Height = 21
         Alignment = taRightJustify
-        TabOrder = 6
+        TabOrder = 3
         Text = '0'
         OnKeyDown = Edit1KeyDown
         OnKeyPress = Edit1KeyPress
-      end
-      object chk_Monitor: TCheckBox
-        Left = 12
-        Top = 111
-        Width = 213
-        Height = 17
-        Caption = 'Monitorar mensagens n'#227'o lidas(chatbots)'
-        TabOrder = 4
-        OnClick = chk_MonitorClick
-      end
-      object spnTimeMonitor: TSpinEdit
-        Left = 239
-        Top = 108
-        Width = 47
-        Height = 22
-        Hint = 'Monitor - Intervalo de segundos'
-        Enabled = False
-        MaxValue = 0
-        MinValue = 0
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 5
-        Value = 0
-        OnChange = spnTimeMonitorChange
-      end
-      object chk_AutoStart: TCheckBox
-        Left = 12
-        Top = 19
-        Width = 165
-        Height = 17
-        Caption = 'Auto Iniciar'
-        Checked = True
-        Enabled = False
-        State = cbChecked
-        TabOrder = 0
       end
     end
     object Button1: TButton
@@ -7598,7 +7548,6 @@ object frm_principal: Tfrm_principal
   end
   object InjectWhatsapp1: TInjectWhatsapp
     Config.AutoStart = True
-    Config.SecontesMonitor = 1
     Config.AutoDelete = False
     Config.AutoDelay = 0
     Config.SyncContacts = False

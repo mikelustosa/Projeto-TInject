@@ -28,6 +28,14 @@ object frm_servicesWhats: Tfrm_servicesWhats
     Align = alClient
     TabOrder = 0
   end
+  object memo_js: TMemo
+    Left = 8
+    Top = 61
+    Width = 193
+    Height = 57
+    TabOrder = 1
+    Visible = False
+  end
   object Panel1: TPanel
     AlignWithMargins = True
     Left = 3
@@ -36,7 +44,7 @@ object frm_servicesWhats: Tfrm_servicesWhats
     Height = 33
     Align = alTop
     ParentBackground = False
-    TabOrder = 1
+    TabOrder = 2
     object Image2: TImage
       Left = 1
       Top = 1

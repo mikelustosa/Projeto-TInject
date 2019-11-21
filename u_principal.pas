@@ -14,7 +14,7 @@ uses
   uCEFApplication, uCefMiscFunctions, uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, uTInject,
   Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.WinXCtrls, System.NetEncoding,
-  Vcl.Imaging.jpeg, Vcl.AppEvnts, Vcl.Samples.Spin;
+  Vcl.Imaging.jpeg, Vcl.AppEvnts;
 
   //############ ATENÇÃO AQUI ####################
   //############ ATENÇÃO AQUI ####################
@@ -66,10 +66,6 @@ type
     chk_grupos: TCheckBox;
     Label8: TLabel;
     Edit1: TEdit;
-    chk_Monitor: TCheckBox;
-    spnTimeMonitor: TSpinEdit;
-    chk_AutoStart: TCheckBox;
-    Label3: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
@@ -97,8 +93,6 @@ type
     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
     procedure chk_delayClick(Sender: TObject);
     procedure InjectWhatsapp1GetStatus(Sender: TObject);
-    procedure chk_MonitorClick(Sender: TObject);
-    procedure spnTimeMonitorChange(Sender: TObject);
 
   protected
 
@@ -139,11 +133,8 @@ type
 
     procedure AddContactList(ANumber: String);
     procedure AddChatList(ANumber: String);
-    procedure SetConfigs;
-    procedure LoadConfigs;
-  end;
 
-  function DiaSemana(Data:TDateTime): String;
+  end;
 
 var
   frm_principal: Tfrm_principal;
@@ -173,34 +164,10 @@ begin
   DiaSemana:=DiaDasemana[NoDia];
 end;
 
-procedure Tfrm_principal.SetConfigs;
-begin
-  //Revisar o porque que as definições em .dfm não estão se mantendo
-  //Esse trexo esta aqui por esse motivo.
-  InjectWhatsapp1.Config.AutoStart    := chk_AutoStart.Checked;
-  InjectWhatsapp1.Config.ShowRandom   := chk_delay.Checked;
-  injectWhatsapp1.Config.AutoDelete   := chk_apagarMsg.Checked;
-  injectWhatsapp1.Config.AutoMonitor  := chk_Monitor.Checked;
-  InjectWhatsapp1.Config.SecontesMonitor := spnTimeMonitor.Value;
-end;
-
-procedure Tfrm_principal.LoadConfigs;
-begin
-  chk_AutoStart.Checked := InjectWhatsapp1.Config.AutoStart;
-  chk_delay.Checked     := InjectWhatsapp1.Config.ShowRandom;
-  chk_apagarMsg.Checked := injectWhatsapp1.Config.FAutoDelete;
-  chk_Monitor.Checked   := (injectWhatsapp1.Config.AutoMonitor) or (injectWhatsapp1.Monitoring);
-  spnTimeMonitor.Value  := InjectWhatsapp1.Config.SecontesMonitor;
-end;
-
 procedure Tfrm_principal.FormCreate(Sender: TObject);
 begin
   idMessageGlobal := 'start';
-
-  SetConfigs;
-  if InjectWhatsapp1.Config.AutoStart then
-     InjectWhatsapp1.startWhatsapp;
-  LoadConfigs;
+  InjectWhatsapp1.startWhatsapp;
 end;
 
 procedure Tfrm_principal.FormShow(Sender: TObject);
@@ -387,48 +354,26 @@ begin
   InjectWhatsapp1.getAllContacts;
 end;
 
-procedure Tfrm_principal.chk_MonitorClick(Sender: TObject);
-begin
-  case chk_Monitor.Checked of
-    True :
-    begin
-     InjectWhatsapp1.StartMonitor;
-     spnTimeMonitor.Enabled := true;
-    end;
-    False:
-    begin
-      InjectWhatsapp1.StopMonitor;
-      spnTimeMonitor.Enabled := false;
-    end;
-  end;
-end;
-
-procedure Tfrm_principal.spnTimeMonitorChange(Sender: TObject);
-begin
-  InjectWhatsapp1.Config.SecontesMonitor := spnTimeMonitor.Value;
-
-  //Restarting
-  if InjectWhatsapp1.Monitoring then
-  begin
-    InjectWhatsapp1.StopMonitor;
-    InjectWhatsapp1.StartMonitor;
-  end;
-end;
-
 procedure Tfrm_principal.chk_apagarMsgClick(Sender: TObject);
 begin
-  injectWhatsapp1.Config.FAutoDelete := chk_apagarMsg.Checked
+ if chk_apagarMsg.Checked then
+  injectWhatsapp1.Config.FAutoDelete := true
+ else
+  injectWhatsapp1.Config.FAutoDelete := false;
 end;
+
 
 procedure Tfrm_principal.chk_delayClick(Sender: TObject);
 begin
-  InjectWhatsapp1.Config.ShowRandom := chk_delay.Checked;
+  if chk_delay.Checked = true then
+    InjectWhatsapp1.Config.ShowRandom := true else
+    InjectWhatsapp1.Config.ShowRandom := false
 end;
 
 procedure Tfrm_principal.Edit1KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  injectWhatsapp1.Config.AutoDelay := strToIntDef(edit1.Text,0);
+  injectWhatsapp1.Config.AutoDelay := strToInt(edit1.Text);
   lbl_track.Caption := edit1.Text;
 end;
 
