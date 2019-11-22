@@ -30,9 +30,9 @@ object frm_servicesWhats: Tfrm_servicesWhats
   end
   object memo_js: TMemo
     Left = 8
-    Top = 61
+    Top = 42
     Width = 193
-    Height = 57
+    Height = 20
     TabOrder = 1
     Visible = False
   end
@@ -279,7 +279,14 @@ object frm_servicesWhats: Tfrm_servicesWhats
   object Timer2: TTimer
     Interval = 4000
     OnTimer = Timer2Timer
-    Left = 296
+    Left = 208
     Top = 40
+  end
+  object inject_prov: TTimer
+    Enabled = False
+    Interval = 100
+    OnTimer = inject_provTimer
+    Left = 136
+    Top = 112
   end
 end

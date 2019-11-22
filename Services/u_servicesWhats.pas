@@ -16,13 +16,16 @@ uses
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
   Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json, uClasses, uTInject, u_view_qrcode, Vcl.Imaging.jpeg;
 
+  //uCEFChromiumCore
+
   var
    vContacts :Array of String;
-
+   cont_inject: integer = 0;
   const
     CEFBROWSER_CREATED          = WM_APP + $100;
     CEFBROWSER_CHILDDESTROYED   = WM_APP + $101;
     CEFBROWSER_DESTROY          = WM_APP + $102;
+    URLWHATS                    = 'https://web.whatsapp.com';
 
 type
   Tfrm_servicesWhats = class(TForm)
@@ -35,6 +38,7 @@ type
     Image2: TImage;
     Image1: TImage;
     Label1: TLabel;
+    inject_prov: TTimer;
     procedure Timer1Timer(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
     procedure Chromium1AfterCreated(Sender: TObject;
@@ -66,6 +70,7 @@ type
     procedure Chromium1ConsoleMessage(Sender: TObject;
       const browser: ICefBrowser; level: Cardinal; const message,
       source: ustring; line: Integer; out Result: Boolean);
+    procedure inject_provTimer(Sender: TObject);
   protected
    // Variáveis para controlar quando podemos destruir o formulário com segurança
     FCanClose : boolean;  // Defina como True em TChromium.OnBeforeClose
@@ -106,6 +111,11 @@ type
     procedure loadQRCode(st: string);
     procedure ReadMessages(vID: string);
     procedure ReadMessagesAndDelete(vID: string);
+
+
+  protected
+    procedure BrowserCreatedMsg(var aMessage : TMessage); message CEF_AFTERCREATED;
+
   end;
 
 var
@@ -155,6 +165,12 @@ begin
   vText := StringReplace((vText), '"','\"',[rfReplaceAll]);
   vText := StringReplace((vText), #$A, '', [rfReplaceAll]);
   Result := vText;
+end;
+
+procedure Tfrm_servicesWhats.BrowserCreatedMsg(var aMessage: TMessage);
+begin
+  CEFWindowParent1.UpdateSize;
+  Chromium1.LoadURL(URLWHATS);
 end;
 
 procedure Tfrm_servicesWhats.BrowserDestroyMsg(var aMessage : TMessage);
@@ -364,10 +380,10 @@ procedure Tfrm_servicesWhats.FormCreate(Sender: TObject);
 begin
   FCanClose := False;
   FClosing  := False;
-  Chromium1.DefaultURL := 'https://web.whatsapp.com/';
   vAuth := false;
 
-  if not(Chromium1.CreateBrowser(CEFWindowParent1)) then Timer1.Enabled := True;
+  if not (Chromium1.CreateBrowser(CEFWindowParent1)) then
+    Timer1.Enabled := True;
 end;
 
 procedure Tfrm_servicesWhats.FormDestroy(Sender: TObject);
@@ -383,6 +399,19 @@ end;
 procedure Tfrm_servicesWhats.Image1Click(Sender: TObject);
 begin
   frm_servicesWhats.Hide;
+end;
+
+procedure Tfrm_servicesWhats.inject_provTimer(Sender: TObject);
+var JS: string;
+begin
+  if cont_inject > 4 then
+  begin
+    inject_prov.Enabled := false;
+  end;
+
+  JS := memo_js.Text;
+  Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+  cont_inject := cont_inject + 1;
 end;
 
 procedure Tfrm_servicesWhats.loadQRCode(st: string);
@@ -587,7 +616,7 @@ procedure Tfrm_servicesWhats.Timer1Timer(Sender: TObject);
 begin
   Timer1.Enabled := False;
   if not(Chromium1.CreateBrowser(CEFWindowParent1)) and not(Chromium1.Initialized) then
-    Timer1.Enabled := True;
+    Timer2.Enabled := True;
 end;
 
 procedure Tfrm_servicesWhats.Timer2Timer(Sender: TObject);
@@ -621,10 +650,10 @@ begin
         CloseFile(arq);
       end;
       //injeta o JS principal
-      JS := memo_js.Text;
-      Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+//      JS := memo_js.Text;
+//      Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
       timer2.Enabled := false;
-
+      inject_prov.Enabled := true;
     end;
 end;
 

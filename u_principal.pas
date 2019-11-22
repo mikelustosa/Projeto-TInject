@@ -21,10 +21,10 @@ uses
   //############ ATENÇÃO AQUI ####################
   //############ Inclua essas variáveis em seus projetos
   //Constantes obrigatórias para controle do destroy do TChromium
-  const
-  CEFBROWSER_CREATED          = WM_APP + $100;
-  CEFBROWSER_CHILDDESTROYED   = WM_APP + $101;
-  CEFBROWSER_DESTROY          = WM_APP + $102;
+//  const
+//  CEFBROWSER_CREATED          = WM_APP + $100;
+//  CEFBROWSER_CHILDDESTROYED   = WM_APP + $101;
+//  CEFBROWSER_DESTROY          = WM_APP + $102;
 
 type
   Tfrm_principal = class(TForm)
