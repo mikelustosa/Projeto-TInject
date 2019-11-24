@@ -1,0 +1,6 @@
+1.0.4.0
+Correções:
+-Adicionado variável de ambiente no u_view_qrcode
+-Correção de mensagens repetidas
+
+-------------------------------------------------------------------------

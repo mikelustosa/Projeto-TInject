@@ -19,7 +19,6 @@ uses
 type
   {Events}
   TGetUnReadMessages = procedure(Chats: TChatList) of object;
-
   TMySubComp = class(TComponent)
 
   public
@@ -45,7 +44,6 @@ type
 
   TInjectWhatsapp = class(TComponent)
   private
-    procedure SetAuth(const Value: boolean);
     { Private declarations }
   protected
     { Protected declarations }
@@ -155,7 +153,7 @@ type
     property AllContacts: TRetornoAllContacts read FAllContacts write FAllContacts;
     property AQrCode: TQrCodeClass read FResult write FResult;
     property AllChats: TChatList read FAllChats write FAllChats;
-    property Auth: boolean read FAuth write SetAuth;
+    property Auth: boolean read FAuth write FAuth;
   published
     { Published declarations }
     property Config               : TMySubComp read FMySubComp1;
@@ -209,7 +207,7 @@ end;
 constructor TInjectWhatsapp.Create(AOwner: TComponent);
 begin
   inherited;
-  FMySubComp1 := TMySubComp.Create(self);
+  FMySubComp1      := TMySubComp.Create(self);
   FMySubComp1.Name := 'AutoInject';
   FMySubComp1.SetSubComponent(true);
 
@@ -234,28 +232,8 @@ end;
 
 function TInjectWhatsapp.GetStatus: Boolean;
 begin
-//   FActivityStatusThread := TThread.CreateAnonymousThread(procedure
-//      var vGetDelay: integer;
-//      begin
-//        try
-//          TThread.Synchronize(nil, procedure
-//          begin
-//            if Assigned(frm_servicesWhats) then
-//            begin
-//              frm_servicesWhats.GetStatus;
-//            end;
-//          end);
-//
-//          finally
-//          begin
-//
-//          end;
-//        end;
-//      end);
-//  FActivityStatusThread.FreeOnTerminate := False;
-//  FActivityStatusThread.Start;
-
-  Result := FAuth;
+  //if Assigned(frm_servicesWhats) then
+  //  frm_servicesWhats.GetStatus;
 end;
 
 function TInjectWhatsapp.GetUnReadMessages: String;
@@ -291,7 +269,7 @@ begin
           end;
         end;
       end);
-  FActivityGetMessagesThread.FreeOnTerminate := False;
+  FActivityGetMessagesThread.FreeOnTerminate := true;
   FActivityGetMessagesThread.Start;
 end;
 
@@ -320,11 +298,8 @@ begin
   FActivitySendThread := TThread.CreateAnonymousThread(procedure
       var vGetDelay: integer;
       begin
-        try
-
-          vGetDelay := random(vDelay);
-
-          sleep(vGetDelay);
+        vGetDelay := random(vDelay);
+        sleep(vGetDelay);
 
           TThread.Synchronize(nil, procedure
           begin
@@ -351,25 +326,17 @@ begin
             end;
           end);
 
-          finally
-          begin
-
-          end;
-        end;
       end);
-  FActivitySendThread.FreeOnTerminate := False;
+  FActivitySendThread.FreeOnTerminate := true;
   FActivitySendThread.Start;
 end;
 
 procedure TInjectWhatsapp.sendBase64(vBase64, vNum, vFileName, vMess: string);
-var
-  AId: String;
 begin
   inherited;
   FActivitySendBase64Thread := TThread.CreateAnonymousThread(procedure
       var vGetDelay: integer;
       begin
-        try
           vGetDelay := random(vDelay);
           sleep(vGetDelay);
 
@@ -377,17 +344,7 @@ begin
           begin
             if Assigned(frm_servicesWhats) then
             begin
-              if (length(vNum) = 10) or (length(vNum) = 11) then
-              begin
-                frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
-                frm_servicesWhats.sendBase64(vBase64,'55'+vNum+'@c.us', vFileName, vMess);
-              end else
-                begin
-                  AId := vNum;
-                  frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
-                  frm_servicesWhats.Send(AId, vMess);
-                  frm_servicesWhats.sendBase64(vBase64, AId, vFileName, vMess);
-                end;
+              frm_servicesWhats.sendBase64(vBase64,'55'+vNum+'@c.us', vFileName, vMess);
             end;
           end);
 
@@ -398,22 +355,9 @@ begin
               showMessage('Random: '+vGetDelay.ToString+' ms');
             end;
           end);
-
-          finally
-          begin
-
-          end;
-        end;
       end);
-  FActivitySendBase64Thread.FreeOnTerminate := False;
+  FActivitySendBase64Thread.FreeOnTerminate := true;
   FActivitySendBase64Thread.Start;
-end;
-
-procedure TInjectWhatsapp.SetAuth(const Value: boolean);
-begin
-  FAuth := Value;
-  if Assigned( OnGetStatus ) then
-     OnGetStatus( Self );
 end;
 
 procedure TInjectWhatsapp.ShowWebApp;

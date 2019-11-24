@@ -59,7 +59,7 @@ var
   stl: TStringList;
 begin
   try
-    LInput := TMemoryStream.Create;
+    LInput  := TMemoryStream.Create;
     LOutput := TMemoryStream.Create;
     stl := TStringList.Create;
     stl.Add(copy(st, 23, length(st)));
@@ -73,10 +73,7 @@ begin
     {$IFDEF VER330}
     //Delphi 10.3
       Image1.Picture.LoadFromStream(LOutput);
-    {$ENDIF}
-
-    {$IFDEF VER310}
-    // Delphi 10.1
+    {$ELSE}
       Image1.Picture.Bitmap.LoadFromStream(LOutput);
     {$ENDIF}
   finally

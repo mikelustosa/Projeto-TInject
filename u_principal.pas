@@ -32,32 +32,20 @@ type
     Label1: TLabel;
     Label2: TLabel;
     ed_num: TEdit;
-    ImageList1: TImageList;
     Image1: TImage;
     Button6: TButton;
     mem_message: TMemo;
-    Button4: TButton;
     Image2: TImage;
     whatsOff: TImage;
     whatsOn: TImage;
-    Label5: TLabel;
     GroupBox1: TGroupBox;
     lbl_track: TLabel;
     InjectWhatsapp1: TInjectWhatsapp;
     OpenDialog1: TOpenDialog;
     Button1: TButton;
-    Button2: TButton;
-    listaChats: TListView;
-    Button3: TButton;
-    Label4: TLabel;
-    Image3: TImage;
     chk_apagarMsg: TCheckBox;
-    Label9: TLabel;
     TrayIcon1: TTrayIcon;
     ApplicationEvents1: TApplicationEvents;
-    Timer2: TTimer;
-    lbl_diaSemana: TLabel;
-    listaContatos: TListView;
     Panel2: TPanel;
     Image4: TImage;
     memo_unReadMessagen: TMemo;
@@ -66,14 +54,24 @@ type
     chk_grupos: TCheckBox;
     Label8: TLabel;
     Edit1: TEdit;
+    ButtonSelecionarArquivo: TButton;
+    LabelFileNamePath: TLabel;
+    Label9: TLabel;
+    Label5: TLabel;
+    ImageList1: TImageList;
+    Panel3: TPanel;
+    listaContatos: TListView;
+    Button2: TButton;
+    Panel4: TPanel;
+    listaChats: TListView;
+    Button3: TButton;
+    Timer1: TTimer;
     procedure FormCreate(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure sw_delayClick(Sender: TObject);
     procedure whatsOnClick(Sender: TObject);
     procedure whatsOffClick(Sender: TObject);
     procedure Button6Click(Sender: TObject);
-    procedure Button4Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure InjectWhatsapp1GetContactList(Sender: TObject);
@@ -87,12 +85,15 @@ type
     procedure TrayIcon1Click(Sender: TObject);
     procedure ApplicationEvents1Minimize(Sender: TObject);
     procedure btn_clearClick(Sender: TObject);
-    procedure Timer2Timer(Sender: TObject);
     procedure Image5Click(Sender: TObject);
-    procedure Edit1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
     procedure chk_delayClick(Sender: TObject);
     procedure InjectWhatsapp1GetStatus(Sender: TObject);
+    procedure Edit1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure ButtonSelecionarArquivoClick(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
+    procedure FormShow(Sender: TObject);
 
   protected
 
@@ -146,24 +147,6 @@ uses
 
 {$R *.dfm}
 
-function DiaSemana(Data:TDateTime): String;
-{Retorna dia da semana}
-var
-  NoDia : Integer;
-  DiaDaSemana : array [1..7] of String[13];
-begin
-{ Dias da Semana }
-  DiaDasemana [1]:= 'Domingo';
-  DiaDasemana [2]:= 'Segunda-feira';
-  DiaDasemana [3]:= 'Terça-feira';
-  DiaDasemana [4]:= 'Quarta-feira';
-  DiaDasemana [5]:= 'Quinta-feira';
-  DiaDasemana [6]:= 'Sexta-feira';
-  DiaDasemana [7]:= 'Sábado';
-  NoDia:=DayOfWeek(Data);
-  DiaSemana:=DiaDasemana[NoDia];
-end;
-
 procedure Tfrm_principal.FormCreate(Sender: TObject);
 begin
   idMessageGlobal := 'start';
@@ -172,7 +155,7 @@ end;
 
 procedure Tfrm_principal.FormShow(Sender: TObject);
 begin
-  lbl_diaSemana.Caption := diaSemana(date);
+  timer1.Enabled := true;
 end;
 
 procedure Tfrm_principal.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -290,6 +273,28 @@ begin
 end;
 
 procedure Tfrm_principal.Button4Click(Sender: TObject);
+begin
+//
+end;
+
+procedure Tfrm_principal.Button6Click(Sender: TObject);
+begin
+  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
+  begin
+    application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
+    abort;
+  end;
+
+  InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
+  application.MessageBox('Mensagem enviada com sucesso!','TInject', mb_iconAsterisk + mb_ok);
+end;
+
+procedure Tfrm_principal.Button7Click(Sender: TObject);
+begin
+  InjectWhatsapp1.GetUnReadMessages;
+end;
+
+procedure Tfrm_principal.ButtonSelecionarArquivoClick(Sender: TObject);
 var
   vFilestream: TMemoryStream;
 begin
@@ -322,26 +327,10 @@ begin
           begin
             vBase64Str := 'data:image/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
           end;
-
+    LabelFileNamePath.Caption := openDialog1.FileName;
     vFilestream.Free;
   end;
-end;
 
-procedure Tfrm_principal.Button6Click(Sender: TObject);
-begin
-  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
-  begin
-    application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
-    abort;
-  end;
-
-  InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
-  application.MessageBox('Mensage enviada com sucesso!','TInject', mb_iconAsterisk + mb_ok);
-end;
-
-procedure Tfrm_principal.Button7Click(Sender: TObject);
-begin
-  InjectWhatsapp1.GetUnReadMessages;
 end;
 
 procedure Tfrm_principal.CarregarChats;
@@ -370,17 +359,23 @@ begin
     InjectWhatsapp1.Config.ShowRandom := false
 end;
 
-procedure Tfrm_principal.Edit1KeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  injectWhatsapp1.Config.AutoDelay := strToInt(edit1.Text);
-  lbl_track.Caption := edit1.Text;
-end;
-
 procedure Tfrm_principal.Edit1KeyPress(Sender: TObject; var Key: Char);
 begin
   if ((key in ['0'..'9'] = false) and (word(key) <> vk_back)) then
     key := #0;
+end;
+
+procedure Tfrm_principal.Edit1KeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if edit1.Text = '' then
+  begin
+    edit1.Text := '0';
+  end else
+  begin
+    injectWhatsapp1.Config.AutoDelay := strToInt(edit1.Text);
+    lbl_track.Caption := edit1.Text;
+  end;
 end;
 
 procedure Tfrm_principal.Image5Click(Sender: TObject);
@@ -466,11 +461,6 @@ begin
   ed_num.Text := InjectWhatsapp1.AllContacts.result[ listaContatos.Selected.Index ].id;
 end;
 
-procedure Tfrm_principal.Timer2Timer(Sender: TObject);
-begin
- lbl_diaSemana.Caption := diaSemana(date);
-end;
-
 procedure Tfrm_principal.sw_delayClick(Sender: TObject);
 begin
   if chk_delay.Checked = true then
@@ -479,6 +469,22 @@ begin
   end else
   begin
     InjectWhatsapp1.Config.ShowRandom := false;
+  end;
+end;
+
+procedure Tfrm_principal.Timer1Timer(Sender: TObject);
+begin
+  if Assigned(frm_servicesWhats) then
+  begin
+    if frm_servicesWhats.vAuth = true then
+    begin
+      whatsOn.Visible := true;
+      whatsOff.Visible := false;
+    end else
+    begin
+      whatsOff.Visible := true;
+      whatsOn.Visible := false;
+    end;
   end;
 end;
 
