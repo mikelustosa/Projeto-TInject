@@ -87,8 +87,8 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
         <DCC_ExeOutput>.\BIN</DCC_ExeOutput>
-        <VerInfo_Keys>CompanyName=Tinject;FileDescription=$(MSBuildProjectName);FileVersion=1.0.2.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=TInject whatspp;ProductVersion=1.0.2.0;Comments=Desenvolvido por Mike W Lustosa</VerInfo_Keys>
-        <VerInfo_Release>2</VerInfo_Release>
+        <VerInfo_Keys>CompanyName=Tinject;FileDescription=$(MSBuildProjectName);FileVersion=1.0.4.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=TInject whatsapp;ProductVersion=1.0.4.0;Comments=Desenvolvido por Mike W Lustosa</VerInfo_Keys>
+        <VerInfo_Release>4</VerInfo_Release>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
