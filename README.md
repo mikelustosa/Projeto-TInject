@@ -3,7 +3,7 @@ Componente para criação de chatBots com delphi e o whatsapp<br></br><br></br>
 
 INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
 
-Compatibilidade testada nas versões do Delphi: Seattle, Berlin, Tokyo e Rio.<br></br>
+Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br></br>
 
 Tutorial de instalação no youtube:<br>
 https://youtu.be/iJAKU8A8fmc
@@ -11,9 +11,9 @@ https://youtu.be/iJAKU8A8fmc
 
 1-Clonar o repositório Projeto-TInject
 <br></br>
-2-Baixar e instalar o CEF4Delphi em: http://www.softmaisbrasil.com.br/#blog
+2-Baixar e instalar o CEF4Delphi em: https://drive.google.com/file/d/11cjHyJ9JYjnbQQI-gufJfDVLjJDHKhv3/view?usp=sharing
 <br></br>
-3-Baixar a pasta BIN em: http://www.softmaisbrasil.com.br/#blog
+3-Baixar a pasta BIN em: https://drive.google.com/open?id=1bNh7kRfj8xSMkMibuAqFjx1V7l3y3r6b
 <br></br>
 4-Copiar todo o conteúdo baixado da pasta BIN no passo 3 para a pasta BIN na raiz do projeto (Caso não exista a pasta BIN em seu projeto Crie)
 <br></br>

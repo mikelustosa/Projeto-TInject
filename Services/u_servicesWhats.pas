@@ -242,28 +242,32 @@ var
 begin
     try
       AResponse := TResponseConsoleMessage.FromJsonString( message );
-      if assigned(AResponse) then
-      begin
-
-        if AResponse.Name = 'getAllContacts' then
+      try
+        if assigned(AResponse) then
         begin
-           LogConsoleMessage( PrettyJSON(AResponse.Result) );
-           SetAllContacts( AResponse.Result );
-        end;
 
-        if AResponse.Name = 'getAllChats' then
-        begin
-           LogConsoleMessage( PrettyJSON(AResponse.Result) );
-           SetAllChats( AResponse.Result );
-        end;
+          if AResponse.Name = 'getAllContacts' then
+          begin
+             LogConsoleMessage( PrettyJSON(AResponse.Result) );
+             SetAllContacts( AResponse.Result );
+          end;
 
-        if AResponse.Name = 'getUnreadMessages' then
-        begin
-           LogConsoleMessage( PrettyJSON(AResponse.Result) );
-           SetUnreadMessages( AResponse.Result );
+          if AResponse.Name = 'getAllChats' then
+          begin
+             LogConsoleMessage( PrettyJSON(AResponse.Result) );
+             SetAllChats( AResponse.Result );
+          end;
+
+          if AResponse.Name = 'getUnreadMessages' then
+          begin
+             LogConsoleMessage( PrettyJSON(AResponse.Result) );
+             SetUnreadMessages( AResponse.Result );
+          end;
+          if AResponse.name = 'getQrCode' then
+             SetQrCode( message )
         end;
-        if AResponse.name = 'getQrCode' then
-           SetQrCode( message )
+      finally
+        FreeAndNil(AResponse);
       end;
     except
       on E:Exception do

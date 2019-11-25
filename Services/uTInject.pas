@@ -50,6 +50,8 @@ type
     FResult               : TQrCodeClass;
     FAllContacts          : TRetornoAllContacts;
     FAllChats             : TChatList;
+    FMySubComp1           : TMySubComp;
+
     FOnGetContactList     : TNotifyEvent;
     FOnGetQrCode          : TNotifyEvent;
     FOnGetChatList        : TNotifyEvent;
@@ -57,7 +59,6 @@ type
     FOnGetUnReadMessages  : TGetUnReadMessages;
     FOnGetStatus          : TNotifyEvent;
     FContacts             : String;
-    FMySubComp1           : TMySubComp;
     FAuth                 : boolean;
   public
     const emoticonSorridente       = '😄';
@@ -138,6 +139,9 @@ type
     const emoticonPanelaComComida  = '🥘';
 
     constructor Create(AOwner: TComponent); override;
+    destructor Destroy; override;
+
+
     procedure ReadMessages(vID: string);
     procedure startQrCode;
     procedure monitorQrCode;
@@ -215,6 +219,18 @@ begin
      startWhatsapp;
 end;
 
+destructor TInjectWhatsapp.Destroy;
+begin
+  FreeAndNil(frm_servicesWhats);
+  FreeAndNil(frm_view_qrcode);
+
+  FreeAndNil(FResult);
+  FreeAndNil(FAllContacts);
+  FreeAndNil(FAllChats);
+  FreeAndNil(FMySubComp1);
+  inherited;
+end;
+
 procedure TInjectWhatsapp.fileToBase64(vFile: string);
 begin
   uBase64.FileToBase64(vFile);
@@ -241,10 +257,8 @@ begin
   FActivityGetMessagesThread := TThread.CreateAnonymousThread(procedure
       var vGetDelay: integer;
       begin
-        try
-
+//        try
           vGetDelay := random(vDelay);
-
           sleep(vGetDelay);
 
           TThread.Synchronize(nil, procedure
@@ -255,6 +269,7 @@ begin
             end;
           end);
 
+          {
           TThread.Synchronize(nil, procedure
           begin
             if FMySubComp1.ShowRandom then
@@ -262,12 +277,11 @@ begin
               showMessage('Random: '+vGetDelay.ToString+' ms');
             end;
           end);
-
           finally
           begin
-
           end;
         end;
+          }
       end);
   FActivityGetMessagesThread.FreeOnTerminate := true;
   FActivityGetMessagesThread.Start;
@@ -310,14 +324,14 @@ begin
                 frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
                 frm_servicesWhats.Send('55'+vNum+'@c.us', vMess);
               end else
-                begin
-                  AId := vNum;
-                  frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
-                  frm_servicesWhats.Send(AId, vMess);
-                end;
+              begin
+                AId := vNum;
+                frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
+                frm_servicesWhats.Send(AId, vMess);
+              end;
             end;
           end);
-
+          {
           TThread.Synchronize(nil, procedure
           begin
             if FMySubComp1.ShowRandom then
@@ -325,7 +339,7 @@ begin
               showMessage('Random: '+vGetDelay.ToString+' ms');
             end;
           end);
-
+          }
       end);
   FActivitySendThread.FreeOnTerminate := true;
   FActivitySendThread.Start;
@@ -348,6 +362,7 @@ begin
             end;
           end);
 
+         {
           TThread.Synchronize(nil, procedure
           begin
             if FMySubComp1.ShowRandom then
@@ -355,6 +370,7 @@ begin
               showMessage('Random: '+vGetDelay.ToString+' ms');
             end;
           end);
+          }
       end);
   FActivitySendBase64Thread.FreeOnTerminate := true;
   FActivitySendBase64Thread.Start;
