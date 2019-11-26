@@ -1,20 +1,7 @@
 ﻿//TInject Criado por Mike W. Lustosa
 //Códido aberto à comunidade Delphi
 //mikelustosa@gmail.com
-{
----------------------------
-Unexpected Memory Leak
----------------------------
-An unexpected memory leak has occurred. The unexpected small block leaks are:
-
-13 - 20 bytes: TPresenceClass x 6
-45 - 52 bytes: UnicodeString x 6
 
----------------------------
-OK
----------------------------
-
-}
 
 unit uTInject;
 
@@ -22,6 +9,9 @@ interface
 
 uses
   System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uClasses, u_view_qrcode;
+
+Const
+  IdeVesao = '1.0.0.5';
 
 type
   {Events}
@@ -45,6 +35,7 @@ type
 
   TInjectWhatsapp = class(TComponent)
   private
+    FVersaoIde: String;
     { Private declarations }
   protected
     { Protected declarations }
@@ -52,7 +43,6 @@ type
     FAllContacts          : TRetornoAllContacts;
     FAllChats             : TChatList;
     FMySubComp1           : TMySubComp;
-
     FOnGetContactList     : TNotifyEvent;
     FOnGetQrCode          : TNotifyEvent;
     FOnGetChatList        : TNotifyEvent;
@@ -168,6 +158,7 @@ type
     property OnGetNewMessage      : TNotifyEvent read FOnGetNewMessage write FOnGetNewMessage;
     property OnGetUnReadMessages  : TGetUnReadMessages read FOnGetUnReadMessages write FOnGetUnReadMessages;
     property OnGetStatus          : TNotifyEvent read FOnGetStatus write FOnGetStatus;
+    Property VersaoIDE: String   Read FVersaoIde;
   end;
 
   Function AjustaNumero(PNumero:String):String;
@@ -215,9 +206,11 @@ End;
 constructor TInjectWhatsapp.Create(AOwner: TComponent);
 begin
   inherited;
-  FMySubComp1      := TMySubComp.Create(self);
-  FMySubComp1.Name := 'AutoInject';
+  FMySubComp1            := TMySubComp.Create(self);
+  FMySubComp1.Name       := 'AutoInject';
+  FMySubComp1.AutoDelay  := 1000;
   FMySubComp1.SetSubComponent(true);
+  FVersaoIde       := IdeVesao;
 
   if Config.AutoStart then
      startWhatsapp;

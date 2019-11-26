@@ -412,27 +412,18 @@ end;
 
 //Apenas marca como lida a mensagem
 procedure Tfrm_servicesWhats.ReadMessages(vID: string);
-var
-  js: string;
 begin
-  js := 'window.WAPI.sendSeen("'+Trim(vID)+'")';
-    if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
+ if Chromium1.Browser <> nil then
+    Chromium1.Browser.MainFrame.ExecuteJavaScript( 'window.WAPI.sendSeen("'+Trim(vID)+'")', 'about:blank', 0);
 end;
 
 //Marca como lida e deleta a conversa
 procedure Tfrm_servicesWhats.ReadMessagesAndDelete(vID: string);
-var
-  js: string;
 begin
-  js := 'window.WAPI.sendSeen("'+Trim(vID)+'")';
-    if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
-
-
-  js := 'window.WAPI.deleteConversation("'+Trim(vID)+'")';
-    if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
+  if Chromium1.Browser <> nil then
+     Chromium1.Browser.MainFrame.ExecuteJavaScript('window.WAPI.sendSeen("'+Trim(vID)+'")', 'about:blank', 0);
+  if Chromium1.Browser <> nil then
+    Chromium1.Browser.MainFrame.ExecuteJavaScript('window.WAPI.deleteConversation("'+Trim(vID)+'")', 'about:blank', 0);
 end;
 
 procedure Tfrm_servicesWhats.SendBase64(vBase64, vNum, vFileName, vText: string);
@@ -575,16 +566,10 @@ begin
 end;
 
 procedure Tfrm_servicesWhats.Send(vNum, vText: string);
-var
- JS: string;
 begin
  vText := caractersWhats(vText);
-
- JS := 'window.WAPI.sendMessageToID("'+Trim(vNum)+'","'+Trim(vText)+'")';
-
  if Chromium1.Browser <> nil then
-      Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-
+      Chromium1.Browser.MainFrame.ExecuteJavaScript( 'window.WAPI.sendMessageToID("'+Trim(vNum)+'","'+Trim(vText)+'")', 'about:blank', 0);
 end;
 
 procedure Tfrm_servicesWhats.Timer1Timer(Sender: TObject);
