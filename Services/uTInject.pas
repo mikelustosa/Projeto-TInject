@@ -1,6 +1,20 @@
 ﻿//TInject Criado por Mike W. Lustosa
 //Códido aberto à comunidade Delphi
 //mikelustosa@gmail.com
+{
+---------------------------
+Unexpected Memory Leak
+---------------------------
+An unexpected memory leak has occurred. The unexpected small block leaks are:
+
+13 - 20 bytes: TPresenceClass x 6
+45 - 52 bytes: UnicodeString x 6
+
+---------------------------
+OK
+---------------------------
+
+}
 
 unit uTInject;
 
@@ -9,36 +23,23 @@ interface
 uses
   System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uClasses, u_view_qrcode;
 
-  var
-    vDelay: integer;
-    vAutoDelete : boolean;
-    FActivityContactsThread   : TThread;
-    FActivityGetMessagesThread: TThread;
-    FActivitySendThread       : TThread;
-    FActivitySendBase64Thread : TThread;
 type
   {Events}
   TGetUnReadMessages = procedure(Chats: TChatList) of object;
-  TMySubComp = class(TComponent)
 
+  TMySubComp = class(TComponent)
   public
     FAutoStart      : Boolean;
     FAutoDelete     : Boolean;
     FAutoDelay      : Integer;
     FSyncContacts   : Boolean;
     FShowRandom     : Boolean;
-  private
-    procedure SetAutoDelete(const Value: Boolean);
-    procedure SetAutoDelay(const Value: integer);
-    procedure SetSyncContacts(const Value: Boolean);
-    procedure SetShowRandom(const Value: Boolean);
-
   published
-    property AutoStart    : Boolean read FAutoStart write FAutoStart default False;
-    property AutoDelete   : Boolean read FAutoDelete   write SetAutoDelete;
-    property AutoDelay    : integer read FAutoDelay    write SetAutoDelay;
-    property SyncContacts : Boolean read FSyncContacts write SetSyncContacts;
-    property ShowRandom   : Boolean read FShowRandom   write SetShowRandom;
+    property AutoStart    : Boolean read FAutoStart    write FAutoStart default False;
+    property AutoDelete   : Boolean read FAutoDelete   write FAutoDelete;
+    property AutoDelay    : integer read FAutoDelay    write FAutoDelay  default 2500;
+    property SyncContacts : Boolean read FSyncContacts write FSyncContacts;
+    property ShowRandom   : Boolean read FShowRandom   write FShowRandom;
   end;
 
 
@@ -168,7 +169,9 @@ type
     property OnGetUnReadMessages  : TGetUnReadMessages read FOnGetUnReadMessages write FOnGetUnReadMessages;
     property OnGetStatus          : TNotifyEvent read FOnGetStatus write FOnGetStatus;
   end;
-  var resultado : integer;
+
+  Function AjustaNumero(PNumero:String):String;
+
 procedure Register;
 
 implementation
@@ -182,29 +185,30 @@ begin
   RegisterComponents('TInjectWhatsapp', [TInjectWhatsapp]);
 end;
 
-{ TInjectWhatsapp }
+Function AjustaNumero(PNumero:String):String;
+var
+  LNumeroLimpo: String;
+  i: Integer;
+Begin
+  Result := '';
+  //Garante valores LIMPOS (sem mascaras, letras, etc) apenas NUMEROS
+  For I := 1 to Length(PNumero) do
+  Begin
+    if PNumero[I] in ['0'..'9'] then
+       LNumeroLimpo := LNumeroLimpo + PNumero[I];
+  End;
 
-procedure TMySubComp.SetAutoDelete(const Value: Boolean);
-begin
-  FAutoDelete := Value;
-  vAutoDelete := FAutoDelete;
-end;
+  //O requisito minumo e possuir DDD + NUMERO (Fone 8 ou 9 digitos)
+  if Length(LNumeroLimpo) < 10 then
+     raise Exception.Create('Número inválido');
 
-procedure TMySubComp.SetShowRandom(const Value: Boolean);
-begin
-  FShowRandom := value;
-end;
-
-procedure TMySubComp.SetSyncContacts(const Value: Boolean);
-begin
-  FSyncContacts := Value;
-end;
-
-procedure TMySubComp.SetAutoDelay(const Value: Integer);
-begin
-  FAutoDelay := Value;
-  vDelay := FAutoDelay;
-end;
+  //Testa se o numero é compativel com brasil!
+  if Length(LNumeroLimpo) > 13 then
+     raise Exception.Create('Número inválido');
+  if Length(LNumeroLimpo) < 12 then  //Nao possui DDI
+     LNumeroLimpo := '55' + LNumeroLimpo;
+  Result := LNumeroLimpo +  '@c.us';
+End;
 
 { TInjectWhatsapp }
 
@@ -253,13 +257,14 @@ begin
 end;
 
 function TInjectWhatsapp.GetUnReadMessages: String;
+var
+  lThread : TThread;
 begin
-  FActivityGetMessagesThread := TThread.CreateAnonymousThread(procedure
-      var vGetDelay: integer;
+  lThread := TThread.CreateAnonymousThread(procedure
       begin
 //        try
-          vGetDelay := random(vDelay);
-          sleep(vGetDelay);
+          if Config.AutoDelay > 0 then
+             sleep(random(Config.AutoDelay));
 
           TThread.Synchronize(nil, procedure
           begin
@@ -283,8 +288,8 @@ begin
         end;
           }
       end);
-  FActivityGetMessagesThread.FreeOnTerminate := true;
-  FActivityGetMessagesThread.Start;
+  lThread.FreeOnTerminate := true;
+  lThread.Start;
 end;
 
 procedure TInjectWhatsapp.monitorQrCode;
@@ -294,43 +299,36 @@ end;
 
 procedure TInjectWhatsapp.ReadMessages(vID: string);
 begin
-  if vAutoDelete = true then
+  if Config.AutoDelete Then
   begin
     if assigned(frm_servicesWhats) then
-      frm_servicesWhats.ReadMessagesAndDelete(vID);
-  end else if vAutoDelete = false then
-  begin
+       frm_servicesWhats.ReadMessagesAndDelete(vID);
+  end else
+  Begin
     if assigned(frm_servicesWhats) then
-      frm_servicesWhats.ReadMessages(vID);
+       frm_servicesWhats.ReadMessages(vID);
   end;
 end;
 
 procedure TInjectWhatsapp.send(vNum, vMess: string);
 var
   AId: String;
+  lThread : TThread;
 begin
-  FActivitySendThread := TThread.CreateAnonymousThread(procedure
-      var vGetDelay: integer;
+  vNum := AjustaNumero(vNum);
+  lThread := TThread.CreateAnonymousThread(procedure
       begin
-        vGetDelay := random(vDelay);
-        sleep(vGetDelay);
+        if Config.AutoDelay > 0 then
+           sleep(random(Config.AutoDelay));
 
-          TThread.Synchronize(nil, procedure
+        TThread.Synchronize(nil, procedure
+        begin
+          if Assigned(frm_servicesWhats) then
           begin
-            if Assigned(frm_servicesWhats) then
-            begin
-              if (length(vNum) = 10) or (length(vNum) = 11) then
-              begin
-                frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
-                frm_servicesWhats.Send('55'+vNum+'@c.us', vMess);
-              end else
-              begin
-                AId := vNum;
-                frm_servicesWhats.ReadMessages('55'+vNum+'@c.us'); //Marca como lida a mensagem
-                frm_servicesWhats.Send(AId, vMess);
-              end;
-            end;
-          end);
+            frm_servicesWhats.ReadMessages(vNum); //Marca como lida a mensagem
+            frm_servicesWhats.Send(vNum, vMess);
+          end;
+        end);
           {
           TThread.Synchronize(nil, procedure
           begin
@@ -341,26 +339,26 @@ begin
           end);
           }
       end);
-  FActivitySendThread.FreeOnTerminate := true;
-  FActivitySendThread.Start;
+  lThread.FreeOnTerminate := true;
+  lThread.Start;
 end;
 
 procedure TInjectWhatsapp.sendBase64(vBase64, vNum, vFileName, vMess: string);
+Var
+  lThread : TThread;
 begin
   inherited;
-  FActivitySendBase64Thread := TThread.CreateAnonymousThread(procedure
-      var vGetDelay: integer;
+  vNum := AjustaNumero(vNum);
+  lThread := TThread.CreateAnonymousThread(procedure
       begin
-          vGetDelay := random(vDelay);
-          sleep(vGetDelay);
+         if Config.AutoDelay > 0 then
+            sleep(random(Config.AutoDelay));
 
-          TThread.Synchronize(nil, procedure
-          begin
-            if Assigned(frm_servicesWhats) then
-            begin
-              frm_servicesWhats.sendBase64(vBase64,'55'+vNum+'@c.us', vFileName, vMess);
-            end;
-          end);
+        TThread.Synchronize(nil, procedure
+        begin
+          if Assigned(frm_servicesWhats) then
+            frm_servicesWhats.sendBase64(vBase64,vNum, vFileName, vMess);
+        end);
 
          {
           TThread.Synchronize(nil, procedure
@@ -372,8 +370,8 @@ begin
           end);
           }
       end);
-  FActivitySendBase64Thread.FreeOnTerminate := true;
-  FActivitySendBase64Thread.Start;
+  lThread.FreeOnTerminate := true;
+  lThread.Start;
 end;
 
 procedure TInjectWhatsapp.ShowWebApp;

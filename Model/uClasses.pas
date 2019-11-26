@@ -586,7 +586,7 @@ destructor TChatClass.Destroy;
 var
   LmessagesItem: TMessagesClass;
 begin
-
+  FreeAndNil(FPresence);
   for LmessagesItem in FMessages do
       LmessagesItem.free;
 
