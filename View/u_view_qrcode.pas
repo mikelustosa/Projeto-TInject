@@ -30,7 +30,7 @@ var
 
 implementation
 
-uses uTInject, System.NetEncoding, Vcl.Imaging.jpeg;
+uses uTInject, System.NetEncoding, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage;
 
 {$R *.dfm}
 
@@ -57,7 +57,10 @@ var
   LInput: TMemoryStream;
   LOutput: TMemoryStream;
   stl: TStringList;
+  PNG: TpngImage;
 begin
+//by Aurino Inovatechi 19/11/2019 review Mike
+{$IFDEF VER330}
   try
     LInput  := TMemoryStream.Create;
     LOutput := TMemoryStream.Create;
@@ -69,22 +72,37 @@ begin
     TNetEncoding.Base64.Decode( LInput, LOutput );
     LOutput.Position := 0;
     if LOutput.size > 0 then
-    //by Aurino Inovatechi 19/11/2019
-    {$IFDEF VER330}
+
     //Delphi 10.3
       Image1.Picture.LoadFromStream(LOutput);
-    {$ENDIF}
 
-    {$IFDEF VER310}
-    // Delphi 10.1 e 10.2
-      Image1.Picture.Bitmap.LoadFromStream(LOutput);
-    {$ENDIF}
-  finally
+  finally
    LInput.Free;
    LOutput.Free;
   end;
 
-  qrCode := st;
+  {$ELSE}
+  try
+    PNG := TPngImage.Create;
+    LInput := TMemoryStream.Create;
+    LOutput := TMemoryStream.Create;
+    stl := TStringList.Create;
+    stl.Add(copy(st, 23, length(st)));
+    stl.SaveToStream(LInput);
+
+    LInput.Position := 0;
+    TNetEncoding.Base64.Decode( LInput, LOutput );
+    LOutput.Position := 0;
+    if LOutput.size > 0 then
+    PNG.LoadFromStream(LOutput);
+    image1.Picture.Graphic := PNG;
+    finally
+      LInput.Free;
+      LOutput.Free;
+    end;
+  end;
+
+  {$ENDIF}
 end;
 
 procedure Tfrm_view_qrcode.Timer1Timer(Sender: TObject);

@@ -9,7 +9,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, uCEFChromium,
-  uCEFWinControl, uCEFWindowParent,
+  uCEFWinControl, uCEFWindowParent, StrUtils,
 
   //units adicionais obrigatórias
   uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium, uCEFApplication,
@@ -239,47 +239,62 @@ var
     AObj.Free;
   end;
 begin
-    try
-      AResponse := TResponseConsoleMessage.FromJsonString( message );
+    begin
       try
-        if assigned(AResponse) then
-        begin
-          if AResponse.Name = 'getAllContacts' then
+        AResponse := TResponseConsoleMessage.FromJsonString( message );
+        try
+          if(AResponse.Result <> '{"result":[]}') then
           begin
-             LogConsoleMessage( PrettyJSON(AResponse.Result) );
-             SetAllContacts( AResponse.Result );
-          end;
+            if assigned(AResponse) then
+            begin
+              if AResponse.Name = 'getAllContacts' then
+              begin
 
-          if AResponse.Name = 'getAllChats' then
+                 begin
+                  LogConsoleMessage( PrettyJSON(AResponse.Result) );
+                  SetAllContacts( AResponse.Result );
+                 end;
+              end;
+
+              if AResponse.Name = 'getAllChats' then
+              begin
+                LogConsoleMessage( PrettyJSON(AResponse.Result) );
+                SetAllChats( AResponse.Result );
+              end;
+
+              if AResponse.Name = 'getUnreadMessages' then
+              begin
+                LogConsoleMessage( PrettyJSON(AResponse.Result) );
+                SetUnreadMessages( AResponse.Result );
+              end;
+
+              if AResponse.Name = 'getBatteryLevel' then
+              begin
+                if POS('undefined', AResponse.Result ) <= 0 then //'{"name":"getBatteryLevel","result":"{"result":undefined}"}'') then
+              //  if AResponse.Result <> 'AResponse.FResult '{"result":undefined}' then
+
+                begin
+                  LogConsoleMessage( PrettyJSON(AResponse.Result) );
+                  SetBatteryLevel( AResponse.Result );
+                end;
+              end;
+
+              if AResponse.name = 'getQrCode' then
+              begin
+                SetQrCode( message );
+              end;
+            end;
+          end;
+          finally
+            FreeAndNil(AResponse);
+          end;
+        except
+          on E:Exception do
           begin
-             LogConsoleMessage( PrettyJSON(AResponse.Result) );
-             SetAllChats( AResponse.Result );
+            Application.MessageBox(PChar(E.Message),'TInject', mb_iconError + mb_ok);
+            raise;
           end;
-
-          if AResponse.Name = 'getUnreadMessages' then
-          begin
-             LogConsoleMessage( PrettyJSON(AResponse.Result) );
-             SetUnreadMessages( AResponse.Result );
-          end;
-
-          if AResponse.Name = 'getBatteryLevel' then
-          begin
-             LogConsoleMessage( PrettyJSON(AResponse.Result) );
-             SetBatteryLevel( AResponse.Result );
-          end;
-
-          if AResponse.name = 'getQrCode' then
-             SetQrCode( message )
         end;
-      finally
-        FreeAndNil(AResponse);
-      end;
-    except
-      on E:Exception do
-      begin
-        Application.MessageBox(PChar(E.Message),'TInject', mb_iconError + mb_ok);
-        raise;
-      end;
     end;
 end;
 
@@ -485,22 +500,21 @@ end;
 
 procedure Tfrm_servicesWhats.SetBatteryLevel(JsonText: string);
 var
-AJson, ASubJSON: TJSONObject;
-Arow: TJSONValue;
+  AJson, ASubJSON: TJSONObject;
 begin
   if not Assigned( _Inject ) then
-     Exit;
+       Exit;
 
-  with _Inject do
-  begin
-    AJson := TJSonObject.ParseJSONValue(JsonText) as TJSONObject;
+    with _Inject do
+    begin
+      AJson := TJSonObject.ParseJSONValue(JsonText) as TJSONObject;
 
-    AGetBatteryLevel := ( AJson.getValue('result').toJSON );
+      AGetBatteryLevel := ( AJson.getValue('result').toJSON );
 
-     //Dispara Notify
-     if Assigned( OnGetBatteryLevel ) then
-        OnGetBatteryLevel(Self);
-  end;
+       //Dispara Notify
+      if Assigned( OnGetBatteryLevel ) then
+          OnGetBatteryLevel(Self);
+    end;
 end;
 
 procedure Tfrm_servicesWhats.loadWEBQRCode(st: string);
