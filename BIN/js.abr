@@ -682,7 +682,8 @@ window.WAPI.ReplyMessage = function (idMessage, message, done) {
     }
 };
 
-window.WAPI.sendMessageToID = function (id, message, done) {
+//Função desativada em 27/11/2019 by Mike 
+/*window.WAPI.sendMessageToID = function (id, message, done) {
     try {
         window.getContact = (id) => {
             return Store.WapQuery.queryExist(id);
@@ -726,7 +727,7 @@ window.WAPI.sendMessageToID = function (id, message, done) {
     }
     if (done !== undefined) done(false);
     return false;
-}
+} */
 
 window.WAPI.sendMessage = function (id, message, done) {
     var chat = WAPI.getChat(id);
@@ -1372,6 +1373,41 @@ window.WAPI.demoteParticipantAdminGroup = function (idGroup, idParticipant, done
         }
         done(true); return true;
     })
+}
+
+
+//Nova função para enviar mensagens
+//Criada em 27/11/2019 Mike
+
+window.WAPI.sendMessageToID = function(id, msgText) 
+{
+		try {
+				window.Store.WapQuery.queryExist(id).then (function(e) 
+				{
+					if (e.status === 200) 
+					{
+						window.Store.Chat.find(e.jid).then ((chat) => 
+						{
+							try 
+							{
+								window.Store.SendTextMsgToChat(chat, msgText);
+								return true;
+							} catch(e) 
+							{
+								return false;
+							}
+               
+						});
+						return true;
+					} else 
+					{
+						return false;
+					}
+				});
+			} catch (e) 
+			{
+				return false;
+			}
 }
 
 function monitorUnReadMessages() {
