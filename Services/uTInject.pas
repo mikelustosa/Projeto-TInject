@@ -11,7 +11,7 @@ uses
   System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uClasses, u_view_qrcode;
 
 Const
-  IdeVesao = '1.0.0.6'; //  27/11/2019
+  TInjectVersion = '1.0.0.7'; //  27/11/2019  //Alterado por Mike
 
 type
   {Events}
@@ -43,15 +43,18 @@ type
     FAllContacts          : TRetornoAllContacts;
     FAllChats             : TChatList;
     FMySubComp1           : TMySubComp;
-    FOnGetContactList     : TNotifyEvent;
+    FBatteryLevel         : TNotifyEvent;
+    FGetBatteryLevel      : string;
     FOnGetQrCode          : TNotifyEvent;
     FOnGetChatList        : TNotifyEvent;
     FOnGetNewMessage      : TNotifyEvent;
+    FOnGetBatteryLevel    : TNotifyEvent;
     FOnGetUnReadMessages  : TGetUnReadMessages;
     FOnGetStatus          : TNotifyEvent;
     FContacts             : String;
     FAuth                 : boolean;
   public
+    AGetBatteryLevel               : string;
     const emoticonSorridente       = '😄';
     const emoticonSorridenteLingua = '😝';
     const emoticonImpressionado    = '😱';
@@ -139,6 +142,7 @@ type
     procedure startWhatsapp;
     procedure ShowWebApp;
     procedure send(vNum, vMess: string);
+    procedure batteryStatus();
     procedure sendBase64(vBase64, vNum, vFileName, vMess: string);
     procedure fileToBase64(vFile: string);
     procedure GetAllContacts;
@@ -146,22 +150,26 @@ type
     function GetStatus: Boolean;
     function GetUnReadMessages: String;
     property AllContacts: TRetornoAllContacts read FAllContacts write FAllContacts;
+    property BatteryLevel: TNotifyEvent read FBatteryLevel write FBatteryLevel;
     property AQrCode: TQrCodeClass read FResult write FResult;
     property AllChats: TChatList read FAllChats write FAllChats;
     property Auth: boolean read FAuth write FAuth;
+
   published
     { Published declarations }
     property Config               : TMySubComp read FMySubComp1;
-    property OnGetContactList     : TNotifyEvent read FOnGetContactList write FOnGetContactList ;
+    property OnGetContactList     : TNotifyEvent read FBatteryLevel write FBatteryLevel;
     property OnGetQrCode          : TNotifyEvent read FOnGetQrCode write FOnGetQrCode;
     property OnGetChatList        : TNotifyEvent read FOnGetChatList write FOnGetChatList;
     property OnGetNewMessage      : TNotifyEvent read FOnGetNewMessage write FOnGetNewMessage;
     property OnGetUnReadMessages  : TGetUnReadMessages read FOnGetUnReadMessages write FOnGetUnReadMessages;
     property OnGetStatus          : TNotifyEvent read FOnGetStatus write FOnGetStatus;
-    Property VersaoIDE: String   Read FVersaoIde;
+    property OnGetBatteryLevel    : TNotifyEvent read FOnGetBatteryLevel write FOnGetBatteryLevel;
+    Property VersaoIDE            : String Read FVersaoIde;
+    property ABatteryLevel        : string Read FGetBatteryLevel;
   end;
 
-  Function AjustaNumero(PNumero:String):String;
+  Function AdjustNumber(PNum:String):String;
 
 procedure Register;
 
@@ -176,32 +184,38 @@ begin
   RegisterComponents('TInjectWhatsapp', [TInjectWhatsapp]);
 end;
 
-Function AjustaNumero(PNumero:String):String;
+function AdjustNumber(PNum:String):String;
 var
-  LNumeroLimpo: String;
+  LClearNum: String;
   i: Integer;
-Begin
+begin
   Result := '';
   //Garante valores LIMPOS (sem mascaras, letras, etc) apenas NUMEROS
-  For I := 1 to Length(PNumero) do
-  Begin
-    if PNumero[I] in ['0'..'9'] then
-       LNumeroLimpo := LNumeroLimpo + PNumero[I];
-  End;
+  for I := 1 to Length(PNum) do
+  begin
+    if PNum[I] in ['0'..'9'] then
+       LClearNum := LClearNum + PNum[I];
+  end;
 
-  //O requisito minumo e possuir DDD + NUMERO (Fone 8 ou 9 digitos)
-  if Length(LNumeroLimpo) < 10 then
+  //O requisito minimo é possuir DDD + NUMERO (Fone 8 ou 9 digitos)
+  if Length(LClearNum) < 10 then
      raise Exception.Create('Número inválido');
 
   //Testa se o numero é compativel com brasil!
-  if Length(LNumeroLimpo) > 13 then
+  if Length(LClearNum) > 13 then
      raise Exception.Create('Número inválido');
-  if Length(LNumeroLimpo) < 12 then  //Nao possui DDI
-     LNumeroLimpo := '55' + LNumeroLimpo;
-  Result := LNumeroLimpo +  '@c.us';
-End;
+  if Length(LClearNum) < 12 then  //Nao possui DDI
+     LClearNum := '55' + LClearNum;
+  Result := LClearNum +  '@c.us';
+end;
 
 { TInjectWhatsapp }
+
+procedure TInjectWhatsapp.batteryStatus();
+begin
+  if Assigned(frm_servicesWhats) then
+    frm_servicesWhats.GetBatteryLevel;
+end;
 
 constructor TInjectWhatsapp.Create(AOwner: TComponent);
 begin
@@ -210,7 +224,7 @@ begin
   FMySubComp1.Name       := 'AutoInject';
   FMySubComp1.AutoDelay  := 1000;
   FMySubComp1.SetSubComponent(true);
-  FVersaoIde       := IdeVesao;
+  FVersaoIde       := TInjectVersion;
 
   if Config.AutoStart then
      startWhatsapp;
@@ -255,7 +269,6 @@ var
 begin
   lThread := TThread.CreateAnonymousThread(procedure
       begin
-//        try
           if Config.AutoDelay > 0 then
              sleep(random(Config.AutoDelay));
 
@@ -267,19 +280,6 @@ begin
             end;
           end);
 
-          {
-          TThread.Synchronize(nil, procedure
-          begin
-            if FMySubComp1.ShowRandom then
-            begin
-              showMessage('Random: '+vGetDelay.ToString+' ms');
-            end;
-          end);
-          finally
-          begin
-          end;
-        end;
-          }
       end);
   lThread.FreeOnTerminate := true;
   lThread.Start;
@@ -308,7 +308,7 @@ var
   AId: String;
   lThread : TThread;
 begin
-  vNum := AjustaNumero(vNum);
+  vNum := AdjustNumber(vNum);
   lThread := TThread.CreateAnonymousThread(procedure
       begin
         if Config.AutoDelay > 0 then
@@ -333,7 +333,7 @@ Var
   lThread : TThread;
 begin
   inherited;
-  vNum := AjustaNumero(vNum);
+  vNum := AdjustNumber(vNum);
   lThread := TThread.CreateAnonymousThread(procedure
       begin
          if Config.AutoDelay > 0 then
@@ -345,15 +345,6 @@ begin
             frm_servicesWhats.sendBase64(vBase64,vNum, vFileName, vMess);
         end);
 
-         {
-          TThread.Synchronize(nil, procedure
-          begin
-            if FMySubComp1.ShowRandom then
-            begin
-              showMessage('Random: '+vGetDelay.ToString+' ms');
-            end;
-          end);
-          }
       end);
   lThread.FreeOnTerminate := true;
   lThread.Start;

@@ -50,14 +50,11 @@ type
     Image4: TImage;
     memo_unReadMessagen: TMemo;
     Image5: TImage;
-    chk_delay: TCheckBox;
     chk_grupos: TCheckBox;
     Label8: TLabel;
     Edit1: TEdit;
     ButtonSelecionarArquivo: TButton;
     LabelFileNamePath: TLabel;
-    Label9: TLabel;
-    Label5: TLabel;
     ImageList1: TImageList;
     Panel3: TPanel;
     listaContatos: TListView;
@@ -66,9 +63,12 @@ type
     listaChats: TListView;
     Button3: TButton;
     Timer1: TTimer;
+    Button4: TButton;
+    lbl_batteryStatus: TLabel;
+    Label5: TLabel;
+    Label9: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure sw_delayClick(Sender: TObject);
     procedure whatsOnClick(Sender: TObject);
     procedure whatsOffClick(Sender: TObject);
     procedure Button6Click(Sender: TObject);
@@ -87,13 +87,13 @@ type
     procedure btn_clearClick(Sender: TObject);
     procedure Image5Click(Sender: TObject);
     procedure Edit1KeyPress(Sender: TObject; var Key: Char);
-    procedure chk_delayClick(Sender: TObject);
     procedure InjectWhatsapp1GetStatus(Sender: TObject);
     procedure Edit1KeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ButtonSelecionarArquivoClick(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure InjectWhatsapp1GetBatteryLevel(Sender: TObject);
 
   protected
 
@@ -274,7 +274,13 @@ end;
 
 procedure Tfrm_principal.Button4Click(Sender: TObject);
 begin
-//
+  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
+  begin
+    application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
+    abort;
+  end;
+
+  InjectWhatsapp1.batteryStatus;
 end;
 
 procedure Tfrm_principal.Button6Click(Sender: TObject);
@@ -352,13 +358,6 @@ begin
 end;
 
 
-procedure Tfrm_principal.chk_delayClick(Sender: TObject);
-begin
-  if chk_delay.Checked = true then
-    InjectWhatsapp1.Config.ShowRandom := true else
-    InjectWhatsapp1.Config.ShowRandom := false
-end;
-
 procedure Tfrm_principal.Edit1KeyPress(Sender: TObject; var Key: Char);
 begin
   if ((key in ['0'..'9'] = false) and (word(key) <> vk_back)) then
@@ -381,6 +380,11 @@ end;
 procedure Tfrm_principal.Image5Click(Sender: TObject);
 begin
   InjectWhatsapp1.startQrCode;
+end;
+
+procedure Tfrm_principal.InjectWhatsapp1GetBatteryLevel(Sender: TObject);
+begin
+  lbl_batteryStatus.Caption := 'My Battery: '+injectWhatsapp1.AGetBatteryLevel + '%';
 end;
 
 procedure Tfrm_principal.InjectWhatsapp1GetChatList(Sender: TObject);
@@ -459,17 +463,6 @@ end;
 procedure Tfrm_principal.listaContatosDblClick(Sender: TObject);
 begin
   ed_num.Text := InjectWhatsapp1.AllContacts.result[ listaContatos.Selected.Index ].id;
-end;
-
-procedure Tfrm_principal.sw_delayClick(Sender: TObject);
-begin
-  if chk_delay.Checked = true then
-  begin
-    InjectWhatsapp1.Config.ShowRandom := true;
-  end else
-  begin
-    InjectWhatsapp1.Config.ShowRandom := false;
-  end;
 end;
 
 procedure Tfrm_principal.Timer1Timer(Sender: TObject);

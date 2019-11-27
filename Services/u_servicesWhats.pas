@@ -85,6 +85,7 @@ type
     procedure SetAllChats(JsonText: String);
     procedure SetUnReadMessages(JsonText: String);
     procedure SetQrCode(JsonText: String);
+    procedure SetBatteryLevel(JsonText: string);
     procedure loadWEBQRCode(st: string);
 
   public
@@ -101,6 +102,7 @@ type
     procedure GetAllContacts;
     procedure GetAllChats;
     procedure GetUnreadMessages;
+    procedure GetBatteryLevel;
     procedure monitorQRCode;
     procedure loadQRCode(st: string);
     procedure ReadMessages(vID: string);
@@ -260,6 +262,12 @@ begin
              SetUnreadMessages( AResponse.Result );
           end;
 
+          if AResponse.Name = 'getBatteryLevel' then
+          begin
+             LogConsoleMessage( PrettyJSON(AResponse.Result) );
+             SetBatteryLevel( AResponse.Result );
+          end;
+
           if AResponse.name = 'getQrCode' then
              SetQrCode( message )
         end;
@@ -278,6 +286,13 @@ end;
 procedure Tfrm_servicesWhats.GetAllContacts;
 const
   JS = 'window.WAPI.getAllContacts();';
+begin
+  Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+end;
+
+procedure Tfrm_servicesWhats.GetBatteryLevel;
+const
+  JS = 'window.WAPI.getBatteryLevel();';
 begin
   Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
@@ -405,23 +420,24 @@ procedure Tfrm_servicesWhats.monitorQRCode;
 const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
 begin
   if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
+      Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
 end;
 
 //Apenas marca como lida a mensagem
 procedure Tfrm_servicesWhats.ReadMessages(vID: string);
 begin
  if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript( 'window.WAPI.sendSeen("'+Trim(vID)+'")', 'about:blank', 0);
+      Chromium1.Browser.MainFrame.ExecuteJavaScript( 'window.WAPI.sendSeen("'+Trim(vID)+'")', 'about:blank', 0);
 end;
 
 //Marca como lida e deleta a conversa
 procedure Tfrm_servicesWhats.ReadMessagesAndDelete(vID: string);
 begin
   if Chromium1.Browser <> nil then
-     Chromium1.Browser.MainFrame.ExecuteJavaScript('window.WAPI.sendSeen("'+Trim(vID)+'")', 'about:blank', 0);
+      Chromium1.Browser.MainFrame.ExecuteJavaScript('window.WAPI.sendSeen("'+Trim(vID)+'")', 'about:blank', 0);
+
   if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript('window.WAPI.deleteConversation("'+Trim(vID)+'")', 'about:blank', 0);
+      Chromium1.Browser.MainFrame.ExecuteJavaScript('window.WAPI.deleteConversation("'+Trim(vID)+'")', 'about:blank', 0);
 end;
 
 procedure Tfrm_servicesWhats.SendBase64(vBase64, vNum, vFileName, vText: string);
@@ -447,7 +463,7 @@ begin
     Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
   end;
 
-  freeAndNil(vBase64);
+  freeAndNil(Base64File);
 end;
 
 procedure Tfrm_servicesWhats.SetAllContacts(JsonText: String);
@@ -464,6 +480,26 @@ begin
      //Dispara Notify
      if Assigned( OnGetContactList ) then
         OnGetContactList(Self);
+  end;
+end;
+
+procedure Tfrm_servicesWhats.SetBatteryLevel(JsonText: string);
+var
+AJson, ASubJSON: TJSONObject;
+Arow: TJSONValue;
+begin
+  if not Assigned( _Inject ) then
+     Exit;
+
+  with _Inject do
+  begin
+    AJson := TJSonObject.ParseJSONValue(JsonText) as TJSONObject;
+
+    AGetBatteryLevel := ( AJson.getValue('result').toJSON );
+
+     //Dispara Notify
+     if Assigned( OnGetBatteryLevel ) then
+        OnGetBatteryLevel(Self);
   end;
 end;
 
@@ -609,12 +645,8 @@ begin
       end;
       //injeta o JS principal
       JS := memo_js.Text;
-      for I := 0 to 4 do
-      begin
-        Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-      end;
+      Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
       timer2.Enabled := false;
-
     end;
 end;
 

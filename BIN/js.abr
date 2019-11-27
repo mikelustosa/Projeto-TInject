@@ -59,9 +59,11 @@ if (!window.Store) {
                                 window.Store[needObj.id] = needObj.foundedModule;
                             }
                         });
-                        window.Store.ChatClass.default.prototype.sendMessage = function (e) {
-                            return window.Store.SendTextMsgToChat(this, ...arguments);
-                        }
+						//Comentado em 27/11/2019 by Mike
+						//Esse trecho estava causando este erro no console = Cannot read property 'default' of undefined
+					 //  window.Store.ChatClass.default.prototype.sendMessage = function (e) {
+                        //    return window.Store.SendTextMsgToChat(this, ...arguments);
+                        //}
                         return window.Store;
                     }
                 }
@@ -792,7 +794,8 @@ window.WAPI.sendMessage2 = function (id, message, done) {
     return false;
 };
 
-window.WAPI.sendSeen = function (id, done) {
+//Função desativada em 27/11/2019 by Mike
+/*window.WAPI.sendSeen = function (id, done) {
     var chat = window.WAPI.getChat(id);
     if (chat !== undefined) {
         if (done !== undefined) {
@@ -807,6 +810,23 @@ window.WAPI.sendSeen = function (id, done) {
     }
     if (done !== undefined) done();
     return false;
+}; */
+
+window.WAPI.sendSeen = function (id, done) {
+	var chat = window.WAPI.getChat(id);
+	if (chat !== undefined) {
+		if (done !== undefined) {
+			Store.SendSeen(Store.Chat.models[0], false).then(function () {
+				done(true);
+			});
+			return true;
+		} else {
+			Store.SendSeen(Store.Chat.models[0], false);
+			return true;
+		}
+	}
+	if (done !== undefined) done();
+	return false;
 };
 
 function isChatMessage(message) {
@@ -1015,6 +1035,7 @@ window.WAPI.getBatteryLevel = function (done) {
     if (done !== undefined) {
         done(output);
     }
+	SetConsoleMessage("getBatteryLevel", JSON.stringify(output));
     return output;
 };
 
@@ -1378,7 +1399,6 @@ window.WAPI.demoteParticipantAdminGroup = function (idGroup, idParticipant, done
 
 //Nova função para enviar mensagens
 //Criada em 27/11/2019 Mike
-
 window.WAPI.sendMessageToID = function(id, msgText) 
 {
 		try {
@@ -1411,6 +1431,6 @@ window.WAPI.sendMessageToID = function(id, msgText)
 }
 
 function monitorUnReadMessages() {
-			WAPI.getUnreadMessages(includeMe="true", includeNotifications="true", use_unread_count="true");
+		WAPI.getUnreadMessages(includeMe="false", includeNotifications="true", use_unread_count="false");
 	}
-	window.setInterval("monitorUnReadMessages()", 2000);
+	window.setInterval("monitorUnReadMessages()", 3000); 

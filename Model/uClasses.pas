@@ -320,6 +320,7 @@ public
   class function FromJsonString(AJsonString: string): TChatList;
 end;
 
+
 TRetornoAllContacts = class
 private
   FResult: TArray<TContactClass>;
@@ -755,6 +756,5 @@ class function TQrCodeClass.FromJsonString(AJsonString: string): TQrCodeClass;
 begin
   result := TJson.JsonToObject<TQrCodeClass>(AJsonString)
 end;
-
 
 end.

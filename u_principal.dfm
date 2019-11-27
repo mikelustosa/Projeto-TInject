@@ -2067,6 +2067,7 @@ object frm_principal: Tfrm_principal
     Height = 226
     Align = alTop
     TabOrder = 0
+    ExplicitTop = -2
     DesignSize = (
       1020
       226)
@@ -5731,10 +5732,10 @@ object frm_principal: Tfrm_principal
       OnClick = whatsOffClick
     end
     object Image5: TImage
-      Left = 907
-      Top = 115
-      Width = 103
-      Height = 104
+      Left = 924
+      Top = 124
+      Width = 74
+      Height = 75
       Cursor = crHandPoint
       Hint = 'Autenticar'
       Anchors = [akTop, akRight]
@@ -6023,12 +6024,12 @@ object frm_principal: Tfrm_principal
       OnClick = Image5Click
     end
     object LabelFileNamePath: TLabel
-      Left = 199
-      Top = 100
-      Width = 362
-      Height = 119
+      Left = 423
+      Top = 69
+      Width = 450
+      Height = 53
       AutoSize = False
-      Caption = 'LabelFileNamePath'
+      Caption = 'Open file'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = 11316396
       Font.Height = -11
@@ -6036,6 +6037,45 @@ object frm_principal: Tfrm_principal
       Font.Style = []
       ParentFont = False
       WordWrap = True
+    end
+    object lbl_batteryStatus: TLabel
+      Left = 387
+      Top = 101
+      Width = 6
+      Height = 23
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 8404992
+      Font.Height = -19
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label5: TLabel
+      Left = 640
+      Top = 13
+      Width = 159
+      Height = 19
+      Anchors = [akTop, akRight]
+      Caption = 'DEMO do componente'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = 4227327
+      Font.Height = -16
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
+    end
+    object Label9: TLabel
+      Left = 638
+      Top = 33
+      Width = 161
+      Height = 19
+      Caption = 'ChatBot Demo By Mike'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      ParentFont = False
     end
     object ed_num: TEdit
       Left = 3
@@ -6064,21 +6104,17 @@ object frm_principal: Tfrm_principal
       TabOrder = 1
     end
     object GroupBox1: TGroupBox
-      Left = 639
-      Top = 5
-      Width = 242
-      Height = 214
+      Left = 199
+      Top = 128
+      Width = 674
+      Height = 91
       Caption = 'Configura'#231#245'es'
       TabOrder = 3
-      DesignSize = (
-        242
-        214)
       object lbl_track: TLabel
-        Left = 144
-        Top = 109
+        Left = 348
+        Top = 45
         Width = 90
         Height = 20
-        Alignment = taRightJustify
         AutoSize = False
         Caption = '0'
         Font.Charset = DEFAULT_CHARSET
@@ -6089,72 +6125,36 @@ object frm_principal: Tfrm_principal
         ParentFont = False
       end
       object Label8: TLabel
-        Left = 12
-        Top = 91
+        Left = 236
+        Top = 27
         Width = 105
         Height = 13
         Caption = 'Random delay milisec:'
       end
-      object Label9: TLabel
-        Left = 44
-        Top = 169
-        Width = 161
-        Height = 19
-        Caption = 'ChatBot Demo By Mike'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -16
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-      end
-      object Label5: TLabel
-        Left = 44
-        Top = 149
-        Width = 159
-        Height = 19
-        Anchors = [akTop, akRight]
-        Caption = 'DEMO do componente'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = 4227327
-        Font.Height = -16
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-      end
       object chk_apagarMsg: TCheckBox
         Left = 12
-        Top = 68
+        Top = 52
         Width = 201
         Height = 17
         Caption = 'Apagar as mensagens ao receber'
         TabOrder = 0
         OnClick = chk_apagarMsgClick
       end
-      object chk_delay: TCheckBox
-        Left = 12
-        Top = 22
-        Width = 165
-        Height = 17
-        Caption = 'Show random delay'
-        TabOrder = 1
-        OnClick = chk_delayClick
-      end
       object chk_grupos: TCheckBox
         Left = 12
-        Top = 45
+        Top = 29
         Width = 149
         Height = 17
         Caption = 'S'#243' contatos de grupos'
-        TabOrder = 2
+        TabOrder = 1
       end
       object Edit1: TEdit
-        Left = 12
-        Top = 110
+        Left = 236
+        Top = 46
         Width = 101
         Height = 21
         Alignment = taRightJustify
-        TabOrder = 3
+        TabOrder = 2
         Text = '0'
         OnKeyPress = Edit1KeyPress
         OnKeyUp = Edit1KeyUp
@@ -6181,6 +6181,17 @@ object frm_principal: Tfrm_principal
       Images = ImageList1
       TabOrder = 5
       OnClick = ButtonSelecionarArquivoClick
+    end
+    object Button4: TButton
+      Left = 200
+      Top = 100
+      Width = 178
+      Height = 25
+      Caption = 'Status da bateria'
+      ImageIndex = 0
+      Images = ImageList1
+      TabOrder = 6
+      OnClick = Button4Click
     end
   end
   object Panel2: TPanel
@@ -6505,8 +6516,6 @@ object frm_principal: Tfrm_principal
       TabOrder = 1
       ViewStyle = vsSmallIcon
       OnDblClick = listaContatosDblClick
-      ExplicitLeft = 6
-      ExplicitWidth = 250
     end
   end
   object Panel4: TPanel
@@ -6533,8 +6542,6 @@ object frm_principal: Tfrm_principal
       TabOrder = 0
       ViewStyle = vsSmallIcon
       OnDblClick = listaChatsDblClick
-      ExplicitLeft = 6
-      ExplicitWidth = 250
     end
     object Button3: TButton
       AlignWithMargins = True
@@ -6560,8 +6567,9 @@ object frm_principal: Tfrm_principal
     OnGetChatList = InjectWhatsapp1GetChatList
     OnGetUnReadMessages = InjectWhatsapp1GetUnReadMessages
     OnGetStatus = InjectWhatsapp1GetStatus
-    Left = 664
-    Top = 168
+    OnGetBatteryLevel = InjectWhatsapp1GetBatteryLevel
+    Left = 656
+    Top = 88
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Imagens|*jpg;*.jpg;*.bmp;*.png;*.pdf;*.mp4;*.mp3;*.rar'
