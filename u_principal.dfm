@@ -6476,20 +6476,6 @@ object frm_principal: Tfrm_principal
     Align = alClient
     Caption = 'Panel3'
     TabOrder = 2
-    object listaContatos: TListView
-      AlignWithMargins = True
-      Left = 4
-      Top = 35
-      Width = 284
-      Height = 312
-      Align = alClient
-      Columns = <>
-      ReadOnly = True
-      RowSelect = True
-      TabOrder = 0
-      ViewStyle = vsSmallIcon
-      OnDblClick = listaContatosDblClick
-    end
     object Button2: TButton
       AlignWithMargins = True
       Left = 4
@@ -6500,8 +6486,27 @@ object frm_principal: Tfrm_principal
       Caption = 'Listar contatos do aparelho'
       ImageIndex = 0
       Images = ImageList1
-      TabOrder = 1
+      TabOrder = 0
       OnClick = Button2Click
+    end
+    object listaContatos: TListView
+      AlignWithMargins = True
+      Left = 4
+      Top = 35
+      Width = 284
+      Height = 312
+      Align = alClient
+      Columns = <>
+      LargeImages = ImageList1
+      ReadOnly = True
+      RowSelect = True
+      SmallImages = ImageList1
+      StateImages = ImageList1
+      TabOrder = 1
+      ViewStyle = vsSmallIcon
+      OnDblClick = listaContatosDblClick
+      ExplicitLeft = 6
+      ExplicitWidth = 250
     end
   end
   object Panel4: TPanel
@@ -6514,17 +6519,22 @@ object frm_principal: Tfrm_principal
     TabOrder = 3
     object listaChats: TListView
       AlignWithMargins = True
-      Left = 6
+      Left = 4
       Top = 35
-      Width = 250
+      Width = 252
       Height = 312
-      Align = alRight
+      Align = alClient
       Columns = <>
+      LargeImages = ImageList1
       ReadOnly = True
       RowSelect = True
+      SmallImages = ImageList1
+      StateImages = ImageList1
       TabOrder = 0
       ViewStyle = vsSmallIcon
       OnDblClick = listaChatsDblClick
+      ExplicitLeft = 6
+      ExplicitWidth = 250
     end
     object Button3: TButton
       AlignWithMargins = True

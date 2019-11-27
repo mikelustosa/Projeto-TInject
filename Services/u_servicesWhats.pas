@@ -37,8 +37,7 @@ type
     Label1: TLabel;
     procedure Timer1Timer(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
-    procedure Chromium1AfterCreated(Sender: TObject;
-      const browser: ICefBrowser);
+    procedure Chromium1AfterCreated(Sender: TObject;      const browser: ICefBrowser);
     procedure Chromium1BeforeClose(Sender: TObject; const browser: ICefBrowser);
     procedure Chromium1BeforePopup(Sender: TObject; const browser: ICefBrowser;
       const frame: ICefFrame; const targetUrl, targetFrameName: ustring;
@@ -127,7 +126,7 @@ begin
    LJsonArr    := TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(aStringJson),0) as TJSONArray;
    for LJsonValue in LJsonArr do
    begin
-      for LItem in TJSONArray(LJsonValue) do
+     for LItem in TJSONArray(LJsonValue) do
         Writeln(Format('%s : %s',[TJSONPair(LItem).JsonString.Value, TJSONPair(LItem).JsonValue.Value]));
      Writeln;
    end;
@@ -165,7 +164,6 @@ end;
 procedure Tfrm_servicesWhats.WMMove(var aMessage : TWMMove);
 begin
   inherited;
-
   if (Chromium1 <> nil) then Chromium1.NotifyMoveOrResizeStarted;
 end;
 
@@ -230,7 +228,6 @@ procedure Tfrm_servicesWhats.Chromium1ConsoleMessage(Sender: TObject;
   line: Integer; out Result: Boolean);
 var
   AResponse: TResponseConsoleMessage;
-
   function PrettyJSON(JsonString: String):String;
   var
     AObj: TJSONObject;
@@ -245,7 +242,6 @@ begin
       try
         if assigned(AResponse) then
         begin
-
           if AResponse.Name = 'getAllContacts' then
           begin
              LogConsoleMessage( PrettyJSON(AResponse.Result) );
@@ -263,6 +259,7 @@ begin
              LogConsoleMessage( PrettyJSON(AResponse.Result) );
              SetUnreadMessages( AResponse.Result );
           end;
+
           if AResponse.name = 'getQrCode' then
              SetQrCode( message )
         end;
@@ -371,7 +368,8 @@ begin
   Chromium1.DefaultURL := 'https://web.whatsapp.com/';
   vAuth := false;
 
-  if not(Chromium1.CreateBrowser(CEFWindowParent1)) then Timer1.Enabled := True;
+  if not(Chromium1.CreateBrowser(CEFWindowParent1)) then
+     Timer1.Enabled := True;
 end;
 
 procedure Tfrm_servicesWhats.FormDestroy(Sender: TObject);
@@ -611,7 +609,10 @@ begin
       end;
       //injeta o JS principal
       JS := memo_js.Text;
-      Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+      for I := 0 to 4 do
+      begin
+        Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+      end;
       timer2.Enabled := false;
 
     end;

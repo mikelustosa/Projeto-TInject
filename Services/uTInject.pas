@@ -11,7 +11,7 @@ uses
   System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uClasses, u_view_qrcode;
 
 Const
-  IdeVesao = '1.0.0.5';
+  IdeVesao = '1.0.0.6'; //  27/11/2019
 
 type
   {Events}
@@ -152,7 +152,7 @@ type
   published
     { Published declarations }
     property Config               : TMySubComp read FMySubComp1;
-    property OnGetContactList     : TNotifyEvent read FOnGetContactList write FOnGetContactList;
+    property OnGetContactList     : TNotifyEvent read FOnGetContactList write FOnGetContactList ;
     property OnGetQrCode          : TNotifyEvent read FOnGetQrCode write FOnGetQrCode;
     property OnGetChatList        : TNotifyEvent read FOnGetChatList write FOnGetChatList;
     property OnGetNewMessage      : TNotifyEvent read FOnGetNewMessage write FOnGetNewMessage;
@@ -322,15 +322,7 @@ begin
             frm_servicesWhats.Send(vNum, vMess);
           end;
         end);
-          {
-          TThread.Synchronize(nil, procedure
-          begin
-            if FMySubComp1.ShowRandom then
-            begin
-              showMessage('Random: '+vGetDelay.ToString+' ms');
-            end;
-          end);
-          }
+
       end);
   lThread.FreeOnTerminate := true;
   lThread.Start;

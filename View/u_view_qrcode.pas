@@ -73,7 +73,10 @@ begin
     {$IFDEF VER330}
     //Delphi 10.3
       Image1.Picture.LoadFromStream(LOutput);
-    {$ELSE}
+    {$ENDIF}
+
+    {$IFDEF VER310}
+    // Delphi 10.1 e 10.2
       Image1.Picture.Bitmap.LoadFromStream(LOutput);
     {$ENDIF}
   finally
