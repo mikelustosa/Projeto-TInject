@@ -14,8 +14,7 @@ uses
   //units adicionais obrigatórias
   uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium, uCEFApplication,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
-  Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json, uClasses, uTInject, u_view_qrcode, Vcl.Imaging.jpeg,
-  uCEFChromiumCore;
+  Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json, uClasses, uTInject, u_view_qrcode, Vcl.Imaging.jpeg;
 
   var
    vContacts :Array of String;
@@ -277,9 +276,7 @@ begin
 
               if AResponse.Name = 'getBatteryLevel' then
               begin
-                if POS('undefined', AResponse.Result ) <= 0 then //'{"name":"getBatteryLevel","result":"{"result":undefined}"}'') then
-              //  if AResponse.Result <> 'AResponse.FResult '{"result":undefined}' then
-
+                if POS('undefined', AResponse.Result ) <= 0 then
                 begin
                   LogConsoleMessage( PrettyJSON(AResponse.Result) );
                   SetBatteryLevel( AResponse.Result );

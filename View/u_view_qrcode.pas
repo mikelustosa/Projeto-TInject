@@ -59,50 +59,40 @@ var
   stl: TStringList;
   PNG: TpngImage;
 begin
-//by Aurino Inovatechi 19/11/2019 review Mike
-{$IFDEF VER330}
+  //by Aurino Inovatechi 19/11/2019 review Mike
+  LInput  := TMemoryStream.Create;
+  LOutput := TMemoryStream.Create;
+  stl     := TStringList.Create;
   try
-    LInput  := TMemoryStream.Create;
-    LOutput := TMemoryStream.Create;
-    stl := TStringList.Create;
     stl.Add(copy(st, 23, length(st)));
     stl.SaveToStream(LInput);
 
     LInput.Position := 0;
     TNetEncoding.Base64.Decode( LInput, LOutput );
     LOutput.Position := 0;
-    if LOutput.size > 0 then
 
     //Delphi 10.3
-      Image1.Picture.LoadFromStream(LOutput);
+    {$IFDEF VER330}
+      if LOutput.size > 0 then
+        Image1.Picture.LoadFromStream(LOutput);
+    {$ELSE}
+    try
+      //Delphi 10.1,2 ....
 
-  finally
-   LInput.Free;
-   LOutput.Free;
-  end;
-
-  {$ELSE}
-  try
-    PNG := TPngImage.Create;
-    LInput := TMemoryStream.Create;
-    LOutput := TMemoryStream.Create;
-    stl := TStringList.Create;
-    stl.Add(copy(st, 23, length(st)));
-    stl.SaveToStream(LInput);
-
-    LInput.Position := 0;
-    TNetEncoding.Base64.Decode( LInput, LOutput );
-    LOutput.Position := 0;
-    if LOutput.size > 0 then
-    PNG.LoadFromStream(LOutput);
-    image1.Picture.Graphic := PNG;
+      PNG := TPngImage.Create;
+      if LOutput.size > 0 then
+         PNG.LoadFromStream(LOutput);
+      image1.Picture.Graphic := PNG;
     finally
-      LInput.Free;
-      LOutput.Free;
+      PNG.Free;
     end;
-  end;
+    {$ENDIF}
 
-  {$ENDIF}
+  finally
+    LInput.Free;
+    LOutput.Free;
+    FreeAndNil(stl);
+  end;
 end;
 
 procedure Tfrm_view_qrcode.Timer1Timer(Sender: TObject);
