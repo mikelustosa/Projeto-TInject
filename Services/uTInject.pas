@@ -44,6 +44,7 @@ type
   private
     FVersaoIde: String;
     { Private declarations }
+    procedure SetAuth(const Value: boolean);
   protected
     { Protected declarations }
     FResult               : TQrCodeClass;
@@ -163,7 +164,7 @@ type
     property BatteryLevel: TNotifyEvent read FBatteryLevel write FBatteryLevel;
     property AQrCode: TQrCodeClass read FResult write FResult;
     property AllChats: TChatList read FAllChats write FAllChats;
-    property Auth: boolean read FAuth write FAuth;
+    property Auth: boolean read FAuth write SetAuth;
     property Monitoring: Boolean read FMonitoring default False;
   published
     { Published declarations }
@@ -375,12 +376,22 @@ begin
         TThread.Synchronize(nil, procedure
         begin
           if Assigned(frm_servicesWhats) then
+          begin
+            frm_servicesWhats.ReadMessages(vNum); //Marca como lida a mensagem
             frm_servicesWhats.sendBase64(vBase64,vNum, vFileName, vMess);
+          end;
         end);
 
       end);
   lThread.FreeOnTerminate := true;
   lThread.Start;
+end;
+
+procedure TInjectWhatsapp.SetAuth(const Value: boolean);
+begin
+  FAuth := Value;
+  if Assigned( OnGetStatus ) then
+     OnGetStatus( Self );
 end;
 
 procedure TInjectWhatsapp.ShowWebApp;

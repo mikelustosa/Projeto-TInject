@@ -359,7 +359,7 @@ begin
   if i > 3 then
   begin
     vAuth := true;
-    //_Inject.Auth := true
+    _Inject.Auth := true
   end;
 end;
 
@@ -378,8 +378,11 @@ begin
     vBase64File := TBase64Encoding.Create;
     vFilestream := TMemoryStream.Create;
     vFilestream.LoadFromFile(vFile);
-   finally
+
     result :=  vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
+  finally
+    vBase64File.Free;
+    vFilestream.Free;
   end;
 end;
 
@@ -567,8 +570,9 @@ procedure Tfrm_servicesWhats.SetQrCode(JsonText: String);
 var AQrCode: TQrCodeClass;
 var code: string;
 begin
-  if not Assigned( _Inject ) then
-     Exit;
+  if not Assigned( _Inject ) then Exit;
+
+  if not Assigned( frm_view_qrcode ) then Exit;
 
   with _Inject do
   begin
