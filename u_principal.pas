@@ -145,7 +145,7 @@ var
 implementation
 
 uses
-  u_servicesWhats, System.StrUtils, uTInject.Emoticons;
+  u_servicesWhats, System.StrUtils;
 
 {$R *.dfm}
 
@@ -503,13 +503,13 @@ begin
       ( POS('INICIO', AnsiUpperCase(pMensagem))     > 0 ) or ( POS('OI', AnsiUpperCase(pMensagem))        > 0 )then
       begin
         mensagem :=
-        TInjectEmoticons.emoticonAtendenteH+ 'Olá *'+pContato+'!*\n\n'+
+        InjectWhatsapp1.Emoticons.AtendenteH+ 'Olá *'+pContato+'!*\n\n'+
         'Você está no auto atendimento do *TInject*!\n\n'+
         'Digite um número:\n\n'+
-        TInjectEmoticons.emoticonUm             +' Suporte\n\n'+
-        TInjectEmoticons.emoticonDois           +' Consultar CEP\n\n'+
-        TInjectEmoticons.emoticonTres           +' Financeiro\n\n'+
-        TInjectEmoticons.emoticonQuatro         +' Horários de atendimento\n\n';
+        InjectWhatsapp1.Emoticons.Um             +' Suporte\n\n'+
+        InjectWhatsapp1.Emoticons.Dois           +' Consultar CEP\n\n'+
+        InjectWhatsapp1.Emoticons.Tres           +' Financeiro\n\n'+
+        InjectWhatsapp1.Emoticons.Quatro         +' Horários de atendimento\n\n';
         vBase64Str := 'data:image/png;base64,' +frm_servicesWhats.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\softmais.png');
         InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, '', mensagem);
         exit;
