@@ -2067,7 +2067,6 @@ object frm_principal: Tfrm_principal
     Height = 226
     Align = alTop
     TabOrder = 0
-    ExplicitTop = -2
     DesignSize = (
       1020
       226)
