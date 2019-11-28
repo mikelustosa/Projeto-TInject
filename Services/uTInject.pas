@@ -64,6 +64,9 @@ type
     FMonitoring           : Boolean;
   public
     AGetBatteryLevel               : string;
+    //Sugestão remover do componente
+    //utilizar uTInject.Emoticons : TInjectEmoticons = record
+    //JTheiller
     const emoticonSorridente       = '😄';
     const emoticonSorridenteLingua = '😝';
     const emoticonImpressionado    = '😱';
