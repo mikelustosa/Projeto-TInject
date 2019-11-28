@@ -14,7 +14,8 @@ uses
   //units adicionais obrigatórias
   uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium, uCEFApplication,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
-  Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json, uClasses, uTInject, u_view_qrcode, Vcl.Imaging.jpeg;
+  Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json, uClasses, uTInject, u_view_qrcode, Vcl.Imaging.jpeg,
+  uCEFChromiumCore;
 
   var
    vContacts :Array of String;
@@ -80,6 +81,7 @@ type
     procedure BrowserDestroyMsg(var aMessage : TMessage); message CEF_DESTROY;
   private
     { Private declarations }
+    procedure ExecuteJS(JS: String);
     procedure LogConsoleMessage(const AMessage: String);
     procedure SetAllContacts(JsonText: String);
     procedure SetAllChats(JsonText: String);
@@ -107,6 +109,8 @@ type
     procedure loadQRCode(st: string);
     procedure ReadMessages(vID: string);
     procedure ReadMessagesAndDelete(vID: string);
+    procedure StartMonitor(Seconds: Integer);
+    procedure StopMonitor;
   end;
 
 var
@@ -240,8 +244,11 @@ var
   end;
 begin
     begin
+      AResponse := TResponseConsoleMessage.FromJsonString( message );
+
+      if AResponse = nil then Exit;
+
       try
-        AResponse := TResponseConsoleMessage.FromJsonString( message );
         try
           if(AResponse.Result <> '{"result":[]}') then
           begin
@@ -356,6 +363,11 @@ begin
   end;
 end;
 
+procedure Tfrm_servicesWhats.ExecuteJS(JS: String);
+begin
+  if Chromium1.Browser <> nil then
+     Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+end;
 
 function Tfrm_servicesWhats.ConvertBase64(vFile: string): string;
 var
@@ -479,6 +491,16 @@ begin
   end;
 
   freeAndNil(Base64File);
+end;
+
+procedure Tfrm_servicesWhats.StartMonitor(Seconds: Integer);
+begin
+  ExecuteJS('startMonitor(intervalSeconds=' + IntToStr( Seconds ) + ')');
+end;
+
+procedure Tfrm_servicesWhats.StopMonitor;
+begin
+  ExecuteJS('stopMonitor()');
 end;
 
 procedure Tfrm_servicesWhats.SetAllContacts(JsonText: String);
@@ -656,11 +678,19 @@ begin
           memo_js.Lines.Add(linha);
         end;
         CloseFile(arq);
+
+        //injeta o JS principal
+        JS := memo_js.Text;
+        Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
+
+        //Auto monitorar mensagens não lidas
+        if _Inject.Config.AutoMonitor then
+        begin
+          _Inject.StartMonitor;
+        end;
+
+        timer2.Enabled := false;
       end;
-      //injeta o JS principal
-      JS := memo_js.Text;
-      Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-      timer2.Enabled := false;
     end;
 end;
 

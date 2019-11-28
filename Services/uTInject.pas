@@ -20,12 +20,19 @@ type
   TMySubComp = class(TComponent)
   public
     FAutoStart      : Boolean;
+    FAutoMonitor    : Boolean;
+    FSecondsMonitor : Integer;
     FAutoDelete     : Boolean;
     FAutoDelay      : Integer;
     FSyncContacts   : Boolean;
     FShowRandom     : Boolean;
+  private
+    procedure SetAutoMonitor(const Value: Boolean);
+    procedure SetSecondsMonitor(const Value: Integer);
   published
     property AutoStart    : Boolean read FAutoStart    write FAutoStart default False;
+    property AutoMonitor  : boolean read FAutoMonitor  write SetAutoMonitor          default True;
+    property SecondsMonitor: Integer read FSecondsMonitor write SetSecondsMonitor default 3;
     property AutoDelete   : Boolean read FAutoDelete   write FAutoDelete;
     property AutoDelay    : integer read FAutoDelay    write FAutoDelay  default 2500;
     property SyncContacts : Boolean read FSyncContacts write FSyncContacts;
@@ -52,7 +59,8 @@ type
     FOnGetUnReadMessages  : TGetUnReadMessages;
     FOnGetStatus          : TNotifyEvent;
     FContacts             : String;
-    FAuth                 : boolean;
+    FAuth                 : Boolean;
+    FMonitoring           : Boolean;
   public
     AGetBatteryLevel               : string;
     const emoticonSorridente       = '😄';
@@ -140,6 +148,8 @@ type
     procedure startQrCode;
     procedure monitorQrCode;
     procedure startWhatsapp;
+    procedure StartMonitor;
+    procedure StopMonitor;
     procedure ShowWebApp;
     procedure send(vNum, vMess: string);
     procedure batteryStatus();
@@ -154,7 +164,7 @@ type
     property AQrCode: TQrCodeClass read FResult write FResult;
     property AllChats: TChatList read FAllChats write FAllChats;
     property Auth: boolean read FAuth write FAuth;
-
+    property Monitoring: Boolean read FMonitoring default False;
   published
     { Published declarations }
     property Config               : TMySubComp read FMySubComp1;
@@ -209,6 +219,22 @@ begin
   Result := LClearNum +  '@c.us';
 end;
 
+procedure TMySubComp.SetAutoMonitor(const Value: boolean);
+begin
+  FAutoMonitor := Value;
+  if SecondsMonitor < 1 then
+     SecondsMonitor := 3; //Default Value;
+end;
+
+procedure TMySubComp.SetSecondsMonitor(const Value: Integer);
+begin
+  FSecondsMonitor := Value;
+
+  //Não permitir que fique zero ou negativo.
+  if Value < 1 then
+     FSecondsMonitor := 3;
+end;
+
 { TInjectWhatsapp }
 
 procedure TInjectWhatsapp.batteryStatus();
@@ -223,8 +249,15 @@ begin
   FMySubComp1            := TMySubComp.Create(self);
   FMySubComp1.Name       := 'AutoInject';
   FMySubComp1.AutoDelay  := 1000;
+
+  FMySubComp1.SecondsMonitor := 3;
+  FMySubComp1.AutoMonitor := True;
+
   FMySubComp1.SetSubComponent(true);
   FVersaoIde       := TInjectVersion;
+
+  //Default
+
 
   if Config.AutoStart then
      startWhatsapp;
@@ -354,6 +387,28 @@ procedure TInjectWhatsapp.ShowWebApp;
 begin
   startWhatsapp;
   frm_servicesWhats.Show;
+end;
+
+procedure TInjectWhatsapp.StartMonitor;
+begin
+  if FMonitoring then Exit;
+
+  if Assigned(frm_servicesWhats) then
+  begin
+    FMonitoring := not Monitoring;
+    frm_servicesWhats.StartMonitor( Config.SecondsMonitor );
+  end;
+end;
+
+procedure TInjectWhatsapp.StopMonitor;
+begin
+  if not FMonitoring then Exit;
+
+  if Assigned(frm_servicesWhats) then
+  begin
+    FMonitoring := not Monitoring;
+    frm_servicesWhats.StopMonitor;
+  end;
 end;
 
 procedure TInjectWhatsapp.startQrCode;

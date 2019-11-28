@@ -6077,6 +6077,21 @@ object frm_principal: Tfrm_principal
       Font.Style = []
       ParentFont = False
     end
+    object Label3: TLabel
+      Left = 152
+      Top = 8
+      Width = 425
+      Height = 13
+      Caption = 
+        'Arquivo js.abr atualizado 28.11.2019, copie-o para pasta BIN do ' +
+        'seu projeto'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clRed
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = [fsBold]
+      ParentFont = False
+    end
     object ed_num: TEdit
       Left = 3
       Top = 28
@@ -6158,6 +6173,17 @@ object frm_principal: Tfrm_principal
         Text = '0'
         OnKeyPress = Edit1KeyPress
         OnKeyUp = Edit1KeyUp
+      end
+      object chk_AutoResposta: TCheckBox
+        Left = 12
+        Top = 71
+        Width = 201
+        Height = 17
+        Caption = 'Auto responder mensagens'
+        Checked = True
+        State = cbChecked
+        TabOrder = 3
+        OnClick = chk_apagarMsgClick
       end
     end
     object Button1: TButton

@@ -67,6 +67,8 @@ type
     lbl_batteryStatus: TLabel;
     Label5: TLabel;
     Label9: TLabel;
+    chk_AutoResposta: TCheckBox;
+    Label3: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure whatsOnClick(Sender: TObject);
@@ -255,8 +257,8 @@ begin
   if vBase64File <> nil then
   begin
     InjectWhatsapp1.sendBase64(vBase64Str, ed_num.Text, vFileName, mem_message.Text);
-    sleep(1000);
-    InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
+    //sleep(1000);
+    //InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
     vBase64File := nil;
     application.MessageBox('Arquivo enviado com sucesso!','TInject whatsapp', mb_iconAsterisk + mb_ok);
   end;
@@ -435,22 +437,24 @@ begin
     begin
       for AMessage in AChat.messages do
       begin
-          if AMessage.sender.isMe = false then  //Não exibe mensages enviadas por mim
+        if not AChat.isGroup then //Não exibe mensages de grupos
+        begin
+          if not AMessage.sender.isMe then  //Não exibe mensages enviadas por mim
           begin
-            if AMessage.isGroupMsg = false then //Não exibe mensages de grupos
-            begin
-              memo_unReadMessagen.Clear;
-              //memo_unReadMessagen.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
-              //memo_unReadMessagen.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
-              memo_unReadMessagen.Lines.Add(PChar(AMessage.body));
-              //memo_unReadMessagen.Lines.Add(PChar( 'ID Message  : ' + AMessage.t.ToString));
-              //memo_unReadMessagen.Lines.Add('__________________________________');
-              telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
-              contato   := AMessage.Sender.pushName;
-              injectWhatsapp1.ReadMessages(AChat.id);
-              VerificaPalavraChave(AMessage.body, '', telefone, contato);
-            end;
+            memo_unReadMessagen.Clear;
+            //memo_unReadMessagen.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
+            //memo_unReadMessagen.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
+            memo_unReadMessagen.Lines.Add(PChar(AMessage.body));
+            //memo_unReadMessagen.Lines.Add(PChar( 'ID Message  : ' + AMessage.t.ToString));
+            //memo_unReadMessagen.Lines.Add('__________________________________');
+            telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
+            contato   := AMessage.Sender.pushName;
+            injectWhatsapp1.ReadMessages(AChat.id);
+
+            if chk_AutoResposta.Checked then
+               VerificaPalavraChave(AMessage.body, '', telefone, contato);
           end;
+        end;
       end;
     end;
 end;
