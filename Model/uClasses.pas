@@ -8,7 +8,6 @@ type
 
 //forware
 TChatClass = class;   //forward
-TLabelsClass = class; //forward
 TSenderClass = class; //forward
 
 
@@ -150,7 +149,7 @@ private
   FName: String;
   FProfilePicThumbObj: TProfilePicThumbObjClass;
   FStatusMute: Boolean;
-  FLabels: TArray<TLabelsClass>;
+  FLabels: TArray<String>;
   FType: String;
 public
   property formattedName: String read FFormattedName write FFormattedName;
@@ -166,7 +165,7 @@ public
   property name: String read FName write FName;
   property profilePicThumbObj: TProfilePicThumbObjClass read FProfilePicThumbObj write FProfilePicThumbObj;
   property statusMute: Boolean read FStatusMute write FStatusMute;
-  property labels: TArray<TLabelsClass> read FLabels write FLabels;
+  property labels: TArray<String> read FLabels write FLabels;
   property &type: String read FType write FType;
   constructor Create;
   destructor Destroy; override;
@@ -207,7 +206,7 @@ private
   FIsNewMsg: Boolean;
   FIsNotification: Boolean;
   FIsPSA: Boolean;
-  FLabels: TArray<TLabelsClass>;
+  FLabels: TArray<String>;
   FMediaData: TMediaDataClass;
   FMentionedJidList: TArray<String>;
   FNotifyName: String;
@@ -236,7 +235,7 @@ public
   property isNewMsg: Boolean read FIsNewMsg write FIsNewMsg;
   property isNotification: Boolean read FIsNotification write FIsNotification;
   property isPSA: Boolean read FIsPSA write FIsPSA;
-  property labels: TArray<TLabelsClass> read FLabels write FLabels;
+  property labels: TArray<String> read FLabels write FLabels;
   property mediaData: TMediaDataClass read FMediaData write FMediaData;
   property mentionedJidList: TArray<String> read FMentionedJidList write FMentionedJidList;
   property notifyName: String read FNotifyName write FNotifyName;
@@ -322,15 +321,6 @@ public
   class function FromJsonString(AJsonString: string): TRetornoAllContacts;
 end;
 
-TLabelsClass = class
-private
-  FTeste: String;
-public
-  property teste: String read FTeste write FTeste;
-  function ToJsonString: string;
-  class function FromJsonString(AJsonString: string): TLabelsClass;
-end;
-
 TSenderClass = class
 private
   FFormattedName: String;
@@ -342,7 +332,7 @@ private
   FIsPSA: Boolean;
   FIsUser: Boolean;
   FIsWAContact: Boolean;
-  FLabels: TArray<TLabelsClass>;
+  FLabels: TArray<String>;
   FProfilePicThumbObj: TProfilePicThumbObjClass;
   FPushname: String;
   FStatusMute: Boolean;
@@ -357,7 +347,7 @@ public
   property isPSA: Boolean read FIsPSA write FIsPSA;
   property isUser: Boolean read FIsUser write FIsUser;
   property isWAContact: Boolean read FIsWAContact write FIsWAContact;
-  property labels: TArray<TLabelsClass> read FLabels write FLabels;
+  property labels: TArray<String> read FLabels write FLabels;
   property profilePicThumbObj: TProfilePicThumbObjClass read FProfilePicThumbObj write FProfilePicThumbObj;
   property pushname: String read FPushname write FPushname;
   property statusMute: Boolean read FStatusMute write FStatusMute;
@@ -644,18 +634,6 @@ begin
   result := TJson.JsonToObject<TRetornoAllContacts>(AJsonString, [TJsonOption.joIgnoreEmptyStrings])
 end;
 
-{TLabelsClass}
-
-function TLabelsClass.ToJsonString: string;
-begin
-  result := TJson.ObjectToJsonString(self);
-end;
-
-class function TLabelsClass.FromJsonString(AJsonString: string): TLabelsClass;
-begin
-  result := TJson.JsonToObject<TLabelsClass>(AJsonString)
-end;
-
 {TSenderClass}
 
 constructor TSenderClass.Create;
@@ -665,13 +643,7 @@ begin
 end;
 
 destructor TSenderClass.Destroy;
-var
-  LlabelsItem: TLabelsClass;
 begin
-
- for LlabelsItem in FLabels do
-   LlabelsItem.free;
-
   FProfilePicThumbObj.free;
   inherited;
 end;
@@ -697,12 +669,7 @@ begin
 end;
 
 destructor TMessagesClass.Destroy;
-var
-  LlabelsItem: TLabelsClass;
 begin
- for LlabelsItem in FLabels do
-   LlabelsItem.free;
-
   FSender.free;
   FChat.free;
   FMediaData.free;
