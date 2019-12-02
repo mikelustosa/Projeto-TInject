@@ -1,0 +1,11 @@
+1.0.0.7 
+Correções:
+
+-Adicionado novo layout
+
+-Nova função sendMessageByID
+-Nova função status da bateria
+
+-Reorganização de pastas
+-
+-------------------------------------------------------------------------
