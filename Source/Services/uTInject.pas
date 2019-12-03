@@ -289,7 +289,7 @@ Var
   lThread : TThread;
 begin
   inherited;
-  vNum := AdjustNumber(vNum);
+  //vNum := AdjustNumber(vNum);
   lThread := TThread.CreateAnonymousThread(procedure
       begin
          if Config.AutoDelay > 0 then
@@ -300,7 +300,7 @@ begin
           if Assigned(frm_servicesWhats) then
           begin
             frm_servicesWhats.ReadMessages(vNum); //Marca como lida a mensagem
-            frm_servicesWhats.sendBase64(vBase64,vNum, vFileName, vMess);
+            frm_servicesWhats.sendBase64(vBase64, vNum, vFileName, vMess);
           end;
         end);
 

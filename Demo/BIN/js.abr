@@ -81,8 +81,8 @@ if (!window.Store) {
                         });
 						//Comentado em 27/11/2019 by Mike
 						//Esse trecho estava causando este erro no console = Cannot read property 'default' of undefined
-					 //  window.Store.ChatClass.default.prototype.sendMessage = function (e) {
-                        //    return window.Store.SendTextMsgToChat(this, ...arguments);
+					   //window.Store.ChatClass.default.prototype.sendMessage = function (e) {
+                         //   return window.Store.SendTextMsgToChat(this, ...arguments);
                         //}
                         return window.Store;
                     }
@@ -1239,6 +1239,15 @@ return Store.Chat.find(idUser).then((chat) => {
 });
 }
 
+//Função criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
+window.WAPI.sendMessageToID = function (chatid, msgText) {
+var idUser = new window.Store.UserConstructor(chatid, { intentionallyUsePrivateConstructor: true });
+return Store.Chat.find(idUser).then((chatid) => {
+    var mc = new Store.SendTextMsgToChat(chatid, msgText);
+		return true;
+});
+}
+
 window.WAPI.base64ImageToFile = function (b64Data, filename) {
     var arr   = b64Data.split(',');
     var mime  = arr[0].match(/:(.*?);/)[1];
@@ -1417,35 +1426,25 @@ window.WAPI.demoteParticipantAdminGroup = function (idGroup, idParticipant, done
 }
 
 
-//Nova função para enviar mensagens
+//Nova função alternativa para enviar mensagens(Não envia para grupos)
 //Criada em 27/11/2019 Mike
-window.WAPI.sendMessageToID = function(id, msgText) 
+window.WAPI.sendMessageToID2 = function(id, msgText) 
 {
-		try {
-				window.Store.WapQuery.queryExist(id).then (function(e) 
-				{
-					if (e.status === 200) 
-					{
-						window.Store.Chat.find(e.jid).then ((chat) => 
-						{
-							try 
-							{
-								window.Store.SendTextMsgToChat(chat, msgText);
-								return true;
-							} catch(e) 
-							{
-								return false;
-							}
-               
-						});
+	try {
+		window.Store.WapQuery.queryExist(id).then (function(e) {
+			if (e.status === 200) {
+				window.Store.Chat.find(e.jid).then ((chat) => {
+					try {
+						window.Store.SendTextMsgToChat(chat, msgText);
 						return true;
-					} else 
-					{
+					} catch(e) {
 						return false;
-					}
-				});
-			} catch (e) 
-			{
+					  }});
+						return true;
+					} else {
+						return false;
+					  }});
+			} catch (e) {
 				return false;
-			}
+			  }
 }
