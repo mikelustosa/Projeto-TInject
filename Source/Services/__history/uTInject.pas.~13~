@@ -134,7 +134,7 @@ begin
   if Length(LClearNum) < 10 then
      raise Exception.Create('Número inválido');
 
-  //Testa se é um grupo!
+  //Testa se o numero é compativel com brasil!
   if Length(LClearNum) > 14 then
   begin
     Result := PNum;

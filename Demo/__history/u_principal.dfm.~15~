@@ -22,13 +22,10 @@ object frmPrincipal: TfrmPrincipal
     Top = 8
     Width = 702
     Height = 353
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o'
-      ExplicitLeft = 0
-      ExplicitWidth = 865
-      ExplicitHeight = 430
       object whatsOn: TImage
         Left = 289
         Top = 57
@@ -2942,10 +2939,10 @@ object frmPrincipal: TfrmPrincipal
       end
       object lblNumeroConectado: TLabel
         Left = 182
-        Top = 210
+        Top = 213
         Width = 316
         Height = 29
-        Caption = 'N'#250'mero: (44) 99183-8054'
+        Caption = 'N'#250'mero: (99) 99999-9999'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -24
@@ -2958,8 +2955,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#245'es'
       ImageIndex = 1
-      ExplicitWidth = 833
-      ExplicitHeight = 430
       object Label8: TLabel
         Left = 12
         Top = 10
@@ -3010,9 +3005,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet3: TTabSheet
       Caption = 'A'#231#245'es Manuais'
       ImageIndex = 2
-      ExplicitLeft = -28
-      ExplicitTop = 16
-      ExplicitWidth = 737
       object groupEnvioMsg: TGroupBox
         Left = 8
         Top = 4
@@ -3190,8 +3182,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
-      ExplicitWidth = 833
-      ExplicitHeight = 430
       object memo_unReadMessagen: TMemo
         Left = 0
         Top = 0
@@ -3209,10 +3199,6 @@ object frmPrincipal: TfrmPrincipal
         ParentFont = False
         ReadOnly = True
         TabOrder = 0
-        ExplicitLeft = 1
-        ExplicitTop = 99
-        ExplicitWidth = 188
-        ExplicitHeight = 245
       end
     end
   end
@@ -3232,9 +3218,6 @@ object frmPrincipal: TfrmPrincipal
         Text = 'Offline'
         Width = 50
       end>
-    ExplicitLeft = 496
-    ExplicitTop = 408
-    ExplicitWidth = 0
   end
   object InjectWhatsapp1: TInjectWhatsapp
     Config.AutoStart = True
@@ -3246,6 +3229,7 @@ object frmPrincipal: TfrmPrincipal
     OnGetChatList = InjectWhatsapp1GetChatList
     OnGetUnReadMessages = InjectWhatsapp1GetUnReadMessages
     OnGetStatus = InjectWhatsapp1GetStatus
+    OnGetBatteryLevel = InjectWhatsapp1GetBatteryLevel
     Left = 624
   end
   object OpenDialog1: TOpenDialog

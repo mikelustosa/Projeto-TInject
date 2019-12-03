@@ -132,19 +132,18 @@ begin
 
   //O requisito minimo é possuir DDD + NUMERO (Fone 8 ou 9 digitos)
   if Length(LClearNum) < 10 then
-  begin
      raise Exception.Create('Número inválido');
-  end;
 
   //Testa se o numero é compativel com brasil!
-  if Length(LClearNum) > 17 then
+  if Length(LClearNum) > 14 then
   begin
-    Result := LClearNum + '@g.us';
-  end else
+    Result := LClearNum
+  end;
+
+  if Length(LClearNum) < 12 then  //Nao possui DDI
   begin
-    if Length(LClearNum) < 12 then  //Nao possui DDI
-      LClearNum := '55' + LClearNum;
-    Result := LClearNum +  '@c.us';
+     LClearNum := '55' + LClearNum;
+     Result := LClearNum +  '@c.us';
   end;
 end;
 
@@ -295,7 +294,7 @@ Var
   lThread : TThread;
 begin
   inherited;
-  vNum := AdjustNumber(vNum);
+  //vNum := AdjustNumber(vNum);
   lThread := TThread.CreateAnonymousThread(procedure
       begin
          if Config.AutoDelay > 0 then
@@ -306,7 +305,7 @@ begin
           if Assigned(frm_servicesWhats) then
           begin
             frm_servicesWhats.ReadMessages(vNum); //Marca como lida a mensagem
-            frm_servicesWhats.sendBase64(vBase64,vNum, vFileName, vMess);
+            frm_servicesWhats.sendBase64(vBase64, vNum, vFileName, vMess);
           end;
         end);
 

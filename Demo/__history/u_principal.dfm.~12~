@@ -2939,10 +2939,10 @@ object frmPrincipal: TfrmPrincipal
       end
       object lblNumeroConectado: TLabel
         Left = 182
-        Top = 210
+        Top = 213
         Width = 316
         Height = 29
-        Caption = 'N'#250'mero: (44) 99183-8054'
+        Caption = 'N'#250'mero: (99) 99999-9999'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -24

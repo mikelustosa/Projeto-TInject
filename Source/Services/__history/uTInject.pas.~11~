@@ -134,10 +134,11 @@ begin
   if Length(LClearNum) < 10 then
      raise Exception.Create('Número inválido');
 
-  //Testa se é um grupo!
-  if Length(LClearNum) > 14 then
+  //Testa se o numero é compativel com brasil!
+  if Length(LClearNum) > 13 then
   begin
-    Result := PNum;
+    //LClearNum := '55' + LClearNum;
+    Result := LClearNum +  '@g.us';
   end;
 
   if Length(LClearNum) < 12 then  //Nao possui DDI

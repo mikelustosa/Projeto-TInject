@@ -22,7 +22,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 8
     Width = 702
     Height = 353
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o'
@@ -2939,10 +2939,10 @@ object frmPrincipal: TfrmPrincipal
       end
       object lblNumeroConectado: TLabel
         Left = 182
-        Top = 210
+        Top = 213
         Width = 316
         Height = 29
-        Caption = 'N'#250'mero: (44) 99183-8054'
+        Caption = 'N'#250'mero: (99) 99999-9999'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -24
