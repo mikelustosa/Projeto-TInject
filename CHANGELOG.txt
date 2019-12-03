@@ -1,3 +1,16 @@
+
+1.0.0.8   
+03/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
+Correções:
+     - Ajustado problema de envio com anexos;
+     
+Melhorias:     
+     - Criado pacote de instalação do componente;
+     - Mostrado no DPR a possibilidade de alterarem os arquivos BIN, Locale, Etc..;
+     - Retirado pasta CONTROLLER que possuia um arquivo sem nada dentro;
+     - Adicionado Script limpeza dos "lixos";
+     
+-------------------------------------------------------------------------
 1.0.0.7 
 Correções:
 
@@ -9,3 +22,4 @@ Correções:
 -Reorganização de pastas
 -
 -------------------------------------------------------------------------
+

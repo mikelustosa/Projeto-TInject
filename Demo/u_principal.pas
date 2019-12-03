@@ -59,14 +59,16 @@ type
     ButtonSelecionarArquivo: TButton;
     btEnviaTextoArq: TButton;
     btEnviaTexto: TButton;
-    groupListaContatos: TGroupBox;
-    listaContatos: TListView;
-    Button2: TButton;
+    GroupBox4: TGroupBox;
+    btStatusBat: TButton;
+    Panel1: TPanel;
     groupListaChats: TGroupBox;
     Button3: TButton;
     listaChats: TListView;
-    GroupBox4: TGroupBox;
-    btStatusBat: TButton;
+    groupListaContatos: TGroupBox;
+    listaContatos: TListView;
+    Button2: TButton;
+    Splitter1: TSplitter;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure whatsOnClick(Sender: TObject);
@@ -311,29 +313,19 @@ begin
     vFilestream := TMemoryStream.Create;
     vFilestream.LoadFromFile(openDialog1.FileName);
 
-    vExtension := Copy(ExtractFileExt(openDialog1.FileName),2,5);
+    vExtension := LowerCase(Copy(ExtractFileExt(openDialog1.FileName),2,5));
 
     vFileName  := ExtractFileName(openDialog1.FileName);
     vFileNameURL := dateToStr(date)+timeToStr(time)+'.'+vExtension;
-    if vExtension = 'pdf' then
+    if (vExtension = 'pdf') or (vExtension = 'rar')  or (vExtension = 'zip') then
     begin
       vBase64Str := 'data:application/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
     end else
-      if vExtension = 'mp4' then
-      begin
-        vBase64Str := 'data:application/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
-      end else
-        if vExtension = 'mp3' then
-        begin
-          vBase64Str := 'data:audio/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
-        end else
-        if vExtension = 'rar' then
-        begin
-          vBase64Str := 'data:application/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
-        end else
-          begin
-            vBase64Str := 'data:image/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
-          end;
+    Begin
+      if (vExtension = 'mp4') or (vExtension = 'mp3') then
+         vBase64Str := 'data:application/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size)  Else
+         vBase64Str := 'data:image/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
+    End;
     caminhoArquivo := openDialog1.FileName;
     vFilestream.Free;
   end;

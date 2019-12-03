@@ -2,8 +2,8 @@ object frmPrincipal: TfrmPrincipal
   Left = 0
   Top = 0
   Caption = 'Demo TInject'
-  ClientHeight = 389
-  ClientWidth = 718
+  ClientHeight = 386
+  ClientWidth = 728
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,12 +18,16 @@ object frmPrincipal: TfrmPrincipal
   PixelsPerInch = 96
   TextHeight = 13
   object PageControl1: TPageControl
-    Left = 8
-    Top = 8
-    Width = 702
-    Height = 353
-    ActivePage = TabSheet1
+    AlignWithMargins = True
+    Left = 3
+    Top = 3
+    Width = 722
+    Height = 361
+    ActivePage = TabSheet3
+    Align = alClient
     TabOrder = 0
+    ExplicitWidth = 731
+    ExplicitHeight = 374
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o'
       object whatsOn: TImage
@@ -2622,7 +2626,7 @@ object frmPrincipal: TfrmPrincipal
       end
       object imgQrcode: TImage
         Left = 304
-        Top = 203
+        Top = 195
         Width = 74
         Height = 75
         Cursor = crHandPoint
@@ -2955,10 +2959,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#245'es'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label8: TLabel
         Left = 12
         Top = 10
@@ -3009,13 +3009,20 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet3: TTabSheet
       Caption = 'A'#231#245'es Manuais'
       ImageIndex = 2
+      ExplicitWidth = 723
+      ExplicitHeight = 346
       object groupEnvioMsg: TGroupBox
-        Left = 8
-        Top = 4
+        Left = 0
+        Top = 0
         Width = 218
-        Height = 241
+        Height = 265
+        Align = alLeft
         Caption = 'Envio de Mensagem'
         TabOrder = 0
+        ExplicitHeight = 278
+        DesignSize = (
+          218
+          265)
         object Label1: TLabel
           Left = 14
           Top = 18
@@ -3042,134 +3049,65 @@ object frmPrincipal: TfrmPrincipal
           Left = 14
           Top = 75
           Width = 190
-          Height = 91
+          Height = 115
+          Anchors = [akLeft, akTop, akBottom]
           TabOrder = 1
+          ExplicitHeight = 128
         end
         object ButtonSelecionarArquivo: TButton
           Left = 14
-          Top = 203
+          Top = 229
           Width = 34
           Height = 25
+          Anchors = [akLeft, akBottom]
           ImageAlignment = iaCenter
           ImageIndex = 3
           Images = ImageList1
           TabOrder = 2
           OnClick = ButtonSelecionarArquivoClick
+          ExplicitTop = 242
         end
         object btEnviaTextoArq: TButton
           Left = 51
-          Top = 203
+          Top = 229
           Width = 153
           Height = 25
+          Anchors = [akLeft, akBottom]
           Caption = 'Enviar Texto e Arquivo'
           ImageIndex = 0
           Images = ImageList1
           TabOrder = 3
           OnClick = btEnviaTextoArqClick
+          ExplicitTop = 242
         end
         object btEnviaTexto: TButton
           Left = 14
-          Top = 172
+          Top = 198
           Width = 190
           Height = 25
+          Anchors = [akLeft, akBottom]
           Caption = 'Enviar Apenas Texto'
           ImageIndex = 0
           Images = ImageList1
           TabOrder = 4
           OnClick = btEnviaTextoClick
-        end
-      end
-      object groupListaContatos: TGroupBox
-        Left = 232
-        Top = 4
-        Width = 222
-        Height = 241
-        Caption = 'Lista de Contatos'
-        TabOrder = 1
-        object listaContatos: TListView
-          AlignWithMargins = True
-          Left = 12
-          Top = 48
-          Width = 197
-          Height = 180
-          Columns = <>
-          LargeImages = ImageList1
-          ReadOnly = True
-          RowSelect = True
-          SmallImages = ImageList1
-          StateImages = ImageList1
-          TabOrder = 0
-          ViewStyle = vsSmallIcon
-          OnDblClick = listaContatosDblClick
-        end
-        object Button2: TButton
-          AlignWithMargins = True
-          Left = 12
-          Top = 18
-          Width = 197
-          Height = 25
-          Caption = 'Listar Contatos do Aparelho'
-          ImageIndex = 0
-          Images = ImageList1
-          TabOrder = 1
-          OnClick = Button2Click
-        end
-      end
-      object groupListaChats: TGroupBox
-        Left = 460
-        Top = 0
-        Width = 222
-        Height = 245
-        Caption = 'Lista Conversas Abertas'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'Tahoma'
-        Font.Style = []
-        ParentFont = False
-        TabOrder = 2
-        object Button3: TButton
-          AlignWithMargins = True
-          Left = 11
-          Top = 22
-          Width = 197
-          Height = 25
-          Caption = 'Listar Chats Abertos'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ImageIndex = 0
-          Images = ImageList1
-          ParentFont = False
-          TabOrder = 0
-          OnClick = Button3Click
-        end
-        object listaChats: TListView
-          AlignWithMargins = True
-          Left = 11
-          Top = 52
-          Width = 197
-          Height = 180
-          Columns = <>
-          LargeImages = ImageList1
-          ReadOnly = True
-          RowSelect = True
-          SmallImages = ImageList1
-          StateImages = ImageList1
-          TabOrder = 1
-          ViewStyle = vsSmallIcon
-          OnDblClick = listaChatsDblClick
+          ExplicitTop = 211
         end
       end
       object GroupBox4: TGroupBox
-        Left = 8
-        Top = 251
-        Width = 674
+        AlignWithMargins = True
+        Left = 7
+        Top = 268
+        Width = 700
         Height = 60
+        Margins.Left = 7
+        Margins.Right = 7
+        Margins.Bottom = 5
+        Align = alBottom
         Caption = 'Outras Fun'#231#245'es'
-        TabOrder = 3
+        TabOrder = 1
+        ExplicitTop = 281
+        ExplicitWidth = 709
         object btStatusBat: TButton
           Left = 14
           Top = 21
@@ -3182,19 +3120,138 @@ object frmPrincipal: TfrmPrincipal
           OnClick = btStatusBatClick
         end
       end
+      object Panel1: TPanel
+        Left = 218
+        Top = 0
+        Width = 496
+        Height = 265
+        Align = alClient
+        BevelOuter = bvNone
+        Caption = 'Panel1'
+        ShowCaption = False
+        TabOrder = 2
+        ExplicitWidth = 505
+        ExplicitHeight = 278
+        object Splitter1: TSplitter
+          Left = 222
+          Top = 0
+          Height = 265
+          ExplicitLeft = 240
+          ExplicitTop = 72
+          ExplicitHeight = 100
+        end
+        object groupListaChats: TGroupBox
+          Left = 225
+          Top = 0
+          Width = 271
+          Height = 265
+          Align = alClient
+          Caption = 'Lista Conversas Abertas'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+          ExplicitWidth = 280
+          ExplicitHeight = 278
+          DesignSize = (
+            271
+            265)
+          object Button3: TButton
+            AlignWithMargins = True
+            Left = 11
+            Top = 22
+            Width = 251
+            Height = 25
+            Anchors = [akLeft, akTop, akRight]
+            Caption = 'Listar Chats Abertos'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ImageIndex = 0
+            Images = ImageList1
+            ParentFont = False
+            TabOrder = 0
+            OnClick = Button3Click
+            ExplicitWidth = 260
+          end
+          object listaChats: TListView
+            AlignWithMargins = True
+            Left = 11
+            Top = 52
+            Width = 250
+            Height = 200
+            Anchors = [akLeft, akTop, akRight, akBottom]
+            Columns = <>
+            LargeImages = ImageList1
+            ReadOnly = True
+            RowSelect = True
+            SmallImages = ImageList1
+            StateImages = ImageList1
+            TabOrder = 1
+            ViewStyle = vsSmallIcon
+            OnDblClick = listaChatsDblClick
+            ExplicitWidth = 259
+            ExplicitHeight = 213
+          end
+        end
+        object groupListaContatos: TGroupBox
+          Left = 0
+          Top = 0
+          Width = 222
+          Height = 265
+          Align = alLeft
+          Caption = 'Lista de Contatos'
+          TabOrder = 1
+          ExplicitHeight = 278
+          DesignSize = (
+            222
+            265)
+          object listaContatos: TListView
+            AlignWithMargins = True
+            Left = 12
+            Top = 52
+            Width = 197
+            Height = 202
+            Anchors = [akLeft, akTop, akBottom]
+            Columns = <>
+            LargeImages = ImageList1
+            ReadOnly = True
+            RowSelect = True
+            SmallImages = ImageList1
+            StateImages = ImageList1
+            TabOrder = 0
+            ViewStyle = vsSmallIcon
+            OnDblClick = listaContatosDblClick
+            ExplicitHeight = 215
+          end
+          object Button2: TButton
+            AlignWithMargins = True
+            Left = 12
+            Top = 18
+            Width = 197
+            Height = 25
+            Caption = 'Listar Contatos do Aparelho'
+            ImageIndex = 0
+            Images = ImageList1
+            TabOrder = 1
+            OnClick = Button2Click
+          end
+        end
+      end
     end
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object memo_unReadMessagen: TMemo
         Left = 0
         Top = 0
-        Width = 694
-        Height = 325
+        Width = 714
+        Height = 333
         Align = alClient
         BorderStyle = bsNone
         Font.Charset = DEFAULT_CHARSET
@@ -3212,8 +3269,8 @@ object frmPrincipal: TfrmPrincipal
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 370
-    Width = 718
+    Top = 367
+    Width = 728
     Height = 19
     Panels = <
       item
@@ -3226,6 +3283,8 @@ object frmPrincipal: TfrmPrincipal
         Text = 'Offline'
         Width = 50
       end>
+    ExplicitTop = 380
+    ExplicitWidth = 737
   end
   object InjectWhatsapp1: TInjectWhatsapp
     Config.AutoStart = True

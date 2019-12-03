@@ -16,6 +16,10 @@ uses
 begin
   GlobalCEFApp := TCefApplication.Create;
   GlobalCEFApp.EnableGPU            := True;
+//  GlobalCEFApp.FrameworkDirPath     := 'C:\Componentes\WhatsApp\Comp\BIN\';
+//  GlobalCEFApp.ResourcesDirPath     := 'C:\Componentes\WhatsApp\Comp\BIN\';
+//  GlobalCEFApp.LocalesDirPath       := 'C:\Componentes\WhatsApp\Comp\BIN\locales';
+//  GlobalCEFApp.UserDataPath         := 'C:\Componentes\WhatsApp\Comp\BIN\User Data';
   GlobalCEFApp.cache                := 'DATA\cache';
   GlobalCEFApp.DisableFeatures      := 'NetworkService,OutOfBlinkCors';
 

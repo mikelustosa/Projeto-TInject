@@ -12,7 +12,18 @@ uses
   uTInject.Emoticons;
 
 Const
-  TInjectVersion = '1.0.0.7'; //  27/11/2019  //Alterado por Mike
+  TInjectVersion = '1.0.0.8'; //  03/12/2019  //Alterado por Daniel Rodrigues
+
+{
+###########################################################################################
+                                    EVOLUÇÃO
+###########################################################################################
+1.0.0.8 =  03/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
+     - Ajustado problema de envio com anexos;
+     - Criado pacote de instalação do componente;
+     - Mostrado no DPR a possibilidade de alterarem os arquivos BIN, Locale, Etc..
+}
+
 
 type
   {Events}
@@ -134,16 +145,17 @@ begin
   if Length(LClearNum) < 10 then
      raise Exception.Create('Número inválido');
 
-  //Testa se é um grupo!
+  //Testa se é um grupo ou Lista Transmissao
   if Length(LClearNum) > 14 then
   begin
     Result := PNum;
-  end;
-
-  if Length(LClearNum) < 12 then  //Nao possui DDI
-  begin
-     LClearNum := '55' + LClearNum;
-     Result := LClearNum +  '@c.us';
+  end else
+  Begin
+    if Length(LClearNum) < 12 then  //Nao possui DDI
+    begin
+       LClearNum := '55' + LClearNum;
+       Result := LClearNum +  '@c.us';
+    end;
   end;
 end;
 
@@ -294,7 +306,7 @@ Var
   lThread : TThread;
 begin
   inherited;
-  //vNum := AdjustNumber(vNum);
+  vNum := AdjustNumber(vNum);
   lThread := TThread.CreateAnonymousThread(procedure
       begin
          if Config.AutoDelay > 0 then
@@ -308,7 +320,6 @@ begin
             frm_servicesWhats.sendBase64(vBase64, vNum, vFileName, vMess);
           end;
         end);
-
       end);
   lThread.FreeOnTerminate := true;
   lThread.Start;
