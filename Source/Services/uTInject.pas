@@ -8,16 +8,23 @@ unit uTInject;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uClasses, u_view_qrcode,
+  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uClasses, u_view_qrcode,  System.MaskUtils,
   uTInject.Emoticons;
 
 Const
-  TInjectVersion = '1.0.0.8'; //  03/12/2019  //Alterado por Daniel Rodrigues
+  TInjectVersion = '1.0.0.9'; //  03/12/2019  //Alterado por Daniel Rodrigues
+  CardContact   = '@c.us';
+  CardGroup     = '@g.us';
 
 {
 ###########################################################################################
                                     EVOLUÇÃO
 ###########################################################################################
+1.0.0.9 =  04/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
+     - Opçao de configurar a formatação do numerto de acordo com o país;
+
+
+
 1.0.0.8 =  03/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
      - Ajustado problema de envio com anexos;
      - Criado pacote de instalação do componente;
@@ -28,6 +35,45 @@ Const
 type
   {Events}
   TGetUnReadMessages = procedure(Chats: TChatList) of object;
+  TTypeNumber        = (TypUndefined=0, TypContact=1, TypGroup=2);
+
+  TAjustNumber  = class(TComponent)
+  private
+    FLastAdjustDt: TDateTime;
+    FLastAdjuste: String;
+    FLastDDI: String;
+    FLastDDD: String;
+    FLastNumber: String;
+
+    FAutoAdjust: Boolean;
+    FDDIDefault: Integer;
+    FLengthDDI: integer;
+    FLengthDDD: Integer;
+    FLengthPhone: Integer;
+    FLastNumberFormat: String;
+    FLastType: TTypeNumber;
+    Procedure SetPhone(Const Pnumero:String);
+  public
+    constructor Create(AOwner: TComponent); override;
+
+    Function  Format(PNum:String): String;
+    property  LastType: TTypeNumber     Read FLastType;
+    property  LastAdjuste : String      Read FLastAdjuste;
+    property  LastDDI     : String      Read FLastDDI;
+    property  LastDDD     : String      Read FLastDDD;
+    property  LastNumber  : String      Read FLastNumber;
+    property  LastNumberFormat: String  Read FLastNumberFormat;
+    property  LastAdjustDt: TDateTime   Read FLastAdjustDt;
+  published
+    property AutoAdjust : Boolean   read FAutoAdjust   write FAutoAdjust default True;
+
+    property LengthDDI  : Integer   read FLengthDDI    write FLengthDDI   default 2;
+    property LengthDDD  : Integer   read FLengthDDD    write FLengthDDD   default 2;
+    property LengthPhone: Integer   read FLengthPhone  write FLengthPhone default 9;
+    property DDIDefault : Integer   read FDDIDefault   write FDDIDefault  Default 2;
+  end;
+
+
 
   TMySubComp = class(TComponent)
   public
@@ -54,29 +100,34 @@ type
 
   TInjectWhatsapp = class(TComponent)
   private
-    FVersaoIde: String;
+    FMySubComp1           : TMySubComp;
+    FAjustNumber          : TAjustNumber;
+    FEmoticons            : TInjectEmoticons;
+
+    FAllContacts          : TRetornoAllContacts;
+    FAllChats             : TChatList;
+    FQrCodeClass          : TQrCodeClass;
+
+    FVersaoIde            : String;
+    FGetBatteryLevel      : string;
+    FContacts             : String;
+    FAuth                 : Boolean;
+    FMonitoring           : Boolean;
+
     { Private declarations }
     procedure SetAuth(const Value: boolean);
   protected
     { Protected declarations }
-    FResult               : TQrCodeClass;
-    FAllContacts          : TRetornoAllContacts;
-    FAllChats             : TChatList;
-    FMySubComp1           : TMySubComp;
+    FOnGetUnReadMessages  : TGetUnReadMessages;
     FBatteryLevel         : TNotifyEvent;
-    FGetBatteryLevel      : string;
     FOnGetQrCode          : TNotifyEvent;
     FOnGetChatList        : TNotifyEvent;
     FOnGetNewMessage      : TNotifyEvent;
     FOnGetBatteryLevel    : TNotifyEvent;
-    FOnGetUnReadMessages  : TGetUnReadMessages;
     FOnGetStatus          : TNotifyEvent;
-    FContacts             : String;
-    FAuth                 : Boolean;
-    FMonitoring           : Boolean;
+
   public
     AGetBatteryLevel               : string;
-    Emoticons: TInjectEmoticons;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure ReadMessages(vID: string);
@@ -94,27 +145,29 @@ type
     procedure GetAllChats;
     function GetStatus: Boolean;
     function GetUnReadMessages: String;
-    property AllContacts: TRetornoAllContacts read FAllContacts write FAllContacts;
-    property BatteryLevel: TNotifyEvent read FBatteryLevel write FBatteryLevel;
-    property AQrCode: TQrCodeClass read FResult write FResult;
-    property AllChats: TChatList read FAllChats write FAllChats;
-    property Auth: boolean read FAuth write SetAuth;
-    property Monitoring: Boolean read FMonitoring default False;
+
+    Property Emoticons : TInjectEmoticons     Read  FEmoticons   Write FEmoticons;
+    property AllContacts: TRetornoAllContacts read FAllContacts  write FAllContacts;
+    property BatteryLevel: TNotifyEvent       read FBatteryLevel write FBatteryLevel;
+    property AQrCode: TQrCodeClass            read FQrCodeClass  write FQrCodeClass;
+    property AllChats: TChatList              read FAllChats     write FAllChats;
+    property Auth: boolean                    read FAuth         write SetAuth;
+    property Monitoring: Boolean              read FMonitoring   default False;
   published
     { Published declarations }
-    property Config               : TMySubComp read FMySubComp1;
-    property OnGetContactList     : TNotifyEvent read FBatteryLevel write FBatteryLevel;
-    property OnGetQrCode          : TNotifyEvent read FOnGetQrCode write FOnGetQrCode;
-    property OnGetChatList        : TNotifyEvent read FOnGetChatList write FOnGetChatList;
-    property OnGetNewMessage      : TNotifyEvent read FOnGetNewMessage write FOnGetNewMessage;
+    property Config               : TMySubComp   read FMySubComp1;
+    property AjustNumber          : TAjustNumber read FAjustNumber;
+    property OnGetContactList     : TNotifyEvent read FBatteryLevel      write FBatteryLevel;
+    property OnGetQrCode          : TNotifyEvent read FOnGetQrCode       write FOnGetQrCode;
+    property OnGetChatList        : TNotifyEvent read FOnGetChatList     write FOnGetChatList;
+    property OnGetNewMessage      : TNotifyEvent read FOnGetNewMessage   write FOnGetNewMessage;
     property OnGetUnReadMessages  : TGetUnReadMessages read FOnGetUnReadMessages write FOnGetUnReadMessages;
-    property OnGetStatus          : TNotifyEvent read FOnGetStatus write FOnGetStatus;
+    property OnGetStatus          : TNotifyEvent read FOnGetStatus       write FOnGetStatus;
     property OnGetBatteryLevel    : TNotifyEvent read FOnGetBatteryLevel write FOnGetBatteryLevel;
-    Property VersaoIDE            : String Read FVersaoIde;
-    property ABatteryLevel        : string Read FGetBatteryLevel;
+    Property VersaoIDE            : String       Read FVersaoIde;
+    property ABatteryLevel        : string       Read FGetBatteryLevel;
   end;
 
-  Function AdjustNumber(PNum:String):String;
 
 procedure Register;
 
@@ -126,37 +179,6 @@ uses
 procedure Register;
 begin
   RegisterComponents('TInjectWhatsapp', [TInjectWhatsapp]);
-end;
-
-function AdjustNumber(PNum:String):String;
-var
-  LClearNum: String;
-  i: Integer;
-begin
-  Result := '';
-  //Garante valores LIMPOS (sem mascaras, letras, etc) apenas NUMEROS
-  for I := 1 to Length(PNum) do
-  begin
-    if PNum[I] in ['0'..'9'] then
-       LClearNum := LClearNum + PNum[I];
-  end;
-
-  //O requisito minimo é possuir DDD + NUMERO (Fone 8 ou 9 digitos)
-  if Length(LClearNum) < 10 then
-     raise Exception.Create('Número inválido');
-
-  //Testa se é um grupo ou Lista Transmissao
-  Result := PNum;
-  if Length(LClearNum) <= 14 then
-  begin
-    if (Length(LClearNum) < 12) or (Length(PNum) <= 12) then
-    begin
-      if Copy(LClearNum, 0, 2) <> '55' then
-         LClearNum := '55' + LClearNum;
-      Result := LClearNum +  '@c.us';
-    end;
-  end;
-
 end;
 
 procedure TMySubComp.SetAutoMonitor(const Value: boolean);
@@ -186,18 +208,16 @@ end;
 constructor TInjectWhatsapp.Create(AOwner: TComponent);
 begin
   inherited;
-  FMySubComp1            := TMySubComp.Create(self);
-  FMySubComp1.Name       := 'AutoInject';
-  FMySubComp1.AutoDelay  := 1000;
-
+  FVersaoIde                 := TInjectVersion;
+  FMySubComp1                := TMySubComp.Create(self);
+  FMySubComp1.Name           := 'AutoInject';
+  FMySubComp1.AutoDelay      := 1000;
   FMySubComp1.SecondsMonitor := 3;
-  FMySubComp1.AutoMonitor := True;
-
+  FMySubComp1.AutoMonitor    := True;
   FMySubComp1.SetSubComponent(true);
-  FVersaoIde       := TInjectVersion;
 
-  //Default
-
+  FAjustNumber               := TAjustNumber.Create(self);
+  FAjustNumber.SetSubComponent(true);
 
   if Config.AutoStart then
      startWhatsapp;
@@ -207,8 +227,9 @@ destructor TInjectWhatsapp.Destroy;
 begin
   FreeAndNil(frm_servicesWhats);
   FreeAndNil(frm_view_qrcode);
+  FreeAndNil(FAjustNumber);
 
-  FreeAndNil(FResult);
+  FreeAndNil(FQrCodeClass);
   FreeAndNil(FAllContacts);
   FreeAndNil(FAllChats);
   FreeAndNil(FMySubComp1);
@@ -281,7 +302,7 @@ var
   AId: String;
   lThread : TThread;
 begin
-  vNum := AdjustNumber(vNum);
+  vNum := AjustNumber.Format(vNum);
   lThread := TThread.CreateAnonymousThread(procedure
       begin
         if Config.AutoDelay > 0 then
@@ -306,7 +327,7 @@ Var
   lThread : TThread;
 begin
   inherited;
-  vNum := AdjustNumber(vNum);
+  vNum := AjustNumber.Format(vNum);
   lThread := TThread.CreateAnonymousThread(procedure
       begin
          if Config.AutoDelay > 0 then
@@ -382,4 +403,95 @@ begin
   end;
 end;
 
+{ TAjustNumber }
+
+function TAjustNumber.Format(PNum: String): String;
+var
+  LClearNum: String;
+  i: Integer;
+begin
+  Result := Pnum;
+  try
+    if not AutoAdjust then
+       Exit;
+
+    //Garante valores LIMPOS (sem mascaras, letras, etc) apenas NUMEROS
+    Result := PNum;
+    for I := 1 to Length(PNum) do
+    begin
+      if PNum[I] in ['0'..'9'] then
+         LClearNum := LClearNum + PNum[I];
+    end;
+
+    //O requisito minimo é possuir DDD + NUMERO (Fone 8 ou 9 digitos)
+    //  if Length(LClearNum) < 10 then
+    if Length(LClearNum) < (LengthDDD + LengthPhone) then
+    Begin
+      Result := '';
+      Exit;
+    End;
+
+    //Testa se é um grupo ou Lista Transmissao
+    if Length(LClearNum) <=  (LengthDDI + LengthDDD + LengthPhone + 1) Then //14 then
+    begin
+      if (Length(LClearNum) <= (LengthDDD + LengthPhone)) or (Length(PNum) <= (LengthDDD + LengthPhone)) then
+      begin
+        if Copy(LClearNum, 0, LengthDDI) <> DDIDefault.ToString then
+           LClearNum := DDIDefault.ToString + LClearNum;
+        Result := LClearNum +  CardContact;
+      end;
+    end;
+  finally
+    if Result = '' then
+       raise Exception.Create('Número inválido');
+    SetPhone(Result);
+  end;
+end;
+
+
+procedure TAjustNumber.SetPhone(const Pnumero: String);
+begin
+  FLastType         := TypUndefined;
+  FLastDDI          := '';
+  FLastDDD          := '';
+  FLastNumber       := '';
+  FLastNumberFormat := '';
+  FLastAdjustDt     := Now;
+  FLastAdjuste      := Pnumero;
+  FLastNumberFormat := Pnumero;
+  if pos(CardGroup, Pnumero) > 0 then
+  begin
+    FLastType := TypGroup;
+  end else
+  Begin
+    if Length(Pnumero) = (LengthDDI + LengthDDD + LengthPhone + Length(CardContact)) then
+       FLastType := TypContact;
+  end;
+
+  if FLastType = TypContact then
+  Begin
+    FLastDDI :=  Copy(Pnumero, 0,           LengthDDI);
+    FLastDDD :=  Copy(Pnumero, LengthDDI+1, LengthDDD);
+    FLastNumber :=  Copy(Pnumero, LengthDDI+LengthDDD+1, LengthPhone);
+    FLastNumberFormat := '+' + FLastDDI + ' (' + FLastDDD + ') ' + FormatMaskText('0\.0000\-0000;0;', FLastNumber)
+  End;
+end;
+
+constructor TAjustNumber.Create(AOwner: TComponent);
+begin
+  inherited;
+  FLastAdjuste := '';
+  FLastDDI     := '';
+  FLastDDD     := '';
+  FLastNumber  := '';
+
+  FAutoAdjust  := True;
+  FDDIDefault  := 55;
+  FLengthDDI   := 2;
+  FLengthDDD   := 2;
+  FLengthPhone := 8;
+end;
+
 end.
+
+

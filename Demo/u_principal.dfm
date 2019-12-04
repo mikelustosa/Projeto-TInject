@@ -3279,6 +3279,8 @@ object frmPrincipal: TfrmPrincipal
     Config.AutoDelay = 0
     Config.SyncContacts = False
     Config.ShowRandom = False
+    AjustNumber.LengthPhone = 8
+    AjustNumber.DDIDefault = 55
     OnGetContactList = InjectWhatsapp1GetContactList
     OnGetChatList = InjectWhatsapp1GetChatList
     OnGetUnReadMessages = InjectWhatsapp1GetUnReadMessages
