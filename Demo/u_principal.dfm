@@ -23,7 +23,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 722
     Height = 361
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -2957,6 +2957,10 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#245'es'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label8: TLabel
         Left = 12
         Top = 10
@@ -3228,6 +3232,10 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object memo_unReadMessagen: TMemo
         Left = 0
         Top = 0
