@@ -1,4 +1,6 @@
 
+Criada branch testRelease para realizações de commit para controle de qualidade de versão
+------------------------------------------------------------------------
 1.0.0.8   
 03/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
 Correções:
