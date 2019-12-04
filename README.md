@@ -6,14 +6,14 @@ INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
 Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br></br>
 
 Tutorial de instalação no youtube:<br>
-https://youtu.be/4fbSepeZPDU
+https://www.youtube.com/watch?v=4fbSepeZPDU&t=2s
 
 
 1-Clonar o repositório Projeto-TInject
 <br></br>
-2-Baixar e instalar o CEF4Delphi em: https://drive.google.com/file/d/11cjHyJ9JYjnbQQI-gufJfDVLjJDHKhv3/view?usp=sharing
+2-Baixar e instalar o CEF4Delphi em: http://www.softmaisbrasil.com.br/#blog
 <br></br>
-3-Baixar a pasta BIN em: https://drive.google.com/open?id=1bNh7kRfj8xSMkMibuAqFjx1V7l3y3r6b
+3-Baixar a pasta BIN em: http://www.softmaisbrasil.com.br/#blog
 <br></br>
 4-Copiar todo o conteúdo baixado da pasta BIN no passo 3 para a pasta BIN na raiz do projeto (Caso não exista a pasta BIN em seu projeto Crie)
 <br></br>
