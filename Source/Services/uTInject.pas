@@ -146,17 +146,17 @@ begin
      raise Exception.Create('Número inválido');
 
   //Testa se é um grupo ou Lista Transmissao
-  if Length(LClearNum) > 14 then
+  Result := PNum;
+  if Length(LClearNum) <= 14 then
   begin
-    Result := PNum;
-  end else
-  Begin
-    if Length(LClearNum) < 12 then  //Nao possui DDI
+    if (Length(LClearNum) < 12) or (Length(PNum) <= 12) then
     begin
-       LClearNum := '55' + LClearNum;
-       Result := LClearNum +  '@c.us';
+      if Copy(LClearNum, 0, 2) <> '55' then
+         LClearNum := '55' + LClearNum;
+      Result := LClearNum +  '@c.us';
     end;
   end;
+
 end;
 
 procedure TMySubComp.SetAutoMonitor(const Value: boolean);

@@ -152,6 +152,7 @@ uses
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
   idMessageGlobal := 'start';
+  PageControl1.ActivePageIndex := 0;
   InjectWhatsapp1.startWhatsapp;
 end;
 
