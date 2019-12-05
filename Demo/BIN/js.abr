@@ -1,5 +1,3 @@
-//Versao 1.0.0.2
-
 function SetConsoleMessage(jsName, resultValue) {
    Obj = {
       name: jsName,
@@ -616,8 +614,7 @@ window.WAPI.getAllMessagesInChat = function (id, includeMe, includeNotifications
         }
         const messageObj = messages[i];
 
-//Miro Emidio - 05/Dez/2019 Alterado para funcionamento em WHATS empresarial/pessoal 
-        let message = WAPI.processMessageObj(messageObj, includeMe, false) //includeNotifications
+        let message = WAPI.processMessageObj(messageObj, includeMe, includeNotifications)
         if (message)
             output.push(message);
     }
@@ -887,8 +884,7 @@ window.WAPI.getUnreadMessages = function (includeMe, includeNotifications, use_u
                 continue;
             } else {
                 messageObj.isNewMsg = false;
-                //Miro Emidio - 05/Dez/2019 Alterado para funcionamento em WHATS empresarial/pessoal
-                let message = WAPI.processMessageObj(messageObj, includeMe, false); //includeNotifications);// MUDAR PARA "FALSE" AQUI
+                let message = WAPI.processMessageObj(messageObj, includeMe, includeNotifications);
                 if (message) {
                     messageGroup.messages.push(message);
                 }

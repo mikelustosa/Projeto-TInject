@@ -1,4 +1,11 @@
-1.0.0.10   
+-------------------------------------------------------------------------
+1.0.0.10 
+05/12/2019
+Rep Revisao 131
+    - Unificado a ideia de Daniel Rodrigues e Joathan Theiller;
+    
+
+   
 04/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
 Melhorias:     
      - Implementado o controle das pasta do FrameWork do CEF;
@@ -8,7 +15,6 @@ Melhorias:
      
 
 Criada branch testRelease para realizações de commit para controle de qualidade de versão
-------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
 1.0.0.9   

@@ -3,27 +3,20 @@ unit u_principal;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uCEFWinControl, uCEFWindowParent,
-  Vcl.ExtCtrls, uCEFChromium, system.JSON, uClasses,
 
-  //############ ATENÇÃO AQUI ####################
-  //############ ATENÇÃO AQUI ####################
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs,  Vcl.ExtCtrls,
+
   //############ ATENÇÃO AQUI ####################
   //units adicionais obrigatórias
-  UCtrGlobalCEFApp, uCefMiscFunctions, uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
-  Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, uTInject,
-  Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.WinXCtrls, System.NetEncoding,
-  Vcl.Imaging.jpeg, Vcl.AppEvnts;
+   uTInject.ConfigCEF, uCEFWinControl,  uTInject,
 
-  //############ ATENÇÃO AQUI ####################
-  //############ ATENÇÃO AQUI ####################
-  //############ ATENÇÃO AQUI ####################
-  //Constantes obrigatórias para controle do destroy do TChromium
-//  const
-//  CEFBROWSER_CREATED          = WM_APP + $100;
-//  CEFBROWSER_CHILDDESTROYED   = WM_APP + $101;
-//  CEFBROWSER_DESTROY          = WM_APP + $102;
+  //units Opcionais (dependendo do que irá fazer)
+   System.NetEncoding, uClasses,
+  //###############################################
+
+  Vcl.StdCtrls, System.ImageList, Vcl.ImgList, Vcl.AppEvnts, Vcl.ComCtrls,
+  Vcl.Imaging.pngimage;
 
 type
   TfrmPrincipal = class(TForm)
@@ -101,24 +94,8 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure InjectWhatsapp1GetBatteryLevel(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure CheckBox1Click(Sender: TObject);
     procedure Edt_DDIPDRExit(Sender: TObject);
-
-  protected
-
-    //############ ATENÇÃO AQUI ####################
-    //############ ATENÇÃO AQUI ####################
-    //############ ATENÇÃO AQUI ####################
-    // Essas variáveis e procedures ajudam à monitorar o destroy correto do TChromium.
-    FCanClose : boolean;  // Defina como True em TChromium.OnBeforeClose
-    FClosing  : boolean;  // Defina como True no evento CloseQuery.
-
-    procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
-    procedure WMMoving(var aMessage : TMessage); message WM_MOVING;
-    procedure WMEnterMenuLoop(var aMessage: TMessage); message WM_ENTERMENULOOP;
-    procedure WMExitMenuLoop(var aMessage: TMessage); message WM_EXITMENULOOP;
-
   private
     { Private declarations }
     idMessageGlobal: string;
@@ -158,12 +135,17 @@ uses
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
-//  FClosingMainForm                  := False;
- // FCanClose                         := False;
   idMessageGlobal              := 'start';
   PageControl1.ActivePageIndex := 0;
 
   InjectWhatsapp1.startWhatsapp;
+  //Define os padrões DO BRASIL
+  InjectWhatsapp1.AjustNumber.AutoAdjust := True;
+  InjectWhatsapp1.AjustNumber.LengthDDI  := 2;
+  InjectWhatsapp1.AjustNumber.LengthDDD  := 2;
+  InjectWhatsapp1.AjustNumber.LengthPhone:= 8; //Whats antigo e 8 digitos
+  InjectWhatsapp1.AjustNumber.DDIDefault := 55;
+
   CheckBox1.Checked := InjectWhatsapp1.AjustNumber.AutoAdjust;
   Edt_LengDDI.text  := InjectWhatsapp1.AjustNumber.LengthDDI.ToString;
   Edt_LengDDD.text  := InjectWhatsapp1.AjustNumber.LengthDDD.ToString;
@@ -180,11 +162,6 @@ procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   Action := Cafree;
   //application.Terminate;
-end;
-
-procedure TfrmPrincipal.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
-begin
-  CanClose := true;
 end;
 
 Procedure TfrmPrincipal.AddChatList(ANumber: String);
@@ -240,32 +217,6 @@ begin
       end;
     end;
   end;
-end;
-
-procedure TfrmPrincipal.WMMove(var aMessage : TWMMove);
-begin
-  inherited;
-end;
-
-procedure TfrmPrincipal.WMMoving(var aMessage : TMessage);
-begin
-  inherited;
-end;
-
-procedure TfrmPrincipal.WMEnterMenuLoop(var aMessage: TMessage);
-begin
-  inherited;
-
-  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then
-     GlobalCEFApp.OsmodalLoop := True;
-end;
-
-procedure TfrmPrincipal.WMExitMenuLoop(var aMessage: TMessage);
-begin
-  inherited;
-
-  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then
-     GlobalCEFApp.OsmodalLoop := False;
 end;
 
 

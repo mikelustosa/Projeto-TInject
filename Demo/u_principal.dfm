@@ -13,7 +13,6 @@ object frmPrincipal: TfrmPrincipal
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
-  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
@@ -24,7 +23,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 833
     Height = 361
-    ActivePage = TabSheet2
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
