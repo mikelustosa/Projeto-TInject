@@ -7,14 +7,15 @@ unit u_servicesWhats;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, UCtrGlobalCEFApp,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, uCEFChromium,
   uCEFWinControl, uCEFWindowParent, StrUtils,
 
   //units adicionais obrigatórias
-  uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium, uCEFApplication,
+  uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
-  Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json, uClasses, uTInject, u_view_qrcode, Vcl.Imaging.jpeg;
+  Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json, uClasses, uTInject, u_view_qrcode, Vcl.Imaging.jpeg,
+  uCEFChromiumCore;
 
   var
    vContacts :Array of String;
@@ -182,15 +183,15 @@ end;
 procedure Tfrm_servicesWhats.WMEnterMenuLoop(var aMessage: TMessage);
 begin
   inherited;
-
-  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then GlobalCEFApp.OsmodalLoop := True;
+  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then
+     GlobalCEFApp.OsmodalLoop := True;
 end;
 
 procedure Tfrm_servicesWhats.WMExitMenuLoop(var aMessage: TMessage);
 begin
   inherited;
-
-  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then GlobalCEFApp.OsmodalLoop := False;
+  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then
+     GlobalCEFApp.OsmodalLoop := False;
 end;
 
 procedure Tfrm_servicesWhats.Chromium1AfterCreated(Sender: TObject;
@@ -371,15 +372,17 @@ var
   vFilestream: TMemoryStream;
   vBase64File: TBase64Encoding;
 begin
+  vBase64File := TBase64Encoding.Create;
+  vFilestream := TMemoryStream.Create;
   try
-    vBase64File := TBase64Encoding.Create;
-    vFilestream := TMemoryStream.Create;
     vFilestream.LoadFromFile(vFile);
-
     result :=  vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
   finally
-    vBase64File.Free;
-    vFilestream.Free;
+    FreeAndNil(vBase64File);
+    FreeAndNil(vFilestream);
+
+//    vBase64File.Free;
+//    vFilestream.Free;
   end;
 end;
 
@@ -412,6 +415,8 @@ begin
 
   if not(Chromium1.CreateBrowser(CEFWindowParent1)) then
      Timer1.Enabled := True;
+  if GlobalCEFApp <> nil then
+     GlobalCEFApp.Chromium :=  Chromium1;
 end;
 
 procedure Tfrm_servicesWhats.FormDestroy(Sender: TObject);
@@ -444,7 +449,8 @@ begin
 end;
 
 procedure Tfrm_servicesWhats.monitorQRCode;
-const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
+ const
+   JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
 begin
   if Chromium1.Browser <> nil then
       Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
@@ -522,7 +528,7 @@ end;
 
 procedure Tfrm_servicesWhats.SetBatteryLevel(JsonText: string);
 var
-  AJson, ASubJSON: TJSONObject;
+  AJson: TJSONObject;
 begin
   if not Assigned( _Inject ) then
        Exit;
@@ -545,9 +551,9 @@ var
   LOutput: TMemoryStream;
   stl: TStringList;
 begin
+  LInput  := TMemoryStream.Create;
+  LOutput := TMemoryStream.Create;
   try
-    LInput := TMemoryStream.Create;
-    LOutput := TMemoryStream.Create;
     stl := TStringList.Create;
     stl.Add(copy(st, 23, length(st)));
     stl.SaveToStream(LInput);
@@ -558,44 +564,52 @@ begin
     if LOutput.size > 0 then
       WEBQrCode := st;
   finally
-   LInput.Free;
-   LOutput.Free;
+    FreeAndNil(LInput);
+    FreeAndNil(LOutput);
+//   LInput.Free;
+//   LOutput.Free;
   end;
 end;
 
 procedure Tfrm_servicesWhats.SetQrCode(JsonText: String);
-var AQrCode: TQrCodeClass;
-var code: string;
+var
+  LQrCode: TQrCodeClass;
+  LCode :String;
 begin
-  if not Assigned( _Inject ) then Exit;
-
-  if not Assigned( frm_view_qrcode ) then Exit;
+  if not Assigned( _Inject ) then
+     Exit;
+  if not Assigned( frm_view_qrcode ) then
+     Exit;
 
   with _Inject do
   begin
-    code :=  copy(JsonText, 42, 4);
-    if (code = 'http') or (code = '/img') then
+    LCode :=  copy(JsonText, 42, 4);
+    if (LCode = 'http') or (LCode = '/img') then
     begin
       frm_view_qrcode.Timer1.Enabled := false;
       frm_view_qrcode.close;
       exit
     end;
-    AQrCode := TQrCodeClass.FromJsonString( JsonText );
-    _Qrcode := AQrCode.result.AQrCode;
 
-    if assigned(frm_view_qrcode) then
-    begin
-      frm_view_qrcode.loadQRCode(_Qrcode);
-      frm_view_qrcode.Image2.visible := false;
-    end else
-    begin
-      //Caso seja solicitação via API REST
-      loadWEBQRCode(_Qrcode);
+    LQrCode := TQrCodeClass.FromJsonString( JsonText );
+    try
+      _Qrcode := LQrCode.result.AQrCode;
+      if assigned(frm_view_qrcode) then
+      begin
+        frm_view_qrcode.loadQRCode(_Qrcode);
+        frm_view_qrcode.Image2.visible := false;
+      end else
+      begin
+        //Caso seja solicitação via API REST
+        loadWEBQRCode(_Qrcode);
+      end;
+
+      //Dispara Notify
+      if Assigned( OnGetQrCode ) then
+         OnGetQrCode(Self);
+    finally
+      FreeAndNil(LQrCode);
     end;
-
-    //Dispara Notify
-    if Assigned( OnGetQrCode ) then
-       OnGetQrCode(Self);
   end;
 end;
 
@@ -655,12 +669,13 @@ var
   arq: TextFile;
   linha: string;
   JS: string;
-  i: integer;
 begin
   //Rotina para leitura e inject do arquivo js.abr ---- 12/10/2019 Mike
     if vAuth = true then
     begin
-      AssignFile(arq, ExtractFilePath(Application.ExeName) + 'js.abr');
+
+      AssignFile(arq, GlobalCEFApp.CEF4Path.InjectJS);
+//      AssignFile(arq, ExtractFilePath(Application.ExeName) + 'js.abr');
       // desativa a diretiva de Input
       Reset(arq);
       // Abre o arquivo texto para leitura
@@ -696,3 +711,4 @@ begin
 end;
 
 end.
+

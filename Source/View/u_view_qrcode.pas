@@ -76,10 +76,9 @@ begin
       if LOutput.size > 0 then
         Image1.Picture.LoadFromStream(LOutput);
     {$ELSE}
-    try
+    PNG := TPngImage.Create;
+    try
       //Delphi 10.1,2 ....
-
-      PNG := TPngImage.Create;
       if LOutput.size > 0 then
          PNG.LoadFromStream(LOutput);
       image1.Picture.Graphic := PNG;
@@ -96,15 +95,14 @@ begin
 end;
 
 procedure Tfrm_view_qrcode.Timer1Timer(Sender: TObject);
-var _inject : TInjectWhatsapp;
+var
+  _inject : TInjectWhatsapp;
 begin
- if assigned( _inject ) then
-  _inject.monitorQrCode;
+  if assigned( _inject ) then
+     _inject.monitorQrCode;
 
   if Image1.Picture.Graphic <> nil    then
-  begin
-    frm_view_qrcode.Caption := 'TInject - Aponte seu celular agora!';
-  end;
+     frm_view_qrcode.Caption := 'TInject - Aponte seu celular agora!';
  end;
 
 end.

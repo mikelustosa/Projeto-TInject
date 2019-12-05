@@ -1,7 +1,7 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{4ADD3B39-A43C-4466-A6C5-C8F5CCAA16EF}</ProjectGuid>
-        <ProjectVersion>18.6</ProjectVersion>
+        <ProjectGuid>{4CC3172F-3848-4B74-8546-8C7915C2DD05}</ProjectGuid>
+        <ProjectVersion>18.4</ProjectVersion>
         <FrameworkType>VCL</FrameworkType>
         <MainSource>TInject.dpr</MainSource>
         <Base>True</Base>
@@ -46,21 +46,24 @@
         <Base>true</Base>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
-        <DCC_DcuOutput>.\$(Platform)\$(Config)</DCC_DcuOutput>
-        <DCC_ExeOutput>.\$(Platform)\$(Config)</DCC_ExeOutput>
+        <DCC_DcuOutput>.\DCU</DCC_DcuOutput>
+        <DCC_ExeOutput>.\BIN</DCC_ExeOutput>
         <DCC_E>false</DCC_E>
         <DCC_N>false</DCC_N>
         <DCC_S>false</DCC_S>
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
+        <DCC_UsePackage>RESTComponents;emsclientfiredac;DataSnapFireDAC;FireDACIBDriver;emsclient;FireDACCommon;RESTBackendComponents;soapserver;CloudService;FireDACCommonDriver;inet;FireDAC;FireDACSqliteDriver;soaprtl;soapmidas;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
         <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
         <SanitizedProjectName>TInject</SanitizedProjectName>
+        <VerInfo_Locale>1046</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win32)'!=''">
-        <DCC_UsePackage>DBXSqliteDriver;fmxase;aseprovider260;DBXDb2Driver;vclactnband;vclFireDAC;liteprovider260;tethering;TelegaPi;FireDACADSDriver;FireDACMSSQLDriver;ibprovider260;vcltouch;vcldb;Intraweb;svn;WebrtcCommon;vclib;FireDACDBXDriver;sugarprovider260;RESTDWDriverFD;vclx;unidac260;DCEF_RIO;RESTBackendComponents;uSynEdit_R2022;salesforceprovider260;VCLRESTComponents;CloudApiCore;vclie;bindengine;CloudService;rbRCL1926;FireDACMySQLDriver;DataSnapClient;bindcompdbx;DBXSybaseASEDriver;IndyIPServer;IndySystem;db2provider260;dsnapcon;rbIDE1926;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;exacttargetprovider260;Zona.ru;mydacvcl260;emshosting;FireDACTDataDriver;DBXOdbcDriver;FMXTee;crcontrols260;zohoprovider260;soaprtl;DbxCommonDriver;uniTools26;rbRTL1926;xmlrtl;soapmidas;DataSnapNativeClient;fmxobj;bigcommerceprovider260;rtl;emsserverresource;DbxClientDriver;DBXSybaseASADriver;SampleListViewMultiDetailAppearancePackage;appanalytics;IndyIPClient;bindcompvcl;dclRBE1926;accessprovider260;tdsprovider260;TeeUI;VclSmp;rbIBE1926;magentoprovider260;FireDACODBCDriver;rbADO1926;mydacfmx260;DataSnapIndy10ServerTransport;freshbooksprovider260;odbcprovider260;DataSnapProviderClient;FireDACMongoDBDriver;ArcProgress;rbUSERDesign1926;DataSnapServerMidas;RESTComponents;DBXInterBaseDriver;sgcWebSocketsD10_3;rbDB1926;rbCIDE1926;rbDAD1926;emsclientfiredac;dacfmx260;DataSnapFireDAC;svnui;quickbooksprovider260;netsuiteprovider260;rbRest1926;DBXMSSQLDriver;mailchimpprovider260;DatasnapConnectorsFreePascal;bindcompfmx;DBXOracleDriver;inetdb;CEF4Delphi;FmxTeeUI;emsedge;FireDACIBDriver;fmx;fmxdae;vquery260;rbUSER1926;dacvcl260;dbexpress;IndyCore;rbRIDE1926;rbDIDE1926;dsnap;DataSnapCommon;emsclient;adsprovider260;FireDACCommon;Package1;uniGUI26Chart;mongoprovider260;uniGUI26m;uniSFChart26;DataSnapConnectors;Webrtc;soapserver;FireDACOracleDriver;DBXMySQLDriver;WebrtcVcl;DBXFirebirdDriver;rbTCUI1926;radiorecord.ru;FireDACCommonODBC;FireDACCommonDriver;inet;IndyIPCommon;dclRBDBE1926;vcl;rbRAP1926;FireDACDb2Driver;uniGUI26Core;uniGUI26VCL;TeeDB;FireDAC;mydac260;unidacvcl260;MaterialDesign;FireDACSqliteDriver;FireDACPgDriver;ibmonitor;FireDACASADriver;myprovider260;dynamicsprovider260;rbBDE1926;rbTC1926;uIndy26;ibxpress;Tee;DataSnapServer;ibxbindings;dac260;vclwinx;FireDACDSDriver;uniSF26;Virustotal.com;CustomIPTransport;vcldsnap;dclRBADO1926;uniGUI26;dclRBIBE1926;bindcomp;fgx;DBXInformixDriver;dclRBFireDAC1926;dbxcds;TelegraPhAPI;pgprovider260;adortl;unidacfmx260;dsnapxml;oraprovider260;dbrtl;inetdbxpress;IndyProtocols;rbDBE1926;rbFireDAC1926;dbfprovider260;RestDatawareCORE;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>DBXSqliteDriver;DataSnapServerMidas;DBXDb2Driver;DBXInterBaseDriver;vclactnband;vclFireDAC;svnui;tethering;NxDBGridDsgn_d10_2;FireDACADSDriver;NxCommonDsgn_d10_2;JvGlobus;JvPluginSystem;DBXMSSQLDriver;JvMM;NxCollection6Dsgn_d10_2;DatasnapConnectorsFreePascal;FireDACMSSQLDriver;NxDBGridRun_d10_2;vcltouch;ACBr_NFe;JvBands;vcldb;bindcompfmx;svn;Intraweb;DBXOracleDriver;JvJans;JvNet;inetdb;ACBr_NFeDanfeESCPOS;JvAppFrm;ACBr_Diversos;NxGridDsgn_d10_2;CEF4Delphi;FmxTeeUI;emsedge;JvDotNetCtrls;fmx;fmxdae;WhatsApp2;ZipMasterR;JvWizards;NxDBGrid6Run_d10_2;NxCollection6Run_d10_2;FireDACDBXDriver;dbexpress;IndyCore;NxLayout6Dsgn_d10_2;NxGrid6Run_d10_2;vclx;JvPageComps;dsnap;DataSnapCommon;JvDB;ACBr_PCNComum;DataSnapConnectors;VCLRESTComponents;NxCommonRun_d10_2;JclDeveloperTools;NxLayout6Run_d10_2;ComponentesMenuDani3PropertyEditor;vclie;bindengine;DBXMySQLDriver;FireDACOracleDriver;FireDACMySQLDriver;DBXFirebirdDriver;JvCmp;JvHMI;NxInspectorDsgn_d10_2;NxInspector6Run_d10_2;FireDACCommonODBC;DataSnapClient;NxInspector6Dsgn_d10_2;bindcompdbx;IndyIPCommon;ACBr_TCP;ACBr_CTeDacteRL;vcl;DBXSybaseASEDriver;IndyIPServer;ACBr_CTe;ACBr_NFeDanfeRL;IndySystem;NxGridRun_d10_2;FireDACDb2Driver;JvCustom;JvXPCtrls;ACBr_Integrador;dsnapcon;NxInspectorRun_d10_2;ACBr_synapse;NxGrid6Dsgn_d10_2;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;TeeDB;Jcl;JvCore;emshosting;ACBr_Comum;NxStandard6Dsgn_d10_2;ACBr_BoletoRL;FireDACPgDriver;DSPack_D2010;FireDACASADriver;JvCrypt;DBXOdbcDriver;FireDACTDataDriver;FMXTee;TInject;DbxCommonDriver;JvDlgs;JvRuntimeDesign;ACBr_NFSeDanfseRL;Tee;JvManagedThreads;DataSnapServer;xmlrtl;DataSnapNativeClient;fmxobj;vclwinx;FireDACDSDriver;rtl;ACBr_OpenSSL;DbxClientDriver;JvTimeFramework;DBXSybaseASADriver;ACBr_DFeComum;CustomIPTransport;vcldsnap;JvSystem;JvStdCtrls;RtmRxDB250;NxCollectionRun_d10_2;bindcomp;appanalytics;ACBr_Serial;DBXInformixDriver;IndyIPClient;ComponentesAztec;frce;bindcompvcl;NxCollectionDsgn_d10_2;TeeUI;NxStandard6Run_d10_2;JvDocking;dbxcds;VclSmp;ACBr_NFCeECFVirtual;adortl;FireDACODBCDriver;JvPascalInterpreter;NxDBGrid6Dsgn_d10_2;NxSheetRun_d10_2;DataSnapIndy10ServerTransport;JclVcl;ACBr_Boleto;dsnapxml;DataSnapProviderClient;dbrtl;inetdbxpress;FireDACMongoDBDriver;IndyProtocols;RtmRxCtl250;JvControls;JvPrintPreview;ACBr_NFSe;JclContainers;ComponentesMenuDani3;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
         <DCC_Namespace>Winapi;System.Win;Data.Win;Datasnap.Win;Web.Win;Soap.Win;Xml.Win;Bde;$(DCC_Namespace)</DCC_Namespace>
         <BT_BuildType>Debug</BT_BuildType>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
@@ -69,7 +72,7 @@
         <Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Base_Win64)'!=''">
-        <DCC_UsePackage>DBXSqliteDriver;fmxase;DBXDb2Driver;vclactnband;vclFireDAC;liteprovider260;tethering;FireDACADSDriver;FireDACMSSQLDriver;ibprovider260;vcltouch;vcldb;Intraweb;vclib;FireDACDBXDriver;RESTDWDriverFD;vclx;unidac260;RESTBackendComponents;uSynEdit_R2022;VCLRESTComponents;vclie;bindengine;CloudService;FireDACMySQLDriver;DataSnapClient;bindcompdbx;DBXSybaseASEDriver;IndyIPServer;IndySystem;dsnapcon;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;emshosting;FireDACTDataDriver;DBXOdbcDriver;FMXTee;soaprtl;DbxCommonDriver;uniTools26;xmlrtl;soapmidas;DataSnapNativeClient;fmxobj;rtl;emsserverresource;DbxClientDriver;DBXSybaseASADriver;appanalytics;IndyIPClient;bindcompvcl;tdsprovider260;TeeUI;VclSmp;FireDACODBCDriver;DataSnapIndy10ServerTransport;odbcprovider260;DataSnapProviderClient;FireDACMongoDBDriver;ArcProgress;DataSnapServerMidas;RESTComponents;DBXInterBaseDriver;sgcWebSocketsD10_3;emsclientfiredac;DataSnapFireDAC;DBXMSSQLDriver;DatasnapConnectorsFreePascal;bindcompfmx;DBXOracleDriver;inetdb;CEF4Delphi;FmxTeeUI;emsedge;FireDACIBDriver;fmx;fmxdae;vquery260;dbexpress;IndyCore;dsnap;DataSnapCommon;emsclient;FireDACCommon;uniGUI26Chart;mongoprovider260;uniGUI26m;DataSnapConnectors;soapserver;FireDACOracleDriver;DBXMySQLDriver;DBXFirebirdDriver;FireDACCommonODBC;FireDACCommonDriver;inet;IndyIPCommon;vcl;FireDACDb2Driver;uniGUI26Core;uniGUI26VCL;TeeDB;FireDAC;unidacvcl260;MaterialDesign;FireDACSqliteDriver;FireDACPgDriver;ibmonitor;FireDACASADriver;myprovider260;uIndy26;ibxpress;Tee;DataSnapServer;ibxbindings;vclwinx;FireDACDSDriver;CustomIPTransport;vcldsnap;uniGUI26;bindcomp;DBXInformixDriver;dbxcds;pgprovider260;adortl;unidacfmx260;dsnapxml;oraprovider260;dbrtl;inetdbxpress;IndyProtocols;RestDatawareCORE;$(DCC_UsePackage)</DCC_UsePackage>
+        <DCC_UsePackage>DBXSqliteDriver;DataSnapServerMidas;DBXDb2Driver;DBXInterBaseDriver;vclactnband;vclFireDAC;tethering;FireDACADSDriver;DBXMSSQLDriver;DatasnapConnectorsFreePascal;FireDACMSSQLDriver;NxDBGridRun_d10_2;vcltouch;vcldb;bindcompfmx;Intraweb;DBXOracleDriver;inetdb;CEF4Delphi;FmxTeeUI;emsedge;fmx;fmxdae;FireDACDBXDriver;dbexpress;IndyCore;vclx;dsnap;DataSnapCommon;DataSnapConnectors;VCLRESTComponents;NxCommonRun_d10_2;JclDeveloperTools;vclie;bindengine;DBXMySQLDriver;FireDACOracleDriver;FireDACMySQLDriver;DBXFirebirdDriver;FireDACCommonODBC;DataSnapClient;bindcompdbx;IndyIPCommon;vcl;DBXSybaseASEDriver;IndyIPServer;IndySystem;NxGridRun_d10_2;FireDACDb2Driver;dsnapcon;NxInspectorRun_d10_2;FireDACMSAccDriver;fmxFireDAC;FireDACInfxDriver;vclimg;TeeDB;Jcl;emshosting;FireDACPgDriver;FireDACASADriver;DBXOdbcDriver;FireDACTDataDriver;FMXTee;DbxCommonDriver;Tee;DataSnapServer;xmlrtl;DataSnapNativeClient;fmxobj;vclwinx;FireDACDSDriver;rtl;DbxClientDriver;DBXSybaseASADriver;CustomIPTransport;vcldsnap;NxCollectionRun_d10_2;bindcomp;appanalytics;DBXInformixDriver;IndyIPClient;bindcompvcl;TeeUI;dbxcds;VclSmp;adortl;FireDACODBCDriver;NxSheetRun_d10_2;DataSnapIndy10ServerTransport;JclVcl;dsnapxml;DataSnapProviderClient;dbrtl;inetdbxpress;FireDACMongoDBDriver;IndyProtocols;JclContainers;fmxase;$(DCC_UsePackage)</DCC_UsePackage>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -82,13 +85,9 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_RemoteDebug>false</DCC_RemoteDebug>
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
-        <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
-        <DCC_DcuOutput>.\DCU</DCC_DcuOutput>
+        <AppEnableHighDPI>true</AppEnableHighDPI>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_Locale>1033</VerInfo_Locale>
-        <DCC_ExeOutput>.\BIN</DCC_ExeOutput>
-        <VerInfo_Keys>CompanyName=Tinject;FileDescription=$(MSBuildProjectName);FileVersion=1.0.4.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=TInject whatsapp;ProductVersion=1.0.4.0;Comments=Desenvolvido por Mike W Lustosa</VerInfo_Keys>
-        <VerInfo_Release>4</VerInfo_Release>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
@@ -98,7 +97,7 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
         <AppEnableRuntimeThemes>true</AppEnableRuntimeThemes>
-        <AppDPIAwarenessMode>PerMonitorV2</AppDPIAwarenessMode>
+        <AppEnableHighDPI>true</AppEnableHighDPI>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -106,7 +105,6 @@
         </DelphiCompile>
         <DCCReference Include="u_principal.pas">
             <Form>frmPrincipal</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
@@ -128,10 +126,9 @@
                 <Source>
                     <Source Name="MainSource">TInject.dpr</Source>
                 </Source>
-                <Excluded_Packages/>
             </Delphi.Personality>
             <Deployment Version="3">
-                <DeployFile LocalName="BIN\TInject.exe" Configuration="Debug" Class="ProjectOutput">
+                <DeployFile LocalName="Win32\Debug\TInject.exe" Configuration="Debug" Class="ProjectOutput">
                     <Platform Name="Win32">
                         <RemoteName>TInject.exe</RemoteName>
                         <Overwrite>true</Overwrite>
@@ -153,12 +150,6 @@
                 <DeployClass Name="AndroidClassesDexFile">
                     <Platform Name="Android">
                         <RemoteDir>classes</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                </DeployClass>
-                <DeployClass Name="AndroidFileProvider">
-                    <Platform Name="Android">
-                        <RemoteDir>res\xml</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
@@ -195,12 +186,6 @@
                 <DeployClass Name="AndroidSplashStyles">
                     <Platform Name="Android">
                         <RemoteDir>res\values</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                </DeployClass>
-                <DeployClass Name="AndroidSplashStylesV21">
-                    <Platform Name="Android">
-                        <RemoteDir>res\values-v21</RemoteDir>
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
@@ -485,12 +470,6 @@
                         <Operation>1</Operation>
                     </Platform>
                 </DeployClass>
-                <DeployClass Name="ProjectOSXDebug">
-                    <Platform Name="OSX64">
-                        <RemoteDir>..\$(PROJECTNAME).app.dSYM\Contents\Resources\DWARF</RemoteDir>
-                        <Operation>1</Operation>
-                    </Platform>
-                </DeployClass>
                 <DeployClass Name="ProjectOSXEntitlements">
                     <Platform Name="OSX32">
                         <RemoteDir>..\</RemoteDir>
@@ -569,7 +548,6 @@
                 <ProjectRoot Platform="Win32" Name="$(PROJECTNAME)"/>
                 <ProjectRoot Platform="OSX32" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="Android" Name="$(PROJECTNAME)"/>
-                <ProjectRoot Platform="OSX64" Name="$(PROJECTNAME).app"/>
                 <ProjectRoot Platform="iOSSimulator" Name="$(PROJECTNAME).app"/>
             </Deployment>
             <Platforms>

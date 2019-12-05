@@ -1,4 +1,21 @@
+1.0.0.10   
+04/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
+Melhorias:     
+     - Implementado o controle das pasta do FrameWork do CEF;
+     - Adicionado uma classe que controla e destroi todas as THREAD ativas,
+       eliminando assim qualquer PROCESSO ZUMBI(Zombie process);
+     - Adicionado novas opções no DEMO;
+     
 
+-------------------------------------------------------------------------
+
+1.0.0.9   
+04/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
+Melhorias:     
+     - Opçao de configurar a formatação do numero Whats de acordo com o país;
+     
+-------------------------------------------------------------------------
+     
 1.0.0.8   
 03/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
 Correções:

@@ -3,7 +3,7 @@ object frmPrincipal: TfrmPrincipal
   Top = 0
   Caption = 'Demo TInject'
   ClientHeight = 386
-  ClientWidth = 728
+  ClientWidth = 839
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -13,6 +13,7 @@ object frmPrincipal: TfrmPrincipal
   OldCreateOrder = False
   Position = poOwnerFormCenter
   OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
@@ -21,19 +22,23 @@ object frmPrincipal: TfrmPrincipal
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 722
+    Width = 833
     Height = 361
-    ActivePage = TabSheet1
+    ActivePage = TabSheet2
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o'
+      DesignSize = (
+        825
+        333)
       object whatsOn: TImage
-        Left = 289
+        Left = 348
         Top = 57
         Width = 103
         Height = 104
         Cursor = crHandPoint
+        Anchors = [akTop, akRight]
         Center = True
         Picture.Data = {
           0954506E67496D61676589504E470D0A1A0A0000000D49484452000000640000
@@ -1352,12 +1357,13 @@ object frmPrincipal: TfrmPrincipal
         OnClick = whatsOnClick
       end
       object whatsOff: TImage
-        Left = 289
+        Left = 348
         Top = 57
         Width = 103
         Height = 104
         Cursor = crHandPoint
         Hint = 'Autenticar'
+        Anchors = [akTop, akRight]
         Center = True
         ParentShowHint = False
         Picture.Data = {
@@ -2623,12 +2629,13 @@ object frmPrincipal: TfrmPrincipal
         OnClick = whatsOffClick
       end
       object imgQrcode: TImage
-        Left = 304
+        Left = 363
         Top = 195
         Width = 74
         Height = 75
         Cursor = crHandPoint
         Hint = 'Autenticar'
+        Anchors = [akTop, akRight]
         Center = True
         ParentShowHint = False
         Picture.Data = {
@@ -2914,10 +2921,11 @@ object frmPrincipal: TfrmPrincipal
         OnClick = imgQrcodeClick
       end
       object lblStatus: TLabel
-        Left = 291
+        Left = 350
         Top = 32
         Width = 98
         Height = 35
+        Anchors = [akTop, akRight]
         Caption = 'Offline'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = 2659583
@@ -2927,10 +2935,11 @@ object frmPrincipal: TfrmPrincipal
         ParentFont = False
       end
       object lblQrcode: TLabel
-        Left = 263
+        Left = 322
         Top = 176
         Width = 158
         Height = 23
+        Anchors = [akTop, akRight]
         Caption = 'Autenticar QRCode'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -2940,10 +2949,11 @@ object frmPrincipal: TfrmPrincipal
         ParentFont = False
       end
       object lblNumeroConectado: TLabel
-        Left = 182
+        Left = 241
         Top = 213
         Width = 316
         Height = 29
+        Anchors = [akTop, akRight]
         Caption = 'N'#250'mero: (99) 99999-9999'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -2957,10 +2967,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#245'es'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label8: TLabel
         Left = 12
         Top = 10
@@ -3002,10 +3008,77 @@ object frmPrincipal: TfrmPrincipal
         Width = 101
         Height = 21
         Alignment = taRightJustify
+        NumbersOnly = True
         TabOrder = 3
         Text = '0'
-        OnKeyPress = edtDelayKeyPress
         OnKeyUp = edtDelayKeyUp
+      end
+      object CheckBox1: TCheckBox
+        Left = 12
+        Top = 122
+        Width = 181
+        Height = 17
+        Caption = 'Ajustar Telefone Internamente'
+        Checked = True
+        State = cbChecked
+        TabOrder = 4
+        OnClick = CheckBox1Click
+      end
+      object Pnl_FONE: TPanel
+        Left = 12
+        Top = 145
+        Width = 331
+        Height = 49
+        Caption = ' '
+        TabOrder = 5
+        object Edt_LengDDD: TLabeledEdit
+          Left = 90
+          Top = 19
+          Width = 61
+          Height = 21
+          EditLabel.Width = 56
+          EditLabel.Height = 13
+          EditLabel.Caption = 'Digitos DDD'
+          NumbersOnly = True
+          TabOrder = 0
+          OnExit = Edt_DDIPDRExit
+        end
+        object Edt_LengDDI: TLabeledEdit
+          Left = 10
+          Top = 19
+          Width = 61
+          Height = 21
+          EditLabel.Width = 53
+          EditLabel.Height = 13
+          EditLabel.Caption = 'Digitos DDI'
+          NumbersOnly = True
+          TabOrder = 1
+          OnExit = Edt_DDIPDRExit
+        end
+        object Edt_LengFone: TLabeledEdit
+          Left = 170
+          Top = 19
+          Width = 61
+          Height = 21
+          EditLabel.Width = 59
+          EditLabel.Height = 13
+          EditLabel.Caption = 'Digitos Fone'
+          NumbersOnly = True
+          TabOrder = 2
+          OnExit = Edt_DDIPDRExit
+        end
+        object Edt_DDIPDR: TLabeledEdit
+          Left = 252
+          Top = 19
+          Width = 61
+          Height = 21
+          EditLabel.Width = 55
+          EditLabel.Height = 13
+          EditLabel.Caption = 'DDI Padr'#227'o'
+          NumbersOnly = True
+          TabOrder = 3
+          OnExit = Edt_DDIPDRExit
+        end
       end
     end
     object TabSheet3: TTabSheet
@@ -3093,7 +3166,7 @@ object frmPrincipal: TfrmPrincipal
         AlignWithMargins = True
         Left = 7
         Top = 268
-        Width = 700
+        Width = 811
         Height = 60
         Margins.Left = 7
         Margins.Right = 7
@@ -3116,7 +3189,7 @@ object frmPrincipal: TfrmPrincipal
       object Panel1: TPanel
         Left = 218
         Top = 0
-        Width = 496
+        Width = 607
         Height = 265
         Align = alClient
         BevelOuter = bvNone
@@ -3124,7 +3197,7 @@ object frmPrincipal: TfrmPrincipal
         ShowCaption = False
         TabOrder = 2
         object Splitter1: TSplitter
-          Left = 222
+          Left = 297
           Top = 0
           Height = 265
           ExplicitLeft = 240
@@ -3132,9 +3205,9 @@ object frmPrincipal: TfrmPrincipal
           ExplicitHeight = 100
         end
         object groupListaChats: TGroupBox
-          Left = 225
+          Left = 300
           Top = 0
-          Width = 271
+          Width = 307
           Height = 265
           Align = alClient
           Caption = 'Lista Conversas Abertas'
@@ -3146,13 +3219,13 @@ object frmPrincipal: TfrmPrincipal
           ParentFont = False
           TabOrder = 0
           DesignSize = (
-            271
+            307
             265)
           object Button3: TButton
             AlignWithMargins = True
             Left = 11
             Top = 22
-            Width = 251
+            Width = 287
             Height = 25
             Anchors = [akLeft, akTop, akRight]
             Caption = 'Listar Chats Abertos'
@@ -3171,7 +3244,7 @@ object frmPrincipal: TfrmPrincipal
             AlignWithMargins = True
             Left = 11
             Top = 52
-            Width = 250
+            Width = 286
             Height = 200
             Anchors = [akLeft, akTop, akRight, akBottom]
             Columns = <>
@@ -3188,19 +3261,19 @@ object frmPrincipal: TfrmPrincipal
         object groupListaContatos: TGroupBox
           Left = 0
           Top = 0
-          Width = 222
+          Width = 297
           Height = 265
           Align = alLeft
           Caption = 'Lista de Contatos'
           TabOrder = 1
           DesignSize = (
-            222
+            297
             265)
           object listaContatos: TListView
             AlignWithMargins = True
             Left = 12
             Top = 52
-            Width = 197
+            Width = 272
             Height = 202
             Anchors = [akLeft, akTop, akRight, akBottom]
             Columns = <>
@@ -3217,7 +3290,7 @@ object frmPrincipal: TfrmPrincipal
             AlignWithMargins = True
             Left = 12
             Top = 18
-            Width = 197
+            Width = 272
             Height = 25
             Anchors = [akLeft, akTop, akRight]
             Caption = 'Listar Contatos do Aparelho'
@@ -3232,14 +3305,10 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object memo_unReadMessagen: TMemo
         Left = 0
         Top = 0
-        Width = 714
+        Width = 825
         Height = 333
         Align = alClient
         BorderStyle = bsNone
@@ -3259,7 +3328,7 @@ object frmPrincipal: TfrmPrincipal
   object StatusBar1: TStatusBar
     Left = 0
     Top = 367
-    Width = 728
+    Width = 839
     Height = 19
     Panels = <
       item
@@ -3272,6 +3341,8 @@ object frmPrincipal: TfrmPrincipal
         Text = 'Offline'
         Width = 50
       end>
+    ExplicitLeft = -3
+    ExplicitTop = 366
   end
   object InjectWhatsapp1: TInjectWhatsapp
     Config.AutoStart = True
@@ -3279,6 +3350,9 @@ object frmPrincipal: TfrmPrincipal
     Config.AutoDelay = 0
     Config.SyncContacts = False
     Config.ShowRandom = False
+    AjustNumber.AutoAdjust = False
+    AjustNumber.LengthPhone = 8
+    AjustNumber.DDIDefault = 55
     OnGetContactList = InjectWhatsapp1GetContactList
     OnGetChatList = InjectWhatsapp1GetChatList
     OnGetUnReadMessages = InjectWhatsapp1GetUnReadMessages

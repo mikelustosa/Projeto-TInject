@@ -1,4 +1,4 @@
-Ôªøunit u_principal;
+unit u_principal;
 
 interface
 
@@ -7,19 +7,19 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uCEFWinControl, uCEFWindowParent,
   Vcl.ExtCtrls, uCEFChromium, system.JSON, uClasses,
 
-  //############ ATEN√á√ÉO AQUI ####################
-  //############ ATEN√á√ÉO AQUI ####################
-  //############ ATEN√á√ÉO AQUI ####################
-  //units adicionais obrigat√≥rias
+  //############ ATEN«√O AQUI ####################
+  //############ ATEN«√O AQUI ####################
+  //############ ATEN«√O AQUI ####################
+  //units adicionais obrigatÛrias
   uCEFApplication, uCefMiscFunctions, uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, uTInject,
   Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.WinXCtrls, System.NetEncoding,
   Vcl.Imaging.jpeg, Vcl.AppEvnts;
 
-  //############ ATEN√á√ÉO AQUI ####################
-  //############ ATEN√á√ÉO AQUI ####################
-  //############ ATEN√á√ÉO AQUI ####################
-  //Constantes obrigat√≥rias para controle do destroy do TChromium
+  //############ ATEN«√O AQUI ####################
+  //############ ATEN«√O AQUI ####################
+  //############ ATEN«√O AQUI ####################
+  //Constantes obrigatÛrias para controle do destroy do TChromium
 //  const
 //  CEFBROWSER_CREATED          = WM_APP + $100;
 //  CEFBROWSER_CHILDDESTROYED   = WM_APP + $101;
@@ -69,6 +69,12 @@ type
     listaContatos: TListView;
     Button2: TButton;
     Splitter1: TSplitter;
+    CheckBox1: TCheckBox;
+    Pnl_FONE: TPanel;
+    Edt_LengDDD: TLabeledEdit;
+    Edt_LengDDI: TLabeledEdit;
+    Edt_LengFone: TLabeledEdit;
+    Edt_DDIPDR: TLabeledEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure whatsOnClick(Sender: TObject);
@@ -88,7 +94,6 @@ type
     procedure ApplicationEvents1Minimize(Sender: TObject);
     procedure btn_clearClick(Sender: TObject);
     procedure imgQrcodeClick(Sender: TObject);
-    procedure edtDelayKeyPress(Sender: TObject; var Key: Char);
     procedure InjectWhatsapp1GetStatus(Sender: TObject);
     procedure edtDelayKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ButtonSelecionarArquivoClick(Sender: TObject);
@@ -96,15 +101,19 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure InjectWhatsapp1GetBatteryLevel(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure CheckBox1Click(Sender: TObject);
+    procedure Edt_DDIPDRExit(Sender: TObject);
 
   protected
 
-    //############ ATEN√á√ÉO AQUI ####################
-    //############ ATEN√á√ÉO AQUI ####################
-    //############ ATEN√á√ÉO AQUI ####################
-    // Essas vari√°veis e procedures ajudam √† monitorar o destroy correto do TChromium.
+    //############ ATEN«√O AQUI ####################
+    //############ ATEN«√O AQUI ####################
+    //############ ATEN«√O AQUI ####################
+    // Essas vari·veis e procedures ajudam ‡ monitorar o destroy correto do TChromium.
     FCanClose : boolean;  // Defina como True em TChromium.OnBeforeClose
     FClosing  : boolean;  // Defina como True no evento CloseQuery.
+
     procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
     procedure WMMoving(var aMessage : TMessage); message WM_MOVING;
     procedure WMEnterMenuLoop(var aMessage: TMessage); message WM_ENTERMENULOOP;
@@ -112,10 +121,8 @@ type
 
   private
     { Private declarations }
-    idMessageLocal, idMessageGlobal: string;
-    vSessao, vSessao2: integer;
-    ChromiumStarted: Boolean;
-    vExtension, vBase64, vFileName, IDMessage: string;
+    idMessageGlobal: string;
+    vExtension,  vFileName: string;
     vBase64File: TBase64Encoding;
     procedure CarregarContatos;
     procedure CarregarChats;
@@ -151,9 +158,17 @@ uses
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
-  idMessageGlobal := 'start';
+//  FClosingMainForm                  := False;
+ // FCanClose                         := False;
+  idMessageGlobal              := 'start';
   PageControl1.ActivePageIndex := 0;
+
   InjectWhatsapp1.startWhatsapp;
+  CheckBox1.Checked := InjectWhatsapp1.AjustNumber.AutoAdjust;
+  Edt_LengDDI.text  := InjectWhatsapp1.AjustNumber.LengthDDI.ToString;
+  Edt_LengDDD.text  := InjectWhatsapp1.AjustNumber.LengthDDD.ToString;
+  Edt_LengFone.Text := InjectWhatsapp1.AjustNumber.LengthPhone.ToString;
+  Edt_DDIPDR.Text   := InjectWhatsapp1.AjustNumber.DDIDefault.ToString;
 end;
 
 procedure TfrmPrincipal.FormShow(Sender: TObject);
@@ -163,10 +178,16 @@ end;
 
 procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-    application.Terminate;
+  Action := Cafree;
+  //application.Terminate;
 end;
 
-procedure TfrmPrincipal.AddChatList(ANumber: String);
+procedure TfrmPrincipal.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose := true;
+end;
+
+Procedure TfrmPrincipal.AddChatList(ANumber: String);
 var
   Item: TListItem;
 begin
@@ -202,21 +223,20 @@ begin
 end;
 
 procedure TfrmPrincipal.btn_clearClick(Sender: TObject);
-var i, j, f, controle: integer;
+var
+  i: integer;
 begin
-  controle := 1;
   for i := 0 to  length(arrayTimer) -1 do
   begin
     if arrayTimer[i] <> '' then
     begin
       if (time - strToTime(arrayTimer[i])) >= strToTime('00:00:10') then
       begin
-        mensagem := 'Seu n√∫mero *'+arrayFila[i]+'* foi removido da fila de atendimento.\n\n*Obrigado* por entrar em _contato_ e at√© breve!';
+        mensagem := 'Seu n˙mero *'+arrayFila[i]+'* foi removido da fila de atendimento.\n\n*Obrigado* por entrar em _contato_ e atÈ breve!';
         injectWhatsapp1.send(arrayFila[i], mensagem);
         arrayFila[i]    := '';
         arraySessao[i]  := '';
         arrayTimer[i]   := '';
-        controle := 0;
       end;
     end;
   end;
@@ -251,7 +271,7 @@ procedure TfrmPrincipal.btEnviaTextoArqClick(Sender: TObject);
 begin
   if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
   begin
-    application.MessageBox('Voc√™ n√£o est√° autenticado.','TInject', mb_iconwarning + mb_ok);
+    application.MessageBox('VocÍ n„o est· autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
   end;
 
@@ -279,7 +299,7 @@ procedure TfrmPrincipal.btStatusBatClick(Sender: TObject);
 begin
   if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
   begin
-    application.MessageBox('Voc√™ n√£o est√° autenticado.','TInject', mb_iconwarning + mb_ok);
+    application.MessageBox('VocÍ n„o est· autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
   end;
 
@@ -290,7 +310,7 @@ procedure TfrmPrincipal.btEnviaTextoClick(Sender: TObject);
 begin
   if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
   begin
-    application.MessageBox('Voc√™ n√£o est√° autenticado.','TInject', mb_iconwarning + mb_ok);
+    application.MessageBox('VocÍ n„o est· autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
   end;
 
@@ -320,12 +340,12 @@ begin
     vFileNameURL := dateToStr(date)+timeToStr(time)+'.'+vExtension;
     if (vExtension = 'pdf') or (vExtension = 'rar')  or (vExtension = 'zip') then
     begin
-      vBase64Str := 'data:application/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
+      vBase64Str := 'data:application/'+vExtension+';base64,'+ String(vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size));
     end else
     Begin
       if (vExtension = 'mp4') or (vExtension = 'mp3') then
-         vBase64Str := 'data:application/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size)  Else
-         vBase64Str := 'data:image/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
+         vBase64Str := 'data:application/'+vExtension+';base64,'+ String(vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size))  Else
+         vBase64Str := 'data:image/'+vExtension+';base64,' + String(vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size));
     End;
     caminhoArquivo := openDialog1.FileName;
     vFilestream.Free;
@@ -343,20 +363,17 @@ begin
   InjectWhatsapp1.getAllContacts;
 end;
 
+procedure TfrmPrincipal.CheckBox1Click(Sender: TObject);
+begin
+  injectWhatsapp1.AjustNumber.AutoAdjust := CheckBox1.Checked;
+  Pnl_FONE.Enabled  := CheckBox1.Checked;
+end;
+
 procedure TfrmPrincipal.chk_apagarMsgClick(Sender: TObject);
 begin
- if chk_apagarMsg.Checked then
-  injectWhatsapp1.Config.FAutoDelete := true
- else
-  injectWhatsapp1.Config.FAutoDelete := false;
+  injectWhatsapp1.Config.FAutoDelete := chk_apagarMsg.Checked;
 end;
 
-
-procedure TfrmPrincipal.edtDelayKeyPress(Sender: TObject; var Key: Char);
-begin
-  if ((key in ['0'..'9'] = false) and (word(key) <> vk_back)) then
-    key := #0;
-end;
 
 procedure TfrmPrincipal.edtDelayKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);
@@ -370,14 +387,22 @@ begin
   end;
 end;
 
-procedure TfrmPrincipal.imgQrcodeClick(Sender: TObject);
+procedure TfrmPrincipal.Edt_DDIPDRExit(Sender: TObject);
+begin
+  InjectWhatsapp1.AjustNumber.LengthDDI   := StrToIntDef(Edt_LengDDI.text , 2);
+  InjectWhatsapp1.AjustNumber.LengthDDD   := StrToIntDef(Edt_LengDDD.text , 2);
+  InjectWhatsapp1.AjustNumber.LengthPhone := StrToIntDef(Edt_LengFone.text, 8);
+  InjectWhatsapp1.AjustNumber.DDIDefault  := StrToIntDef(Edt_DDIPDR.text  , 55);
+end;
+
+Procedure TfrmPrincipal.imgQrcodeClick(Sender: TObject);
 begin
   InjectWhatsapp1.startQrCode;
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetBatteryLevel(Sender: TObject);
 begin
-  btStatusBat.caption := 'N√≠vel da bateria: '+injectWhatsapp1.AGetBatteryLevel + '%';
+  btStatusBat.caption := 'NÌvel da bateria: '+injectWhatsapp1.AGetBatteryLevel + '%';
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetChatList(Sender: TObject);
@@ -446,9 +471,9 @@ begin
     begin
       for AMessage in AChat.messages do
       begin
-        if not AChat.isGroup then //N√£o exibe mensages de grupos
+        if not AChat.isGroup then //N„o exibe mensages de grupos
         begin
-          if not AMessage.sender.isMe then  //N√£o exibe mensages enviadas por mim
+          if not AMessage.sender.isMe then  //N„o exibe mensages enviadas por mim
           begin
             memo_unReadMessagen.Clear;
             //memo_unReadMessagen.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
@@ -522,22 +547,24 @@ end;
 function TfrmPrincipal.VerificaPalavraChave(pMensagem, pSessao, pTelefone,
   pContato: String): Boolean;
 begin
-   if ( POS('OLA', AnsiUpperCase(pMensagem))        > 0 ) or ( POS('OL√Å', AnsiUpperCase(pMensagem))       > 0 ) or
+  Result := False;
+   if ( POS('OLA', AnsiUpperCase(pMensagem))        > 0 ) or ( POS('OL¡', AnsiUpperCase(pMensagem))       > 0 ) or
       ( POS('BOM DIA', AnsiUpperCase(pMensagem))    > 0 ) or ( POS('BOA TARDE', AnsiUpperCase(pMensagem)) > 0 ) or
-      ( POS('BOA NOITE', AnsiUpperCase(pMensagem))  > 0 ) or ( POS('IN√çCIO', AnsiUpperCase(pMensagem))    > 0 ) or
+      ( POS('BOA NOITE', AnsiUpperCase(pMensagem))  > 0 ) or ( POS('INÕCIO', AnsiUpperCase(pMensagem))    > 0 ) or
       ( POS('HELLO', AnsiUpperCase(pMensagem))      > 0 ) or ( POS('HI', AnsiUpperCase(pMensagem))        > 0 ) or
       ( POS('INICIO', AnsiUpperCase(pMensagem))     > 0 ) or ( POS('OI', AnsiUpperCase(pMensagem))        > 0 )then
       begin
         mensagem :=
-        InjectWhatsapp1.Emoticons.AtendenteH+ 'Ol√° *'+pContato+'!*\n\n'+
-        'Voc√™ est√° no auto atendimento do *TInject*!\n\n'+
-        'Digite um n√∫mero:\n\n'+
+        InjectWhatsapp1.Emoticons.AtendenteH+ 'Ol· *'+pContato+'!*\n\n'+
+        'VocÍ est· no auto atendimento do *TInject*!\n\n'+
+        'Digite um n˙mero:\n\n'+
         InjectWhatsapp1.Emoticons.Um             +' Suporte\n\n'+
         InjectWhatsapp1.Emoticons.Dois           +' Consultar CEP\n\n'+
         InjectWhatsapp1.Emoticons.Tres           +' Financeiro\n\n'+
-        InjectWhatsapp1.Emoticons.Quatro         +' Hor√°rios de atendimento\n\n';
+        InjectWhatsapp1.Emoticons.Quatro         +' Hor·rios de atendimento\n\n';
         vBase64Str := 'data:image/png;base64,' +frm_servicesWhats.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\softmais.png');
         InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, '', mensagem);
+        Result := True;
         exit;
       end;
    exit;

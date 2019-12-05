@@ -1,2 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<BorlandProject/>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2019/12/04 20:09:37.000.488,C:\Users\Vm\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Componentes\WhatsApp\Repositorio\Demo\TInject.dproj</Transaction>
+  </Transactions>
+</BorlandProject>

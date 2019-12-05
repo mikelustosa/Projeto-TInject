@@ -111,12 +111,12 @@ begin
   WS := Handler;
   HandlerSessionKey(Handler_key);
   PointerHandler := PWideChar(WS);
-   If FHandle >= 0 then
-   begin
+  If FHandle > 0 then
+  begin
      try
-         FPointer := GetProcAddress(FHandle,PointerHandler);
-         if (Assigned( FPointer )) then
-         Begin
+       FPointer := GetProcAddress(FHandle,PointerHandler);
+       if (Assigned( FPointer )) then
+       Begin
           try
            ChromiumObject := TChromiumObject(FPointer);
            Process := ChromiumObject(Handler_key,HandlerResponse);
@@ -127,9 +127,9 @@ begin
           except
            on E: Exception do FreeLibrary(FHandle);
           end;
-         End;
+       End;
      finally
-      FreeLibrary(FHandle);
+       FreeLibrary(FHandle);
      end;
    end;
  except

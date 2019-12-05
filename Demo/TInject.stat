@@ -1,10 +1,62 @@
+<<<<<<< .mine
 [Stats]
+EditorSecs=111
+DesignerSecs=6
+InspectorSecs=1
+CompileSecs=1715
+OtherSecs=4
+StartTime=04/12/2019 22:12:46
+RealKeys=0
+EffectiveKeys=0
+DebugSecs=99
+||||||| .r119
+[Stats]
+<<<<<<< .mine
+EditorSecs=4464
+DesignerSecs=96
+InspectorSecs=27
+CompileSecs=240099
+OtherSecs=262
+||||||| .r112
+EditorSecs=565
+DesignerSecs=95
+InspectorSecs=21
+CompileSecs=199757
+OtherSecs=166
+=======
 EditorSecs=512
 DesignerSecs=109
 InspectorSecs=21
 CompileSecs=226929
 OtherSecs=144
+>>>>>>> .r115
 StartTime=19/11/2019 16:36:53
 RealKeys=0
 EffectiveKeys=0
-DebugSecs=371
+DebugSecs=1909
+=======
+[Stats]
+<<<<<<< .mine
+EditorSecs=4469
+DesignerSecs=96
+InspectorSecs=27
+CompileSecs=240099
+OtherSecs=252
+||||||| .r112
+EditorSecs=565
+DesignerSecs=95
+InspectorSecs=21
+CompileSecs=199757
+OtherSecs=166
+=======
+EditorSecs=512
+DesignerSecs=109
+InspectorSecs=21
+CompileSecs=226929
+OtherSecs=144
+>>>>>>> .r115
+StartTime=19/11/2019 16:36:53
+RealKeys=0
+EffectiveKeys=0
+DebugSecs=1909
+>>>>>>> .r120

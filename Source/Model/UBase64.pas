@@ -1,13 +1,17 @@
 ﻿{** Douglas Colombo
   * Classe de conversão de arquivos em texto
   * e de Texto em Arquivos, BASE64
+  
+  * MODIFICADO 04/12/2019 POR Daniel Rodrigues (ajustes de plataforma) 
+  *
+  *
 **}
 
 unit UBase64;
 
 interface
 
-uses System.Classes, System.netEncoding, System.SysUtils, FMX.Graphics;
+uses System.Classes, System.netEncoding, System.SysUtils, VCL.Graphics;
 
 
 //Type
@@ -49,8 +53,9 @@ begin
     sTream := Base64ToStream(Arquivo);
     sTream.SaveToFile(caminhoSalvar);
   Finally
-    sTream.free;
-    sTream:=nil;
+//    sTream.Free;
+//    sTream:=nil;
+    FreeAndNil(sTream);
   End;
 end;
 
@@ -64,8 +69,9 @@ begin
     result := TBytesStream.Create(bytes);
     result.Seek(0, 0);
   Finally
-    Base64.Free;
-    Base64:=nil;
+    FreeAndNil(Base64);
+//    Base64.Free;
+//    Base64:=nil;
     SetLength(bytes, 0);
   End;
 end;
@@ -74,16 +80,20 @@ function BitmapToBase64(imagem: TBitmap): String;
 Var sTream : TMemoryStream;
 begin
   result := '';
-
-  if not (imagem.IsEmpty) then
+  if not (imagem.Empty) then
   begin
      Try
-        sTream := TMemoryStream.Create;
-        imagem.SaveToStream(sTream);
-        result := StreamToBase64(sTream);
-        sTream.DisposeOf;
-        sTream := nil;
-     Except End;
+       sTream := TMemoryStream.Create;
+       try
+         imagem.SaveToStream(sTream);
+         result := StreamToBase64(sTream);
+       finally
+        FreeAndNil(Stream);
+//         sTream.DisposeOf;
+//         sTream := nil;
+       end;
+     Except
+     End;
   end;
 end;
 
@@ -95,8 +105,9 @@ begin
     sTream.LoadFromFile(Arquivo);
     result := StreamToBase64(sTream);
   Finally
-    Stream.Free;
-    Stream:=nil;
+    FreeAndNil(Stream);
+//    Stream.Free;
+//    Stream:=nil;
   End;
 end;
 
@@ -108,8 +119,9 @@ begin
     Base64 := TBase64Encoding.Create;
     Result := Base64.EncodeBytesToString(sTream.Memory, sTream.Size);
   Finally
-    Base64.Free;
-    Base64:=nil;
+    FreeAndNil(Stream);
+//    Base64.Free;
+//    Base64:=nil;
   End;
 end;
 
