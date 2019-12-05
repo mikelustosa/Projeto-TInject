@@ -7,6 +7,8 @@ Melhorias:
      - Adicionado novas opções no DEMO;
      
 
+Criada branch testRelease para realizações de commit para controle de qualidade de versão
+------------------------------------------------------------------------
 -------------------------------------------------------------------------
 
 1.0.0.9   

@@ -87,6 +87,7 @@ type
     procedure SetAllChats(JsonText: String);
     procedure SetUnReadMessages(JsonText: String);
     procedure SetQrCode(JsonText: String);
+    procedure SetQrCodeWEB(JsonText: String);
     procedure SetBatteryLevel(JsonText: string);
     procedure loadWEBQRCode(st: string);
 
@@ -106,6 +107,8 @@ type
     procedure GetUnreadMessages;
     procedure GetBatteryLevel;
     procedure monitorQRCode;
+    //Para monitorar o qrcode via REST
+    procedure WEBmonitorQRCode;
     procedure loadQRCode(st: string);
     procedure ReadMessages(vID: string);
     procedure ReadMessagesAndDelete(vID: string);
@@ -178,6 +181,14 @@ begin
   inherited;
 
   if (Chromium1 <> nil) then Chromium1.NotifyMoveOrResizeStarted;
+end;
+
+//Usado para requisições REST
+procedure Tfrm_servicesWhats.WEBmonitorQRCode;
+const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
+begin
+  if Chromium1.Browser <> nil then
+    Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
 end;
 
 procedure Tfrm_servicesWhats.WMEnterMenuLoop(var aMessage: TMessage);
@@ -287,6 +298,11 @@ begin
               if AResponse.name = 'getQrCode' then
               begin
                 SetQrCode( message );
+              end;
+
+              if AResponse.name = 'getQrCodeWEB' then
+              begin
+                SetQrCodeWEB( message );
               end;
             end;
           end;
@@ -611,6 +627,31 @@ begin
       FreeAndNil(LQrCode);
     end;
   end;
+end;
+
+procedure Tfrm_servicesWhats.SetQrCodeWEB(JsonText: String);
+var AQrCode: TQrCodeClass;
+var code: string;
+begin
+  if not Assigned( _Inject ) then Exit;
+
+  //if not Assigned( frm_view_qrcode ) then Exit;
+
+  with _Inject do
+  begin
+    code :=  copy(JsonText, 42, 4);
+    if (code = 'http') or (code = '/img') then
+    begin
+      frm_view_qrcode.Timer1.Enabled := false;
+      frm_view_qrcode.close;
+      exit
+    end;
+    AQrCode := TQrCodeClass.FromJsonString( JsonText );
+    _Qrcode := AQrCode.result.AQrCode;
+
+    loadWEBQRCode(_Qrcode);
+  end;
+
 end;
 
 procedure Tfrm_servicesWhats.SetUnReadMessages(JsonText: String);

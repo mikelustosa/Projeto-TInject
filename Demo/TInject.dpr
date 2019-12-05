@@ -7,20 +7,28 @@ uses
   Forms,
   Windows,
   {$ENDIF }
-  UCtrGlobalCEFApp,
-  u_principal      in 'u_principal.pas' {frmPrincipal};
+  uTInject.ConfigCEF,
+  u_principal in 'u_principal.pas' {frmPrincipal};
 
 {$R *.res}
 
 begin
-  GlobalCEFApp := TCefInject.Create(True);
+  //Colocar arquivos CEFLib junto a pasta binária da aplicação (Nao definir ou passar vazio)
+  CEFConfig.PATH_ROOT := '';
 
-  Application.Initialize;
-  {$IFDEF DELPHI11_UP}
-     Application.MainFormOnTaskbar := True;
-  {$ENDIF}
-  Application.CreateForm(TfrmPrincipal, frmPrincipal);
-  Application.Run;
+  //Colocar arquivos CEFLib em subpasta CEF na raiz da demo
+  //CEFConfig.PATH_ROOT := 'CEF\'
 
-  GlobalCEFApp.Free;
+  //Colocar arquivos CEFLib em pasta fixa especifica (unica autenciacao)
+  //CEFConfig.PATH_ROOT := 'C:\CEF\'
+
+  if CEFConfig.StartMainProcess then
+  begin
+    Application.Initialize;
+    {$IFDEF DELPHI11_UP}
+    Application.MainFormOnTaskbar := True;
+    {$ENDIF}
+    Application.CreateForm(TfrmPrincipal, frmPrincipal);
+    Application.Run;
+  end;
 end.
