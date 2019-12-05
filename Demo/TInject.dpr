@@ -7,10 +7,11 @@ uses
     Forms,
     Windows,
   {$ENDIF }
+
   u_principal                   in 'u_principal.pas' {frmPrincipal},
-  u_servicesWhats               in '..\..\Source\Services\u_servicesWhats.pas' {frm_servicesWhats},
-  uTInject                      in '..\..\Source\Services\uTInject.pas',
-  u_view_qrcode                 in '..\..\Source\View\u_view_qrcode.pas' {frm_view_qrcode},
+  u_servicesWhats               in '..\Source\Services\u_servicesWhats.pas' {frm_servicesWhats},
+  uTInject                      in '..\Source\Services\uTInject.pas',
+  u_view_qrcode                 in '..\Source\View\u_view_qrcode.pas' {frm_view_qrcode},
   UBase64                       in '..\Source\Model\UBase64.pas',
   uClasses                      in '..\Source\Model\uClasses.pas',
   uTInject.Emoticons            in '..\Source\Model\uTInject.Emoticons.pas',

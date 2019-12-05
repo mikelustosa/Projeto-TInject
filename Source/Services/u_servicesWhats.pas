@@ -7,15 +7,16 @@ unit u_servicesWhats;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics, UCtrGlobalCEFApp,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, uCEFChromium,
-  uCEFWinControl, uCEFWindowParent, StrUtils,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, StrUtils,
+
+  uCEFWinControl, uCEFWindowParent, uCEFChromium, uCEFChromiumCore,
 
   //units adicionais obrigatórias
-  uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
+  uCEFInterfaces, uCEFConstants, uCEFTypes, uTInject.ConfigCEF,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
-  Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json, uClasses, uTInject, u_view_qrcode, Vcl.Imaging.jpeg,
-  uCEFChromiumCore;
+  Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json, uClasses, uTInject, u_view_qrcode,
+  Vcl.Imaging.jpeg;
 
   var
    vContacts :Array of String;
@@ -715,7 +716,7 @@ begin
     if vAuth = true then
     begin
 
-      AssignFile(arq, GlobalCEFApp.CEF4Path.InjectJS);
+      AssignFile(arq, GlobalCEFApp.PathInjectJS);
 //      AssignFile(arq, ExtractFilePath(Application.ExeName) + 'js.abr');
       // desativa a diretiva de Input
       Reset(arq);
