@@ -7,32 +7,28 @@ uses
   Forms,
   Windows,
   {$ENDIF }
-  uCEFApplication,
-  uCEFConstants,
+  uTInject.ConfigCEF,
   u_principal in 'u_principal.pas' {frmPrincipal};
 
 {$R *.res}
 
 begin
-  GlobalCEFApp                      := TCefApplication.Create;
-  GlobalCEFApp.EnableGPU            := True;
-  GlobalCEFApp.cache                := 'DATA\cache';
-  GlobalCEFApp.DisableFeatures      := 'NetworkService,OutOfBlinkCors';
-  //GlobalCEFApp.FrameworkDirPath     := 'C:\Componentes\WhatsApp\Comp\BIN\';
-  //GlobalCEFApp.ResourcesDirPath     := 'C:\Componentes\WhatsApp\Comp\BIN\';
-  //GlobalCEFApp.LocalesDirPath       := 'C:\Componentes\WhatsApp\Comp\BIN\locales';
-  //GlobalCEFApp.UserDataPath         := 'C:\Componentes\WhatsApp\Comp\BIN\User Data';
+  //Colocar arquivos CEFLib junto a pasta binária da aplicação (Nao definir ou passar vazio)
+  CEFConfig.PATH_ROOT := '';
 
-  if GlobalCEFApp.StartMainProcess then
-    begin
-      Application.Initialize;
-      {$IFDEF DELPHI11_UP}
-      Application.MainFormOnTaskbar := True;
-      {$ENDIF}
-      Application.CreateForm(TfrmPrincipal, frmPrincipal);
-      Application.Run;
-    end;
+  //Colocar arquivos CEFLib em subpasta CEF na raiz da demo
+  //CEFConfig.PATH_ROOT := 'CEF\'
 
-  GlobalCEFApp.Free;
-  GlobalCEFApp := nil;
+  //Colocar arquivos CEFLib em pasta fixa especifica (unica autenciacao)
+  //CEFConfig.PATH_ROOT := 'C:\CEF\'
+
+  if CEFConfig.StartMainProcess then
+  begin
+    Application.Initialize;
+    {$IFDEF DELPHI11_UP}
+    Application.MainFormOnTaskbar := True;
+    {$ENDIF}
+    Application.CreateForm(TfrmPrincipal, frmPrincipal);
+    Application.Run;
+  end;
 end.
