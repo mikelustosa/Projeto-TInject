@@ -11,7 +11,7 @@ uses
   //############ ATENÇÃO AQUI ####################
   //############ ATENÇÃO AQUI ####################
   //units adicionais obrigatórias
-  uCEFApplication, uCefMiscFunctions, uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
+  UCtrGlobalCEFApp, uCefMiscFunctions, uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, uTInject,
   Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.WinXCtrls, System.NetEncoding,
   Vcl.Imaging.jpeg, Vcl.AppEvnts;
@@ -256,14 +256,16 @@ procedure TfrmPrincipal.WMEnterMenuLoop(var aMessage: TMessage);
 begin
   inherited;
 
-  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then GlobalCEFApp.OsmodalLoop := True;
+  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then
+     GlobalCEFApp.OsmodalLoop := True;
 end;
 
 procedure TfrmPrincipal.WMExitMenuLoop(var aMessage: TMessage);
 begin
   inherited;
 
-  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then GlobalCEFApp.OsmodalLoop := False;
+  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then
+     GlobalCEFApp.OsmodalLoop := False;
 end;
 
 

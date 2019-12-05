@@ -3341,8 +3341,6 @@ object frmPrincipal: TfrmPrincipal
         Text = 'Offline'
         Width = 50
       end>
-    ExplicitLeft = -3
-    ExplicitTop = 366
   end
   object InjectWhatsapp1: TInjectWhatsapp
     Config.AutoStart = True
@@ -3351,6 +3349,8 @@ object frmPrincipal: TfrmPrincipal
     Config.SyncContacts = False
     Config.ShowRandom = False
     AjustNumber.AutoAdjust = False
+    AjustNumber.LengthDDI = 0
+    AjustNumber.LengthDDD = 0
     AjustNumber.LengthPhone = 8
     AjustNumber.DDIDefault = 55
     OnGetContactList = InjectWhatsapp1GetContactList
