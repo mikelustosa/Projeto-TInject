@@ -1,8 +1,8 @@
-unit uClasses;
+unit uTInject.Classes;
 
 interface
 
-uses Generics.Collections, Rest.Json, u_view_qrcode;
+uses Generics.Collections, Rest.Json, uTInject.FrmQRCode;
 
 type
 
@@ -49,7 +49,6 @@ end;
 
 TMediaDataClass = class
 private
-  //Teste: String;
 public
   function ToJsonString: string;
   class function FromJsonString(AJsonString: string): TMediaDataClass;

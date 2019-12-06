@@ -1,4 +1,4 @@
-object frm_view_qrcode: Tfrm_view_qrcode
+object FrmQRCode: TFrmQRCode
   Left = 0
   Top = 0
   BorderIcons = [biSystemMenu]

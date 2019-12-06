@@ -13,38 +13,15 @@ interface
 
 uses System.Classes, System.netEncoding, System.SysUtils, VCL.Graphics;
 
-
-//Type
-  // tBase64 = class
-
-   //public
-     procedure Base64ToFile(Arquivo, caminhoSalvar : String);
-     function Base64ToStream(imagem : String) : TMemoryStream;
-     //function Base64ToBitmap(imagem : String) : TBitmap;
-     function BitmapToBase64(imagem : TBitmap) : String;
-     function FileToBase64(Arquivo : String) : String;
-     function StreamToBase64(STream : TMemoryStream) : String;
-//end;
+   procedure Base64ToFile  (Arquivo, caminhoSalvar : String);
+   function  Base64ToStream(imagem : String) : TMemoryStream;
+   function  BitmapToBase64(imagem : TBitmap) : String;
+   function  FileToBase64  (Arquivo : String) : String;
+   function  StreamToBase64(STream : TMemoryStream) : String;
 
 implementation
 
 
-//{ tBase64 }
-//function tBase64.Base64ToBitmap(imagem: String): TBitmap;
-//Var sTream : TMemoryStream;
-//begin
-//  if (trim(imagem) <> '') then
-//  begin
-//     Try
-//        sTream := Base64ToStream(imagem);
-//        result := TBitmap.CreateFromStream(sTream);
-//     Finally
-//        sTream.DisposeOf;
-//        sTream := nil;
-//     End;
-//  end else
-//  exit;
-//end;
 
 procedure Base64ToFile(Arquivo, caminhoSalvar : String);
 Var sTream : TMemoryStream;
@@ -53,8 +30,6 @@ begin
     sTream := Base64ToStream(Arquivo);
     sTream.SaveToFile(caminhoSalvar);
   Finally
-//    sTream.Free;
-//    sTream:=nil;
     FreeAndNil(sTream);
   End;
 end;
@@ -70,8 +45,6 @@ begin
     result.Seek(0, 0);
   Finally
     FreeAndNil(Base64);
-//    Base64.Free;
-//    Base64:=nil;
     SetLength(bytes, 0);
   End;
 end;
@@ -89,8 +62,6 @@ begin
          result := StreamToBase64(sTream);
        finally
         FreeAndNil(Stream);
-//         sTream.DisposeOf;
-//         sTream := nil;
        end;
      Except
      End;
@@ -106,8 +77,6 @@ begin
     result := StreamToBase64(sTream);
   Finally
     FreeAndNil(Stream);
-//    Stream.Free;
-//    Stream:=nil;
   End;
 end;
 
@@ -120,8 +89,6 @@ begin
     Result := Base64.EncodeBytesToString(sTream.Memory, sTream.Size);
   Finally
     FreeAndNil(Stream);
-//    Base64.Free;
-//    Base64:=nil;
   End;
 end;
 

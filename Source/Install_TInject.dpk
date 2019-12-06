@@ -36,8 +36,7 @@ requires
   xmlrtl,
   fmx,
   RESTComponents,
-  CEF4Delphi,
-  TInject;
+  CEF4Delphi;
 
 end.
 

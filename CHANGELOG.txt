@@ -1,6 +1,9 @@
 -------------------------------------------------------------------------
 1.0.0.10 
 05/12/2019
+Rep Revisao 134
+    - Troca dos nomes das UNITS para um novo Padrão 
+
 Rep Revisao 132
     - Retirado Units que não são utilizadas(\service\ UnitCEFLoadHandlerChromium.pas e UnitCEFHandlerSessionChromium.pas);
 

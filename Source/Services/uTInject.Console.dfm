@@ -1,4 +1,4 @@
-object frm_servicesWhats: Tfrm_servicesWhats
+object FrmConsole: TFrmConsole
   Left = 0
   Top = 0
   BorderStyle = bsNone

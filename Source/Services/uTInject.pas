@@ -8,7 +8,7 @@ unit uTInject;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uClasses, u_view_qrcode,  System.MaskUtils,
+  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uTInject.Classes, uTInject.FrmQRCode,  System.MaskUtils,
   uTInject.Emoticons;
 
 Const
@@ -181,7 +181,7 @@ procedure Register;
 implementation
 
 uses
-  u_servicesWhats;
+  uTInject.Console;
 
 procedure Register;
 begin
@@ -208,8 +208,8 @@ end;
 
 procedure TInjectWhatsapp.batteryStatus();
 begin
-  if Assigned(frm_servicesWhats) then
-    frm_servicesWhats.GetBatteryLevel;
+  if Assigned(FrmConsole) then
+    FrmConsole.GetBatteryLevel;
 end;
 
 constructor TInjectWhatsapp.Create(AOwner: TComponent);
@@ -233,8 +233,8 @@ end;
 
 destructor TInjectWhatsapp.Destroy;
 begin
-  FreeAndNil(frm_servicesWhats);
-  FreeAndNil(frm_view_qrcode);
+  FreeAndNil(FrmConsole);
+  FreeAndNil(FrmQRCode);
   FreeAndNil(FAjustNumber);
 
   FreeAndNil(FQrCodeClass);
@@ -251,12 +251,12 @@ end;
 
 procedure TInjectWhatsapp.GetAllContacts;
 begin
-  frm_servicesWhats.GetAllContacts;
+  FrmConsole.GetAllContacts;
 end;
 
 procedure TInjectWhatsapp.GetAllChats;
 begin
-  frm_servicesWhats.GetAllChats;
+  FrmConsole.GetAllChats;
 end;
 
 function TInjectWhatsapp.GetStatus: Boolean;
@@ -277,9 +277,9 @@ begin
 
           TThread.Synchronize(nil, procedure
           begin
-            if Assigned(frm_servicesWhats) then
+            if Assigned(FrmConsole) then
             begin
-              frm_servicesWhats.GetUnReadMessages;
+              FrmConsole.GetUnReadMessages;
             end;
           end);
 
@@ -290,19 +290,19 @@ end;
 
 procedure TInjectWhatsapp.monitorQrCode;
 begin
-  frm_servicesWhats.monitorQRCode;
+  FrmConsole.monitorQRCode;
 end;
 
 procedure TInjectWhatsapp.ReadMessages(vID: string);
 begin
   if Config.AutoDelete Then
   begin
-    if assigned(frm_servicesWhats) then
-       frm_servicesWhats.ReadMessagesAndDelete(vID);
+    if assigned(FrmConsole) then
+       FrmConsole.ReadMessagesAndDelete(vID);
   end else
   Begin
-    if assigned(frm_servicesWhats) then
-       frm_servicesWhats.ReadMessages(vID);
+    if assigned(FrmConsole) then
+       FrmConsole.ReadMessages(vID);
   end;
 end;
 
@@ -318,10 +318,10 @@ begin
 
         TThread.Synchronize(nil, procedure
         begin
-          if Assigned(frm_servicesWhats) then
+          if Assigned(FrmConsole) then
           begin
-            frm_servicesWhats.ReadMessages(vNum); //Marca como lida a mensagem
-            frm_servicesWhats.Send(vNum, vMess);
+            FrmConsole.ReadMessages(vNum); //Marca como lida a mensagem
+            FrmConsole.Send(vNum, vMess);
           end;
         end);
 
@@ -343,10 +343,10 @@ begin
 
         TThread.Synchronize(nil, procedure
         begin
-          if Assigned(frm_servicesWhats) then
+          if Assigned(FrmConsole) then
           begin
-            frm_servicesWhats.ReadMessages(vNum); //Marca como lida a mensagem
-            frm_servicesWhats.sendBase64(vBase64, vNum, vFileName, vMess);
+            FrmConsole.ReadMessages(vNum); //Marca como lida a mensagem
+            FrmConsole.sendBase64(vBase64, vNum, vFileName, vMess);
           end;
         end);
       end);
@@ -364,17 +364,17 @@ end;
 procedure TInjectWhatsapp.ShowWebApp;
 begin
   startWhatsapp;
-  frm_servicesWhats.Show;
+  FrmConsole.Show;
 end;
 
 procedure TInjectWhatsapp.StartMonitor;
 begin
   if FMonitoring then Exit;
 
-  if Assigned(frm_servicesWhats) then
+  if Assigned(FrmConsole) then
   begin
     FMonitoring := not Monitoring;
-    frm_servicesWhats.StartMonitor( Config.SecondsMonitor );
+    FrmConsole.StartMonitor( Config.SecondsMonitor );
   end;
 end;
 
@@ -382,32 +382,32 @@ procedure TInjectWhatsapp.StopMonitor;
 begin
   if not FMonitoring then Exit;
 
-  if Assigned(frm_servicesWhats) then
+  if Assigned(FrmConsole) then
   begin
     FMonitoring := not Monitoring;
-    frm_servicesWhats.StopMonitor;
+    FrmConsole.StopMonitor;
   end;
 end;
 
 procedure TInjectWhatsapp.startQrCode;
 begin
   startWhatsapp;
-  if Assigned(frm_servicesWhats) then
+  if Assigned(FrmConsole) then
   begin
-    if not Assigned(frm_view_qrcode) then
+    if not Assigned(FrmQRCode) then
     begin
-      frm_view_qrcode         := Tfrm_view_qrcode.Create(nil);
-      frm_view_qrcode.Show;
+      FrmQRCode         := TFrmQRCode.Create(nil);
+      FrmQRCode.Show;
     end;
   end;
 end;
 
 procedure TInjectWhatsapp.startWhatsapp;
 begin
-  if not Assigned(frm_servicesWhats) then
+  if not Assigned(FrmConsole) then
   begin
-   frm_servicesWhats         := Tfrm_servicesWhats.Create(nil);
-   frm_servicesWhats._Inject := Self;
+   FrmConsole         := TFrmConsole.Create(nil);
+   FrmConsole._Inject := Self;
   end;
 end;
 

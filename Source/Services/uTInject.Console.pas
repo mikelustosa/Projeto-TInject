@@ -2,7 +2,7 @@
 //Códido aberto à comunidade Delphi
 //mikelustosa@gmail.com
 
-unit u_servicesWhats;
+unit uTInject.Console;
 
 interface
 
@@ -11,11 +11,12 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, StrUtils,
 
   uCEFWinControl, uCEFWindowParent, uCEFChromium, uCEFChromiumCore,
-
   //units adicionais obrigatórias
+  uTInject.Classes, uTInject, uTInject.FrmQRCode,
   uCEFInterfaces, uCEFConstants, uCEFTypes, uTInject.ConfigCEF,
+
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
-  Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json, uClasses, uTInject, u_view_qrcode,
+  Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json,
   Vcl.Imaging.jpeg;
 
   var
@@ -27,7 +28,7 @@ uses
     CEFBROWSER_DESTROY          = WM_APP + $102;
 
 type
-  Tfrm_servicesWhats = class(TForm)
+  TFrmConsole = class(TForm)
     CEFWindowParent1: TCEFWindowParent;
     Chromium1: TChromium;
     Timer1: TTimer;
@@ -118,7 +119,7 @@ type
   end;
 
 var
-  frm_servicesWhats: Tfrm_servicesWhats;
+  FrmConsole: TFrmConsole;
 
 implementation
 
@@ -157,7 +158,7 @@ Begin
   Result := Texto;
 end;
 
-function Tfrm_servicesWhats.caractersWhats(vText: string): string;
+function TFrmConsole.caractersWhats(vText: string): string;
 begin
   vText := StringReplace(vText, sLineBreak,'\n',[rfReplaceAll]);
   vText := StringReplace((vText), #13,'',[rfReplaceAll]);
@@ -166,18 +167,18 @@ begin
   Result := vText;
 end;
 
-procedure Tfrm_servicesWhats.BrowserDestroyMsg(var aMessage : TMessage);
+procedure TFrmConsole.BrowserDestroyMsg(var aMessage : TMessage);
 begin
   CEFWindowParent1.Free;
 end;
 
-procedure Tfrm_servicesWhats.WMMove(var aMessage : TWMMove);
+procedure TFrmConsole.WMMove(var aMessage : TWMMove);
 begin
   inherited;
   if (Chromium1 <> nil) then Chromium1.NotifyMoveOrResizeStarted;
 end;
 
-procedure Tfrm_servicesWhats.WMMoving(var aMessage : TMessage);
+procedure TFrmConsole.WMMoving(var aMessage : TMessage);
 begin
   inherited;
 
@@ -185,28 +186,28 @@ begin
 end;
 
 //Usado para requisições REST
-procedure Tfrm_servicesWhats.WEBmonitorQRCode;
+procedure TFrmConsole.WEBmonitorQRCode;
 const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
 begin
   if Chromium1.Browser <> nil then
     Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
 end;
 
-procedure Tfrm_servicesWhats.WMEnterMenuLoop(var aMessage: TMessage);
+procedure TFrmConsole.WMEnterMenuLoop(var aMessage: TMessage);
 begin
   inherited;
   if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then
      GlobalCEFApp.OsmodalLoop := True;
 end;
 
-procedure Tfrm_servicesWhats.WMExitMenuLoop(var aMessage: TMessage);
+procedure TFrmConsole.WMExitMenuLoop(var aMessage: TMessage);
 begin
   inherited;
   if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then
      GlobalCEFApp.OsmodalLoop := False;
 end;
 
-procedure Tfrm_servicesWhats.Chromium1AfterCreated(Sender: TObject;
+procedure TFrmConsole.Chromium1AfterCreated(Sender: TObject;
   const browser: ICefBrowser);
 begin
   { Agora que o navegador está totalmente inicializado, podemos enviar uma mensagem para
@@ -215,14 +216,14 @@ begin
   PostMessage(Handle, CEF_AFTERCREATED, 0, 0);
 end;
 
-procedure Tfrm_servicesWhats.Chromium1BeforeClose(Sender: TObject;
+procedure TFrmConsole.Chromium1BeforeClose(Sender: TObject;
   const browser: ICefBrowser);
 begin
   FCanClose := True;
   PostMessage(Handle, WM_CLOSE, 0, 0);
 end;
 
-procedure Tfrm_servicesWhats.Chromium1BeforePopup(Sender: TObject;
+procedure TFrmConsole.Chromium1BeforePopup(Sender: TObject;
   const browser: ICefBrowser; const frame: ICefFrame; const targetUrl,
   targetFrameName: ustring; targetDisposition: TCefWindowOpenDisposition;
   userGesture: Boolean; const popupFeatures: TCefPopupFeatures;
@@ -234,14 +235,14 @@ begin
   Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
 end;
 
-procedure Tfrm_servicesWhats.Chromium1Close(Sender: TObject;
+procedure TFrmConsole.Chromium1Close(Sender: TObject;
   const browser: ICefBrowser; var aAction: TCefCloseBrowserAction);
 begin
   PostMessage(Handle, CEF_DESTROY, 0, 0);
   aAction := cbaDelay;
 end;
 
-procedure Tfrm_servicesWhats.Chromium1ConsoleMessage(Sender: TObject;
+procedure TFrmConsole.Chromium1ConsoleMessage(Sender: TObject;
   const browser: ICefBrowser; level: Cardinal; const message, source: ustring;
   line: Integer; out Result: Boolean);
 var
@@ -320,35 +321,35 @@ begin
     end;
 end;
 
-procedure Tfrm_servicesWhats.GetAllContacts;
+procedure TFrmConsole.GetAllContacts;
 const
   JS = 'window.WAPI.getAllContacts();';
 begin
   Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
 
-procedure Tfrm_servicesWhats.GetBatteryLevel;
+procedure TFrmConsole.GetBatteryLevel;
 const
   JS = 'window.WAPI.getBatteryLevel();';
 begin
   Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
 
-procedure Tfrm_servicesWhats.GetUnreadMessages;
+procedure TFrmConsole.GetUnreadMessages;
 const
   JS = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
 begin
   Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
 
-procedure Tfrm_servicesWhats.GetAllChats;
+procedure TFrmConsole.GetAllChats;
 const
   JS = 'window.WAPI.getAllChats();';
 begin
   Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
 
-procedure Tfrm_servicesWhats.Chromium1LoadEnd(Sender: TObject;
+procedure TFrmConsole.Chromium1LoadEnd(Sender: TObject;
   const browser: ICefBrowser; const frame: ICefFrame; httpStatusCode: Integer);
   begin
  //Injeto o código para verificar se está logado
@@ -357,7 +358,7 @@ procedure Tfrm_servicesWhats.Chromium1LoadEnd(Sender: TObject;
  //     Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
 
-procedure Tfrm_servicesWhats.Chromium1OpenUrlFromTab(Sender: TObject;
+procedure TFrmConsole.Chromium1OpenUrlFromTab(Sender: TObject;
   const browser: ICefBrowser; const frame: ICefFrame; const targetUrl: ustring;
   targetDisposition: TCefWindowOpenDisposition; userGesture: Boolean;
   out Result: Boolean);
@@ -366,7 +367,7 @@ begin
   Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
 end;
 
-procedure Tfrm_servicesWhats.Chromium1TitleChange(Sender: TObject;
+procedure TFrmConsole.Chromium1TitleChange(Sender: TObject;
   const browser: ICefBrowser; const title: ustring);
 begin
   //injectJS;
@@ -378,13 +379,13 @@ begin
   end;
 end;
 
-procedure Tfrm_servicesWhats.ExecuteJS(JS: String);
+procedure TFrmConsole.ExecuteJS(JS: String);
 begin
   if Chromium1.Browser <> nil then
      Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
 
-function Tfrm_servicesWhats.ConvertBase64(vFile: string): string;
+function TFrmConsole.ConvertBase64(vFile: string): string;
 var
   vFilestream: TMemoryStream;
   vBase64File: TBase64Encoding;
@@ -403,14 +404,14 @@ begin
   end;
 end;
 
-procedure Tfrm_servicesWhats.FormClose(Sender: TObject;
+procedure TFrmConsole.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
   action := cafree;
-  frm_servicesWhats := nil;
+  FrmConsole := nil;
 end;
 
-procedure Tfrm_servicesWhats.FormCloseQuery(Sender: TObject;
+procedure TFrmConsole.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
   CanClose := FCanClose;
@@ -423,7 +424,7 @@ begin
     end;
 end;
 
-procedure Tfrm_servicesWhats.FormCreate(Sender: TObject);
+procedure TFrmConsole.FormCreate(Sender: TObject);
 begin
   FCanClose := False;
   FClosing  := False;
@@ -436,28 +437,28 @@ begin
      GlobalCEFApp.Chromium :=  Chromium1;
 end;
 
-procedure Tfrm_servicesWhats.FormDestroy(Sender: TObject);
+procedure TFrmConsole.FormDestroy(Sender: TObject);
 begin
   PostMessage(Handle, CEFBROWSER_CHILDDESTROYED, 0, 0);
 end;
 
-procedure Tfrm_servicesWhats.FormShow(Sender: TObject);
+procedure TFrmConsole.FormShow(Sender: TObject);
 begin
   //if not(Chromium1.CreateBrowser(CEFWindowParent1)) then Timer1.Enabled := True;
 end;
 
-procedure Tfrm_servicesWhats.Image1Click(Sender: TObject);
+procedure TFrmConsole.Image1Click(Sender: TObject);
 begin
-  frm_servicesWhats.Hide;
+  FrmConsole.Hide;
 end;
 
-procedure Tfrm_servicesWhats.loadQRCode(st: string);
+procedure TFrmConsole.loadQRCode(st: string);
 begin
-  if assigned(frm_servicesWhats) then
-    frm_view_qrcode.loadQRCode(st);
+  if assigned(FrmConsole) then
+    FrmQRCode.loadQRCode(st);
 end;
 
-procedure Tfrm_servicesWhats.LogConsoleMessage(const AMessage: String);
+procedure TFrmConsole.LogConsoleMessage(const AMessage: String);
 begin
   TFile.AppendAllText(
     ExtractFilePath(Application.ExeName) + 'ConsoleMessage.log',
@@ -465,7 +466,7 @@ begin
     TEncoding.ASCII);
 end;
 
-procedure Tfrm_servicesWhats.monitorQRCode;
+procedure TFrmConsole.monitorQRCode;
  const
    JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
 begin
@@ -474,14 +475,14 @@ begin
 end;
 
 //Apenas marca como lida a mensagem
-procedure Tfrm_servicesWhats.ReadMessages(vID: string);
+procedure TFrmConsole.ReadMessages(vID: string);
 begin
  if Chromium1.Browser <> nil then
       Chromium1.Browser.MainFrame.ExecuteJavaScript( 'window.WAPI.sendSeen("'+Trim(vID)+'")', 'about:blank', 0);
 end;
 
 //Marca como lida e deleta a conversa
-procedure Tfrm_servicesWhats.ReadMessagesAndDelete(vID: string);
+procedure TFrmConsole.ReadMessagesAndDelete(vID: string);
 begin
   if Chromium1.Browser <> nil then
       Chromium1.Browser.MainFrame.ExecuteJavaScript('window.WAPI.sendSeen("'+Trim(vID)+'")', 'about:blank', 0);
@@ -490,7 +491,7 @@ begin
       Chromium1.Browser.MainFrame.ExecuteJavaScript('window.WAPI.deleteConversation("'+Trim(vID)+'")', 'about:blank', 0);
 end;
 
-procedure Tfrm_servicesWhats.SendBase64(vBase64, vNum, vFileName, vText: string);
+procedure TFrmConsole.SendBase64(vBase64, vNum, vFileName, vText: string);
 var
  js: string;
  Base64File: TStringList;
@@ -516,17 +517,17 @@ begin
   freeAndNil(Base64File);
 end;
 
-procedure Tfrm_servicesWhats.StartMonitor(Seconds: Integer);
+procedure TFrmConsole.StartMonitor(Seconds: Integer);
 begin
   ExecuteJS('startMonitor(intervalSeconds=' + IntToStr( Seconds ) + ')');
 end;
 
-procedure Tfrm_servicesWhats.StopMonitor;
+procedure TFrmConsole.StopMonitor;
 begin
   ExecuteJS('stopMonitor()');
 end;
 
-procedure Tfrm_servicesWhats.SetAllContacts(JsonText: String);
+procedure TFrmConsole.SetAllContacts(JsonText: String);
 begin
   if not Assigned( _Inject ) then
      Exit;
@@ -543,7 +544,7 @@ begin
   end;
 end;
 
-procedure Tfrm_servicesWhats.SetBatteryLevel(JsonText: string);
+procedure TFrmConsole.SetBatteryLevel(JsonText: string);
 var
   AJson: TJSONObject;
 begin
@@ -562,7 +563,7 @@ begin
     end;
 end;
 
-procedure Tfrm_servicesWhats.loadWEBQRCode(st: string);
+procedure TFrmConsole.loadWEBQRCode(st: string);
 var
   LInput: TMemoryStream;
   LOutput: TMemoryStream;
@@ -588,14 +589,14 @@ begin
   end;
 end;
 
-procedure Tfrm_servicesWhats.SetQrCode(JsonText: String);
+procedure TFrmConsole.SetQrCode(JsonText: String);
 var
   LQrCode: TQrCodeClass;
   LCode :String;
 begin
   if not Assigned( _Inject ) then
      Exit;
-  if not Assigned( frm_view_qrcode ) then
+  if not Assigned( FrmQRCode ) then
      Exit;
 
   with _Inject do
@@ -603,18 +604,18 @@ begin
     LCode :=  copy(JsonText, 42, 4);
     if (LCode = 'http') or (LCode = '/img') then
     begin
-      frm_view_qrcode.Timer1.Enabled := false;
-      frm_view_qrcode.close;
+      FrmQRCode.Timer1.Enabled := false;
+      FrmQRCode.close;
       exit
     end;
 
     LQrCode := TQrCodeClass.FromJsonString( JsonText );
     try
       _Qrcode := LQrCode.result.AQrCode;
-      if assigned(frm_view_qrcode) then
+      if assigned(FrmQRCode) then
       begin
-        frm_view_qrcode.loadQRCode(_Qrcode);
-        frm_view_qrcode.Image2.visible := false;
+        FrmQRCode.loadQRCode(_Qrcode);
+        FrmQRCode.Image2.visible := false;
       end else
       begin
         //Caso seja solicitação via API REST
@@ -630,9 +631,9 @@ begin
   end;
 end;
 
-procedure Tfrm_servicesWhats.SetQrCodeWEB(JsonText: String);
-var AQrCode: TQrCodeClass;
-var code: string;
+procedure TFrmConsole.SetQrCodeWEB(JsonText: String);
+var
+   code: string;
 begin
   if not Assigned( _Inject ) then Exit;
 
@@ -643,8 +644,8 @@ begin
     code :=  copy(JsonText, 42, 4);
     if (code = 'http') or (code = '/img') then
     begin
-      frm_view_qrcode.Timer1.Enabled := false;
-      frm_view_qrcode.close;
+      FrmQRCode.Timer1.Enabled := false;
+      FrmQRCode.close;
       exit
     end;
     AQrCode := TQrCodeClass.FromJsonString( JsonText );
@@ -655,7 +656,7 @@ begin
 
 end;
 
-procedure Tfrm_servicesWhats.SetUnReadMessages(JsonText: String);
+procedure TFrmConsole.SetUnReadMessages(JsonText: String);
 var
   AChats: TChatList;
 begin
@@ -675,7 +676,7 @@ begin
   end;
 end;
 
-procedure Tfrm_servicesWhats.SetAllChats(JsonText: String);
+procedure TFrmConsole.SetAllChats(JsonText: String);
 begin
   if not Assigned( _Inject ) then
      Exit;
@@ -692,21 +693,21 @@ begin
   end;
 end;
 
-procedure Tfrm_servicesWhats.Send(vNum, vText: string);
+procedure TFrmConsole.Send(vNum, vText: string);
 begin
  vText := caractersWhats(vText);
  if Chromium1.Browser <> nil then
       Chromium1.Browser.MainFrame.ExecuteJavaScript( 'window.WAPI.sendMessageToID("'+Trim(vNum)+'","'+Trim(vText)+'")', 'about:blank', 0);
 end;
 
-procedure Tfrm_servicesWhats.Timer1Timer(Sender: TObject);
+procedure TFrmConsole.Timer1Timer(Sender: TObject);
 begin
   Timer1.Enabled := False;
   if not(Chromium1.CreateBrowser(CEFWindowParent1)) and not(Chromium1.Initialized) then
     Timer1.Enabled := True;
 end;
 
-procedure Tfrm_servicesWhats.Timer2Timer(Sender: TObject);
+procedure TFrmConsole.Timer2Timer(Sender: TObject);
 var
   arq: TextFile;
   linha: string;
@@ -715,7 +716,7 @@ begin
   //Rotina para leitura e inject do arquivo js.abr ---- 12/10/2019 Mike
     if vAuth = true then
     begin
-
+//      ShowMessage(GlobalCEFApp.PathInjectJS);
       AssignFile(arq, GlobalCEFApp.PathInjectJS);
 //      AssignFile(arq, ExtractFilePath(Application.ExeName) + 'js.abr');
       // desativa a diretiva de Input

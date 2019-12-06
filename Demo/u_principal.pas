@@ -12,7 +12,7 @@ uses
    uTInject.ConfigCEF, uCEFWinControl,  uTInject,
 
   //units Opcionais (dependendo do que irá fazer)
-   System.NetEncoding, uClasses,
+   System.NetEncoding, uTInject.Classes,
   //###############################################
 
   Vcl.StdCtrls, System.ImageList, Vcl.ImgList, Vcl.AppEvnts, Vcl.ComCtrls,
@@ -129,7 +129,7 @@ var
 implementation
 
 uses
-  u_servicesWhats, System.StrUtils;
+  uTInject.Console, System.StrUtils;
 
 {$R *.dfm}
 
@@ -222,7 +222,7 @@ end;
 
 procedure TfrmPrincipal.btEnviaTextoArqClick(Sender: TObject);
 begin
-  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
+  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (FrmConsole.vAuth = false)) then
   begin
     application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
@@ -250,7 +250,7 @@ end;
 
 procedure TfrmPrincipal.btStatusBatClick(Sender: TObject);
 begin
-  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
+  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (FrmConsole.vAuth = false)) then
   begin
     application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
@@ -261,7 +261,7 @@ end;
 
 procedure TfrmPrincipal.btEnviaTextoClick(Sender: TObject);
 begin
-  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
+  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (FrmConsole.vAuth = false)) then
   begin
     application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
@@ -458,9 +458,9 @@ end;
 
 procedure TfrmPrincipal.Timer1Timer(Sender: TObject);
 begin
-  if Assigned(frm_servicesWhats) then
+  if Assigned(FrmConsole) then
   begin
-    if frm_servicesWhats.vAuth = true then
+    if FrmConsole.vAuth = true then
     begin
       lblStatus.Caption := 'Online';
       lblStatus.Font.Color := $0000AE11;
@@ -515,7 +515,7 @@ begin
         InjectWhatsapp1.Emoticons.Dois           +' Consultar CEP\n\n'+
         InjectWhatsapp1.Emoticons.Tres           +' Financeiro\n\n'+
         InjectWhatsapp1.Emoticons.Quatro         +' Horários de atendimento\n\n';
-        vBase64Str := 'data:image/png;base64,' +frm_servicesWhats.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\softmais.png');
+        vBase64Str := 'data:image/png;base64,' + FrmConsole.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\softmais.png');
         InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, '', mensagem);
         Result := True;
         exit;

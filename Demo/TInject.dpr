@@ -2,35 +2,39 @@ program TInject;
 
 uses
   {$IFDEF DELPHI16_UP}
-    Vcl.Forms,
+  Vcl.Forms,
   {$ELSE}
-    Forms,
-    Windows,
+  Forms,
+  Windows,
   {$ENDIF }
-
-  u_principal                   in 'u_principal.pas' {frmPrincipal},
-  u_servicesWhats               in '..\Source\Services\u_servicesWhats.pas' {frm_servicesWhats},
-  uTInject                      in '..\Source\Services\uTInject.pas',
-  u_view_qrcode                 in '..\Source\View\u_view_qrcode.pas' {frm_view_qrcode},
-  UBase64                       in '..\Source\Model\UBase64.pas',
-  uClasses                      in '..\Source\Model\uClasses.pas',
-  uTInject.Emoticons            in '..\Source\Model\uTInject.Emoticons.pas',
-  uTInject.ConfigCEF            in '..\Source\Services\uTInject.ConfigCEF.pas';
+  u_principal        in 'u_principal.pas' {frmPrincipal},
+  uTInject           in '..\Source\Services\uTInject.pas',
+  uTInject.Console   in '..\Source\Services\uTInject.Console.pas' {FrmConsole},
+  uTInject.ConfigCEF in '..\Source\Services\uTInject.ConfigCEF.pas',
+  uTInject.FrmQRCode in '..\Source\View\uTInject.FrmQRCode.pas'   {FrmQRCode},
+  UBase64            in '..\Source\Model\UBase64.pas',
+  uTInject.Classes   in '..\Source\Model\uTInject.Classes.pas',
+  uTInject.Emoticons in '..\Source\Model\uTInject.Emoticons.pas';
 
 {$R *.res}
 
 begin
 
   //Colocar arquivos CEFLib junto a pasta binária da aplicação (Nao definir ou passar vazio)
-  // GlobalCEFApp.PathFrameworkDirPath := '';
-  // GlobalCEFApp.PathResourcesDirPath := '';
-  // GlobalCEFApp.PathLocalesDirPath   := '';
-  // GlobalCEFApp.Pathcache            := '';
-  // GlobalCEFApp.PathUserDataPath     := '';
-  // GlobalCEFApp.PathLogFile          := '';
+  //Caso deseja informar.. segue exemplo abaixo
+ {
+  GlobalCEFApp.PathFrameworkDirPath := 'C:\Componentes\WhatsApp\Comp\BIN';
+  GlobalCEFApp.PathResourcesDirPath := 'C:\Componentes\WhatsApp\Comp\BIN';
+  GlobalCEFApp.PathLocalesDirPath   := 'C:\Componentes\WhatsApp\Comp\BIN\locales';
+  GlobalCEFApp.Pathcache            := 'C:\Componentes\WhatsApp\Comp\BIN\Cache';
+  GlobalCEFApp.PathUserDataPath     := 'C:\Componentes\WhatsApp\Comp\BIN\User Data';
+  GlobalCEFApp.PathInjectJS         := 'C:\Componentes\WhatsApp\Repositorio\Release\Demo\BIN\js.abr';
+  GlobalCEFApp.PathLogFile          := '';
+ }
+
   If not GlobalCEFApp.StartMainProcess then
      Exit;
-  
+
   Application.Initialize;
   {$IFDEF DELPHI11_UP}
       Application.MainFormOnTaskbar := True;

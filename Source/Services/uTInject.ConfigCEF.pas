@@ -124,9 +124,6 @@ Var
 begin
   if FChromium = Value then
      Exit;
-  if not Assigned(LObj) then
-     Exit;
-
   FChromium := Value;
   //Acha o FORM que esta o componente
   try
@@ -229,8 +226,9 @@ begin
 
   Self.EnableGPU              := SetEnableGPU;
   Self.DisableFeatures        := SetDisableFeatures;
+
   If PathFrameworkDirPath <> '' then
-     Self.ResourcesDirPath    := PathFrameworkDirPath;
+     Self.FrameworkDirPath    := PathFrameworkDirPath;
   If PathResourcesDirPath <> '' then
      Self.ResourcesDirPath    := PathResourcesDirPath;
   If PathLocalesDirPath   <> '' Then
@@ -254,6 +252,14 @@ begin
 
   //Chegou aqui, é porque os PATH são validos e pode continuar
   inherited;  //Dispara a THREAD la do objeto PAI
+
+
+  if Self.status <> asInitialized then
+  Begin
+    //estado invalido!!!! pode trer dado erro acima
+    Exit;
+  End;
+
 
   Linicio := GetTickCount;
   try
