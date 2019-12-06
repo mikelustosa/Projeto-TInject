@@ -1,12 +1,17 @@
 -------------------------------------------------------------------------
 1.0.0.10
 06/12/2019
+Rep Revisao 139
+-  
+
+
 Rep Revisao 136 e 137
 - Retirada de arquivos Não necessário ao projeto (Arquivos de backup, temporários, etc.) 
 - Melhorias no form PRINCIPAL escondendo as abas, para evitar má interpretação achando que pode enviar MSG sem estar conectado.
 - Novos Exemplos de PATH de configuração;
 - Evento shutdown que finaliza com segurança o CONSOLE;
 
+-------------------------------------------------------------------------
  
 05/12/2019
 Rep Revisao 135
