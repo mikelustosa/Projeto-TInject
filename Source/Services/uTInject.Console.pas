@@ -10,7 +10,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, StrUtils,
 
-  uCEFWinControl, uCEFWindowParent, uCEFChromium, uCEFChromiumCore,
+  uCEFWinControl, uCEFWindowParent, uCEFChromium, 
   //units adicionais obrigatórias
   uTInject.Classes, uTInject, uTInject.FrmQRCode,
   uCEFInterfaces, uCEFConstants, uCEFTypes, uTInject.ConfigCEF,

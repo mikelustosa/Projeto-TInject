@@ -1,11 +1,6 @@
 package TInjectCollection;
 
 {$R *.res}
-{$R 'Cript_reg\Cripto.dcr'}
-{$R 'diskcaps_inf_hd\DISKCAPS.dcr'}
-{$R 'FILECRIPT\FilCrpto.dcr'}
-{$R 'MSNPOPUP\SOURCE\MSNPopUp.dcr'}
-{$R 'VersaoSistema\VERSLAB.dcr'}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -31,7 +26,6 @@ package TInjectCollection;
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'TInject WhatsApp'}
-{$RUNONLY}
 {$IMPLICITBUILD OFF}
 
 requires
