@@ -37,7 +37,7 @@ uses
   uCEFApplication,
   System.SysUtils,
   Winapi.Windows,
-  uCEFConstants, uCEFChromium, Vcl.Forms;
+  uCEFConstants, uCEFChromium, Vcl.Forms, uTInject;
 
 Const
   ConstLocalesDirPath   = 'locales';
@@ -60,6 +60,7 @@ type
     FPathLogFile         : String;
     FPathInjectJS        : String;
     FSJFile              : String;
+    FInject              : TInjectWhatsapp;
     FChromium: TChromium;
     FChromiumForm: TForm;
     FStartMainProcessTimeOut: Cardinal;
@@ -73,12 +74,11 @@ type
     procedure SetPathUserDataPath    (const Value: String);
     function  TestaOk                (const POldValue, PNewValue: String): Boolean;
     procedure SetChromium            (const Value: TChromium);
-    procedure Terminate;
   public
     SetEnableGPU         : Boolean;
     SetDisableFeatures   : String;
     SetLogSeverity       : Boolean;
-
+    Property InjectWhatsApp   : TInjectWhatsapp   Read FInject  Write FInject;
     property PathFrameworkDirPath : String  Read FPathFrameworkDirPath Write SetPathFrameworkDirPath;
     property PathResourcesDirPath : String  Read FPathResourcesDirPath Write SetPathResourcesDirPath;
     property PathLocalesDirPath   : String  Read FPathLocalesDirPath   Write SetPathLocalesDirPath;
@@ -95,12 +95,12 @@ type
     constructor Create;
     destructor  Destroy; override;
     function StartMainProcess : boolean;
-
+    procedure FreeChromium;
   end;
 
 
 var
-  GlobalCEFApp: TCEFConfig;
+  GlobalCEFApp: TCEFConfig = nil;
 
 
 implementation
@@ -125,6 +125,13 @@ begin
   if FChromium = Value then
      Exit;
   FChromium := Value;
+  if FChromium = Nil then
+  Begin
+    FChromiumForm := Nil;
+    Exit;
+  End;
+
+
   //Acha o FORM que esta o componente
   try
     LObj     := FChromium;
@@ -201,7 +208,13 @@ end;
 
 procedure TCEFConfig.SetPathCache(const Value: String);
 begin
-  if not TestaOk(FPathCache, Value) Then
+  if AnsiLowerCase(FPathCache) = AnsiLowerCase(Value) Then
+     Exit;
+
+
+  ForceDirectories(PWideChar(ExtractFilePath(Value)));
+
+   if not TestaOk(FPathCache, Value) Then
      Exit;
   FPathCache := Value;
 end;
@@ -297,15 +310,19 @@ end;
 
 destructor TCEFConfig.Destroy;
 begin
-  Terminate;
+  FreeChromium;
   inherited;
 end;
 
 
-procedure TCEFConfig.Terminate;
+procedure TCEFConfig.FreeChromium;
 var
-  LVar: Boolean;
+  LVar        : Boolean;
+  LaAction    : TCefCloseBrowserAction;
+  LaActionForm: TCloseAction;
+  I: Integer;
 begin
+  //Se nao excecutado o SHTDOWN natural.. ele processa
   if FChromium = nil then
      Exit;
   if not Assigned(FChromium) then
@@ -318,10 +335,22 @@ begin
 
    //manda um CLOSEForm (caso tenham esquecido)
    try
-     LVar:= True;
+     LVar        := True;
+     LaAction    := cbaDelay;
+     LaActionForm:= Cafree;
      if Assigned(FChromiumForm.OnCloseQuery) then
      Begin
+       //Envia os comandos
+       FChromium.StopLoad;
+       //Gaarante a execução de códigos obrigatorios pelo CEF
+       PostMessage(FChromiumForm.Handle, CEF_DESTROY, 0, 0);
+       PostMessage(FChromiumForm.Handle, $0010      , 0, 0);
+       FChromium.OnClose(FChromium, FChromium.Browser,  LaAction);
+       FChromium.CloseBrowser(True);
+
+       //Executa fecgamento FORM
        FChromiumForm.OnCloseQuery(FChromiumForm, LVar);
+       FChromiumForm.OnClose     (FChromiumForm, LaActionForm);
      End;
    Except
    end;

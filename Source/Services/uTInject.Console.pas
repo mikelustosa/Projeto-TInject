@@ -60,19 +60,15 @@ type
     procedure Chromium1TitleChange(Sender: TObject; const browser: ICefBrowser;
       const title: ustring);
     procedure FormCreate(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Image1Click(Sender: TObject);
     procedure Chromium1ConsoleMessage(Sender: TObject;
       const browser: ICefBrowser; level: Cardinal; const message,
       source: ustring; line: Integer; out Result: Boolean);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
   protected
-   // Variáveis para controlar quando podemos destruir o formulário com segurança
-    FCanClose : boolean;  // Defina como True em TChromium.OnBeforeClose
-    FClosing  : boolean;  // Defina como True no evento CloseQuery.
-
     // You have to handle this two messages to call NotifyMoveOrResizeStarted or some page elements will be misaligned.
     procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
     procedure WMMoving(var aMessage : TMessage); message WM_MOVING;
@@ -95,7 +91,6 @@ type
 
   public
     { Public declarations }
-    _Inject: TInjectWhatsapp;
     JS1: string;
     _Qrcode, WEBQrCode: string;
     i: integer;
@@ -219,7 +214,6 @@ end;
 procedure TFrmConsole.Chromium1BeforeClose(Sender: TObject;
   const browser: ICefBrowser);
 begin
-  FCanClose := True;
   PostMessage(Handle, WM_CLOSE, 0, 0);
 end;
 
@@ -371,11 +365,14 @@ procedure TFrmConsole.Chromium1TitleChange(Sender: TObject;
   const browser: ICefBrowser; const title: ustring);
 begin
   //injectJS;
+  if not  Assigned(GlobalCEFApp.InjectWhatsApp) then
+     Exit;
+
   i := i + 1;
   if i > 3 then
   begin
-    vAuth := true;
-    _Inject.Auth := true
+    vAuth        := true;
+    GlobalCEFApp.InjectWhatsApp.Auth := true
   end;
 end;
 
@@ -407,27 +404,24 @@ end;
 procedure TFrmConsole.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
-  action := cafree;
+  action     := cafree;
   FrmConsole := nil;
 end;
 
 procedure TFrmConsole.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
-  CanClose := FCanClose;
+  CanClose := True;
 
-  if not(FClosing) then
-    begin
-      FClosing := True;
-      Visible  := False;
-      Chromium1.CloseBrowser(True);
-    end;
+  if CanClose then
+  begin
+    Visible  := False;
+    Chromium1.CloseBrowser(True);
+  end;
 end;
 
 procedure TFrmConsole.FormCreate(Sender: TObject);
 begin
-  FCanClose := False;
-  FClosing  := False;
   Chromium1.DefaultURL := 'https://web.whatsapp.com/';
   vAuth := false;
 
@@ -529,10 +523,10 @@ end;
 
 procedure TFrmConsole.SetAllContacts(JsonText: String);
 begin
-  if not Assigned( _Inject ) then
+  if not Assigned(GlobalCEFApp.InjectWhatsApp) then
      Exit;
 
-  with _Inject do
+  with GlobalCEFApp.InjectWhatsApp do
   begin
     if Assigned(AllContacts) then
        AllContacts.Free;
@@ -548,10 +542,10 @@ procedure TFrmConsole.SetBatteryLevel(JsonText: string);
 var
   AJson: TJSONObject;
 begin
-  if not Assigned( _Inject ) then
+  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
        Exit;
 
-    with _Inject do
+    with GlobalCEFApp.InjectWhatsApp do
     begin
       AJson := TJSonObject.ParseJSONValue(JsonText) as TJSONObject;
 
@@ -594,12 +588,12 @@ var
   LQrCode: TQrCodeClass;
   LCode :String;
 begin
-  if not Assigned( _Inject ) then
+  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
      Exit;
   if not Assigned( FrmQRCode ) then
      Exit;
 
-  with _Inject do
+  with GlobalCEFApp.InjectWhatsApp do
   begin
     LCode :=  copy(JsonText, 42, 4);
     if (LCode = 'http') or (LCode = '/img') then
@@ -635,11 +629,11 @@ procedure TFrmConsole.SetQrCodeWEB(JsonText: String);
 var
    code: string;
 begin
-  if not Assigned( _Inject ) then Exit;
+  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then Exit;
 
   //if not Assigned( frm_view_qrcode ) then Exit;
 
-  with _Inject do
+  with GlobalCEFApp.InjectWhatsApp do
   begin
     code :=  copy(JsonText, 42, 4);
     if (code = 'http') or (code = '/img') then
@@ -660,12 +654,12 @@ procedure TFrmConsole.SetUnReadMessages(JsonText: String);
 var
   AChats: TChatList;
 begin
-  if not Assigned( _Inject ) then
+  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
      Exit;
 
   AChats := TChatList.FromJsonString( JsonText );
   try
-    with _Inject do
+    with GlobalCEFApp.InjectWhatsApp do
     begin
       //Dispara Notify
       if Assigned( OnGetUnReadMessages ) then
@@ -678,10 +672,10 @@ end;
 
 procedure TFrmConsole.SetAllChats(JsonText: String);
 begin
-  if not Assigned( _Inject ) then
+  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
      Exit;
 
-  with _Inject do
+  with GlobalCEFApp.InjectWhatsApp do
   begin
     if Assigned(AllChats) then
        AllChats.Free;
@@ -697,7 +691,7 @@ procedure TFrmConsole.Send(vNum, vText: string);
 begin
  vText := caractersWhats(vText);
  if Chromium1.Browser <> nil then
-      Chromium1.Browser.MainFrame.ExecuteJavaScript( 'window.WAPI.sendMessageToID("'+Trim(vNum)+'","'+Trim(vText)+'")', 'about:blank', 0);
+    Chromium1.Browser.MainFrame.ExecuteJavaScript( 'window.WAPI.sendMessageToID("'+Trim(vNum)+'","'+Trim(vText)+'")', 'about:blank', 0);
 end;
 
 procedure TFrmConsole.Timer1Timer(Sender: TObject);
@@ -718,8 +712,6 @@ begin
     begin
 //      ShowMessage(GlobalCEFApp.PathInjectJS);
       AssignFile(arq, GlobalCEFApp.PathInjectJS);
-//      AssignFile(arq, ExtractFilePath(Application.ExeName) + 'js.abr');
-      // desativa a diretiva de Input
       Reset(arq);
       // Abre o arquivo texto para leitura
       // ativa a diretiva de Input
@@ -743,10 +735,8 @@ begin
         Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 
         //Auto monitorar mensagens não lidas
-        if _Inject.Config.AutoMonitor then
-        begin
-          _Inject.StartMonitor;
-        end;
+        if GlobalCEFApp.InjectWhatsApp.Config.AutoMonitor then
+          GlobalCEFApp.InjectWhatsApp.StartMonitor;
 
         timer2.Enabled := false;
       end;

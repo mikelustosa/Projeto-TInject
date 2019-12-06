@@ -145,6 +145,9 @@ begin
   InjectWhatsapp1.AjustNumber.LengthDDD  := 2;
   InjectWhatsapp1.AjustNumber.LengthPhone:= 8; //Whats antigo e 8 digitos
   InjectWhatsapp1.AjustNumber.DDIDefault := 55;
+  TabSheet2.TabVisible                   := False;
+  TabSheet3.TabVisible                   := False;
+  TabSheet4.TabVisible                   := False;
 
   CheckBox1.Checked := InjectWhatsapp1.AjustNumber.AutoAdjust;
   Edt_LengDDI.text  := InjectWhatsapp1.AjustNumber.LengthDDI.ToString;
@@ -160,6 +163,7 @@ end;
 
 procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  InjectWhatsapp1.ShutDown;
   Action := Cafree;
   //application.Terminate;
 end;
@@ -392,26 +396,37 @@ end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetStatus(Sender: TObject);
 begin
+  If Application.Terminated Then
+     Exit;
+
   if InjectWhatsapp1.Auth = True then
   begin
-    lblStatus.Caption := 'Online';
-    lblStatus.Font.Color := $0000AE11;
-    whatsOn.Visible  := True;
+    lblStatus.Caption            := 'Online';
+    lblStatus.Font.Color         := $0000AE11;
+    whatsOn.Visible              := True;
 
-    lblQrcode.Visible := False;
-    imgQrcode.Visible := False;
-    lblNumeroConectado.Visible := True;
+    lblQrcode.Visible            := False;
+    imgQrcode.Visible            := False;
+    lblNumeroConectado.Visible   := True;
   end
   else
   begin
-    lblStatus.Caption := 'Offline';
-    lblStatus.Font.Color := $002894FF;
-    whatsOff.Visible := True;
+    lblStatus.Caption     := 'Offline';
+    lblStatus.Font.Color  := $002894FF;
+    whatsOff.Visible      := True;
 
-    lblQrcode.Visible := True;
-    imgQrcode.Visible := True;
-    lblNumeroConectado.Visible := False;
+    lblQrcode.Visible     := True;
+    imgQrcode.Visible     := True;
+    lblNumeroConectado.Visible   := False;
   end;
+  TabSheet2.TabVisible   := lblNumeroConectado.Visible;
+  TabSheet3.TabVisible   := lblNumeroConectado.Visible;
+  TabSheet4.TabVisible   := lblNumeroConectado.Visible;
+ {
+  if lblNumeroConectado.Visible then
+     PageControl1.ActivePageIndex := 2 Else
+     PageControl1.ActivePageIndex := 0;
+ }
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetUnReadMessages(Chats: TChatList);

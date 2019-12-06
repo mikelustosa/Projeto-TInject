@@ -137,6 +137,8 @@ type
     AGetBatteryLevel               : string;
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
+    procedure ShutDown(PClearNotifyEvent: Boolean = False);
+
     procedure ReadMessages(vID: string);
     procedure startQrCode;
     procedure monitorQrCode;
@@ -181,7 +183,7 @@ procedure Register;
 implementation
 
 uses
-  uTInject.Console;
+  uTInject.Console,   uTInject.ConfigCEF, uCEFTypes;
 
 procedure Register;
 begin
@@ -208,6 +210,8 @@ end;
 
 procedure TInjectWhatsapp.batteryStatus();
 begin
+  If Application.Terminated Then
+     Exit;
   if Assigned(FrmConsole) then
     FrmConsole.GetBatteryLevel;
 end;
@@ -251,11 +255,15 @@ end;
 
 procedure TInjectWhatsapp.GetAllContacts;
 begin
+  If Application.Terminated Then
+     Exit;
   FrmConsole.GetAllContacts;
 end;
 
 procedure TInjectWhatsapp.GetAllChats;
 begin
+  If Application.Terminated Then
+     Exit;
   FrmConsole.GetAllChats;
 end;
 
@@ -270,6 +278,9 @@ function TInjectWhatsapp.GetUnReadMessages: String;
 var
   lThread : TThread;
 begin
+  If Application.Terminated Then
+     Exit;
+
   lThread := TThread.CreateAnonymousThread(procedure
       begin
           if Config.AutoDelay > 0 then
@@ -290,11 +301,16 @@ end;
 
 procedure TInjectWhatsapp.monitorQrCode;
 begin
+  If Application.Terminated Then
+     Exit;
   FrmConsole.monitorQRCode;
 end;
 
 procedure TInjectWhatsapp.ReadMessages(vID: string);
 begin
+  If Application.Terminated Then
+     Exit;
+
   if Config.AutoDelete Then
   begin
     if assigned(FrmConsole) then
@@ -310,6 +326,9 @@ procedure TInjectWhatsapp.send(vNum, vMess: string);
 var
   lThread : TThread;
 begin
+  If Application.Terminated Then
+     Exit;
+
   vNum := AjustNumber.Format(vNum);
   lThread := TThread.CreateAnonymousThread(procedure
       begin
@@ -335,6 +354,9 @@ Var
   lThread : TThread;
 begin
   inherited;
+  If Application.Terminated Then
+     Exit;
+
   vNum := AjustNumber.Format(vNum);
   lThread := TThread.CreateAnonymousThread(procedure
       begin
@@ -356,6 +378,9 @@ end;
 
 procedure TInjectWhatsapp.SetAuth(const Value: boolean);
 begin
+  If Application.Terminated Then
+     Exit;
+
   FAuth := Value;
   if Assigned( OnGetStatus ) then
      OnGetStatus( Self );
@@ -363,12 +388,57 @@ end;
 
 procedure TInjectWhatsapp.ShowWebApp;
 begin
+  If Application.Terminated Then
+     Exit;
+
   startWhatsapp;
   FrmConsole.Show;
 end;
 
+procedure TInjectWhatsapp.ShutDown(PClearNotifyEvent: Boolean = False);
+var
+  LVar        : Boolean;
+  LaAction    : TCefCloseBrowserAction;
+  LaActionForm: TCloseAction;
+begin
+  //Executa o SHutDown
+  if PClearNotifyEvent then
+  Begin
+    FOnGetUnReadMessages  := Nil;
+    FBatteryLevel         := Nil;
+    FOnGetQrCode          := Nil;
+    FOnGetChatList        := Nil;
+    FOnGetNewMessage      := Nil;
+    FOnGetBatteryLevel    := Nil;
+    FOnGetStatus          := Nil;
+  End;
+
+  LVar        := True;
+  LaAction    := cbaDelay;
+  LaActionForm:= Cafree;
+  if  Assigned(GlobalCEFApp) and (GlobalCEFApp <> nil) Then
+  Begin
+    GlobalCEFApp.Chromium.OnClose(GlobalCEFApp.Chromium, GlobalCEFApp.Chromium.Browser,  LaAction);
+    GlobalCEFApp.Chromium.CloseBrowser(True);
+
+    //Executa fecgamento FORM
+     GlobalCEFApp.ChromiumForm.OnCloseQuery(GlobalCEFApp.ChromiumForm, LVar);
+    GlobalCEFApp.ChromiumForm.OnClose     (GlobalCEFApp.ChromiumForm, LaActionForm);
+    GlobalCEFApp.ChromiumForm.Close;
+
+    FreeAndNil(FrmQRCode);
+    FreeAndNil(FrmConsole);
+
+    GlobalCEFApp.Chromium     := Nil;
+
+  End;
+end;
+
 procedure TInjectWhatsapp.StartMonitor;
 begin
+  If Application.Terminated Then
+     Exit;
+
   if FMonitoring then Exit;
 
   if Assigned(FrmConsole) then
@@ -380,6 +450,9 @@ end;
 
 procedure TInjectWhatsapp.StopMonitor;
 begin
+  If Application.Terminated Then
+     Exit;
+
   if not FMonitoring then Exit;
 
   if Assigned(FrmConsole) then
@@ -391,6 +464,9 @@ end;
 
 procedure TInjectWhatsapp.startQrCode;
 begin
+  If Application.Terminated Then
+     Exit;
+
   startWhatsapp;
   if Assigned(FrmConsole) then
   begin
@@ -404,10 +480,13 @@ end;
 
 procedure TInjectWhatsapp.startWhatsapp;
 begin
+  If Application.Terminated Then
+     Exit;
+
   if not Assigned(FrmConsole) then
   begin
-   FrmConsole         := TFrmConsole.Create(nil);
-   FrmConsole._Inject := Self;
+   FrmConsole                  := TFrmConsole.Create(nil);
+   GlobalCEFApp.InjectWhatsApp := Self;
   end;
 end;
 
