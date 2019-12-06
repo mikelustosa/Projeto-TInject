@@ -320,7 +320,6 @@ var
   LVar        : Boolean;
   LaAction    : TCefCloseBrowserAction;
   LaActionForm: TCloseAction;
-  I: Integer;
 begin
   //Se nao excecutado o SHTDOWN natural.. ele processa
   if FChromium = nil then

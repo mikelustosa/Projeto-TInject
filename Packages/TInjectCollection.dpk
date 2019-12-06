@@ -1,0 +1,53 @@
+package TInjectCollection;
+
+{$R *.res}
+{$R 'Cript_reg\Cripto.dcr'}
+{$R 'diskcaps_inf_hd\DISKCAPS.dcr'}
+{$R 'FILECRIPT\FilCrpto.dcr'}
+{$R 'MSNPOPUP\SOURCE\MSNPopUp.dcr'}
+{$R 'VersaoSistema\VERSLAB.dcr'}
+{$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
+{$ALIGN 8}
+{$ASSERTIONS ON}
+{$BOOLEVAL OFF}
+{$DEBUGINFO OFF}
+{$EXTENDEDSYNTAX ON}
+{$IMPORTEDDATA ON}
+{$IOCHECKS ON}
+{$LOCALSYMBOLS ON}
+{$LONGSTRINGS ON}
+{$OPENSTRINGS ON}
+{$OPTIMIZATION OFF}
+{$OVERFLOWCHECKS OFF}
+{$RANGECHECKS OFF}
+{$REFERENCEINFO ON}
+{$SAFEDIVIDE OFF}
+{$STACKFRAMES ON}
+{$TYPEDADDRESS OFF}
+{$VARSTRINGCHECKS ON}
+{$WRITEABLECONST OFF}
+{$MINENUMSIZE 1}
+{$IMAGEBASE $400000}
+{$DEFINE DEBUG}
+{$ENDIF IMPLICITBUILDING}
+{$DESCRIPTION 'TInject WhatsApp'}
+{$RUNONLY}
+{$IMPLICITBUILD OFF}
+
+requires
+  rtl,
+  vcl,
+  vclimg,
+  RESTComponents,
+  CEF4Delphi;
+
+contains
+  UBase64 in '..\Model\UBase64.pas',
+  uTInject.Classes in '..\Model\uTInject.Classes.pas',
+  uTInject.Emoticons in '..\Model\uTInject.Emoticons.pas',
+  uTInject.ConfigCEF in '..\Services\uTInject.ConfigCEF.pas',
+  uTInject.Console in '..\Services\uTInject.Console.pas' {FrmConsole},
+  uTInject in '..\Services\uTInject.pas',
+  uTInject.FrmQRCode in '..\View\uTInject.FrmQRCode.pas' {FrmQRCode};
+
+end.

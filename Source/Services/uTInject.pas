@@ -422,15 +422,13 @@ begin
     GlobalCEFApp.Chromium.CloseBrowser(True);
 
     //Executa fecgamento FORM
-     GlobalCEFApp.ChromiumForm.OnCloseQuery(GlobalCEFApp.ChromiumForm, LVar);
+    GlobalCEFApp.ChromiumForm.OnCloseQuery(GlobalCEFApp.ChromiumForm, LVar);
     GlobalCEFApp.ChromiumForm.OnClose     (GlobalCEFApp.ChromiumForm, LaActionForm);
     GlobalCEFApp.ChromiumForm.Close;
 
     FreeAndNil(FrmQRCode);
     FreeAndNil(FrmConsole);
-
     GlobalCEFApp.Chromium     := Nil;
-
   End;
 end;
 
