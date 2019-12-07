@@ -14,6 +14,8 @@ uses
   uTInject.FrmQRCode in '..\Source\View\uTInject.FrmQRCode.pas'   {FrmQRCode},
   UBase64            in '..\Source\Model\UBase64.pas',
   uTInject.Classes   in '..\Source\Model\uTInject.Classes.pas',
+  uTInject.Constant  in '..\Source\Model\uTInject.Constant.pas',
+  uTInject.ExePath   in '..\Source\Model\uTInject.ExePath.pas',
   uTInject.Emoticons in '..\Source\Model\uTInject.Emoticons.pas';
 
 {$R *.res}

@@ -12,20 +12,16 @@ uses
 
   uCEFWinControl, uCEFWindowParent, uCEFChromium, 
   //units adicionais obrigatórias
-  uTInject.Classes, uTInject, uTInject.FrmQRCode,
+  uTInject.Classes, uTInject, uTInject.FrmQRCode, uTInject.constant,
   uCEFInterfaces, uCEFConstants, uCEFTypes, uTInject.ConfigCEF,
 
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
   Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json,
-  Vcl.Imaging.jpeg;
+  Vcl.Imaging.jpeg, uCEFChromiumCore;
 
-  var
-   vContacts :Array of String;
+var
+ vContacts :Array of String;
 
-  const
-    CEFBROWSER_CREATED          = WM_APP + $100;
-    CEFBROWSER_CHILDDESTROYED   = WM_APP + $101;
-    CEFBROWSER_DESTROY          = WM_APP + $102;
 
 type
   TFrmConsole = class(TForm)
@@ -422,7 +418,7 @@ end;
 
 procedure TFrmConsole.FormCreate(Sender: TObject);
 begin
-  Chromium1.DefaultURL := 'https://web.whatsapp.com/';
+  Chromium1.DefaultURL := FrmConsole_URL;
   vAuth := false;
 
   if not(Chromium1.CreateBrowser(CEFWindowParent1)) then
@@ -433,7 +429,7 @@ end;
 
 procedure TFrmConsole.FormDestroy(Sender: TObject);
 begin
-  PostMessage(Handle, CEFBROWSER_CHILDDESTROYED, 0, 0);
+  PostMessage(Handle, FrmConsole_Browser_ChildDestroy, 0, 0);
 end;
 
 procedure TFrmConsole.FormShow(Sender: TObject);

@@ -37,16 +37,12 @@ uses
   uCEFApplication,
   System.SysUtils,
   Winapi.Windows,
-  uCEFConstants, uCEFChromium, Vcl.Forms, uTInject;
+  uCEFConstants, uCEFChromium, Vcl.Forms,
 
-Const
-  ConstLocalesDirPath   = 'locales';
-  ConstCache            = 'cache';
-  ConstUserDataPath     = 'User Data';
+  uTInject,
+  uTInject.constant ;
 
-  ExceptNotFoundJS      = 'Arquivo JS.ABR não localizado';
-  ExceptNotFoundPATH    = 'Não é possível realizar essa operação após a inicialização do componente';
-  ExceptConnection      = 'Erro ao conectar com componente';
+
 
 type
 
@@ -113,7 +109,7 @@ uses
 constructor TCEFConfig.Create;
 begin
   inherited;
-  FSJFile                   := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'js.abr';
+  FSJFile                   := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + NomeArquivoInject;
   FStartMainProcessTimeOut  := 5000; //(+- 5 Segundos)
   SetDefault;
 end;
@@ -177,7 +173,7 @@ begin
   End;
 
   if Self.status = asInitialized then
-     raise Exception.Create(ExceptNotFoundPATH);
+     raise Exception.Create(ConfigCEF_ExceptNotFoundPATH);
 
   if not DirectoryExists(ExtractFilePath(PNewValue)) then
      raise Exception.Create('O Path ' + PNewValue + ' inválido');
@@ -211,10 +207,8 @@ begin
   if AnsiLowerCase(FPathCache) = AnsiLowerCase(Value) Then
      Exit;
 
-
   ForceDirectories(PWideChar(ExtractFilePath(Value)));
-
-   if not TestaOk(FPathCache, Value) Then
+  if not TestaOk(FPathCache, Value) Then
      Exit;
   FPathCache := Value;
 end;
@@ -259,7 +253,7 @@ begin
   Begin
     //Se nao informado!! por padrao ficara na pasta da APP
     if not FileExists(FSJFile) then
-       raise Exception.Create(ExceptNotFoundJS);
+       raise Exception.Create(ConfigCEF_ExceptNotFoundJS);
     FPathInjectJS            := FSJFile;
   End;
 
@@ -287,7 +281,7 @@ begin
   finally
     Result  := (Self.status = asInitialized);
     if not Result then
-       raise Exception.Create(ExceptConnection);
+       raise Exception.Create(ConfigCEF_ExceptConnection);
   end;
 end;
 
@@ -299,13 +293,18 @@ begin
 end;
 
 procedure TCEFConfig.SetPathInjectJS(const Value: String);
+var
+  lTmp : String;
 begin
-  if not TestaOk(FPathInjectJS, Value) Then
-     Exit;
-  if not FileExists(Value) then
-     raise Exception.Create(ExceptNotFoundJS);
+  //Rarante arquivo padrao
+  lTmp := ExtractFilePath(IncludeTrailingPathDelimiter(ExtractFilePath(Value))) + NomeArquivoInject;
 
-  FPathInjectJS := Value;
+  if not TestaOk(FPathInjectJS, lTmp) Then
+     Exit;
+  if not FileExists(lTmp) then
+     raise Exception.Create(ConfigCEF_ExceptNotFoundJS);
+
+  FPathInjectJS := lTmp;
 end;
 
 destructor TCEFConfig.Destroy;

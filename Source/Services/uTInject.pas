@@ -1,6 +1,6 @@
 ﻿//TInject Criado por Mike W. Lustosa
 //Códido aberto à comunidade Delphi
-//mikelustosa@gmail.com
+//mikelustosa@gmail.com  +55 81 9630-2385
 
 
 unit uTInject;
@@ -8,13 +8,10 @@ unit uTInject;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uTInject.Classes, uTInject.FrmQRCode,  System.MaskUtils,
-  uTInject.Emoticons;
+  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, System.MaskUtils,
 
-Const
-  TInjectVersion = '1.0.0.10'; //  04/12/2019  //Alterado por Daniel Rodrigues
-  CardContact   = '@c.us';
-  CardGroup     = '@g.us';
+  uTInject.Classes, uTInject.FrmQRCode, uTInject.constant, uTInject.Emoticons;
+
 
 {
 ###########################################################################################
@@ -43,6 +40,7 @@ type
   {Events}
   TGetUnReadMessages = procedure(Chats: TChatList) of object;
   TTypeNumber        = (TypUndefined=0, TypContact=1, TypGroup=2);
+
 
   TAjustNumber  = class(TComponent)
   private
@@ -120,9 +118,14 @@ type
 //    FContacts             : String;
     FAuth                 : Boolean;
     FMonitoring           : Boolean;
+    FJSVersao             : String;
+    FJSPath               : String;
+    FJSScript             : TstringList;
 
     { Private declarations }
     procedure SetAuth(const Value: boolean);
+    Function PegarLocalJS:String;
+    procedure SetSScript(const Value: TstringList);
   protected
     { Protected declarations }
     FOnGetUnReadMessages  : TGetUnReadMessages;
@@ -136,8 +139,9 @@ type
   public
     AGetBatteryLevel               : string;
     constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
-    procedure ShutDown(PClearNotifyEvent: Boolean = False);
+    destructor  Destroy; override;
+    procedure   ShutDown(PClearNotifyEvent: Boolean = False);
+    Procedure   GetVersaoJS;
 
     procedure ReadMessages(vID: string);
     procedure startQrCode;
@@ -155,7 +159,8 @@ type
     function GetStatus: Boolean;
     function GetUnReadMessages: String;
 
-    Property Emoticons : TInjectEmoticons     Read  FEmoticons   Write FEmoticons;
+
+    Property Emoticons : TInjectEmoticons     Read FEmoticons    Write FEmoticons;
     property AllContacts: TRetornoAllContacts read FAllContacts  write FAllContacts;
     property BatteryLevel: TNotifyEvent       read FBatteryLevel write FBatteryLevel;
     property AQrCode: TQrCodeClass            read FQrCodeClass  write FQrCodeClass;
@@ -164,6 +169,10 @@ type
     property Monitoring: Boolean              read FMonitoring   default False;
   published
     { Published declarations }
+    Property JSScript             : TstringList  Read FJSScript          Write SetSScript;
+    Property JSPath               : String       Read FJSPath;
+    Property JSVersao             : String       Read FJSVersao;
+    Property VersaoIDE            : String       Read FVersaoIde;
     property Config               : TMySubComp   read FMySubComp1;
     property AjustNumber          : TAjustNumber read FAjustNumber;
     property OnGetContactList     : TNotifyEvent read FBatteryLevel      write FBatteryLevel;
@@ -173,22 +182,29 @@ type
     property OnGetUnReadMessages  : TGetUnReadMessages read FOnGetUnReadMessages write FOnGetUnReadMessages;
     property OnGetStatus          : TNotifyEvent read FOnGetStatus       write FOnGetStatus;
     property OnGetBatteryLevel    : TNotifyEvent read FOnGetBatteryLevel write FOnGetBatteryLevel;
-    Property VersaoIDE            : String       Read FVersaoIde;
     property ABatteryLevel        : string       Read FGetBatteryLevel;
   end;
+
+var
+   OnGetUnitPath: TFunc<String>;
 
 
 procedure Register;
 
+
 implementation
 
 uses
-  uTInject.Console,   uTInject.ConfigCEF, uCEFTypes;
+  uTInject.Console,   uTInject.ConfigCEF, uCEFTypes, uTInject.ExePath;
+
 
 procedure Register;
 begin
   RegisterComponents('TInjectWhatsapp', [TInjectWhatsapp]);
 end;
+
+
+
 
 procedure TMySubComp.SetAutoMonitor(const Value: boolean);
 begin
@@ -219,6 +235,7 @@ end;
 constructor TInjectWhatsapp.Create(AOwner: TComponent);
 begin
   inherited;
+  FJSScript                  := TstringList.create;
   FVersaoIde                 := TInjectVersion;
   FMySubComp1                := TMySubComp.Create(self);
   FMySubComp1.Name           := 'AutoInject';
@@ -230,6 +247,11 @@ begin
   FAjustNumber               := TAjustNumber.Create(self);
   FAjustNumber.Name          := 'AjustNumber';
   FAjustNumber.SetSubComponent(true);
+  GetVersaoJS;
+//  ShowMessage(FJSVersao);
+
+  if (csDesigning in ComponentState) then
+     Exit;
 
   if Config.AutoStart then
      startWhatsapp;
@@ -237,6 +259,7 @@ end;
 
 destructor TInjectWhatsapp.Destroy;
 begin
+  FreeAndNil(FJSScript);
   FreeAndNil(FrmConsole);
   FreeAndNil(FrmQRCode);
   FreeAndNil(FAjustNumber);
@@ -281,6 +304,7 @@ begin
   If Application.Terminated Then
      Exit;
 
+
   lThread := TThread.CreateAnonymousThread(procedure
       begin
           if Config.AutoDelay > 0 then
@@ -299,11 +323,84 @@ begin
   lThread.Start;
 end;
 
+
+Procedure TInjectWhatsapp.GetVersaoJS;
+var
+  LFile, LLinha0: String;
+
+begin
+  Lfile   := PegarLocalJS;
+  try
+    if LFile = '' then             Exit;
+    if Not FileExists(LFile) then  Exit;
+
+    try
+      FJSScript.Clear;
+      FJSScript.LoadFromFile(LFile);
+      if FJSScript.Count < 30 then
+      Begin
+        Lfile := '';
+        exit;
+      end;
+    except
+      Lfile := '';
+    end
+  finally
+    if Lfile = '' then
+    Begin
+      FJSScript.clear;
+      FJSVersao := '';
+      FJSPath   := NomeArquivoInject + ' not found';
+    end  else
+    begin
+     //permite que os fontes tenha comentarios sem interferir na descoberta da versao
+      LLinha0   := FJSScript.Strings[0];
+      if pos('//', LLinha0) > 0 then
+         LLinha0   := Copy(LLinha0, 0, pos('//', LLinha0)-1);
+
+      //Limpa tudo que nao faz parte da versao!!
+      LLinha0   := StringReplace(LLinha0, ' ',      '',  [rfReplaceAll, rfIgnoreCase]);
+      LLinha0   := StringReplace(LLinha0, 'var',    '',  [rfReplaceAll, rfIgnoreCase]);
+      LLinha0   := StringReplace(LLinha0, 'Versao', '',  [rfReplaceAll, rfIgnoreCase]);
+      LLinha0   := StringReplace(LLinha0, '=', '',  [rfReplaceAll, rfIgnoreCase]);
+      LLinha0   := StringReplace(LLinha0, ';', '',  [rfReplaceAll, rfIgnoreCase]);
+      LLinha0   := StringReplace(LLinha0, '"', '',  [rfReplaceAll, rfIgnoreCase]);
+      LLinha0   := StringReplace(LLinha0, Chr(39) , '',  [rfReplaceAll, rfIgnoreCase]);
+      FJSVersao := LLinha0;
+      FJSPath   := Lfile;
+    end;
+  end;
+end;
+
 procedure TInjectWhatsapp.monitorQrCode;
 begin
   If Application.Terminated Then
      Exit;
   FrmConsole.monitorQRCode;
+end;
+
+Function TInjectWhatsapp.PegarLocalJS: String;
+var
+  LDados: TDadosApp;
+begin
+  try
+    if (csDesigning in ComponentState) then
+    Begin
+      //Se em designer procura
+      LDados  := TDadosApp.Create(True);
+      try
+        Result  := LDados.LocalEXE;
+      finally
+        FreeAndNil(LDados);
+      end;
+    end else
+    Begin
+      //Se em execuçao ja sabe aonde ta
+      Result  := GlobalCEFApp.PathInjectJS;
+    end
+  Except
+    Result  := '';
+  end;
 end;
 
 procedure TInjectWhatsapp.ReadMessages(vID: string);
@@ -386,7 +483,13 @@ begin
      OnGetStatus( Self );
 end;
 
-procedure TInjectWhatsapp.ShowWebApp;
+procedure TInjectWhatsapp.SetSScript(const Value: TstringList);
+begin
+  if Value.text <> FJSScript.text then
+     raise Exception.Create('Não é possível modificar em Modo Designer');
+end;
+
+Procedure TInjectWhatsapp.ShowWebApp;
 begin
   If Application.Terminated Then
      Exit;

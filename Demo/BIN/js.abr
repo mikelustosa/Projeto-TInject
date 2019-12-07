@@ -1,6 +1,12 @@
-//Versao 1.0.0.2
+var Versao = '1.0.0.2';
 
-function SetConsoleMessage(jsName, resultValue) {
+function getVersionJS() 
+{
+  SetConsoleMessage('getVersionJS', Versao);
+}
+
+function SetConsoleMessage(jsName, resultValue) 
+{
    Obj = {
       name: jsName,
       result: '{"result":' + resultValue + '}'

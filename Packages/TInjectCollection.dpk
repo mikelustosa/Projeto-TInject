@@ -23,6 +23,7 @@ package TInjectCollection;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
+{$DEFINE DESIGNER_COMP}
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'TInject WhatsApp'}
@@ -32,16 +33,19 @@ requires
   rtl,
   vcl,
   vclimg,
+  designide,
   RESTComponents,
   CEF4Delphi;
 
 contains
-  UBase64 in '..\Model\UBase64.pas',
-  uTInject.Classes in '..\Model\uTInject.Classes.pas',
-  uTInject.Emoticons in '..\Model\uTInject.Emoticons.pas',
-  uTInject.ConfigCEF in '..\Services\uTInject.ConfigCEF.pas',
-  uTInject.Console in '..\Services\uTInject.Console.pas' {FrmConsole},
-  uTInject in '..\Services\uTInject.pas',
-  uTInject.FrmQRCode in '..\View\uTInject.FrmQRCode.pas' {FrmQRCode};
+  UBase64 in '..\Source\Model\UBase64.pas',
+  uTInject.Classes in '..\Source\Model\uTInject.Classes.pas',
+  uTInject.Emoticons in '..\Source\Model\uTInject.Emoticons.pas',
+  uTInject.ConfigCEF in '..\Source\Services\uTInject.ConfigCEF.pas',
+  uTInject.Console in '..\Source\Services\uTInject.Console.pas' {FrmConsole},
+  uTInject in '..\Source\Services\uTInject.pas',
+  uTInject.FrmQRCode in '..\Source\View\uTInject.FrmQRCode.pas' {FrmQRCode},
+  uTInject.ExePath in '..\Source\Model\uTInject.ExePath.pas',
+  uTInject.Constant in '..\Source\Model\uTInject.Constant.pas';
 
 end.
