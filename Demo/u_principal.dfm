@@ -3336,9 +3336,7 @@ object frmPrincipal: TfrmPrincipal
     Height = 19
     Panels = <
       item
-        Text = 
-          'Aplicativo DEMO do componente TInject - https://github.com/mikel' +
-          'ustosa/Projeto-TInject'
+        Text = 'Aplicativo DEMO do componente TInject - www.TInject.com.br'
         Width = 640
       end
       item
@@ -5144,9 +5142,6 @@ object frmPrincipal: TfrmPrincipal
     Config.AutoDelay = 0
     Config.SyncContacts = False
     Config.ShowRandom = False
-    AjustNumber.AutoAdjust = False
-    AjustNumber.LengthDDI = 0
-    AjustNumber.LengthDDD = 0
     AjustNumber.LengthPhone = 8
     AjustNumber.DDIDefault = 55
     OnGetContactList = InjectWhatsapp1GetContactList

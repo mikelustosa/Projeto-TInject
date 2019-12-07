@@ -28,14 +28,6 @@ object FrmConsole: TFrmConsole
     Align = alClient
     TabOrder = 0
   end
-  object memo_js: TMemo
-    Left = 8
-    Top = 61
-    Width = 193
-    Height = 57
-    TabOrder = 1
-    Visible = False
-  end
   object Panel1: TPanel
     AlignWithMargins = True
     Left = 3
@@ -44,7 +36,7 @@ object FrmConsole: TFrmConsole
     Height = 33
     Align = alTop
     ParentBackground = False
-    TabOrder = 2
+    TabOrder = 1
     object Image2: TImage
       Left = 1
       Top = 1
@@ -268,18 +260,5 @@ object FrmConsole: TFrmConsole
     OnOpenUrlFromTab = Chromium1OpenUrlFromTab
     Left = 40
     Top = 160
-  end
-  object Timer1: TTimer
-    Enabled = False
-    Interval = 300
-    OnTimer = Timer1Timer
-    Left = 136
-    Top = 40
-  end
-  object Timer2: TTimer
-    Interval = 4000
-    OnTimer = Timer2Timer
-    Left = 296
-    Top = 40
   end
 end

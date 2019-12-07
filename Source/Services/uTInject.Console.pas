@@ -13,7 +13,7 @@ uses
   uCEFWinControl, uCEFWindowParent, uCEFChromium, 
   //units adicionais obrigatórias
   uTInject.Classes, uTInject, uTInject.FrmQRCode, uTInject.constant,
-  uCEFInterfaces, uCEFConstants, uCEFTypes, uTInject.ConfigCEF,
+  uCEFInterfaces, uCEFConstants, uCEFTypes, uTInject.ConfigCEF, uTInject.Diversos,
 
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
   Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json,
@@ -27,15 +27,10 @@ type
   TFrmConsole = class(TForm)
     CEFWindowParent1: TCEFWindowParent;
     Chromium1: TChromium;
-    Timer1: TTimer;
-    Timer2: TTimer;
-    memo_js: TMemo;
     Panel1: TPanel;
     Image2: TImage;
     Image1: TImage;
     Label1: TLabel;
-    procedure Timer1Timer(Sender: TObject);
-    procedure Timer2Timer(Sender: TObject);
     procedure Chromium1AfterCreated(Sender: TObject;      const browser: ICefBrowser);
     procedure Chromium1BeforeClose(Sender: TObject; const browser: ICefBrowser);
     procedure Chromium1BeforePopup(Sender: TObject; const browser: ICefBrowser;
@@ -75,7 +70,11 @@ type
     procedure BrowserDestroyMsg(var aMessage : TMessage); message CEF_DESTROY;
   private
     { Private declarations }
-    procedure ExecuteJS(JS: String);
+    FConectado: Boolean;
+    FTimerConnect: TTimer;
+
+    procedure OnTimerConnect(Sender: TObject);
+    procedure ExecuteJS(PScript: String; Purl:String = 'about:blank'; pStartline: integer=0);
     procedure LogConsoleMessage(const AMessage: String);
     procedure SetAllContacts(JsonText: String);
     procedure SetAllChats(JsonText: String);
@@ -87,14 +86,13 @@ type
 
   public
     { Public declarations }
-    JS1: string;
+    JS1 : string;
     _Qrcode, WEBQrCode: string;
     i: integer;
-    vAuth: boolean;
     procedure Send(vNum, vText:string);
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
-    function ConvertBase64(vFile: string): string;
-    function caractersWhats(vText: string): string;
+    function  ConvertBase64(vFile: string): string;
+    function  caractersWhats(vText: string): string;
     procedure GetAllContacts;
     procedure GetAllChats;
     procedure GetUnreadMessages;
@@ -104,6 +102,7 @@ type
     procedure WEBmonitorQRCode;
     procedure loadQRCode(st: string);
     procedure ReadMessages(vID: string);
+    procedure DeleteMessages(vID: string);
     procedure ReadMessagesAndDelete(vID: string);
     procedure StartMonitor(Seconds: Integer);
     procedure StopMonitor;
@@ -123,38 +122,34 @@ procedure ParseJson(aStringJson : string);
 var
   LJsonArr   : TJSONArray;
   LJsonValue : TJSONValue;
-  LItem     : TJSONValue;
+  LItem      : TJSONValue;
 begin
    LJsonArr    := TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(aStringJson),0) as TJSONArray;
    for LJsonValue in LJsonArr do
    begin
      for LItem in TJSONArray(LJsonValue) do
-        Writeln(Format('%s : %s',[TJSONPair(LItem).JsonString.Value, TJSONPair(LItem).JsonValue.Value]));
+         Writeln(Format('%s : %s',[TJSONPair(LItem).JsonString.Value, TJSONPair(LItem).JsonValue.Value]));
      Writeln;
    end;
 end;
 
 function removeCaracter(texto : String) : String;
 Begin
-
   While pos('-', Texto) <> 0 Do
     delete(Texto,pos('-', Texto),1);
-
   While pos('/', Texto) <> 0 Do
     delete(Texto,pos('/', Texto),1);
-
   While pos(',', Texto) <> 0 Do
     delete(Texto,pos(',', Texto),1);
-
   Result := Texto;
 end;
 
 function TFrmConsole.caractersWhats(vText: string): string;
 begin
-  vText := StringReplace(vText, sLineBreak,'\n',[rfReplaceAll]);
-  vText := StringReplace((vText), #13,'',[rfReplaceAll]);
-  vText := StringReplace((vText), '"','\"',[rfReplaceAll]);
-  vText := StringReplace((vText), #$A, '', [rfReplaceAll]);
+  vText  := StringReplace(vText, sLineBreak,'\n',[rfReplaceAll]);
+  vText  := StringReplace((vText), #13,'',[rfReplaceAll]);
+  vText  := StringReplace((vText), '"','\"',[rfReplaceAll]);
+  vText  := StringReplace((vText), #$A, '', [rfReplaceAll]);
   Result := vText;
 end;
 
@@ -166,23 +161,153 @@ end;
 procedure TFrmConsole.WMMove(var aMessage : TWMMove);
 begin
   inherited;
-  if (Chromium1 <> nil) then Chromium1.NotifyMoveOrResizeStarted;
+  if (Chromium1 <> nil) then
+     Chromium1.NotifyMoveOrResizeStarted;
 end;
 
 procedure TFrmConsole.WMMoving(var aMessage : TMessage);
 begin
   inherited;
-
-  if (Chromium1 <> nil) then Chromium1.NotifyMoveOrResizeStarted;
+  if (Chromium1 <> nil) then
+     Chromium1.NotifyMoveOrResizeStarted;
 end;
 
-//Usado para requisições REST
-procedure TFrmConsole.WEBmonitorQRCode;
-const JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
+procedure TFrmConsole.ExecuteJS(PScript: String; Purl:String = 'about:blank'; pStartline: integer=0);
 begin
+  if not FConectado Then
+     Exit;
+
   if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
+     Chromium1.Browser.MainFrame.ExecuteJavaScript(PScript, Purl, pStartline);
 end;
+
+procedure TFrmConsole.WEBmonitorQRCode;
+begin
+  ExecuteJS(FrmConsole_JS_WEBmonitorQRCode);
+end;
+
+procedure TFrmConsole.monitorQRCode;
+begin
+  ExecuteJS(FrmConsole_JS_monitorQRCode);
+end;
+
+procedure TFrmConsole.OnTimerConnect(Sender: TObject);
+var
+  lNovoStatus: Boolean;
+begin
+   if not Assigned(GlobalCEFApp.InjectWhatsApp) then
+      Exit;
+
+  //Rotina para leitura e inject do arquivo js.abr ---- 12/10/2019 Mike
+  lNovoStatus            := True;
+  FTimerConnect.Enabled  := False;
+  try
+    If GlobalCEFApp.InjectWhatsApp.Auth then
+    Begin
+      ExecuteJS(GlobalCEFApp.InjectWhatsApp.JSScript.Text);
+      //Auto monitorar mensagens não lidas
+      If GlobalCEFApp.InjectWhatsApp.Config.AutoMonitor then
+         GlobalCEFApp.InjectWhatsApp.StartMonitor;
+      lNovoStatus    := False;
+    End;
+  finally
+    FTimerConnect.Enabled := lNovoStatus;
+  end;
+end;
+
+procedure TFrmConsole.GetAllContacts;
+begin
+  ExecuteJS(FrmConsole_JS_GetAllContacts);
+end;
+
+procedure TFrmConsole.GetBatteryLevel;
+begin
+  ExecuteJS(FrmConsole_JS_GetBatteryLevel);
+end;
+
+procedure TFrmConsole.GetUnreadMessages;
+begin
+  ExecuteJS(FrmConsole_JS_GetUnreadMessages);
+end;
+
+procedure TFrmConsole.GetAllChats;
+begin
+  ExecuteJS(FrmConsole_JS_GetAllChats);
+end;
+
+procedure TFrmConsole.StartMonitor(Seconds: Integer);
+var
+  LJS: String;
+begin
+  LJS := FrmConsole_JS_VAR_StartMonitor;
+  ExecuteJS(FrmConsole_JS_AlterVar(LJS, '#TEMPO#' , Seconds.ToString));
+end;
+
+procedure TFrmConsole.StopMonitor;
+begin
+  ExecuteJS(FrmConsole_JS_StopMonitor);
+end;
+
+procedure TFrmConsole.ReadMessages(vID: string);
+var
+  LJS: String;
+begin
+  LJS := FrmConsole_JS_VAR_ReadMessages;
+  ExecuteJS(FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#' , Trim(vID)));
+end;
+
+procedure TFrmConsole.DeleteMessages(vID: string);
+var
+  LJS: String;
+begin
+  LJS := FrmConsole_JS_VAR_DeleteMessages;
+  ExecuteJS(FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#', Trim(vID)));
+end;
+
+//Marca como lida e deleta a conversa
+procedure TFrmConsole.ReadMessagesAndDelete(vID: string);
+begin
+  ReadMessages  (Trim(vID));
+  DeleteMessages(Trim(vID));
+end;
+
+procedure TFrmConsole.SendBase64(vBase64, vNum, vFileName, vText: string);
+var
+  Ljs, LLine: string;
+  LBase64: TStringList;
+  i: integer;
+begin
+  vText           := caractersWhats(vText);
+  removeCaracter(vFileName);
+  LBase64         := TStringList.Create;
+  TRY
+    LBase64.Text := vBase64;
+    for i := 0 to LBase64.Count -1  do
+       LLine := LLine + LBase64[i];
+    vBase64 := LLine;
+
+    LJS := FrmConsole_JS_VAR_SendBase64;
+    FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',       Trim(vNum));
+    FrmConsole_JS_AlterVar(LJS, '#MSG_NOMEARQUIVO#', Trim(vFileName));
+    FrmConsole_JS_AlterVar(LJS, '#MSG_CORPO#',       Trim(vText));
+    FrmConsole_JS_AlterVar(LJS, '#MSG_BASE64#',      Trim(vBase64));
+    ExecuteJS(LJS);
+  FINALLY
+    freeAndNil(LBase64);
+  END;
+end;
+
+procedure TFrmConsole.Send(vNum, vText: string);
+var
+  Ljs: string;
+begin
+  vText := caractersWhats(vText);
+  LJS   := FrmConsole_JS_VAR_SendMsg;
+  FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',       Trim(vNum));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_CORPO#',       Trim(vText));
+  ExecuteJS(LJS);
+end;
+
 
 procedure TFrmConsole.WMEnterMenuLoop(var aMessage: TMessage);
 begin
@@ -205,6 +330,7 @@ begin
     o formulário principal para carregar a página inicial da web.}
   //PostMessage(Handle, CEFBROWSER_CREATED, 0, 0);
   PostMessage(Handle, CEF_AFTERCREATED, 0, 0);
+  FTimerConnect.Enabled  := True;
 end;
 
 procedure TFrmConsole.Chromium1BeforeClose(Sender: TObject;
@@ -237,20 +363,10 @@ procedure TFrmConsole.Chromium1ConsoleMessage(Sender: TObject;
   line: Integer; out Result: Boolean);
 var
   AResponse: TResponseConsoleMessage;
-  function PrettyJSON(JsonString: String):String;
-  var
-    AObj: TJSONObject;
-  begin
-    AObj := TJSONObject.ParseJSONValue(JsonString) as TJSONObject;
-    result:=TJSON.Format(AObj);
-    AObj.Free;
-  end;
 begin
     begin
       AResponse := TResponseConsoleMessage.FromJsonString( message );
-
       if AResponse = nil then Exit;
-
       try
         try
           if(AResponse.Result <> '{"result":[]}') then
@@ -311,33 +427,6 @@ begin
     end;
 end;
 
-procedure TFrmConsole.GetAllContacts;
-const
-  JS = 'window.WAPI.getAllContacts();';
-begin
-  Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-end;
-
-procedure TFrmConsole.GetBatteryLevel;
-const
-  JS = 'window.WAPI.getBatteryLevel();';
-begin
-  Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-end;
-
-procedure TFrmConsole.GetUnreadMessages;
-const
-  JS = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
-begin
-  Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-end;
-
-procedure TFrmConsole.GetAllChats;
-const
-  JS = 'window.WAPI.getAllChats();';
-begin
-  Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-end;
 
 procedure TFrmConsole.Chromium1LoadEnd(Sender: TObject;
   const browser: ICefBrowser; const frame: ICefFrame; httpStatusCode: Integer);
@@ -367,15 +456,8 @@ begin
   i := i + 1;
   if i > 3 then
   begin
-    vAuth        := true;
     GlobalCEFApp.InjectWhatsApp.Auth := true
   end;
-end;
-
-procedure TFrmConsole.ExecuteJS(JS: String);
-begin
-  if Chromium1.Browser <> nil then
-     Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
 end;
 
 function TFrmConsole.ConvertBase64(vFile: string): string;
@@ -391,9 +473,6 @@ begin
   finally
     FreeAndNil(vBase64File);
     FreeAndNil(vFilestream);
-
-//    vBase64File.Free;
-//    vFilestream.Free;
   end;
 end;
 
@@ -417,19 +496,38 @@ begin
 end;
 
 procedure TFrmConsole.FormCreate(Sender: TObject);
+var
+  LInicio: Cardinal;
 begin
-  Chromium1.DefaultURL := FrmConsole_URL;
-  vAuth := false;
-
-  if not(Chromium1.CreateBrowser(CEFWindowParent1)) then
-     Timer1.Enabled := True;
   if GlobalCEFApp <> nil then
      GlobalCEFApp.Chromium :=  Chromium1;
+
+  Chromium1.DefaultURL := FrmConsole_JS_URL;
+  LInicio              := GetTickCount;
+  Repeat
+    FConectado := (not(Chromium1.CreateBrowser(CEFWindowParent1)) and not(Chromium1.Initialized));
+    if not FConectado then
+    Begin
+      Sleep(10);
+      Application.ProcessMessages;
+      if (GetTickCount - LInicio) >= 15000 then
+         Break;
+    End;
+  Until FConectado;
+
+  if not FConectado then
+     raise Exception.Create(ConfigCEF_ExceptBrowse);
+
+  FTimerConnect          := TTimer.Create(nil);
+  FTimerConnect.Interval := 1000;
+  FTimerConnect.Enabled  := False;
+  FTimerConnect.OnTimer  := OnTimerConnect;
 end;
 
 procedure TFrmConsole.FormDestroy(Sender: TObject);
 begin
   PostMessage(Handle, FrmConsole_Browser_ChildDestroy, 0, 0);
+  FreeAndNil(FTimerConnect);
 end;
 
 procedure TFrmConsole.FormShow(Sender: TObject);
@@ -445,76 +543,12 @@ end;
 procedure TFrmConsole.loadQRCode(st: string);
 begin
   if assigned(FrmConsole) then
-    FrmQRCode.loadQRCode(st);
+     FrmQRCode.loadQRCode(st);
 end;
 
 procedure TFrmConsole.LogConsoleMessage(const AMessage: String);
 begin
-  TFile.AppendAllText(
-    ExtractFilePath(Application.ExeName) + 'ConsoleMessage.log',
-    AMessage,
-    TEncoding.ASCII);
-end;
-
-procedure TFrmConsole.monitorQRCode;
- const
-   JSQrCode = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
-begin
-  if Chromium1.Browser <> nil then
-      Chromium1.Browser.MainFrame.ExecuteJavaScript(JSQrCode, 'about:blank', 0);
-end;
-
-//Apenas marca como lida a mensagem
-procedure TFrmConsole.ReadMessages(vID: string);
-begin
- if Chromium1.Browser <> nil then
-      Chromium1.Browser.MainFrame.ExecuteJavaScript( 'window.WAPI.sendSeen("'+Trim(vID)+'")', 'about:blank', 0);
-end;
-
-//Marca como lida e deleta a conversa
-procedure TFrmConsole.ReadMessagesAndDelete(vID: string);
-begin
-  if Chromium1.Browser <> nil then
-      Chromium1.Browser.MainFrame.ExecuteJavaScript('window.WAPI.sendSeen("'+Trim(vID)+'")', 'about:blank', 0);
-
-  if Chromium1.Browser <> nil then
-      Chromium1.Browser.MainFrame.ExecuteJavaScript('window.WAPI.deleteConversation("'+Trim(vID)+'")', 'about:blank', 0);
-end;
-
-procedure TFrmConsole.SendBase64(vBase64, vNum, vFileName, vText: string);
-var
- js: string;
- Base64File: TStringList;
- i: integer;
- vLine: string;
-begin
-  vText := caractersWhats(vText);
-  removeCaracter(vFileName);
-  Base64File:= TStringList.Create;
-  Base64File.Text := vBase64;
-  for i := 0 to Base64File.Count -1  do
-  begin
-    vLine := vLine + Base64File[i];
-  end;
-  vBase64 := vLine;
-  js := 'window.WAPI.sendImage("'+Trim(vBase64)+'","'+Trim(vNum)+'", "'+Trim(vFileName)+'", "'+Trim(vText)+'")';
-
-  if Chromium1.Browser <> nil then
-  begin
-    Chromium1.Browser.MainFrame.ExecuteJavaScript(js, 'about:blank', 0);
-  end;
-
-  freeAndNil(Base64File);
-end;
-
-procedure TFrmConsole.StartMonitor(Seconds: Integer);
-begin
-  ExecuteJS('startMonitor(intervalSeconds=' + IntToStr( Seconds ) + ')');
-end;
-
-procedure TFrmConsole.StopMonitor;
-begin
-  ExecuteJS('stopMonitor()');
+  TFile.AppendAllText(ExtractFilePath(Application.ExeName) + 'ConsoleMessage.log',  AMessage, TEncoding.ASCII);
 end;
 
 procedure TFrmConsole.SetAllContacts(JsonText: String);
@@ -526,11 +560,12 @@ begin
   begin
     if Assigned(AllContacts) then
        AllContacts.Free;
+
     AllContacts := TRetornoAllContacts.FromJsonString( JsonText );
 
-     //Dispara Notify
-     if Assigned( OnGetContactList ) then
-        OnGetContactList(Self);
+    //Dispara Notify
+    if Assigned( OnGetContactList ) then
+       OnGetContactList(Self);
   end;
 end;
 
@@ -541,23 +576,22 @@ begin
   if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
        Exit;
 
-    with GlobalCEFApp.InjectWhatsApp do
-    begin
-      AJson := TJSonObject.ParseJSONValue(JsonText) as TJSONObject;
+  with GlobalCEFApp.InjectWhatsApp do
+  begin
+    AJson := TJSonObject.ParseJSONValue(JsonText) as TJSONObject;
+    AGetBatteryLevel := ( AJson.getValue('result').toJSON );
 
-      AGetBatteryLevel := ( AJson.getValue('result').toJSON );
-
-       //Dispara Notify
-      if Assigned( OnGetBatteryLevel ) then
-          OnGetBatteryLevel(Self);
-    end;
+     //Dispara Notify
+    if Assigned( OnGetBatteryLevel ) then
+        OnGetBatteryLevel(Self);
+  end;
 end;
 
 procedure TFrmConsole.loadWEBQRCode(st: string);
 var
-  LInput: TMemoryStream;
+  LInput : TMemoryStream;
   LOutput: TMemoryStream;
-  stl: TStringList;
+  stl    : TStringList;
 begin
   LInput  := TMemoryStream.Create;
   LOutput := TMemoryStream.Create;
@@ -566,16 +600,14 @@ begin
     stl.Add(copy(st, 23, length(st)));
     stl.SaveToStream(LInput);
 
-    LInput.Position := 0;
+    LInput.Position  := 0;
     TNetEncoding.Base64.Decode( LInput, LOutput );
     LOutput.Position := 0;
     if LOutput.size > 0 then
-      WEBQrCode := st;
+       WEBQrCode := st;
   finally
     FreeAndNil(LInput);
     FreeAndNil(LOutput);
-//   LInput.Free;
-//   LOutput.Free;
   end;
 end;
 
@@ -602,18 +634,18 @@ begin
     LQrCode := TQrCodeClass.FromJsonString( JsonText );
     try
       _Qrcode := LQrCode.result.AQrCode;
-      if assigned(FrmQRCode) then
+      If assigned(FrmQRCode) then
       begin
         FrmQRCode.loadQRCode(_Qrcode);
         FrmQRCode.Image2.visible := false;
-      end else
-      begin
+      End else
+      Begin
         //Caso seja solicitação via API REST
         loadWEBQRCode(_Qrcode);
-      end;
+      End;
 
       //Dispara Notify
-      if Assigned( OnGetQrCode ) then
+      If Assigned( OnGetQrCode ) then
          OnGetQrCode(Self);
     finally
       FreeAndNil(LQrCode);
@@ -625,7 +657,8 @@ procedure TFrmConsole.SetQrCodeWEB(JsonText: String);
 var
    code: string;
 begin
-  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then Exit;
+  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
+     Exit;
 
   //if not Assigned( frm_view_qrcode ) then Exit;
 
@@ -638,12 +671,11 @@ begin
       FrmQRCode.close;
       exit
     end;
+
     AQrCode := TQrCodeClass.FromJsonString( JsonText );
     _Qrcode := AQrCode.result.AQrCode;
-
     loadWEBQRCode(_Qrcode);
   end;
-
 end;
 
 procedure TFrmConsole.SetUnReadMessages(JsonText: String);
@@ -668,76 +700,21 @@ end;
 
 procedure TFrmConsole.SetAllChats(JsonText: String);
 begin
-  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
+  if not Assigned(GlobalCEFApp.InjectWhatsApp) then
      Exit;
 
-  with GlobalCEFApp.InjectWhatsApp do
+  With GlobalCEFApp.InjectWhatsApp do
   begin
     if Assigned(AllChats) then
        AllChats.Free;
-    AllChats := TChatList.FromJsonString( JsonText );
 
+    AllChats := TChatList.FromJsonString(JsonText);
      //Dispara Notify
-     if Assigned( OnGetChatList ) then
-        OnGetChatList(Self);
+    if Assigned(OnGetChatList) then
+       OnGetChatList(Self);
   end;
 end;
 
-procedure TFrmConsole.Send(vNum, vText: string);
-begin
- vText := caractersWhats(vText);
- if Chromium1.Browser <> nil then
-    Chromium1.Browser.MainFrame.ExecuteJavaScript( 'window.WAPI.sendMessageToID("'+Trim(vNum)+'","'+Trim(vText)+'")', 'about:blank', 0);
-end;
-
-procedure TFrmConsole.Timer1Timer(Sender: TObject);
-begin
-  Timer1.Enabled := False;
-  if not(Chromium1.CreateBrowser(CEFWindowParent1)) and not(Chromium1.Initialized) then
-    Timer1.Enabled := True;
-end;
-
-procedure TFrmConsole.Timer2Timer(Sender: TObject);
-var
-  arq: TextFile;
-  linha: string;
-  JS: string;
-begin
-  //Rotina para leitura e inject do arquivo js.abr ---- 12/10/2019 Mike
-    if vAuth = true then
-    begin
-//      ShowMessage(GlobalCEFApp.PathInjectJS);
-      AssignFile(arq, GlobalCEFApp.PathInjectJS);
-      Reset(arq);
-      // Abre o arquivo texto para leitura
-      // ativa a diretiva de Input
-      if (IOResult <> 0) then
-      begin
-        showmessage('Erro na leitura do arquivo js.abr. Verifique se o arquivo existe.');
-      end
-      else
-      begin
-        // verifica se o ponteiro de arquivo atingiu a marca de final de arquivo
-        while (not eof(arq)) do
-        begin
-          readln(arq, linha);
-          //Lê linha do arquivo
-          memo_js.Lines.Add(linha);
-        end;
-        CloseFile(arq);
-
-        //injeta o JS principal
-        JS := memo_js.Text;
-        Chromium1.Browser.MainFrame.ExecuteJavaScript(JS, 'about:blank', 0);
-
-        //Auto monitorar mensagens não lidas
-        if GlobalCEFApp.InjectWhatsApp.Config.AutoMonitor then
-          GlobalCEFApp.InjectWhatsApp.StartMonitor;
-
-        timer2.Enabled := false;
-      end;
-    end;
-end;
 
 end.
 

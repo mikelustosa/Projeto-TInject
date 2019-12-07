@@ -61,27 +61,27 @@ type
     FChromiumForm: TForm;
     FStartMainProcessTimeOut: Cardinal;
     procedure SetDefault;
-    procedure SetPathInjectJS(const Value: String);
     procedure SetPathCache   (const Value: String);
     procedure SetPathFrameworkDirPath(const Value: String);
     procedure SetPathLocalesDirPath  (const Value: String);
     procedure SetPathLogFile         (const Value: String);
     procedure SetPathResourcesDirPath(const Value: String);
     procedure SetPathUserDataPath    (const Value: String);
-    function  TestaOk                (const POldValue, PNewValue: String): Boolean;
+    function  TestaOk                (POldValue, PNewValue: String): Boolean;
     procedure SetChromium            (const Value: TChromium);
+    procedure SetInject(const Value: String);
   public
     SetEnableGPU         : Boolean;
     SetDisableFeatures   : String;
     SetLogSeverity       : Boolean;
-    Property InjectWhatsApp   : TInjectWhatsapp   Read FInject  Write FInject;
+    Property InjectWhatsApp       : TInjectWhatsapp   Read FInject  Write FInject;
     property PathFrameworkDirPath : String  Read FPathFrameworkDirPath Write SetPathFrameworkDirPath;
     property PathResourcesDirPath : String  Read FPathResourcesDirPath Write SetPathResourcesDirPath;
     property PathLocalesDirPath   : String  Read FPathLocalesDirPath   Write SetPathLocalesDirPath;
     property PathCache            : String  Read FPathCache            Write SetPathCache;
     property PathUserDataPath     : String  Read FPathUserDataPath     Write SetPathUserDataPath;
     property PathLogFile          : String  Read FPathLogFile          Write SetPathLogFile;
-    property PathInjectJS         : String  Read FPathInjectJS         Write SetPathInjectJS;
+    property PathInjectJS         : String  Read FPathInjectJS         Write SetInject;// FPathInjectJS;//SetPathInjectJS;
 
     Property StartMainProcessTimeOut : Cardinal    Read FStartMainProcessTimeOut Write FStartMainProcessTimeOut;
 
@@ -90,7 +90,7 @@ type
 
     constructor Create;
     destructor  Destroy; override;
-    function StartMainProcess : boolean;
+    function  StartMainProcess : boolean;
     procedure FreeChromium;
   end;
 
@@ -164,7 +164,26 @@ begin
   Self.UserDataPath       := 'User Data';
 end;
 
-Function TCEFConfig.TestaOk(const POldValue, PNewValue: String):Boolean;
+procedure TCEFConfig.SetInject(const Value: String);
+var
+  lTmp : String;
+begin
+  //Rarante arquivo padrao
+  if Self.status = asInitialized then
+     raise Exception.Create(ConfigCEF_ExceptNotFoundPATH);
+
+  lTmp := ExtractFilePath(IncludeTrailingPathDelimiter(ExtractFilePath(Value))) + NomeArquivoInject;
+  if not FileExists(lTmp) then
+     raise Exception.Create(ConfigCEF_ExceptNotFoundJS);
+
+  FPathInjectJS := lTmp;
+
+//  FPathInjectJS := Value;
+end;
+
+function TCEFConfig.TestaOk(POldValue, PNewValue: String):Boolean;
+var
+  LDir : String;
 begin
   if AnsiLowerCase(POldValue) = AnsiLowerCase(PNewValue) Then
   Begin
@@ -172,11 +191,13 @@ begin
     Exit;
   End;
 
+  LDir := ExtractFilePath(PNewValue);
+
   if Self.status = asInitialized then
      raise Exception.Create(ConfigCEF_ExceptNotFoundPATH);
 
-  if not DirectoryExists(ExtractFilePath(PNewValue)) then
-     raise Exception.Create('O Path ' + PNewValue + ' inválido');
+  if not DirectoryExists(LDir) then
+    raise Exception.Create('O Path ' + LDir + ' inválido');
 
   Result := true;
 end;
@@ -292,20 +313,6 @@ begin
   FPathLogFile := Value;
 end;
 
-procedure TCEFConfig.SetPathInjectJS(const Value: String);
-var
-  lTmp : String;
-begin
-  //Rarante arquivo padrao
-  lTmp := ExtractFilePath(IncludeTrailingPathDelimiter(ExtractFilePath(Value))) + NomeArquivoInject;
-
-  if not TestaOk(FPathInjectJS, lTmp) Then
-     Exit;
-  if not FileExists(lTmp) then
-     raise Exception.Create(ConfigCEF_ExceptNotFoundJS);
-
-  FPathInjectJS := lTmp;
-end;
 
 destructor TCEFConfig.Destroy;
 begin

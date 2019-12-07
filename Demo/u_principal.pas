@@ -226,7 +226,8 @@ end;
 
 procedure TfrmPrincipal.btEnviaTextoArqClick(Sender: TObject);
 begin
-  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (FrmConsole.vAuth = false)) then
+
+  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
   begin
     application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
@@ -254,7 +255,7 @@ end;
 
 procedure TfrmPrincipal.btStatusBatClick(Sender: TObject);
 begin
-  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (FrmConsole.vAuth = false)) then
+  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
   begin
     application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
@@ -265,7 +266,7 @@ end;
 
 procedure TfrmPrincipal.btEnviaTextoClick(Sender: TObject);
 begin
-  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (FrmConsole.vAuth = false)) then
+  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
   begin
     application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
@@ -475,7 +476,7 @@ procedure TfrmPrincipal.Timer1Timer(Sender: TObject);
 begin
   if Assigned(FrmConsole) then
   begin
-    if FrmConsole.vAuth = true then
+    if GlobalCEFApp.InjectWhatsApp.Auth = true then
     begin
       lblStatus.Caption := 'Online';
       lblStatus.Font.Color := $0000AE11;

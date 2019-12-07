@@ -1,6 +1,10 @@
 -------------------------------------------------------------------------
 1.0.0.10
 06/12/2019
+Rep Revisao 142
+ - Refactory na unit uTInject.Console
+   
+
 Rep Revisao 141
  - Unificação das Constant em um só local;
  - Captura em modo DESIGNER da versão do JS utilizado;
