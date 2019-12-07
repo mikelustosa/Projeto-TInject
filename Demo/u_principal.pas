@@ -16,7 +16,7 @@ uses
   //###############################################
 
   Vcl.StdCtrls, System.ImageList, Vcl.ImgList, Vcl.AppEvnts, Vcl.ComCtrls,
-  Vcl.Imaging.pngimage;
+  Vcl.Imaging.pngimage, Vcl.Buttons;
 
 type
   TfrmPrincipal = class(TForm)
@@ -45,7 +45,6 @@ type
     StatusBar1: TStatusBar;
     lblNumeroConectado: TLabel;
     groupEnvioMsg: TGroupBox;
-    ed_num: TEdit;
     Label1: TLabel;
     Label2: TLabel;
     mem_message: TMemo;
@@ -68,6 +67,7 @@ type
     Edt_LengDDI: TLabeledEdit;
     Edt_LengFone: TLabeledEdit;
     Edt_DDIPDR: TLabeledEdit;
+    ed_num: TComboBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure whatsOnClick(Sender: TObject);
@@ -96,6 +96,8 @@ type
     procedure InjectWhatsapp1GetBatteryLevel(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
     procedure Edt_DDIPDRExit(Sender: TObject);
+    procedure ed_numChange(Sender: TObject);
+    procedure ed_numSelect(Sender: TObject);
   private
     { Private declarations }
     idMessageGlobal: string;
@@ -226,20 +228,31 @@ end;
 
 procedure TfrmPrincipal.btEnviaTextoArqClick(Sender: TObject);
 begin
+  try
+    if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
+    begin
+      application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
+      abort;
+    end;
 
-  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
-  begin
-    application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
-    abort;
-  end;
+    if (Trim(ed_num.Text) = '') or (Trim(mem_message.Text) = '') or (vBase64Str = '') then
+    begin
+      application.MessageBox('Não existe nenhum conteudo a ser enviado.','TInject', mb_iconwarning + mb_ok);
+      abort;
+    end;
 
-  if vBase64File <> nil then
-  begin
-    InjectWhatsapp1.sendBase64(vBase64Str, ed_num.Text, vFileName, mem_message.Text);
-    //sleep(1000);
-    //InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
-    vBase64File := nil;
-    application.MessageBox('Arquivo enviado com sucesso!','TInject whatsapp', mb_iconAsterisk + mb_ok);
+
+    if vBase64File <> nil then
+    begin
+      InjectWhatsapp1.sendBase64(vBase64Str, ed_num.Text, vFileName, mem_message.Text);
+      //sleep(1000);
+      //InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
+      vBase64File := nil;
+      application.MessageBox('Arquivo enviado com sucesso!','TInject whatsapp', mb_iconAsterisk + mb_ok);
+    end;
+  finally
+    ed_num.SelectAll;
+    ed_num.SetFocus;
   end;
 end;
 
@@ -266,14 +279,26 @@ end;
 
 procedure TfrmPrincipal.btEnviaTextoClick(Sender: TObject);
 begin
-  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
-  begin
-    application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
-    abort;
-  end;
+  try
+    if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
+    begin
+      application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
+      abort;
+    end;
 
-  InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
-  application.MessageBox('Mensagem enviada com sucesso!','TInject', mb_iconAsterisk + mb_ok);
+    if (Trim(ed_num.Text) = '') or (Trim(mem_message.Text) = '') then
+    begin
+      application.MessageBox('Não existe nenhum conteudo a ser enviado.','TInject', mb_iconwarning + mb_ok);
+      abort;
+    end;
+
+
+    InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
+    application.MessageBox('Mensagem enviada com sucesso!','TInject', mb_iconAsterisk + mb_ok);
+  finally
+    ed_num.SelectAll;
+    ed_num.SetFocus;
+  end;
 end;
 
 procedure TfrmPrincipal.Button7Click(Sender: TObject);
@@ -332,6 +357,57 @@ begin
   injectWhatsapp1.Config.FAutoDelete := chk_apagarMsg.Checked;
 end;
 
+
+procedure TfrmPrincipal.ed_numChange(Sender: TObject);
+var
+  LRet: TStringList;
+  I: Integer;
+  Ltexto: String;
+begin
+  //Esta processando outro CHANGE
+  if ed_num.AutoComplete = False Then
+     Exit;
+
+  {
+   ##### modo 1
+  InjectWhatsapp1.GetContacts(ComboBox1.Text, ComboBox1.Items);
+  if ComboBox1.Items.Count <= 0 then
+     ComboBox1.Style := csSimple else
+     ComboBox1.Style := csOwnerDrawFixed;
+
+
+  ##### modo 2
+   }
+
+  LRet:= TStringList.Create;
+  ed_num.AutoComplete := False;
+  Ltexto                 := ed_num.Text;
+  try
+    ed_num.Items.Clear;
+    InjectWhatsapp1.GetContacts(Ltexto, LRet);
+    if LRet.Count <= 0 then
+       ed_num.Style := csSimple else
+       ed_num.Style := csDropDown;
+
+    for I := 0 to LRet.Count -1 do
+       ed_num.Items.Add(LRet.Strings[i]);
+  finally
+    ed_num.Text         := Ltexto;
+    ed_num.SelStart     := Length(Ltexto);
+    ed_num.AutoComplete := True;
+    FreeAndNil(LRet);
+  end;
+end;
+
+procedure TfrmPrincipal.ed_numSelect(Sender: TObject);
+begin
+  if (ed_num.ItemIndex >=0) and (ed_num.Items.Count > 0) then
+  Begin
+   ed_num.AutoComplete  := False;
+    ed_num.Text         := ed_num.Items.Strings[ed_num.ItemIndex];
+    ed_num.AutoComplete := True;
+  End;
+end;
 
 procedure TfrmPrincipal.edtDelayKeyUp(Sender: TObject; var Key: Word;
   Shift: TShiftState);

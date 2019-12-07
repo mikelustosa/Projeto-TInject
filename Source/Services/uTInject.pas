@@ -9,7 +9,7 @@ interface
 
 uses
   System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, System.MaskUtils,
-
+  Generics.Collections,
   uTInject.Classes, uTInject.FrmQRCode, uTInject.constant, uTInject.Emoticons;
 
 
@@ -118,13 +118,14 @@ type
 //    FContacts             : String;
     FAuth                 : Boolean;
     FMonitoring           : Boolean;
+    FPediuCOntados        : Boolean;
     FJSVersao             : String;
     FJSPath               : String;
     FJSScript             : TstringList;
 
     { Private declarations }
     procedure SetAuth(const Value: boolean);
-    Function PegarLocalJS:String;
+    Function  PegarLocalJS:String;
     procedure SetSScript(const Value: TstringList);
   protected
     { Protected declarations }
@@ -147,6 +148,7 @@ type
     procedure startQrCode;
     procedure monitorQrCode;
     procedure startWhatsapp;
+    procedure stopWhatsapp;
     procedure StartMonitor;
     procedure StopMonitor;
     procedure ShowWebApp;
@@ -155,9 +157,12 @@ type
     procedure sendBase64(vBase64, vNum, vFileName, vMess: string);
     procedure fileToBase64(vFile: string);
     procedure GetAllContacts;
+    procedure GetContacts(PFind:String; Const PResult: TStrings);
+
     procedure GetAllChats;
-    function GetStatus: Boolean;
-    function GetUnReadMessages: String;
+    function  GetStatus: Boolean;
+    function  GetUnReadMessages: String;
+
 
 
     Property Emoticons : TInjectEmoticons     Read FEmoticons    Write FEmoticons;
@@ -259,6 +264,7 @@ end;
 
 destructor TInjectWhatsapp.Destroy;
 begin
+  stopWhatsapp;
   FreeAndNil(FJSScript);
   FreeAndNil(FrmConsole);
   FreeAndNil(FrmQRCode);
@@ -281,12 +287,50 @@ begin
   If Application.Terminated Then
      Exit;
   FrmConsole.GetAllContacts;
+  FPediuCOntados := true;
+end;
+
+procedure TInjectWhatsapp.GetContacts(PFind: String; const PResult: TStrings);
+var
+  LContato: TContactClass;
+begin
+  PResult.Clear;
+  if Length(PFind) < 2 then
+     Exit;
+
+  PFind := Trim(PFind);
+  if Assigned(FAllContacts) then
+  Begin
+    if (Length(FAllContacts.result) <= 0) and (not FPediuCOntados) Then
+    Begin
+      //nao buscou ainda os contatos
+      GetAllContacts;
+      Exit;
+    end;
+  end else
+  begin
+    //nao buscou ainda os contatos
+    GetAllContacts;
+    Exit;
+  end;
+
+  for LContato in FAllContacts.result do
+  Begin
+    if (pos(PFind, LContato.formattedName) > 0) or (pos(PFind, LContato.id) > 0) then
+    Begin
+       if (LContato.name = '') or (LContato.name.IsEmpty = true) then
+          PResult.Add(LContato.id) else
+          PResult.Add(LContato.id + ' ' +LContato.name)
+    end;
+  end;
+
 end;
 
 procedure TInjectWhatsapp.GetAllChats;
 begin
   If Application.Terminated Then
      Exit;
+
   FrmConsole.GetAllChats;
 end;
 
@@ -521,14 +565,17 @@ begin
   LaActionForm:= Cafree;
   if  Assigned(GlobalCEFApp) and (GlobalCEFApp <> nil) Then
   Begin
-    GlobalCEFApp.Chromium.OnClose(GlobalCEFApp.Chromium, GlobalCEFApp.Chromium.Browser,  LaAction);
-    GlobalCEFApp.Chromium.CloseBrowser(True);
+    if Assigned(GlobalCEFApp.Chromium) then
+    Begin
+      GlobalCEFApp.Chromium.OnClose(GlobalCEFApp.Chromium, GlobalCEFApp.Chromium.Browser,  LaAction);
+      GlobalCEFApp.Chromium.CloseBrowser(True);
 
-    //Executa fecgamento FORM
-    GlobalCEFApp.ChromiumForm.OnCloseQuery(GlobalCEFApp.ChromiumForm, LVar);
-    GlobalCEFApp.ChromiumForm.OnClose     (GlobalCEFApp.ChromiumForm, LaActionForm);
-    GlobalCEFApp.ChromiumForm.Close;
-
+      //Executa fecgamento FORM
+      GlobalCEFApp.ChromiumForm.OnCloseQuery(GlobalCEFApp.ChromiumForm, LVar);
+      GlobalCEFApp.ChromiumForm.OnClose     (GlobalCEFApp.ChromiumForm, LaActionForm);
+      GlobalCEFApp.ChromiumForm.Close;
+    End;
+    FPediuCOntados := False;
     FreeAndNil(FrmQRCode);
     FreeAndNil(FrmConsole);
     GlobalCEFApp.Chromium     := Nil;
@@ -563,6 +610,17 @@ begin
   end;
 end;
 
+procedure TInjectWhatsapp.stopWhatsapp;
+begin
+  if Assigned(FrmConsole) then
+  begin
+    FrmConsole.DisConnect;
+    FrmConsole.close;
+    FreeAndNil(FrmConsole);
+  end;
+  FPediuCOntados := False;
+end;
+
 procedure TInjectWhatsapp.startQrCode;
 begin
   If Application.Terminated Then
@@ -586,8 +644,10 @@ begin
 
   if not Assigned(FrmConsole) then
   begin
-   FrmConsole                  := TFrmConsole.Create(nil);
-   GlobalCEFApp.InjectWhatsApp := Self;
+    FrmConsole                  := TFrmConsole.Create(nil);
+    GlobalCEFApp.InjectWhatsApp := Self;
+    FrmConsole.Connect;
+
   end;
 end;
 

@@ -312,7 +312,7 @@ end;
 
 TRetornoAllContacts = class
 private
-  FResult: TArray<TContactClass>;
+  FResult: TArray<TContactClass>;  //TObjectList
 public
   property result: TArray<TContactClass> read FResult write FResult;
   destructor Destroy; override;

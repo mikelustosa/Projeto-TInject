@@ -23,7 +23,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 830
     Height = 355
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -3113,14 +3113,6 @@ object frmPrincipal: TfrmPrincipal
           Height = 13
           Caption = 'Texto'
         end
-        object ed_num: TEdit
-          Left = 14
-          Top = 33
-          Width = 190
-          Height = 21
-          TabOrder = 0
-          TextHint = 'DDD+N'#250'mero'
-        end
         object mem_message: TMemo
           Left = 14
           Top = 75
@@ -3164,6 +3156,20 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 4
           OnClick = btEnviaTextoClick
+        end
+        object ed_num: TComboBox
+          Left = 14
+          Top = 32
+          Width = 190
+          Height = 21
+          AutoDropDown = True
+          AutoCloseUp = True
+          Style = csSimple
+          Anchors = [akLeft, akTop, akRight]
+          Sorted = True
+          TabOrder = 0
+          OnChange = ed_numChange
+          OnSelect = ed_numSelect
         end
       end
       object GroupBox4: TGroupBox

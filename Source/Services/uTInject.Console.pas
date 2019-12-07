@@ -89,6 +89,8 @@ type
     JS1 : string;
     _Qrcode, WEBQrCode: string;
     i: integer;
+    Procedure Connect;
+    Procedure DisConnect;
     procedure Send(vNum, vText:string);
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
     function  ConvertBase64(vFile: string): string;
@@ -174,8 +176,8 @@ end;
 
 procedure TFrmConsole.ExecuteJS(PScript: String; Purl:String = 'about:blank'; pStartline: integer=0);
 begin
-  if not FConectado Then
-     Exit;
+  if not FConectado then
+     raise Exception.Create(ConfigCEF_ExceptConnetWhats);
 
   if Chromium1.Browser <> nil then
      Chromium1.Browser.MainFrame.ExecuteJavaScript(PScript, Purl, pStartline);
@@ -264,6 +266,16 @@ begin
   ExecuteJS(FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#', Trim(vID)));
 end;
 
+Procedure TFrmConsole.DisConnect;
+begin
+  if not FConectado then
+     Exit;
+
+  Chromium1.CloseBrowser(True);
+  GlobalCEFApp.InjectWhatsApp.Auth := False;
+  FConectado                       := False;
+end;
+
 //Marca como lida e deleta a conversa
 procedure TFrmConsole.ReadMessagesAndDelete(vID: string);
 begin
@@ -277,6 +289,9 @@ var
   LBase64: TStringList;
   i: integer;
 begin
+  if not FConectado then
+    raise Exception.Create(ConfigCEF_ExceptConnetWhats);
+
   vText           := caractersWhats(vText);
   removeCaracter(vFileName);
   LBase64         := TStringList.Create;
@@ -301,6 +316,10 @@ procedure TFrmConsole.Send(vNum, vText: string);
 var
   Ljs: string;
 begin
+  if not FConectado then
+    raise Exception.Create(ConfigCEF_ExceptConnetWhats);
+
+
   vText := caractersWhats(vText);
   LJS   := FrmConsole_JS_VAR_SendMsg;
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',       Trim(vNum));
@@ -460,6 +479,31 @@ begin
   end;
 end;
 
+Procedure TFrmConsole.Connect;
+var
+  LInicio: Cardinal;
+begin
+  try
+    if FConectado then
+       Exit;
+
+    LInicio              := GetTickCount;
+    Repeat
+      FConectado := (not(Chromium1.CreateBrowser(CEFWindowParent1)) and not(Chromium1.Initialized));
+      if not FConectado then
+      Begin
+        Sleep(10);
+        Application.ProcessMessages;
+        if (GetTickCount - LInicio) >= 15000 then
+           Break;
+      End;
+    Until FConectado;
+  finally
+    if not FConectado then
+       raise Exception.Create(ConfigCEF_ExceptBrowse);
+  end;
+end;
+
 function TFrmConsole.ConvertBase64(vFile: string): string;
 var
   vFilestream: TMemoryStream;
@@ -491,33 +535,16 @@ begin
   if CanClose then
   begin
     Visible  := False;
-    Chromium1.CloseBrowser(True);
+    DisConnect;
   end;
 end;
 
 procedure TFrmConsole.FormCreate(Sender: TObject);
-var
-  LInicio: Cardinal;
 begin
   if GlobalCEFApp <> nil then
      GlobalCEFApp.Chromium :=  Chromium1;
 
-  Chromium1.DefaultURL := FrmConsole_JS_URL;
-  LInicio              := GetTickCount;
-  Repeat
-    FConectado := (not(Chromium1.CreateBrowser(CEFWindowParent1)) and not(Chromium1.Initialized));
-    if not FConectado then
-    Begin
-      Sleep(10);
-      Application.ProcessMessages;
-      if (GetTickCount - LInicio) >= 15000 then
-         Break;
-    End;
-  Until FConectado;
-
-  if not FConectado then
-     raise Exception.Create(ConfigCEF_ExceptBrowse);
-
+  Chromium1.DefaultURL   := FrmConsole_JS_URL;
   FTimerConnect          := TTimer.Create(nil);
   FTimerConnect.Interval := 1000;
   FTimerConnect.Enabled  := False;
@@ -526,6 +553,8 @@ end;
 
 procedure TFrmConsole.FormDestroy(Sender: TObject);
 begin
+  GlobalCEFApp.Chromium     := Nil;
+
   PostMessage(Handle, FrmConsole_Browser_ChildDestroy, 0, 0);
   FreeAndNil(FTimerConnect);
 end;

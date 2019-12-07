@@ -90,8 +90,8 @@ type
 
     constructor Create;
     destructor  Destroy; override;
-    function  StartMainProcess : boolean;
-    procedure FreeChromium;
+    function    StartMainProcess : boolean;
+    procedure   FreeChromium;
   end;
 
 
