@@ -48,17 +48,16 @@ type
 
   TCEFConfig = class(TCefApplication)
   private
+    FInject              : TInjectWhatsapp;
+    FChromium            : TChromium;
+    FChromiumForm        : TForm;
+
     FPathFrameworkDirPath: String;
     FPathResourcesDirPath: String;
     FPathLocalesDirPath  : String;
     FPathCache           : String;
     FPathUserDataPath    : String;
     FPathLogFile         : String;
-    FPathInjectJS        : String;
-    FSJFile              : String;
-    FInject              : TInjectWhatsapp;
-    FChromium: TChromium;
-    FChromiumForm: TForm;
     FStartMainProcessTimeOut: Cardinal;
     procedure SetDefault;
     procedure SetPathCache   (const Value: String);
@@ -69,7 +68,6 @@ type
     procedure SetPathUserDataPath    (const Value: String);
     function  TestaOk                (POldValue, PNewValue: String): Boolean;
     procedure SetChromium            (const Value: TChromium);
-    procedure SetInject(const Value: String);
   public
     SetEnableGPU         : Boolean;
     SetDisableFeatures   : String;
@@ -81,7 +79,6 @@ type
     property PathCache            : String  Read FPathCache            Write SetPathCache;
     property PathUserDataPath     : String  Read FPathUserDataPath     Write SetPathUserDataPath;
     property PathLogFile          : String  Read FPathLogFile          Write SetPathLogFile;
-    property PathInjectJS         : String  Read FPathInjectJS         Write SetInject;// FPathInjectJS;//SetPathInjectJS;
 
     Property StartMainProcessTimeOut : Cardinal    Read FStartMainProcessTimeOut Write FStartMainProcessTimeOut;
 
@@ -109,7 +106,6 @@ uses
 constructor TCEFConfig.Create;
 begin
   inherited;
-  FSJFile                   := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + NomeArquivoInject;
   FStartMainProcessTimeOut  := 5000; //(+- 5 Segundos)
   SetDefault;
 end;
@@ -164,22 +160,6 @@ begin
   Self.UserDataPath       := 'User Data';
 end;
 
-procedure TCEFConfig.SetInject(const Value: String);
-var
-  lTmp : String;
-begin
-  //Rarante arquivo padrao
-  if Self.status = asInitialized then
-     raise Exception.Create(ConfigCEF_ExceptNotFoundPATH);
-
-  lTmp := ExtractFilePath(IncludeTrailingPathDelimiter(ExtractFilePath(Value))) + NomeArquivoInject;
-  if not FileExists(lTmp) then
-     raise Exception.Create(ConfigCEF_ExceptNotFoundJS);
-
-  FPathInjectJS := lTmp;
-
-//  FPathInjectJS := Value;
-end;
 
 function TCEFConfig.TestaOk(POldValue, PNewValue: String):Boolean;
 var
@@ -269,14 +249,6 @@ begin
      Self.LogFile             := PathLogFile;
   If SetLogSeverity then
      Self.LogSeverity := LOGSEVERITY_INFO;
-
-  If PathInjectJS   = '' Then
-  Begin
-    //Se nao informado!! por padrao ficara na pasta da APP
-    if not FileExists(FSJFile) then
-       raise Exception.Create(ConfigCEF_ExceptNotFoundJS);
-    FPathInjectJS            := FSJFile;
-  End;
 
   //Chegou aqui, é porque os PATH são validos e pode continuar
   inherited;  //Dispara a THREAD la do objeto PAI

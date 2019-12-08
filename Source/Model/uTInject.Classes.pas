@@ -7,9 +7,10 @@ uses Generics.Collections, Rest.Json, uTInject.FrmQRCode;
 type
 
 //forware
-TChatClass = class;   //forward
-TSenderClass = class; //forward
-
+  TChatClass   = class;   //forward
+  TSenderClass = class; //forward
+  TTypeNumber  = (TypUndefined=0, TypContact=1, TypGroup=2);
+  TFormaUpdate = (Tup_Local=0, Tup_Web=1);
 
 {ResultQRCodeClass}
 TResultQRCodeClass = class

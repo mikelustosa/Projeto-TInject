@@ -1,6 +1,10 @@
 -------------------------------------------------------------------------
 1.0.0.10
 06/12/2019
+Rep Revisao 148
+  - Inclusao do icone no componente;
+  - Estrutura basica para recebimento do JS por web;
+
 Rep Revisao 145
   - Função de Desconectar do WhatsApp;
   - Função de procurar o numero ou NOME na agenda por um conteudo chave;

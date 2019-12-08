@@ -118,6 +118,9 @@
         <DCCReference Include="..\Source\Model\uTInject.ExePath.pas"/>
         <DCCReference Include="..\Source\Model\uTInject.Emoticons.pas"/>
         <DCCReference Include="..\Source\Model\uTInject.Diversos.pas"/>
+        <DCCReference Include="..\Source\Model\uTInject.Config.pas"/>
+        <DCCReference Include="..\Source\Model\uTInject.AdjustNumber.pas"/>
+        <DCCReference Include="..\Source\Model\uTInject.JS.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

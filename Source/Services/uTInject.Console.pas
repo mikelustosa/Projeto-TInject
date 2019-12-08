@@ -19,7 +19,7 @@ uses
 
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
   Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json,
-  Vcl.Imaging.jpeg;
+  Vcl.Imaging.jpeg, uCEFChromiumCore, uCEFWinControl;
 
 var
  vContacts :Array of String;
@@ -208,7 +208,7 @@ begin
   try
     If GlobalCEFApp.InjectWhatsApp.Auth then
     Begin
-      ExecuteJS(GlobalCEFApp.InjectWhatsApp.JSScript.Text);
+      ExecuteJS(GlobalCEFApp.InjectWhatsApp.InjectJS.InjectScript.Text);
       //Auto monitorar mensagens não lidas
       If GlobalCEFApp.InjectWhatsApp.Config.AutoMonitor then
          GlobalCEFApp.InjectWhatsApp.StartMonitor;
@@ -544,8 +544,15 @@ end;
 procedure TFrmConsole.FormCreate(Sender: TObject);
 begin
   if GlobalCEFApp <> nil then
-     GlobalCEFApp.Chromium :=  Chromium1;
+  Begin
+    if not GlobalCEFApp.InjectWhatsApp.InjectJS.Ready then
+       raise Exception.Create('Classe principal não localizada');
+  End else
+  begin
+    raise Exception.Create('Classe principal não localizada');
+  end;
 
+  GlobalCEFApp.Chromium :=  Chromium1;
   Chromium1.DefaultURL   := FrmConsole_JS_URL;
   FTimerConnect          := TTimer.Create(nil);
   FTimerConnect.Interval := 1000;

@@ -8,9 +8,10 @@ unit uTInject;
 interface
 
 uses
-  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, System.MaskUtils,
+  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, UBase64, uTInject.AdjustNumber,
   Generics.Collections,
-  uTInject.Classes, uTInject.FrmQRCode, uTInject.constant, uTInject.Emoticons;
+  uTInject.Classes, uTInject.FrmQRCode, uTInject.constant, uTInject.Emoticons, uTInject.Config,
+  uTInject.JS;
 
 
 {
@@ -39,75 +40,13 @@ uses
 type
   {Events}
   TGetUnReadMessages = procedure(Chats: TChatList) of object;
-  TTypeNumber        = (TypUndefined=0, TypContact=1, TypGroup=2);
-
-
-  TAjustNumber  = class(TComponent)
-  private
-    FLastAdjustDt: TDateTime;
-    FLastAdjuste: String;
-    FLastDDI: String;
-    FLastDDD: String;
-    FLastNumber: String;
-
-    FAutoAdjust: Boolean;
-    FDDIDefault: Integer;
-    FLengthDDI: integer;
-    FLengthDDD: Integer;
-    FLengthPhone: Integer;
-    FLastNumberFormat: String;
-    FLastType: TTypeNumber;
-    Procedure SetPhone(Const Pnumero:String);
-  public
-    constructor Create(AOwner: TComponent); override;
-
-    Function  Format(PNum:String): String;
-    property  LastType: TTypeNumber     Read FLastType;
-    property  LastAdjuste : String      Read FLastAdjuste;
-    property  LastDDI     : String      Read FLastDDI;
-    property  LastDDD     : String      Read FLastDDD;
-    property  LastNumber  : String      Read FLastNumber;
-    property  LastNumberFormat: String  Read FLastNumberFormat;
-    property  LastAdjustDt: TDateTime   Read FLastAdjustDt;
-  published
-    property AutoAdjust : Boolean   read FAutoAdjust   write FAutoAdjust default True;
-
-    property LengthDDI  : Integer   read FLengthDDI    write FLengthDDI   default 2;
-    property LengthDDD  : Integer   read FLengthDDD    write FLengthDDD   default 2;
-    property LengthPhone: Integer   read FLengthPhone  write FLengthPhone default 9;
-    property DDIDefault : Integer   read FDDIDefault   write FDDIDefault  Default 2;
-  end;
-
-
-
-  TMySubComp = class(TComponent)
-  public
-    FAutoStart      : Boolean;
-    FAutoMonitor    : Boolean;
-    FSecondsMonitor : Integer;
-    FAutoDelete     : Boolean;
-    FAutoDelay      : Integer;
-    FSyncContacts   : Boolean;
-    FShowRandom     : Boolean;
-  private
-    procedure SetAutoMonitor(const Value: Boolean);
-    procedure SetSecondsMonitor(const Value: Integer);
-  published
-    property AutoStart    : Boolean read FAutoStart    write FAutoStart default False;
-    property AutoMonitor  : boolean read FAutoMonitor  write SetAutoMonitor          default True;
-    property SecondsMonitor: Integer read FSecondsMonitor write SetSecondsMonitor default 3;
-    property AutoDelete   : Boolean read FAutoDelete   write FAutoDelete;
-    property AutoDelay    : integer read FAutoDelay    write FAutoDelay  default 2500;
-    property SyncContacts : Boolean read FSyncContacts write FSyncContacts;
-    property ShowRandom   : Boolean read FShowRandom   write FShowRandom;
-  end;
-
 
   TInjectWhatsapp = class(TComponent)
   private
-    FMySubComp1           : TMySubComp;
-    FAjustNumber          : TAjustNumber;
+    FInjectConfig         : TInjectConfig;
+    FInjectJS             : TInjectJS;
     FEmoticons            : TInjectEmoticons;
+    FAdjustNumber         : TInjectAdjusteNumber;
 
     FAllContacts          : TRetornoAllContacts;
     FAllChats             : TChatList;
@@ -115,18 +54,13 @@ type
 
     FVersaoIde            : String;
     FGetBatteryLevel      : string;
-//    FContacts             : String;
     FAuth                 : Boolean;
     FMonitoring           : Boolean;
     FPediuCOntados        : Boolean;
-    FJSVersao             : String;
-    FJSPath               : String;
-    FJSScript             : TstringList;
 
     { Private declarations }
+    Function ConsolePronto:Boolean;
     procedure SetAuth(const Value: boolean);
-    Function  PegarLocalJS:String;
-    procedure SetSScript(const Value: TstringList);
   protected
     { Protected declarations }
     FOnGetUnReadMessages  : TGetUnReadMessages;
@@ -136,13 +70,11 @@ type
     FOnGetNewMessage      : TNotifyEvent;
     FOnGetBatteryLevel    : TNotifyEvent;
     FOnGetStatus          : TNotifyEvent;
-
   public
     AGetBatteryLevel               : string;
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
     procedure   ShutDown(PClearNotifyEvent: Boolean = False);
-    Procedure   GetVersaoJS;
 
     procedure ReadMessages(vID: string);
     procedure startQrCode;
@@ -155,14 +87,12 @@ type
     procedure send(vNum, vMess: string);
     procedure batteryStatus();
     procedure sendBase64(vBase64, vNum, vFileName, vMess: string);
-    procedure fileToBase64(vFile: string);
+//    procedure fileToBase64(vFile: string);
     procedure GetAllContacts;
     procedure GetContacts(PFind:String; Const PResult: TStrings);
 
     procedure GetAllChats;
-    function  GetStatus: Boolean;
     function  GetUnReadMessages: String;
-
 
 
     Property Emoticons : TInjectEmoticons     Read FEmoticons    Write FEmoticons;
@@ -174,24 +104,19 @@ type
     property Monitoring: Boolean              read FMonitoring   default False;
   published
     { Published declarations }
-    Property JSScript             : TstringList  Read FJSScript          Write SetSScript;
-    Property JSPath               : String       Read FJSPath;
-    Property JSVersao             : String       Read FJSVersao;
-    Property VersaoIDE            : String       Read FVersaoIde;
-    property Config               : TMySubComp   read FMySubComp1;
-    property AjustNumber          : TAjustNumber read FAjustNumber;
-    property OnGetContactList     : TNotifyEvent read FBatteryLevel      write FBatteryLevel;
-    property OnGetQrCode          : TNotifyEvent read FOnGetQrCode       write FOnGetQrCode;
-    property OnGetChatList        : TNotifyEvent read FOnGetChatList     write FOnGetChatList;
-    property OnGetNewMessage      : TNotifyEvent read FOnGetNewMessage   write FOnGetNewMessage;
-    property OnGetUnReadMessages  : TGetUnReadMessages read FOnGetUnReadMessages write FOnGetUnReadMessages;
-    property OnGetStatus          : TNotifyEvent read FOnGetStatus       write FOnGetStatus;
-    property OnGetBatteryLevel    : TNotifyEvent read FOnGetBatteryLevel write FOnGetBatteryLevel;
-    property ABatteryLevel        : string       Read FGetBatteryLevel;
+    Property VersaoIDE            : String               Read FVersaoIde;
+    Property InjectJS             : TInjectJS            Read FInjectJS;
+    property Config               : TInjectConfig        read FInjectConfig;
+    property AjustNumber          : TInjectAdjusteNumber read FAdjustNumber;
+    property OnGetContactList     : TNotifyEvent         read FBatteryLevel         write FBatteryLevel;
+    property OnGetQrCode          : TNotifyEvent         read FOnGetQrCode          write FOnGetQrCode;
+    property OnGetChatList        : TNotifyEvent         read FOnGetChatList        write FOnGetChatList;
+    property OnGetNewMessage      : TNotifyEvent         read FOnGetNewMessage      write FOnGetNewMessage;
+    property OnGetUnReadMessages  : TGetUnReadMessages   read FOnGetUnReadMessages  write FOnGetUnReadMessages;
+    property OnGetStatus          : TNotifyEvent         read FOnGetStatus          write FOnGetStatus;
+    property OnGetBatteryLevel    : TNotifyEvent         read FOnGetBatteryLevel    write FOnGetBatteryLevel;
+    property ABatteryLevel        : string               Read FGetBatteryLevel;
   end;
-
-var
-   OnGetUnitPath: TFunc<String>;
 
 
 procedure Register;
@@ -200,7 +125,8 @@ procedure Register;
 implementation
 
 uses
-  uTInject.Console,   uTInject.ConfigCEF, uCEFTypes, uTInject.ExePath;
+  uCEFTypes,
+  uTInject.Console,   uTInject.ConfigCEF;
 
 
 procedure Register;
@@ -210,84 +136,92 @@ end;
 
 
 
-
-procedure TMySubComp.SetAutoMonitor(const Value: boolean);
-begin
-  FAutoMonitor := Value;
-  if SecondsMonitor < 1 then
-     SecondsMonitor := 3; //Default Value;
-end;
-
-procedure TMySubComp.SetSecondsMonitor(const Value: Integer);
-begin
-  FSecondsMonitor := Value;
-
-  //Não permitir que fique zero ou negativo.
-  if Value < 1 then
-     FSecondsMonitor := 3;
-end;
-
 { TInjectWhatsapp }
 
 procedure TInjectWhatsapp.batteryStatus();
 begin
-  If Application.Terminated Then
-     Exit;
   if Assigned(FrmConsole) then
-    FrmConsole.GetBatteryLevel;
+     FrmConsole.GetBatteryLevel;
+end;
+
+function TInjectWhatsapp.ConsolePronto: Boolean;
+begin
+  try
+    Result := Assigned(FrmConsole);
+    if not Assigned(FrmConsole) Then
+    Begin
+      InjectJS.UpdateNow;
+      if InjectJS.Ready then
+      Begin
+        FrmConsole                  := TFrmConsole.Create(nil);
+        FrmConsole.Connect;
+        Result := Assigned(FrmConsole);
+      end;
+    end;
+  except
+    Result := False;
+  end
 end;
 
 constructor TInjectWhatsapp.Create(AOwner: TComponent);
 begin
   inherited;
-  FJSScript                  := TstringList.create;
-  FVersaoIde                 := TInjectVersion;
-  FMySubComp1                := TMySubComp.Create(self);
-  FMySubComp1.Name           := 'AutoInject';
-  FMySubComp1.AutoDelay      := 1000;
-  FMySubComp1.SecondsMonitor := 3;
-  FMySubComp1.AutoMonitor    := True;
-  FMySubComp1.SetSubComponent(true);
+  FVersaoIde                   := TInjectVersion;
+  FInjectConfig                := TInjectConfig.Create(self);
+  FInjectConfig.Name           := 'AutoInject';
+  FInjectConfig.AutoDelay      := 1000;
+  FInjectConfig.SecondsMonitor := 3;
+  FInjectConfig.AutoMonitor    := True;
+  FInjectConfig.SetSubComponent(true);
 
-  FAjustNumber               := TAjustNumber.Create(self);
-  FAjustNumber.Name          := 'AjustNumber';
-  FAjustNumber.SetSubComponent(true);
-  GetVersaoJS;
-//  ShowMessage(FJSVersao);
+  FAdjustNumber               := TInjectAdjusteNumber.Create(self);
+  FAdjustNumber.Name          := 'AdjustNumber';
+  FAdjustNumber.SetSubComponent(true);
+
+
+  FInjectJS                   := TInjectJS.Create(self);
+  FInjectJS.Name              := 'InjectJS';
+  FInjectJS.SetSubComponent(true);
 
   if (csDesigning in ComponentState) then
      Exit;
+  if Assigned(GlobalCEFApp) then
+     GlobalCEFApp.InjectWhatsApp := Self;
 
-  if Config.AutoStart then
-     startWhatsapp;
+//  if Config.AutoStart then
+//     startWhatsapp;
 end;
 
 destructor TInjectWhatsapp.Destroy;
 begin
   stopWhatsapp;
-  FreeAndNil(FJSScript);
   FreeAndNil(FrmConsole);
   FreeAndNil(FrmQRCode);
-  FreeAndNil(FAjustNumber);
 
   FreeAndNil(FQrCodeClass);
   FreeAndNil(FAllContacts);
   FreeAndNil(FAllChats);
-  FreeAndNil(FMySubComp1);
+
+  FreeAndNil(FAdjustNumber);
+  FreeAndNil(FInjectJS);
+  FreeAndNil(FInjectConfig);
   inherited;
 end;
 
-procedure TInjectWhatsapp.fileToBase64(vFile: string);
-begin
-  uBase64.FileToBase64(vFile);
-end;
+//procedure TInjectWhatsapp.fileToBase64(vFile: string);
+//begin
+//  uBase64.FileToBase64(vFile);
+//end;
 
 procedure TInjectWhatsapp.GetAllContacts;
 begin
   If Application.Terminated Then
      Exit;
-  FrmConsole.GetAllContacts;
-  FPediuCOntados := true;
+  if Assigned(FrmConsole) then
+  Begin
+    FrmConsole.GetAllContacts;
+    FPediuCOntados := true;
+  end;
 end;
 
 procedure TInjectWhatsapp.GetContacts(PFind: String; const PResult: TStrings);
@@ -330,22 +264,18 @@ procedure TInjectWhatsapp.GetAllChats;
 begin
   If Application.Terminated Then
      Exit;
-
-  FrmConsole.GetAllChats;
+  if Assigned(FrmConsole) then
+     FrmConsole.GetAllChats;
 end;
 
-function TInjectWhatsapp.GetStatus: Boolean;
-begin
-  Result := False;
-  //if Assigned(frm_servicesWhats) then
-  //  frm_servicesWhats.GetStatus;
-end;
 
 function TInjectWhatsapp.GetUnReadMessages: String;
 var
   lThread : TThread;
 begin
   If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
      Exit;
 
 
@@ -357,9 +287,7 @@ begin
           TThread.Synchronize(nil, procedure
           begin
             if Assigned(FrmConsole) then
-            begin
-              FrmConsole.GetUnReadMessages;
-            end;
+               FrmConsole.GetUnReadMessages;
           end);
 
       end);
@@ -367,89 +295,20 @@ begin
   lThread.Start;
 end;
 
-
-Procedure TInjectWhatsapp.GetVersaoJS;
-var
-  LFile, LLinha0: String;
-
-begin
-  Lfile   := PegarLocalJS;
-  try
-    if LFile = '' then             Exit;
-    if Not FileExists(LFile) then  Exit;
-
-    try
-      FJSScript.Clear;
-      FJSScript.LoadFromFile(LFile);
-      if FJSScript.Count < 30 then
-      Begin
-        Lfile := '';
-        exit;
-      end;
-    except
-      Lfile := '';
-    end
-  finally
-    if Lfile = '' then
-    Begin
-      FJSScript.clear;
-      FJSVersao := '';
-      FJSPath   := NomeArquivoInject + ' not found';
-    end  else
-    begin
-     //permite que os fontes tenha comentarios sem interferir na descoberta da versao
-      LLinha0   := FJSScript.Strings[0];
-      if pos('//', LLinha0) > 0 then
-         LLinha0   := Copy(LLinha0, 0, pos('//', LLinha0)-1);
-
-      //Limpa tudo que nao faz parte da versao!!
-      LLinha0   := StringReplace(LLinha0, ' ',      '',  [rfReplaceAll, rfIgnoreCase]);
-      LLinha0   := StringReplace(LLinha0, 'var',    '',  [rfReplaceAll, rfIgnoreCase]);
-      LLinha0   := StringReplace(LLinha0, 'Versao', '',  [rfReplaceAll, rfIgnoreCase]);
-      LLinha0   := StringReplace(LLinha0, '=', '',  [rfReplaceAll, rfIgnoreCase]);
-      LLinha0   := StringReplace(LLinha0, ';', '',  [rfReplaceAll, rfIgnoreCase]);
-      LLinha0   := StringReplace(LLinha0, '"', '',  [rfReplaceAll, rfIgnoreCase]);
-      LLinha0   := StringReplace(LLinha0, Chr(39) , '',  [rfReplaceAll, rfIgnoreCase]);
-      FJSVersao := LLinha0;
-      FJSPath   := Lfile;
-    end;
-  end;
-end;
-
 procedure TInjectWhatsapp.monitorQrCode;
 begin
   If Application.Terminated Then
      Exit;
-  FrmConsole.monitorQRCode;
+  if Assigned(FrmConsole) then
+     FrmConsole.monitorQRCode;
 end;
 
-Function TInjectWhatsapp.PegarLocalJS: String;
-var
-  LDados: TDadosApp;
-begin
-  try
-    if (csDesigning in ComponentState) then
-    Begin
-      //Se em designer procura
-      LDados  := TDadosApp.Create(True);
-      try
-        Result  := LDados.LocalEXE;
-      finally
-        FreeAndNil(LDados);
-      end;
-    end else
-    Begin
-      //Se em execuçao ja sabe aonde ta
-      Result  := GlobalCEFApp.PathInjectJS;
-    end
-  Except
-    Result  := '';
-  end;
-end;
 
 procedure TInjectWhatsapp.ReadMessages(vID: string);
 begin
   If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
      Exit;
 
   if Config.AutoDelete Then
@@ -468,6 +327,8 @@ var
   lThread : TThread;
 begin
   If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
      Exit;
 
   vNum := AjustNumber.Format(vNum);
@@ -496,6 +357,8 @@ Var
 begin
   inherited;
   If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
      Exit;
 
   vNum := AjustNumber.Format(vNum);
@@ -527,11 +390,6 @@ begin
      OnGetStatus( Self );
 end;
 
-procedure TInjectWhatsapp.SetSScript(const Value: TstringList);
-begin
-  if Value.text <> FJSScript.text then
-     raise Exception.Create('Não é possível modificar em Modo Designer');
-end;
 
 Procedure TInjectWhatsapp.ShowWebApp;
 begin
@@ -539,7 +397,8 @@ begin
      Exit;
 
   startWhatsapp;
-  FrmConsole.Show;
+  if Assigned(FrmConsole) then
+     FrmConsole.Show;
 end;
 
 procedure TInjectWhatsapp.ShutDown(PClearNotifyEvent: Boolean = False);
@@ -586,28 +445,26 @@ procedure TInjectWhatsapp.StartMonitor;
 begin
   If Application.Terminated Then
      Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
 
   if FMonitoring then Exit;
 
-  if Assigned(FrmConsole) then
-  begin
-    FMonitoring := not Monitoring;
-    FrmConsole.StartMonitor( Config.SecondsMonitor );
-  end;
+  FMonitoring := not Monitoring;
+  FrmConsole.StartMonitor( Config.SecondsMonitor );
 end;
 
 procedure TInjectWhatsapp.StopMonitor;
 begin
   If Application.Terminated Then
      Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
 
   if not FMonitoring then Exit;
 
-  if Assigned(FrmConsole) then
-  begin
-    FMonitoring := not Monitoring;
-    FrmConsole.StopMonitor;
-  end;
+  FMonitoring := not Monitoring;
+  FrmConsole.StopMonitor;
 end;
 
 procedure TInjectWhatsapp.stopWhatsapp;
@@ -642,103 +499,8 @@ begin
   If Application.Terminated Then
      Exit;
 
-  if not Assigned(FrmConsole) then
-  begin
-    FrmConsole                  := TFrmConsole.Create(nil);
-    GlobalCEFApp.InjectWhatsApp := Self;
-    FrmConsole.Connect;
-
-  end;
-end;
-
-{ TAjustNumber }
-
-function TAjustNumber.Format(PNum: String): String;
-var
-  LClearNum: String;
-  i: Integer;
-begin
-  Result := Pnum;
-  try
-    if not AutoAdjust then
-       Exit;
-
-    //Garante valores LIMPOS (sem mascaras, letras, etc) apenas NUMEROS
-    Result := PNum;
-    for I := 1 to Length(PNum) do
-    begin
-//      if PNum[I] in ['0'..'9'] then
-      if  (CharInSet(PNum[I] ,['0'..'9'])) Then
-          LClearNum := LClearNum + PNum[I];
-    end;
-
-    //O requisito minimo é possuir DDD + NUMERO (Fone 8 ou 9 digitos)
-    //  if Length(LClearNum) < 10 then
-    if Length(LClearNum) < (LengthDDD + LengthPhone) then
-    Begin
-      Result := '';
-      Exit;
-    End;
-
-    //Testa se é um grupo ou Lista Transmissao
-    if Length(LClearNum) <=  (LengthDDI + LengthDDD + LengthPhone + 1) Then //14 then
-    begin
-      if (Length(LClearNum) <= (LengthDDD + LengthPhone)) or (Length(PNum) <= (LengthDDD + LengthPhone)) then
-      begin
-        if Copy(LClearNum, 0, LengthDDI) <> DDIDefault.ToString then
-           LClearNum := DDIDefault.ToString + LClearNum;
-        Result := LClearNum +  CardContact;
-      end;
-    end;
-  finally
-    if Result = '' then
-       raise Exception.Create('Número inválido');
-    SetPhone(Result);
-  end;
-end;
-
-
-procedure TAjustNumber.SetPhone(const Pnumero: String);
-begin
-  FLastType         := TypUndefined;
-  FLastDDI          := '';
-  FLastDDD          := '';
-  FLastNumber       := '';
-  FLastNumberFormat := '';
-  FLastAdjustDt     := Now;
-  FLastAdjuste      := Pnumero;
-  FLastNumberFormat := Pnumero;
-  if pos(CardGroup, Pnumero) > 0 then
-  begin
-    FLastType := TypGroup;
-  end else
-  Begin
-    if Length(Pnumero) = (LengthDDI + LengthDDD + LengthPhone + Length(CardContact)) then
-       FLastType := TypContact;
-  end;
-
-  if FLastType = TypContact then
-  Begin
-    FLastDDI :=  Copy(Pnumero, 0,           LengthDDI);
-    FLastDDD :=  Copy(Pnumero, LengthDDI+1, LengthDDD);
-    FLastNumber :=  Copy(Pnumero, LengthDDI+LengthDDD+1, LengthPhone);
-    FLastNumberFormat := '+' + FLastDDI + ' (' + FLastDDD + ') ' + FormatMaskText('0\.0000\-0000;0;', FLastNumber)
-  End;
-end;
-
-constructor TAjustNumber.Create(AOwner: TComponent);
-begin
-  inherited;
-  FLastAdjuste := '';
-  FLastDDI     := '';
-  FLastDDD     := '';
-  FLastNumber  := '';
-
-  FAutoAdjust  := True;
-  FDDIDefault  := 55;
-  FLengthDDI   := 2;
-  FLengthDDD   := 2;
-  FLengthPhone := 8;
+  if not ConsolePronto then
+     raise Exception.Create(ConfigCEF_ExceptConsoleNaoPronto);
 end;
 
 end.

@@ -140,7 +140,6 @@ begin
   idMessageGlobal              := 'start';
   PageControl1.ActivePageIndex := 0;
 
-  InjectWhatsapp1.startWhatsapp;
   //Define os padrões DO BRASIL
   InjectWhatsapp1.AjustNumber.AutoAdjust := True;
   InjectWhatsapp1.AjustNumber.LengthDDI  := 2;
@@ -156,6 +155,7 @@ begin
   Edt_LengDDD.text  := InjectWhatsapp1.AjustNumber.LengthDDD.ToString;
   Edt_LengFone.Text := InjectWhatsapp1.AjustNumber.LengthPhone.ToString;
   Edt_DDIPDR.Text   := InjectWhatsapp1.AjustNumber.DDIDefault.ToString;
+  InjectWhatsapp1.startWhatsapp;
 end;
 
 procedure TfrmPrincipal.FormShow(Sender: TObject);

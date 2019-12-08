@@ -19,10 +19,17 @@ Const
   ConfigCEF_ExceptConnection      = 'Erro ao conectar com componente';
   ConfigCEF_ExceptBrowse          = 'Erro ao criar browser';
   ConfigCEF_ExceptConnetWhats     = 'Você não está conectado ao WhatsApp';
+  ConfigCEF_ExceptConsoleNaoPronto= 'Console ainda não obteve os comandos de INJECT JS';
 
   ConfigCEF_Path_Locales          = 'locales';
   ConfigCEF_Path_Cache            = 'cache';
   ConfigCEF_Path_UserData         = 'User Data';
+
+
+  //Usado no TInjectJS
+  TInjectJS_JSUrlPadrao            = 'http://www.tinject.com.br/viewtopic.php?f=7&t=9&sid=1a66463a3f4b11e30683834555f17417';
+  TInjectJS_JSLinhasMInimas        = 50;
+
 
   //Usados em FrmConsole
   FrmConsole_Browser_Created       = WM_APP + $100;
