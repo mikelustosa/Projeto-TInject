@@ -1,4 +1,6 @@
+// JCL_DEBUG_EXPERT_INSERTJDBG OFF
 package TInjectCollection;
+
 
 {$R *.res}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
@@ -39,14 +41,14 @@ requires
 
 contains
   uTInject.ConfigCEF in '..\Source\Services\uTInject.ConfigCEF.pas',
-  uTInject.Console   in '..\Source\Services\uTInject.Console.pas' {FrmConsole},
-  uTInject           in '..\Source\Services\uTInject.pas',
+  uTInject.Console in '..\Source\Services\uTInject.Console.pas' {FrmConsole},
+  uTInject in '..\Source\Services\uTInject.pas',
   uTInject.FrmQRCode in '..\Source\View\uTInject.FrmQRCode.pas' {FrmQRCode},
-  UBase64            in '..\Source\Model\UBase64.pas',
-  uTInject.Classes   in '..\Source\Model\uTInject.Classes.pas',
+  UBase64 in '..\Source\Model\UBase64.pas',
+  uTInject.Classes in '..\Source\Model\uTInject.Classes.pas',
   uTInject.Emoticons in '..\Source\Model\uTInject.Emoticons.pas',
-  uTInject.ExePath   in '..\Source\Model\uTInject.ExePath.pas',
-  uTInject.Constant  in '..\Source\Model\uTInject.Constant.pas',
-  uTInject.Diversos  in '..\Source\Model\uTInject.Diversos.pas';
+  uTInject.ExePath in '..\Source\Model\uTInject.ExePath.pas',
+  uTInject.Constant in '..\Source\Model\uTInject.Constant.pas',
+  uTInject.Diversos in '..\Source\Model\uTInject.Diversos.pas';
 
 end.

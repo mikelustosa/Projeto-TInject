@@ -1,4 +1,4 @@
- program TInject;
+program TInject;
 
 uses
   {$IFDEF DELPHI16_UP}
@@ -26,6 +26,7 @@ begin
   Colocar arquivos CEFLib junto a pasta binária da aplicação (Nao definir ou passar vazio)
   Caso deseja informar.. segue exemplo abaixo
   ##########################################################################################}
+  {
   GlobalCEFApp.PathLogFile          := '';
   GlobalCEFApp.PathFrameworkDirPath := 'C:\Componentes\WhatsApp\Comp\BIN';
   GlobalCEFApp.PathResourcesDirPath := 'C:\Componentes\WhatsApp\Comp\BIN';
@@ -38,6 +39,7 @@ begin
   //Forma 3 GlobalCEFApp.PathInjectJS         := 'BIN\js.abr';            //<-  NOME do ARQUIVO INFORMADO
   //Forma 4 GlobalCEFApp.PathInjectJS         := '..\Source\js.abr';      //<-  NOME do ARQUIVO INFORMADO
   //Exemplo se aplica para todos os PATH
+  }
   If not GlobalCEFApp.StartMainProcess then
      Exit;
 

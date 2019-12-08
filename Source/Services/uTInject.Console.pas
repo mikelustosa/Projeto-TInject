@@ -10,14 +10,16 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, StrUtils,
 
-  uCEFWinControl, uCEFWindowParent, uCEFChromium, 
+  uCEFInterfaces, uCEFConstants, uCEFWindowParent, uCEFChromium,
+  //uCEFWinControl, uCEFChromiumCore,
+
   //units adicionais obrigatórias
   uTInject.Classes, uTInject, uTInject.FrmQRCode, uTInject.constant,
-  uCEFInterfaces, uCEFConstants, uCEFTypes, uTInject.ConfigCEF, uTInject.Diversos,
+  uCEFTypes, uTInject.ConfigCEF, uTInject.Diversos,
 
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
   Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json,
-  Vcl.Imaging.jpeg, uCEFChromiumCore;
+  Vcl.Imaging.jpeg;
 
 var
  vContacts :Array of String;
@@ -116,7 +118,7 @@ var
 implementation
 
 uses
-  System.IOUtils, System.NetEncoding;
+  System.NetEncoding;
 
 {$R *.dfm}
 
@@ -577,7 +579,8 @@ end;
 
 procedure TFrmConsole.LogConsoleMessage(const AMessage: String);
 begin
-  TFile.AppendAllText(ExtractFilePath(Application.ExeName) + 'ConsoleMessage.log',  AMessage, TEncoding.ASCII);
+//Esse cara esta usando uma UNIT que ninguem TEM!!!   //uCEFWinControl   ->> uCEFChromiumCore,
+//  TFile.AppendAllText(ExtractFilePath(Application.ExeName) + 'ConsoleMessage.log',  AMessage, TEncoding.ASCII);
 end;
 
 procedure TFrmConsole.SetAllContacts(JsonText: String);

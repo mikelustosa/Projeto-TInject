@@ -4,16 +4,39 @@ interface
 
 {$WARN SYMBOL_PLATFORM OFF}
 uses
-  System.Classes,  SysUtils, DesignIntf, ToolsAPI,  Windows,
+  System.Classes,  SysUtils,
+  {$IFDEF DESIGNER_COMP}
+//     DesignIntf,
+     ToolsAPI,
+  {$ENDIF}
+
+  Windows,
   uTInject.Constant;
+
+{Para ativar a diretivar COMPONENTE_CRIACAO deve ser incluido as Libray o PATH
+        $(DELPHI)\Source\ToolsAPI
+
+        e ativar o -LUDesignIDE em
+        Menu Project - Options - Delphi Compiler
+           - Compiler
+              -  Other Options
+                 - Additional Options to pass to Compiler =  -LUDesignIDE
+
+           OBS: ( o traço EXISTE....  tem que ficar -LUDesignIDE)
+}
+
 
 Type
   TDadosApp = Class
   Private
     FLocalEXE: String;
     FIniProc: Cardinal;
-    function GetPathExe: IOTAProject;
+   {$IFDEF DESIGNER_COMP}
+      function GetPathExe: IOTAProject;
+   {$ENDIF}
+
     Function FindDirs(ADirRoot: String):String;
+    Procedure TrazNomeJs;
   Public
     constructor Create(PModoDesigner: Boolean);
     Property LocalEXE: String   Read FLocalEXE;
@@ -72,9 +95,6 @@ end;
 
 
 constructor TDadosApp.Create(PModoDesigner: Boolean);
-var
-  LApp: IOTAProject;
-  LpastaRaiz: String;
 begin
   //Se estiver em modo DESIGNER tem que catar o local
   //Esta rodando a APLICAção
@@ -84,15 +104,10 @@ begin
   if not PModoDesigner then
      Exit;
 
-  LApp       := GetPathExe;
-  LpastaRaiz :=  LApp.FileName;
-
-
-  //Agora tem que varrer para achar!!
-  FIniProc   := GetTickCount; //rotina de segurança de TIMEOUT
-  FLocalEXE  := FindDirs(ExtractFilePath(LpastaRaiz));
+  TrazNomeJs;
 end;
 
+{$IFDEF DESIGNER_COMP}
 function TDadosApp.GetPathExe: IOTAProject;
 var
   LServico: IOTAModuleServices;
@@ -119,6 +134,27 @@ begin
       end;
     End;
   end;
+end;
+{$ENDIF}
+
+
+procedure TDadosApp.TrazNomeJs;
+var
+  LpastaRaiz: String;
+ {$IFDEF DESIGNER_COMP}
+    LApp: IOTAProject;
+ {$ENDIF}
+begin
+  {$IFDEF DESIGNER_COMP}
+     LApp       := GetPathExe;
+     LpastaRaiz := LApp.FileName;
+  {$ELSE}
+     LpastaRaiz := Application.ExeName;
+  {$ENDIF}
+
+  //Agora tem que varrer para achar!!
+  FIniProc   := GetTickCount; //rotina de segurança de TIMEOUT
+  FLocalEXE  := FindDirs(ExtractFilePath(LpastaRaiz));
 end;
 
 end.
