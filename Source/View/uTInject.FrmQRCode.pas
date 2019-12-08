@@ -56,7 +56,9 @@ var
   LInput: TMemoryStream;
   LOutput: TMemoryStream;
   stl: TStringList;
+ {$IFNDEF VER330}
   PNG: TpngImage;
+ {$ENDIF}
 begin
   //by Aurino Inovatechi 19/11/2019 review Mike
   LInput  := TMemoryStream.Create;
