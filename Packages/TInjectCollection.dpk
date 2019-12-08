@@ -25,7 +25,7 @@ package TInjectCollection;
 {$WRITEABLECONST OFF}
 {$MINENUMSIZE 1}
 {$IMAGEBASE $400000}
-{$DEFINE DESIGNER_COMP}
+{$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'TInject WhatsApp'}
 {$IMPLICITBUILD OFF}
@@ -36,7 +36,10 @@ requires
   vclimg,
   designide,
   RESTComponents,
-  CEF4Delphi;
+  CEF4Delphi,
+  IndySystem,
+  IndyProtocols,
+  IndyCore;
 
 contains
   uTInject.ConfigCEF in '..\Source\Services\uTInject.ConfigCEF.pas',

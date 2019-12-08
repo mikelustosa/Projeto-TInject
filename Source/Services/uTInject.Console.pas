@@ -19,7 +19,7 @@ uses
 
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
   Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json,
-  Vcl.Imaging.jpeg, uCEFChromiumCore, uCEFWinControl;
+  Vcl.Imaging.jpeg, uCEFWinControl, uCEFChromiumCore;
 
 var
  vContacts :Array of String;
@@ -76,7 +76,7 @@ type
     FTimerConnect: TTimer;
 
     procedure OnTimerConnect(Sender: TObject);
-    procedure ExecuteJS(PScript: String; Purl:String = 'about:blank'; pStartline: integer=0);
+    procedure ExecuteJS(PScript: WideString; Purl:String = 'about:blank'; pStartline: integer=0);
     procedure LogConsoleMessage(const AMessage: String);
     procedure SetAllContacts(JsonText: String);
     procedure SetAllChats(JsonText: String);
@@ -176,8 +176,14 @@ begin
      Chromium1.NotifyMoveOrResizeStarted;
 end;
 
-procedure TFrmConsole.ExecuteJS(PScript: String; Purl:String = 'about:blank'; pStartline: integer=0);
+procedure TFrmConsole.ExecuteJS(PScript: WideString; Purl:String = 'about:blank'; pStartline: integer=0);
 begin
+  if Assigned(GlobalCEFApp) then
+  Begin
+    if GlobalCEFApp.ErrorInt Then
+       Exit;
+  end;
+
   if not FConectado then
      raise Exception.Create(ConfigCEF_ExceptConnetWhats);
 
@@ -350,8 +356,8 @@ begin
   { Agora que o navegador está totalmente inicializado, podemos enviar uma mensagem para
     o formulário principal para carregar a página inicial da web.}
   //PostMessage(Handle, CEFBROWSER_CREATED, 0, 0);
-  PostMessage(Handle, CEF_AFTERCREATED, 0, 0);
   FTimerConnect.Enabled  := True;
+  PostMessage(Handle, CEF_AFTERCREATED, 0, 0);
 end;
 
 procedure TFrmConsole.Chromium1BeforeClose(Sender: TObject;
@@ -485,13 +491,20 @@ Procedure TFrmConsole.Connect;
 var
   LInicio: Cardinal;
 begin
+  if Assigned(GlobalCEFApp) then
+  Begin
+    if GlobalCEFApp.ErrorInt Then
+       Exit;
+  end;
+
   try
     if FConectado then
        Exit;
 
-    LInicio              := GetTickCount;
+    LInicio      := GetTickCount;
+    FConectado := Chromium1.CreateBrowser(CEFWindowParent1);
     Repeat
-      FConectado := (not(Chromium1.CreateBrowser(CEFWindowParent1)) and not(Chromium1.Initialized));
+      FConectado := (Chromium1.Initialized);
       if not FConectado then
       Begin
         Sleep(10);
@@ -552,7 +565,7 @@ begin
     raise Exception.Create('Classe principal não localizada');
   end;
 
-  GlobalCEFApp.Chromium :=  Chromium1;
+  GlobalCEFApp.Chromium  :=  Chromium1;
   Chromium1.DefaultURL   := FrmConsole_JS_URL;
   FTimerConnect          := TTimer.Create(nil);
   FTimerConnect.Interval := 1000;

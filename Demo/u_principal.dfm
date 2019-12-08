@@ -23,7 +23,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 830
     Height = 355
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -3351,7 +3351,6 @@ object frmPrincipal: TfrmPrincipal
       end>
   end
   object InjectWhatsapp1: TInjectWhatsapp
-    InjectJS.AutoUpdate = False
     Config.AutoStart = True
     Config.AutoDelete = False
     Config.AutoDelay = 0

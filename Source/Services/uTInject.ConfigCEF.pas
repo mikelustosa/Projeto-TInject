@@ -59,6 +59,7 @@ type
     FPathUserDataPath    : String;
     FPathLogFile         : String;
     FStartMainProcessTimeOut: Cardinal;
+    FErrorInt: Boolean;
     procedure SetDefault;
     procedure SetPathCache   (const Value: String);
     procedure SetPathFrameworkDirPath(const Value: String);
@@ -68,6 +69,7 @@ type
     procedure SetPathUserDataPath    (const Value: String);
     function  TestaOk                (POldValue, PNewValue: String): Boolean;
     procedure SetChromium            (const Value: TChromium);
+    Function  VersaoCEF4Aceita: Boolean;
   public
     SetEnableGPU         : Boolean;
     SetDisableFeatures   : String;
@@ -84,11 +86,13 @@ type
 
     Property    Chromium      : TChromium       Read FChromium         Write SetChromium;
     Property    ChromiumForm  : TForm           Read FChromiumForm;
+    Property    ErrorInt      : Boolean         Read FErrorInt;
 
     constructor Create;
     destructor  Destroy; override;
     function    StartMainProcess : boolean;
     procedure   FreeChromium;
+    Procedure   SetError;
   end;
 
 
@@ -99,13 +103,14 @@ var
 implementation
 
 uses
-  uCEFTypes;
+  uCEFTypes, Vcl.Dialogs;
 
 { TCEFConfig }
 
 constructor TCEFConfig.Create;
 begin
   inherited;
+  FErrorInt  := False;
   FStartMainProcessTimeOut  := 5000; //(+- 5 Segundos)
   SetDefault;
 end;
@@ -161,6 +166,11 @@ begin
 end;
 
 
+procedure TCEFConfig.SetError;
+begin
+  FErrorInt := True;
+end;
+
 function TCEFConfig.TestaOk(POldValue, PNewValue: String):Boolean;
 var
   LDir : String;
@@ -180,6 +190,24 @@ begin
     raise Exception.Create('O Path ' + LDir + ' inválido');
 
   Result := true;
+end;
+
+function TCEFConfig.VersaoCEF4Aceita: Boolean;
+begin
+  if CEF_SUPPORTED_VERSION_MAJOR > VersaoMinima_CF4_Major then
+  Begin
+    //Versao e maior!!! entaoo pode1
+    Result := True;
+    Exit;
+  End;
+
+  //Se chegou aki!! a versao e MENOR ou IGUAL
+  //Continuar a testar!
+  if (CEF_SUPPORTED_VERSION_MAJOR   < VersaoMinima_CF4_Major) or
+     (CEF_SUPPORTED_VERSION_MINOR   < VersaoMinima_CF4_Minor) or
+     (CEF_SUPPORTED_VERSION_BUILD   < VersaoMinima_CF4_Release) Then
+    Result := False else
+    Result := True;
 end;
 
 procedure TCEFConfig.SetPathFrameworkDirPath(const Value: String);
@@ -232,6 +260,17 @@ begin
     Exit;
   end;
 
+  if not VersaoCEF4Aceita then
+  Begin
+    FErrorInt := true;
+    Application.MessageBox(PWideChar(ConfigCEF_ExceptVersaoErrada + Chr(13) +
+                           '   Requerida: ' + VersaoMinima_CF4_Major.ToString + '.' + VersaoMinima_CF4_Minor.ToString + '.' + VersaoMinima_CF4_Release.ToString + Chr(13) +
+                           '            Atual: ' + CEF_SUPPORTED_VERSION_MAJOR.ToString + '.' + CEF_SUPPORTED_VERSION_MINOR.ToString + '.' + CEF_SUPPORTED_VERSION_BUILD.ToString),
+    PWideChar(Application.Title), MB_ICONERROR + mb_ok);
+    result := False;
+    Exit;
+  End;
+
   Self.EnableGPU              := SetEnableGPU;
   Self.DisableFeatures        := SetDisableFeatures;
 
@@ -249,6 +288,8 @@ begin
      Self.LogFile             := PathLogFile;
   If SetLogSeverity then
      Self.LogSeverity := LOGSEVERITY_INFO;
+
+
 
   //Chegou aqui, é porque os PATH são validos e pode continuar
   inherited;  //Dispara a THREAD la do objeto PAI
@@ -274,7 +315,9 @@ begin
   finally
     Result  := (Self.status = asInitialized);
     if not Result then
-       raise Exception.Create(ConfigCEF_ExceptConnection);
+    Begin
+      Application.MessageBox(ConfigCEF_ExceptConnection, PWideChar(Application.Title), MB_ICONERROR + mb_ok);
+    End;
   end;
 end;
 

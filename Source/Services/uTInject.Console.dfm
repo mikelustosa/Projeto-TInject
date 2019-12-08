@@ -258,7 +258,7 @@ object FrmConsole: TFrmConsole
     OnBeforeClose = Chromium1BeforeClose
     OnClose = Chromium1Close
     OnOpenUrlFromTab = Chromium1OpenUrlFromTab
-    Left = 40
-    Top = 160
+    Left = 56
+    Top = 136
   end
 end

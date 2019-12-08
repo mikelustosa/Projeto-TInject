@@ -1,4 +1,16 @@
-var Versao = '1.0.0.2';
+﻿            var Versao = '1.0.0.2';                               
+var TinjectVMinima = '1.0.0.9';
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
 
 function getVersionJS() 
 {
@@ -17,12 +29,12 @@ function SetConsoleMessage(jsName, resultValue)
 var intervalMonitor;
 
 function startMonitor(intervalSeconds=0) {
-	if (intervalSeconds >= 1) {
-		//Imediatelly
-		//monitorUnReadMessages();  
+     if (intervalSeconds >= 1) {
+          //Imediatelly
+          //monitorUnReadMessages();  
 
-		//Loop time
-		intervalMonitor = window.setInterval(monitorUnReadMessages, intervalSeconds * 1000);
+          //Loop time
+          intervalMonitor = window.setInterval(monitorUnReadMessages, intervalSeconds * 1000);
   }
 }
 
@@ -31,8 +43,8 @@ function stopMonitor() {
 }
 
 function monitorUnReadMessages() {
-			WAPI.getUnreadMessages(includeMe="true", includeNotifications="true", use_unread_count="true");
-	}
+               WAPI.getUnreadMessages(includeMe="true", includeNotifications="true", use_unread_count="true");
+     }
 
 if (!window.Store) {
     (function () {
@@ -87,9 +99,9 @@ if (!window.Store) {
                                 window.Store[needObj.id] = needObj.foundedModule;
                             }
                         });
-						//Comentado em 27/11/2019 by Mike
-						//Esse trecho estava causando este erro no console = Cannot read property 'default' of undefined
-					   //window.Store.ChatClass.default.prototype.sendMessage = function (e) {
+                              //Comentado em 27/11/2019 by Mike
+                              //Esse trecho estava causando este erro no console = Cannot read property 'default' of undefined
+                            //window.Store.ChatClass.default.prototype.sendMessage = function (e) {
                          //   return window.Store.SendTextMsgToChat(this, ...arguments);
                         //}
                         return window.Store;
@@ -227,7 +239,7 @@ window.WAPI.getAllContacts = function (done) {
 
     if (done !== undefined) done(contacts);
 
-	SetConsoleMessage("getAllContacts", JSON.stringify(contacts)); 
+     SetConsoleMessage("getAllContacts", JSON.stringify(contacts)); 
 
     return contacts;
 };
@@ -268,9 +280,9 @@ window.WAPI.getAllChats = function (done) {
     const chats = window.Store.Chat.map((chat) => WAPI._serializeChatObj(chat));
 
     if (done !== undefined) done(chats);
-	
-	SetConsoleMessage("getAllChats", JSON.stringify(chats));
-	
+     
+     SetConsoleMessage("getAllChats", JSON.stringify(chats));
+     
     return chats;
 };
 
@@ -606,8 +618,8 @@ window.WAPI.processMessageObj = function (messageObj, includeMe, includeNotifica
     } else if (messageObj.id.fromMe === false || includeMe) {
         return WAPI._serializeMessageObj(messageObj);
     }
-	
-	SetConsoleMessage("processMessageObj",JSON.stringify( messageObj ));
+     
+     SetConsoleMessage("processMessageObj",JSON.stringify( messageObj ));
     return;
 };
 
@@ -721,14 +733,14 @@ window.WAPI.ReplyMessage = function (idMessage, message, done) {
         }
         window.getContact(id).then(contact => {
             if (contact.status === 404) {
-	              done(true);
+                   done(true);
             } else {
                 Store.Chat.find(contact.jid).then(chat => {
                     chat.sendMessage(message);
                     return true;
                 }).catch(reject => {
                     if (WAPI.sendMessage(id, message)) {
-                        done(true);						
+                        done(true);                              
                         return true;
                     }else{
                         done(false);
@@ -842,20 +854,20 @@ window.WAPI.sendMessage2 = function (id, message, done) {
 }; */
 
 window.WAPI.sendSeen = function (id, done) {
-	var chat = window.WAPI.getChat(id);
-	if (chat !== undefined) {
-		if (done !== undefined) {
-			Store.SendSeen(Store.Chat.models[0], false).then(function () {
-				done(true);
-			});
-			return true;
-		} else {
-			Store.SendSeen(Store.Chat.models[0], false);
-			return true;
-		}
-	}
-	if (done !== undefined) done();
-	return false;
+     var chat = window.WAPI.getChat(id);
+     if (chat !== undefined) {
+          if (done !== undefined) {
+               Store.SendSeen(Store.Chat.models[0], false).then(function () {
+                    done(true);
+               });
+               return true;
+          } else {
+               Store.SendSeen(Store.Chat.models[0], false);
+               return true;
+          }
+     }
+     if (done !== undefined) done();
+     return false;
 };
 
 function isChatMessage(message) {
@@ -933,10 +945,10 @@ window.WAPI.getUnreadMessages = function (includeMe, includeNotifications, use_u
     }
     if (done !== undefined) {
         done(output);
-		
+          
     }
-	
-	SetConsoleMessage("getUnreadMessages", JSON.stringify(output));
+     
+     SetConsoleMessage("getUnreadMessages", JSON.stringify(output));
     return output;
 };
 
@@ -946,8 +958,8 @@ window.WAPI.getGroupOwnerID = async function (id, done) {
         done(output);
     }
 
-	SetConsoleMessage("getGroupOwnerID", JSON.stringify(output));
-	
+     SetConsoleMessage("getGroupOwnerID", JSON.stringify(output));
+     
     return output;
 
 };
@@ -1065,7 +1077,7 @@ window.WAPI.getBatteryLevel = function (done) {
     if (done !== undefined) {
         done(output);
     }
-	SetConsoleMessage("getBatteryLevel", JSON.stringify(output));
+     SetConsoleMessage("getBatteryLevel", JSON.stringify(output));
     return output;
 };
 
@@ -1254,7 +1266,7 @@ window.WAPI.sendMessageToID = function (chatid, msgText) {
 var idUser = new window.Store.UserConstructor(chatid, { intentionallyUsePrivateConstructor: true });
 return Store.Chat.find(idUser).then((chatid) => {
     var mc = new Store.SendTextMsgToChat(chatid, msgText);
-		return true;
+          return true;
 });
 }
 
@@ -1440,21 +1452,21 @@ window.WAPI.demoteParticipantAdminGroup = function (idGroup, idParticipant, done
 //Criada em 27/11/2019 Mike
 window.WAPI.sendMessageToID2 = function(id, msgText) 
 {
-	try {
-		window.Store.WapQuery.queryExist(id).then (function(e) {
-			if (e.status === 200) {
-				window.Store.Chat.find(e.jid).then ((chat) => {
-					try {
-						window.Store.SendTextMsgToChat(chat, msgText);
-						return true;
-					} catch(e) {
-						return false;
-					  }});
-						return true;
-					} else {
-						return false;
-					  }});
-			} catch (e) {
-				return false;
-			  }
+     try {
+          window.Store.WapQuery.queryExist(id).then (function(e) {
+               if (e.status === 200) {
+                    window.Store.Chat.find(e.jid).then ((chat) => {
+                         try {
+                              window.Store.SendTextMsgToChat(chat, msgText);
+                              return true;
+                         } catch(e) {
+                              return false;
+                           }});
+                              return true;
+                         } else {
+                              return false;
+                           }});
+               } catch (e) {
+                    return false;
+                 }
 }

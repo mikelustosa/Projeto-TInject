@@ -148,6 +148,13 @@ function TInjectWhatsapp.ConsolePronto: Boolean;
 begin
   try
     Result := Assigned(FrmConsole);
+    if Assigned(GlobalCEFApp) then
+    Begin
+      if GlobalCEFApp.ErrorInt Then
+         Exit;
+    end;
+
+    Result := Assigned(FrmConsole);
     if not Assigned(FrmConsole) Then
     Begin
       InjectJS.UpdateNow;
