@@ -1,5 +1,12 @@
 -------------------------------------------------------------------------
 1.0.0.10
+09/12/2019
+Rep Revisao 153
+ - Classe CefConfig agora pode ser configurada por arquivo .INI;
+ - Melhorias no instalador do componente;
+ - JS.ABR não é baixado mais de uma vez (no mesmo aplicativo);
+ - Incluso no JS.ABR comunicaçao com o software atraves de variaveis separada como ; (ponto e virgula)  
+
 06/12/2019
 Rep Revisao 148
   - Inclusao do icone no componente;

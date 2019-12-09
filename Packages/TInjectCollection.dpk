@@ -1,8 +1,32 @@
+{####################################################################################################################
+                         TINJECT - Componente de comunicação WhatsApp (Não Oficial WhatsApp)
+                                           www.tinject.com.br
+                                            Novembro de 2019
+####################################################################################################################
+    Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
+    Developer.: Joathan Theiller           - jtheiller@hotmail.com   -
+                Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
+####################################################################################################################
+  Obs:
+     - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores;
+     - Colocar na evolução as Modificação juntamente com as informaçoes do colaborador: Data, Nova Versao, Autor;
+     - Mantenha sempre a versao mais atual acima das demais;
+     - Todo Commit ao repositório deverá ser declarado as mudança na UNIT e ainda o Incremento da Versão de
+       compilação (último digito);
+####################################################################################################################
+                                  Evolução do Código
+####################################################################################################################
+  Autor........:
+  Email........:
+  Modificação..:
+####################################################################################################################
+}
+
 package TInjectCollection;
 
 
 {$R *.res}
-{$R *.otares}
+{$R *.dres}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -39,7 +63,10 @@ requires
   CEF4Delphi,
   IndySystem,
   IndyProtocols,
-  IndyCore;
+  IndyCore,
+  FireDAC,
+  FireDACCommonDriver,
+  FireDACCommon;
 
 contains
   uTInject.ConfigCEF in '..\Source\Services\uTInject.ConfigCEF.pas',
@@ -54,6 +81,7 @@ contains
   uTInject.Diversos in '..\Source\Model\uTInject.Diversos.pas',
   uTInject.Emoticons in '..\Source\Model\uTInject.Emoticons.pas',
   uTInject.ExePath in '..\Source\Model\uTInject.ExePath.pas',
-  uTInject.JS in '..\Source\Model\uTInject.JS.pas';
+  uTInject.JS in '..\Source\Model\uTInject.JS.pas',
+  uCSV.Import in '..\Source\Model\uCSV.Import.pas';
 
 end.

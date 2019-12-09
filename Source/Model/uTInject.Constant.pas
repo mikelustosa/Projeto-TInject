@@ -1,24 +1,50 @@
+{####################################################################################################################
+                         TINJECT - Componente de comunicação WhatsApp (Não Oficial WhatsApp)
+                                           www.tinject.com.br
+                                            Novembro de 2019
+####################################################################################################################
+    Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
+    Developer.: Joathan Theiller           - jtheiller@hotmail.com   -
+                Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
+####################################################################################################################
+  Obs:
+     - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores;
+     - Colocar na evolução as Modificação juntamente com as informaçoes do colaborador: Data, Nova Versao, Autor;
+     - Mantenha sempre a versao mais atual acima das demais;
+     - Todo Commit ao repositório deverá ser declarado as mudança na UNIT e ainda o Incremento da Versão de
+       compilação (último digito);
+
+####################################################################################################################
+                                  Evolução do Código
+####################################################################################################################
+  Autor........:
+  Email........:
+  Modificação..:
+####################################################################################################################
+}
 unit uTInject.Constant;
 
 interface
 
-Uses Winapi.Messages;
+Uses Winapi.Messages, System.SysUtils;
 
 Const
   //Uso GLOBAL
-  TInjectVersion           = '1.0.0.11'; //  04/12/2019  //Alterado por Daniel Rodrigues
+  TInjectVersion                  = '1.0.0.11'; //  04/12/2019  //Alterado por Daniel Rodrigues
+  CardContact                     = '@c.us';
+  CardGroup                       = '@g.us';
+  NomeArquivoInject               = 'js.abr';
+  NomeArquivoIni                  = 'ConfTinject.ini';
+  MsMaxFindJSinDesigner           = 5000;
+  VersaoMinima_CF4_Major          = 78;
+  VersaoMinima_CF4_Minor          = 3;
+  VersaoMinima_CF4_Release        = 0;
 
-  CardContact              = '@c.us';
-  CardGroup                = '@g.us';
-  NomeArquivoInject        = 'js.abr';
-  MsMaxFindJSinDesigner    = 5000;
-  VersaoMinima_CF4_Major   = 78;
-  VersaoMinima_CF4_Minor   = 3;
-  VersaoMinima_CF4_Release = 0;
-  Versao0porCasas          = 3;
-
-
-
+  Versao0porCasas                 = 3;
+  MinutosCOnsideradoObsoletooJS   = 50;
+  ConfigCEF_Path_Locales          = 'locales';
+  ConfigCEF_Path_Cache            = 'cache';
+  ConfigCEF_Path_UserData         = 'User Data';
 
   //Usados em ConfigCEF
   ConfigCEF_ExceptNotFoundJS      = 'Arquivo ' + NomeArquivoInject + ' não localizado';
@@ -30,16 +56,9 @@ Const
   ConfigCEF_ExceptVersaoErrada    = 'Sua versão do CEF4 não é compatível, por favor, atualize suas biblioteca em https://github.com/salvadordf/CEF4Delphi';
   ConfigVersaoCompInvalida        = 'Sua versão do componente Tinject não é compatível com o novo JavaScript, por favor, atualize suas biblioteca em http://www.tinject.com.br/';
 
-
-  ConfigCEF_Path_Locales          = 'locales';
-  ConfigCEF_Path_Cache            = 'cache';
-  ConfigCEF_Path_UserData         = 'User Data';
-
-
   //Usado no TInjectJS
-  TInjectJS_JSUrlPadrao            = 'http://www.tinject.com.br/viewtopic.php?f=3&t=10&p=17&sid=1a66463a3f4b11e30683834555f17417#p17';
+  TInjectJS_JSUrlPadrao            = 'http://www.tinject.com.br/viewtopic.php?f=3&t=10&p=17&sid=84550ac7f5d0134a129eb73144943991#p17';
   TInjectJS_JSLinhasMInimas        = 1400;
-
 
   //Usados em FrmConsole
   FrmConsole_Browser_Created       = WM_APP + $100;
@@ -67,18 +86,16 @@ Const
   //FrmConsole_JS_  
   //FrmConsole_JS_
   
-  Function VerificaCompatibilidadeVersao(PVersaoComponente:String):Boolean;
-
+  Function VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
   Function FrmConsole_JS_AlterVar(var PScript:String;  PNomeVar: String;  Const PValor:String):String;
-
 
 implementation
 
 uses
-  System.SysUtils, System.JSON, System.Classes;
+  System.JSON, System.Classes;
 
 
-Function VerificaCompatibilidadeVersao(PVersaoComponente:String):Boolean;
+Function VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
 Var
   Lob1 : TStringList;
   Lob2 : TStringList;
@@ -86,29 +103,14 @@ Var
   lVersao1, Lversao2: String;
 Begin
   Result := False;
-  PVersaoComponente := StringReplace(PVersaoComponente, '=', '',     [rfReplaceAll, rfIgnoreCase]);
-  PVersaoComponente := StringReplace(PVersaoComponente, ';', '',     [rfReplaceAll, rfIgnoreCase]);
-  PVersaoComponente := StringReplace(PVersaoComponente, ':', '',     [rfReplaceAll, rfIgnoreCase]);
-  PVersaoComponente := StringReplace(PVersaoComponente, '-', '',     [rfReplaceAll, rfIgnoreCase]);
-  PVersaoComponente := StringReplace(PVersaoComponente, ' ', '',     [rfReplaceAll, rfIgnoreCase]);
-  PVersaoComponente := StringReplace(PVersaoComponente, chr(39), '', [rfReplaceAll, rfIgnoreCase]);
-  PVersaoComponente := StringReplace(PVersaoComponente, ',', '.',    [rfReplaceAll, rfIgnoreCase]);
-  lVersao1          := PVersaoComponente;
-
-  Lversao2 := StringReplace(TInjectVersion, '=', '',     [rfReplaceAll, rfIgnoreCase]);
-  Lversao2 := StringReplace(Lversao2, ';', '',     [rfReplaceAll, rfIgnoreCase]);
-  Lversao2 := StringReplace(Lversao2, ':', '',     [rfReplaceAll, rfIgnoreCase]);
-  Lversao2 := StringReplace(Lversao2, '-', '',     [rfReplaceAll, rfIgnoreCase]);
-  Lversao2 := StringReplace(Lversao2, ' ', '',     [rfReplaceAll, rfIgnoreCase]);
-  Lversao2 := StringReplace(Lversao2, chr(39), '', [rfReplaceAll, rfIgnoreCase]);
-  Lversao2 := StringReplace(Lversao2, ',', '.',    [rfReplaceAll, rfIgnoreCase]);
+  lVersao1       := StringReplace(PVersaoExterna, ',', '.',    [rfReplaceAll, rfIgnoreCase]);
+  Lversao2       := StringReplace(PversaoInterna, ',', '.',    [rfReplaceAll, rfIgnoreCase]);
 
   Lob1 := TStringList.Create;
   Lob2 := TStringList.Create;
   try
     Lob1.Delimiter      := '.';
     Lob2.Delimiter      := '.';
-
     Lob1.DelimitedText  := lVersao1;
     Lob2.DelimitedText  := Lversao2;
     for I := 0 to Lob1.Count -1 do
@@ -121,7 +123,6 @@ Begin
       end;
     End;
     Result := True;
-
   finally
     FreeAndNil(Lob1);
     FreeAndNil(Lob2);
@@ -132,7 +133,6 @@ End;
 Function FrmConsole_JS_AlterVar(var PScript:String;  PNomeVar: String;  Const PValor:String):String;
 Begin
   //Ele pode trazer montado em PSCRIPT ou no retorno
-
   If PNomeVar = '' Then Exit;
   if pos('<', PNomeVar) = 0 Then
      PNomeVar := '<'+PNomeVar;
@@ -141,8 +141,6 @@ Begin
   PScript := StringReplace(PScript, PNomeVar, PValor, [rfReplaceAll, rfIgnoreCase]);
   result  := PScript;
 end;
-
-
 
 
 end.

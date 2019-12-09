@@ -3365,8 +3365,7 @@ object frmPrincipal: TfrmPrincipal
     OnGetStatus = InjectWhatsapp1GetStatus
     OnGetBatteryLevel = InjectWhatsapp1GetBatteryLevel
     OnGetMyNumber = InjectWhatsapp1GetMyNumber
-    Left = 376
-    Top = 152
+    Left = 648
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Imagens|*jpg;*.jpg;*.bmp;*.png;*.pdf;*.mp4;*.mp3;*.rar'

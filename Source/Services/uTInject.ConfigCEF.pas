@@ -1,4 +1,29 @@
-﻿//Recommended to set subfolders CEFLib other than root.
+﻿{####################################################################################################################
+                         TINJECT - Componente de comunicação WhatsApp (Não Oficial WhatsApp)
+                                           www.tinject.com.br
+                                            Novembro de 2019
+####################################################################################################################
+    Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
+    Developer.: Joathan Theiller           - jtheiller@hotmail.com   -
+                Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
+####################################################################################################################
+  Obs:
+     - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores;
+     - Colocar na evolução as Modificação juntamente com as informaçoes do colaborador: Data, Nova Versao, Autor;
+     - Mantenha sempre a versao mais atual acima das demais;
+     - Todo Commit ao repositório deverá ser declarado as mudança na UNIT e ainda o Incremento da Versão de
+       compilação (último digito);
+
+####################################################################################################################
+                                  Evolução do Código
+####################################################################################################################
+  Autor........:
+  Email........:
+  Modificação..:
+####################################################################################################################
+}
+
+//Recommended to set subfolders CEFLib other than root.
 //Do this in your project's .DRP
 //Exemple:
 //program TInject-Demo;
@@ -34,10 +59,13 @@ interface
 
 uses
   System.Classes,
-  uCEFApplication,
   System.SysUtils,
   Winapi.Windows,
-  uCEFConstants, uCEFChromium, Vcl.Forms,
+  Vcl.Forms,
+  DateUtils,
+  IniFiles,
+  uCEFApplication, uCEFConstants,
+  uCEFChromium, 
 
   uTInject,
   uTInject.constant ;
@@ -51,6 +79,9 @@ type
     FInject              : TInjectWhatsapp;
     FChromium            : TChromium;
     FChromiumForm        : TForm;
+    FDefPathLocais       : TIniFile;
+    Falterdo             : Boolean;
+
 
     FPathFrameworkDirPath: String;
     FPathResourcesDirPath: String;
@@ -58,8 +89,10 @@ type
     FPathCache           : String;
     FPathUserDataPath    : String;
     FPathLogFile         : String;
-    FStartMainProcessTimeOut: Cardinal;
+    FPathJS              : String;
+    FStartTimeOut: Cardinal;
     FErrorInt: Boolean;
+    FPathJsUpdate: TdateTime;
     procedure SetDefault;
     procedure SetPathCache   (const Value: String);
     procedure SetPathFrameworkDirPath(const Value: String);
@@ -70,29 +103,33 @@ type
     function  TestaOk                (POldValue, PNewValue: String): Boolean;
     procedure SetChromium            (const Value: TChromium);
     Function  VersaoCEF4Aceita: Boolean;
+    Procedure  UpdateIniFile(Const PSection, PKey, PValue :String);
   public
     SetEnableGPU         : Boolean;
     SetDisableFeatures   : String;
     SetLogSeverity       : Boolean;
-    Property InjectWhatsApp       : TInjectWhatsapp   Read FInject  Write FInject;
-    property PathFrameworkDirPath : String  Read FPathFrameworkDirPath Write SetPathFrameworkDirPath;
-    property PathResourcesDirPath : String  Read FPathResourcesDirPath Write SetPathResourcesDirPath;
-    property PathLocalesDirPath   : String  Read FPathLocalesDirPath   Write SetPathLocalesDirPath;
-    property PathCache            : String  Read FPathCache            Write SetPathCache;
-    property PathUserDataPath     : String  Read FPathUserDataPath     Write SetPathUserDataPath;
-    property PathLogFile          : String  Read FPathLogFile          Write SetPathLogFile;
-
-    Property StartMainProcessTimeOut : Cardinal    Read FStartMainProcessTimeOut Write FStartMainProcessTimeOut;
-
-    Property    Chromium      : TChromium       Read FChromium         Write SetChromium;
-    Property    ChromiumForm  : TForm           Read FChromiumForm;
-    Property    ErrorInt      : Boolean         Read FErrorInt;
+    Procedure  UpdateDateIniFile;
+    function   StartMainProcess : boolean;
+    procedure  FreeChromium;
+    Procedure  SetError;
 
     constructor Create;
     destructor  Destroy; override;
-    function    StartMainProcess : boolean;
-    procedure   FreeChromium;
-    Procedure   SetError;
+
+    Function   PathJsOverdue        : Boolean;
+    property   PathJsUpdate         : TdateTime         Read FPathJsUpdate;
+    Property   InjectWhatsApp       : TInjectWhatsapp   Read FInject         Write FInject;
+    property   PathFrameworkDirPath : String       Read FPathFrameworkDirPath Write SetPathFrameworkDirPath;
+    property   PathResourcesDirPath : String       Read FPathResourcesDirPath Write SetPathResourcesDirPath;
+    property   PathLocalesDirPath   : String       Read FPathLocalesDirPath   Write SetPathLocalesDirPath;
+    property   PathCache            : String       Read FPathCache            Write SetPathCache;
+    property   PathUserDataPath     : String       Read FPathUserDataPath     Write SetPathUserDataPath;
+    property   PathLogFile          : String       Read FPathLogFile          Write SetPathLogFile;
+    property   PathJs               : String       Read FPathJS;
+    Property   StartTimeOut         : Cardinal     Read FStartTimeOut         Write FStartTimeOut;
+    Property   Chromium             : TChromium    Read FChromium             Write SetChromium;
+    Property   ChromiumForm         : TForm        Read FChromiumForm;
+    Property   ErrorInt             : Boolean      Read FErrorInt;
   end;
 
 
@@ -107,11 +144,33 @@ uses
 
 { TCEFConfig }
 
-constructor TCEFConfig.Create;
+procedure TCEFConfig.UpdateDateIniFile;
 begin
+  FPathJsUpdate := Now;
+  UpdateIniFile('Tinject Comp', 'Ultima interação', FormatDateTime('dd/mm/yy hh:nn:ss', FPathJsUpdate));
+end;
+
+procedure TCEFConfig.UpdateIniFile(const PSection, PKey, PValue: String);
+begin
+  if LowerCase(FDefPathLocais.ReadString(PSection, PKey, '')) <> LowerCase(PValue) then
+  Begin
+    FDefPathLocais.WriteString(PSection, PKey, PValue);
+    Falterdo := true;
+  End;
+end;
+
+constructor TCEFConfig.Create;
+Var
+  FDirApp, Lx: String;
+begin
+  FDirApp := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
   inherited;
-  FErrorInt  := False;
-  FStartMainProcessTimeOut  := 5000; //(+- 5 Segundos)
+  FDefPathLocais       := TIniFile.create(FDirApp + NomeArquivoIni);
+  FPathJS              := FDirApp + NomeArquivoInject;
+  FErrorInt            := False;
+  FStartTimeOut        := 5000; //(+- 5 Segundos)
+  Lx                   := FDefPathLocais.ReadString('Tinject Comp', 'Ultima interação', FormatDateTime('dd/mm/yy hh:nn:ss', Now));
+  FPathJsUpdate        := StrToDateTimeDef(Lx, StrTodateTime('01/01/1500 00:00'));
   SetDefault;
 end;
 
@@ -148,15 +207,15 @@ Procedure TCEFConfig.SetDefault;
 begin
   //Default Values
 //  PATH_ROOT            := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
-  SetEnableGPU            := True;
   SetDisableFeatures      := 'NetworkService,OutOfBlinkCors';
-  SetLogSeverity          := False;
-  PathFrameworkDirPath    := '';
-  PathResourcesDirPath    := '';
-  PathLocalesDirPath      := '';
-  Pathcache               := '';
-  PathUserDataPath        := '';
-  PathLogFile             := '';
+  SetEnableGPU            := FDefPathLocais.ReadBool  ('Path Defines', 'GPU',           True);
+  SetLogSeverity          := FDefPathLocais.ReadBool  ('Path Defines', 'Log Severity',  False);
+  PathFrameworkDirPath    := FDefPathLocais.ReadString('Path Defines', 'FrameWork', '');
+  PathResourcesDirPath    := FDefPathLocais.ReadString('Path Defines', 'Binary',    '');
+  PathLocalesDirPath      := FDefPathLocais.ReadString('Path Defines', 'Locales',   '');
+  Pathcache               := FDefPathLocais.ReadString('Path Defines', 'Cache',     '');
+  PathUserDataPath        := FDefPathLocais.ReadString('Path Defines', 'Data User', '');
+  PathLogFile             := FDefPathLocais.ReadString('Path Defines', 'Log File',  '');
 
   Self.FrameworkDirPath   := '';
   Self.ResourcesDirPath   := '';
@@ -191,6 +250,7 @@ begin
 
   Result := true;
 end;
+
 
 function TCEFConfig.VersaoCEF4Aceita: Boolean;
 begin
@@ -228,7 +288,7 @@ procedure TCEFConfig.SetPathLocalesDirPath(const Value: String);
 begin
   if not TestaOk(FPathLocalesDirPath, Value) Then
      Exit;
-  FPathLocalesDirPath := Value;
+  FPathLocalesDirPath   := Value;
 end;
 
 procedure TCEFConfig.SetPathCache(const Value: String);
@@ -239,14 +299,14 @@ begin
   ForceDirectories(PWideChar(ExtractFilePath(Value)));
   if not TestaOk(FPathCache, Value) Then
      Exit;
-  FPathCache := Value;
+  FPathCache            := Value;
 end;
 
 procedure TCEFConfig.SetPathUserDataPath(const Value: String);
 begin
   if not TestaOk(FPathUserDataPath, Value) Then
      Exit;
-  FPathUserDataPath := Value;
+  FPathUserDataPath   := Value;
 end;
 
 function TCEFConfig.StartMainProcess: boolean;
@@ -289,6 +349,23 @@ begin
   If SetLogSeverity then
      Self.LogSeverity := LOGSEVERITY_INFO;
 
+  UpdateIniFile('Path Defines', 'FrameWork',     Self.FrameworkDirPath);
+  UpdateIniFile('Path Defines', 'Binary',        Self.ResourcesDirPath);
+  UpdateIniFile('Path Defines', 'Locales',       Self.LocalesDirPath);
+  UpdateIniFile('Path Defines', 'Cache',         Self.cache);
+  UpdateIniFile('Path Defines', 'Data User',     Self.UserDataPath);
+  UpdateIniFile('Path Defines', 'Log File',      Self.LogFile);
+  UpdateIniFile('Path Defines', 'GPU',           SetEnableGPU.ToString);
+  UpdateIniFile('Path Defines', 'Log Severity',  SetLogSeverity.ToString);
+
+
+  UpdateIniFile('Tinject Comp', 'TInject Versão',   TInjectVersion);
+  UpdateIniFile('Tinject Comp', 'Caminho JS'    ,   TInjectJS_JSUrlPadrao);
+  UpdateIniFile('Tinject Comp', 'CEF4 Versão'   ,   CEF_SUPPORTED_VERSION_MAJOR.ToString +'.'+ CEF_SUPPORTED_VERSION_MINOR.ToString +'.'+ CEF_SUPPORTED_VERSION_RELEASE.ToString +'.'+ CEF_SUPPORTED_VERSION_BUILD.ToString );
+  UpdateIniFile('Tinject Comp', 'CHROME Versão' ,   CEF_CHROMEELF_VERSION_MAJOR.ToString +'.'+ CEF_CHROMEELF_VERSION_MINOR.ToString +'.'+ CEF_CHROMEELF_VERSION_RELEASE.ToString +'.'+ CEF_CHROMEELF_VERSION_BUILD.ToString );
+  UpdateIniFile('Tinject Comp', 'Dlls'          ,   LIBCEF_DLL + ' / ' + CHROMEELF_DLL);
+  if Falterdo then
+    UpdateDateIniFile;
 
 
   //Chegou aqui, é porque os PATH são validos e pode continuar
@@ -309,7 +386,7 @@ begin
     while  Self.status <> asInitialized do
     Begin
       Sleep(10);
-      if (GetTickCount - Linicio) >= FStartMainProcessTimeOut then
+      if (GetTickCount - Linicio) >= FStartTimeOut then
          Break;
     End;
   finally
@@ -331,7 +408,9 @@ end;
 
 destructor TCEFConfig.Destroy;
 begin
+  FreeandNil(FDefPathLocais);
   FreeChromium;
+
   inherited;
 end;
 
@@ -374,6 +453,11 @@ begin
      End;
    Except
    end;
+end;
+
+function TCEFConfig.PathJsOverdue: Boolean;
+begin
+  Result := (MinutesBetween(Now, FPathJsUpdate) > MinutosCOnsideradoObsoletooJS)
 end;
 
 initialization
