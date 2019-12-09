@@ -84,6 +84,7 @@ type
     procedure SetQrCode(JsonText: String);
     procedure SetQrCodeWEB(JsonText: String);
     procedure SetBatteryLevel(JsonText: string);
+    procedure SetMyNumber(JsonText: string);
     procedure loadWEBQRCode(st: string);
 
   public
@@ -101,6 +102,7 @@ type
     procedure GetAllChats;
     procedure GetUnreadMessages;
     procedure GetBatteryLevel;
+    procedure GetMyNumber;
     procedure monitorQRCode;
     //Para monitorar o qrcode via REST
     procedure WEBmonitorQRCode;
@@ -233,6 +235,11 @@ end;
 procedure TFrmConsole.GetBatteryLevel;
 begin
   ExecuteJS(FrmConsole_JS_GetBatteryLevel);
+end;
+
+procedure TFrmConsole.GetMyNumber;
+begin
+  ExecuteJS(FrmConsole_JS_GetMyNumber);
 end;
 
 procedure TFrmConsole.GetUnreadMessages;
@@ -439,6 +446,15 @@ begin
               begin
                 SetQrCodeWEB( message );
               end;
+
+              if AResponse.Name = 'getMyNumber' then
+              begin
+                if POS('undefined', AResponse.Result ) <= 0 then
+                begin
+                  LogConsoleMessage( PrettyJSON(AResponse.Result) );
+                  SetMyNumber( AResponse.Result );
+                end;
+              end;
             end;
           end;
           finally
@@ -637,6 +653,25 @@ begin
     if Assigned( OnGetBatteryLevel ) then
         OnGetBatteryLevel(Self);
   end;
+end;
+
+procedure TFrmConsole.SetMyNumber(JsonText: string);
+var
+  AJson: TJSONObject;
+begin
+  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
+       Exit;
+
+  with GlobalCEFApp.InjectWhatsApp do
+  begin
+    AJson := TJSonObject.ParseJSONValue(JsonText) as TJSONObject;
+    AGetMyNumber:= ( AJson.getValue('result').toJSON );
+
+     //Dispara Notify
+    if Assigned( OnGetMyNumber ) then
+        OnGetMyNumber(Self);
+  end;
+
 end;
 
 procedure TFrmConsole.loadWEBQRCode(st: string);

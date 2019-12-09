@@ -23,7 +23,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 830
     Height = 355
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -2954,10 +2954,12 @@ object frmPrincipal: TfrmPrincipal
       object lblNumeroConectado: TLabel
         Left = 238
         Top = 213
-        Width = 316
+        Width = 339
         Height = 29
+        Alignment = taCenter
         Anchors = [akTop, akRight]
-        Caption = 'N'#250'mero: (99) 99999-9999'
+        AutoSize = False
+        Caption = 'MyNumber'
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -24
@@ -2965,7 +2967,6 @@ object frmPrincipal: TfrmPrincipal
         Font.Style = [fsBold]
         ParentFont = False
         Visible = False
-        ExplicitLeft = 241
       end
     end
     object TabSheet2: TTabSheet
@@ -3234,8 +3235,8 @@ object frmPrincipal: TfrmPrincipal
           object Button3: TButton
             AlignWithMargins = True
             Left = 11
-            Top = 22
-            Width = 284
+            Top = 18
+            Width = 283
             Height = 25
             Anchors = [akLeft, akTop, akRight]
             Caption = 'Listar Chats Abertos'
@@ -3255,7 +3256,7 @@ object frmPrincipal: TfrmPrincipal
             Left = 11
             Top = 52
             Width = 283
-            Height = 194
+            Height = 196
             Anchors = [akLeft, akTop, akRight, akBottom]
             Columns = <>
             LargeImages = ImageList1
@@ -3363,7 +3364,9 @@ object frmPrincipal: TfrmPrincipal
     OnGetUnReadMessages = InjectWhatsapp1GetUnReadMessages
     OnGetStatus = InjectWhatsapp1GetStatus
     OnGetBatteryLevel = InjectWhatsapp1GetBatteryLevel
-    Left = 696
+    OnGetMyNumber = InjectWhatsapp1GetMyNumber
+    Left = 376
+    Top = 152
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Imagens|*jpg;*.jpg;*.bmp;*.png;*.pdf;*.mp4;*.mp3;*.rar'

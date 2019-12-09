@@ -18,6 +18,9 @@ uses
 ###########################################################################################
                                     EVOLUÇÃO
 ###########################################################################################
+1.0.0.11 =  08/12/2019 - Mike Lustosa
+     - Implementado o getMyNumber função que retorna o número do telefone logado no whatsapp
+
 1.0.0.10 =  04/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
      - Implementado o controle das pasta do FrameWork do CEF;
      - Adicionado uma classe que controla e destroi todas as THREAD ativas,
@@ -69,9 +72,11 @@ type
     FOnGetChatList        : TNotifyEvent;
     FOnGetNewMessage      : TNotifyEvent;
     FOnGetBatteryLevel    : TNotifyEvent;
+    FOnGetMyNumber        : TNotifyEvent;
     FOnGetStatus          : TNotifyEvent;
   public
     AGetBatteryLevel               : string;
+    AGetMyNumber                   : string;
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
     procedure   ShutDown(PClearNotifyEvent: Boolean = False);
@@ -86,6 +91,7 @@ type
     procedure ShowWebApp;
     procedure send(vNum, vMess: string);
     procedure batteryStatus();
+    procedure myNumber();
     procedure sendBase64(vBase64, vNum, vFileName, vMess: string);
 //    procedure fileToBase64(vFile: string);
     procedure GetAllContacts;
@@ -115,6 +121,7 @@ type
     property OnGetUnReadMessages  : TGetUnReadMessages   read FOnGetUnReadMessages  write FOnGetUnReadMessages;
     property OnGetStatus          : TNotifyEvent         read FOnGetStatus          write FOnGetStatus;
     property OnGetBatteryLevel    : TNotifyEvent         read FOnGetBatteryLevel    write FOnGetBatteryLevel;
+    property OnGetMyNumber        : TNotifyEvent         read FOnGetMyNumber        write FOnGetMyNumber;
     property ABatteryLevel        : string               Read FGetBatteryLevel;
   end;
 
@@ -310,6 +317,12 @@ begin
      FrmConsole.monitorQRCode;
 end;
 
+
+procedure TInjectWhatsapp.myNumber;
+begin
+  if Assigned(FrmConsole) then
+     FrmConsole.GetMyNumber;
+end;
 
 procedure TInjectWhatsapp.ReadMessages(vID: string);
 begin

@@ -98,6 +98,8 @@ type
     procedure Edt_DDIPDRExit(Sender: TObject);
     procedure ed_numChange(Sender: TObject);
     procedure ed_numSelect(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure InjectWhatsapp1GetMyNumber(Sender: TObject);
   private
     { Private declarations }
     idMessageGlobal: string;
@@ -254,6 +256,17 @@ begin
     ed_num.SelectAll;
     ed_num.SetFocus;
   end;
+end;
+
+procedure TfrmPrincipal.Button1Click(Sender: TObject);
+begin
+  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
+  begin
+    application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
+    abort;
+  end;
+
+  InjectWhatsapp1.myNumber;
 end;
 
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
@@ -471,6 +484,11 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.InjectWhatsapp1GetMyNumber(Sender: TObject);
+begin
+  lblNumeroConectado.Caption :=  stringReplace( injectWhatsapp1.AGetMyNumber , '@c.us', '', []);
+end;
+
 procedure TfrmPrincipal.InjectWhatsapp1GetStatus(Sender: TObject);
 begin
   If Application.Terminated Then
@@ -564,6 +582,8 @@ begin
       imgQrcode.Visible := False;
       lblNumeroConectado.Visible := True;
       StatusBar1.Panels[1].Text := 'Online';
+
+      InjectWhatsapp1.myNumber;//Get phone number
     end
     else
     begin

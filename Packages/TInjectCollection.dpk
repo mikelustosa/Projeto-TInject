@@ -2,7 +2,7 @@ package TInjectCollection;
 
 
 {$R *.res}
-{$R *.dres}
+{$R *.otares}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
