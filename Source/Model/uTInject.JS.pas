@@ -66,7 +66,6 @@ type
     function   PegarLocalJS_Web: String;
     Function   AtualizarInternamente(PForma: TFormaUpdate):Boolean;
     Function   ValidaJs(Const TValor: Tstrings): Boolean;
-    Procedure  LimpaConteudoSite(Var TValor: TStringList);
     Procedure  OnTimeOutIndy(Sender: TObject);
 
     procedure SetTimeOutGetJS(const Value: Integer);  protected
@@ -226,6 +225,7 @@ end;
 function TInjectJS.ValidaJs(const TValor: Tstrings): Boolean;
 var
   LVersaoCefFull:String;
+  LTemp1, LTemp2: String;
 begin
   Result := False;
   if Assigned(GlobalCEFApp) then
@@ -238,9 +238,21 @@ begin
      Exit;
 
   If Pos(AnsiUpperCase(';'),  AnsiUpperCase(TValor.Strings[0])) <= 0 then   //Nao tem a variavel
-     Exit;
+//     Exit;
+  begin
+    //Evitar quebrar (Temporariamente) devido js do master não possuir trexo inicial como esta no forum.
+    //Alterar o js.abr do master em git...(Daniel/Mike) by JTheiller
+    LTemp1 := '//Version_JS;Version_TInjectMin;Version_CEF4Min';
+    LTemp2 := '//0.0.0.0;0.0.0.0;0.0.0';
+  end
+  else
+      begin
+        LTemp1 := TValor.Strings[0];
+        LTemp2 :=  TValor.Strings[1]
+      end;
 
-  If not ReadCSV(TValor.Strings[0], TValor.Strings[1]) Then
+
+  If not ReadCSV(LTemp1, LTemp2) Then
      Exit;
 
   If (Pos(AnsiUpperCase('!window.Store'),       AnsiUpperCase(TValor.text))     <= 0) or
@@ -301,10 +313,17 @@ begin
     DeleteFile(PwideChar(LSalvamento));
     try
       LHttp       := TIdHTTP.Create(nil);
+      with LHttp do
+      begin
+        Request.Accept := 'text/html, */*';
+        Request.ContentEncoding := 'raw';
+        HandleRedirects := True;
+      end;
+
       _Indy       := LHttp;
       FTImeOutIndy.Enabled := True;
       LRet.text   := LHttp.Get(TInjectJS_JSUrlPadrao);
-      LimpaConteudoSite(LRet);
+
       if not ValidaJs(LRet) Then
          LRet.Clear;
     Except
@@ -351,57 +370,6 @@ begin
   finally
     FreeAndNil(LCsv);
   end;
-end;
-
-
-procedure TInjectJS.LimpaConteudoSite(var TValor: TStringList);
-var
-  i, A : Integer;
-  LAchouIni : Boolean;
-begin
-  LAchouIni := False;
-  if Pos(AnsiLowerCase('<!DOCTYPE html>'), AnsiLowerCase(TValor.Strings[0])) > 0 Then
-  Begin
-    //Se veio de um site.. vai vir em HTML no CAB
-    for I := 0 to TValor.Count -1 do
-    Begin
-      if pos(AnsiLowerCase('<div class="content">'), AnsiLowerCase(TValor.Strings[i])) > 0 then
-      Begin
-        // Achou o Inicio do container
-        LAchouIni := True;
-        for A:= i -1 downto 0 do
-          TValor.Delete(A);
-        Break;
-      End;
-    End;
-  End;
-
-  if not LAchouIni then
-     Exit;
-
-  for I := 0 to TValor.Count -1 do
-  Begin
-    if pos(AnsiLowerCase('</div>'), AnsiLowerCase(TValor.Strings[i])) > 0 then
-    Begin
-      // Achou o Inicio do container
-      for A := TValor.Count -1 downto i +1 do
-         TValor.Delete(A);
-      Break;
-    End;
-  End;
-
-  TValor.Text   := StringReplace(TValor.Text, #9,                        '    ',  [rfReplaceAll, rfIgnoreCase]);  //TAB
-  TValor.Text   := StringReplace(TValor.Text, '<br>',                          '',  [rfReplaceAll, rfIgnoreCase]);
-  TValor.Text   := StringReplace(TValor.Text, '</em>',                         '',  [rfReplaceAll, rfIgnoreCase]);
-  TValor.Text   := StringReplace(TValor.Text, '</div>',                        '',  [rfReplaceAll, rfIgnoreCase]);
-  TValor.Text   := StringReplace(TValor.Text, '<div class="content">',         '',  [rfReplaceAll, rfIgnoreCase]);
-  TValor.Text   := StringReplace(TValor.Text, '&gt;',                         '>',  [rfReplaceAll, rfIgnoreCase]);
-  TValor.Text   := StringReplace(TValor.Text, '&lt;',                         '<',  [rfReplaceAll, rfIgnoreCase]);
-  TValor.Text   := StringReplace(TValor.Text, '&amp;',                        '&',  [rfReplaceAll, rfIgnoreCase]);
-  TValor.Text   := StringReplace(TValor.Text, '<em class="text-italics">',    'i',  [rfReplaceAll, rfIgnoreCase]);
-
-  for I := 0 to 2 do  //Linhas de comunicação com o sistemas
-     TValor.Strings[i] := Trim(TValor.Strings[i]);
 end;
 
 procedure TInjectJS.Loaded;
