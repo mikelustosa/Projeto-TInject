@@ -16,7 +16,8 @@ uses
   //###############################################
 
   Vcl.StdCtrls, System.ImageList, Vcl.ImgList, Vcl.AppEvnts, Vcl.ComCtrls,
-  Vcl.Imaging.pngimage, Vcl.Buttons;
+  Vcl.Imaging.pngimage, Vcl.Buttons, IdBaseComponent, IdAntiFreezeBase,
+  IdAntiFreeze, Vcl.Mask;
 
 type
   TfrmPrincipal = class(TForm)
@@ -133,12 +134,14 @@ var
 implementation
 
 uses
-  uTInject.Console, System.StrUtils;
+  uTInject.Console, System.StrUtils, uTInject.Constant;
 
 {$R *.dfm}
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
+//  ReportMemoryLeaksOnShutdown := True;
+
   idMessageGlobal              := 'start';
   PageControl1.ActivePageIndex := 0;
 
@@ -265,8 +268,6 @@ begin
     application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
   end;
-
-  InjectWhatsapp1.myNumber;
 end;
 
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
@@ -287,7 +288,7 @@ begin
     abort;
   end;
 
-  InjectWhatsapp1.batteryStatus;
+  InjectWhatsapp1.GetBatteryStatus;
 end;
 
 procedure TfrmPrincipal.btEnviaTextoClick(Sender: TObject);
@@ -449,7 +450,7 @@ end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetBatteryLevel(Sender: TObject);
 begin
-  btStatusBat.caption := 'Nível da bateria: '+injectWhatsapp1.AGetBatteryLevel + '%';
+  btStatusBat.caption := 'Nível da bateria: '+injectWhatsapp1.BatteryLevel.ToString + '%';
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetChatList(Sender: TObject);
@@ -486,7 +487,7 @@ end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetMyNumber(Sender: TObject);
 begin
-  lblNumeroConectado.Caption :=  stringReplace( injectWhatsapp1.AGetMyNumber , '@c.us', '', []);
+  lblNumeroConectado.Caption :=  injectWhatsapp1.MyNumber;
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetStatus(Sender: TObject);
@@ -582,8 +583,6 @@ begin
       imgQrcode.Visible := False;
       lblNumeroConectado.Visible := True;
       StatusBar1.Panels[1].Text := 'Online';
-
-      InjectWhatsapp1.myNumber;//Get phone number
     end
     else
     begin

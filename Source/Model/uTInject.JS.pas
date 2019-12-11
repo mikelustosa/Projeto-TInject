@@ -31,7 +31,7 @@ interface
 
 uses
   System.Classes, uTInject.Classes, System.MaskUtils, Data.DB, uCSV.Import,
-  FireDAC.Comp.Client;
+  FireDAC.Comp.Client, Vcl.ExtCtrls, IdHTTP;
 
 type
     TInjectJSDefine  = class
@@ -56,6 +56,9 @@ type
     FReady          : Boolean;
     FOnUpdateJS     : TNotifyEvent;
     FInjectJSDefine : TInjectJSDefine;
+    FTImeOutIndy    : TTimer;
+    FTimeOutGetJS   : Integer;
+    _Indy           : TIdHTTP;
 
     Function   ReadCSV(Const PLineCab, PLineValues: String): Boolean;
     procedure  SetInjectScript(const Value: TstringList);
@@ -64,7 +67,9 @@ type
     Function   AtualizarInternamente(PForma: TFormaUpdate):Boolean;
     Function   ValidaJs(Const TValor: Tstrings): Boolean;
     Procedure  LimpaConteudoSite(Var TValor: TStringList);
-  protected
+    Procedure  OnTimeOutIndy(Sender: TObject);
+
+    procedure SetTimeOutGetJS(const Value: Integer);  protected
     procedure Loaded; override;
   public
     constructor Create(AOwner: TComponent); override;
@@ -74,6 +79,8 @@ type
     Function    UpdateNow:Boolean;
     Procedure   DelFileTemp;
   published
+    property   TimeOutGetJS  : Integer        Read FTimeOutGetJS    Write SetTimeOutGetJS Default 4;
+
     property   OnUpdateJS    : TNotifyEvent   Read FOnUpdateJS      Write FOnUpdateJS;
     property   Ready         : Boolean        read FReady;
     property   AutoUpdate    : Boolean        read FAutoUpdate      write FAutoUpdate  default True;
@@ -86,8 +93,8 @@ type
 implementation
 
 uses uTInject.Constant, System.SysUtils, uTInject.ExePath, Vcl.Forms,
-    IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, IdHTTP,
-  Winapi.Windows, uTInject.ConfigCEF;
+    IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
+  Winapi.Windows, uTInject.ConfigCEF, Vcl.IdAntiFreeze;
 
 
 { TInjectAutoUpdate }
@@ -148,11 +155,16 @@ end;
 constructor TInjectJS.Create(AOwner: TComponent);
 begin
   inherited;
+  FTimeOutGetJS              := 4;
+  FTImeOutIndy               := TTimer.Create(Nil);
+  FTImeOutIndy.OnTimer       := OnTimeOutIndy;
+  FTImeOutIndy.Interval      := FTimeOutGetJS * 1000;
+  FTImeOutIndy.Enabled       := False;
   FJSScript                  := TstringList.create;
-  FAutoUpdate                    := True;
+  FAutoUpdate                := True;
   FJSURL                     := TInjectJS_JSUrlPadrao;
-  FInjectJSDefine                := TInjectJSDefine.Create;
-  FReady                         := False;
+  FInjectJSDefine            := TInjectJSDefine.Create;
+  FReady                     := False;
 end;
 
 procedure TInjectJS.DelFileTemp;
@@ -163,6 +175,7 @@ end;
 destructor TInjectJS.Destroy;
 begin
   DelFileTemp;
+  FreeAndNil(FTImeOutIndy);
   FreeAndNil(FInjectJSDefine);
   FreeAndNil(FJSScript);
   inherited;
@@ -179,6 +192,12 @@ begin
   FJSScript := Value;
 end;
 
+
+procedure TInjectJS.SetTimeOutGetJS(const Value: Integer);
+begin
+  FTimeOutGetJS         := Value;
+  FTImeOutIndy.Interval := FTimeOutGetJS * 1000;
+end;
 
 function TInjectJS.UpdateNow: Boolean;
 begin
@@ -270,16 +289,20 @@ end;
 
 function TInjectJS.PegarLocalJS_Web: String;
 var
-  LHttp  : TIdHTTP;
-  LSalvamento: String;
-  LRet   : TStringList;
+  LHttp        : TIdHTTP;
+  LSalvamento  : String;
+  LRet         : TStringList;
+  IdAntiFreeze1: TIdAntiFreeze;
 begin
-  LSalvamento := IncludeTrailingPathDelimiter(GetEnvironmentVariable('Temp'))+'GetTInject.tmp';
-  LRet        := TStringList.Create;
+  LSalvamento   := IncludeTrailingPathDelimiter(GetEnvironmentVariable('Temp'))+'GetTInject.tmp';
+  LRet          := TStringList.Create;
+  IdAntiFreeze1 := TIdAntiFreeze.Create(nil);
   Try
     DeleteFile(PwideChar(LSalvamento));
     try
       LHttp       := TIdHTTP.Create(nil);
+      _Indy       := LHttp;
+      FTImeOutIndy.Enabled := True;
       LRet.text   := LHttp.Get(TInjectJS_JSUrlPadrao);
       LimpaConteudoSite(LRet);
       if not ValidaJs(LRet) Then
@@ -288,6 +311,8 @@ begin
       LRet.Clear
     end;
   Finally
+    FreeAndNil(IdAntiFreeze1);
+    FTImeOutIndy.Enabled := False;
     if LRet.Count > 1 then
     Begin
       if not FileExists(LSalvamento) then
@@ -383,6 +408,16 @@ procedure TInjectJS.Loaded;
 begin
   inherited;
   UpdateNow;
+end;
+
+procedure TInjectJS.OnTimeOutIndy(Sender: TObject);
+begin
+  FTImeOutIndy.Enabled   := False;
+  try
+    if Assigned(_Indy) then
+      _Indy.Disconnect(true);
+  Except
+  end;
 end;
 
 end.

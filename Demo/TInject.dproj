@@ -142,6 +142,9 @@
                 <Source>
                     <Source Name="MainSource">TInject.dpr</Source>
                 </Source>
+                <Excluded_Packages>
+                    <Excluded_Packages Name="C:\Users\Public\Documents\Embarcadero\Studio\19.0\Bpl\JvMMDesign250.bpl">JVCL Multimedia and Image Components</Excluded_Packages>
+                </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>
                 <Platform value="Win32">True</Platform>

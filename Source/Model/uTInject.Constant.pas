@@ -26,7 +26,7 @@ unit uTInject.Constant;
 
 interface
 
-Uses Winapi.Messages, System.SysUtils;
+Uses Winapi.Messages, System.SysUtils, typinfo;
 
 Const
   //Uso GLOBAL
@@ -56,7 +56,7 @@ Const
   ConfigCEF_ExceptVersaoErrada    = 'Sua versão do CEF4 não é compatível, por favor, atualize suas biblioteca em https://github.com/salvadordf/CEF4Delphi';
   ConfigVersaoCompInvalida        = 'Sua versão do componente Tinject não é compatível com o novo JavaScript, por favor, atualize suas biblioteca em http://www.tinject.com.br/';
 
-  //Usado no TInjectJS
+  //Usado no TInjectJS               'https://raw.githubusercontent.com/mikelustosa/Projeto-TInject/master/Demo/BIN/js.abr'; //
   TInjectJS_JSUrlPadrao            = 'http://www.tinject.com.br/viewtopic.php?f=3&t=10&p=17&sid=84550ac7f5d0134a129eb73144943991#p17';
   TInjectJS_JSLinhasMInimas        = 1400;
 
@@ -83,16 +83,25 @@ Const
   //FrmConsole_JS_VAR_
   //FrmConsole_JS_
   //FrmConsole_JS_
-  //FrmConsole_JS_  
   //FrmConsole_JS_
-  
-  Function VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
-  Function FrmConsole_JS_AlterVar(var PScript:String;  PNomeVar: String;  Const PValor:String):String;
+  //FrmConsole_JS_
+
+
+  type
+    TTypeHeader = (Th_None = 0,
+                     Th_getAllContacts  = 1,  Th_GetAllChats = 2,     Th_getUnreadMessages = 3,
+                     Th_GetBatteryLevel = 4,  Th_getQrCodeForm = 5,   Th_getQrCodeWEB = 6,
+                     Th_getMyNumber = 7,      Th_Disconect= 8
+                     );
+
+    Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
+    Function   FrmConsole_JS_AlterVar(var PScript:String;  PNomeVar: String;  Const PValor:String):String;
+    function   StrToTypeHeader(PText: string): TTypeHeader;
 
 implementation
 
 uses
-  System.JSON, System.Classes;
+  System.JSON, System.Classes, Vcl.Dialogs;
 
 
 Function VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
@@ -142,6 +151,23 @@ Begin
   result  := PScript;
 end;
 
+
+function   StrToTypeHeader(PText: string): TTypeHeader;
+var
+  I: Integer;
+  LNome: String;
+Begin
+  Result  := Th_None;
+  for I := 0 to 20 do
+  Begin
+    LNome   := LowerCase(GetEnumName(TypeInfo(TTypeHeader), ord(TTypeHeader(i))));
+    if POs(LowerCase(PText), LNome) > 0 then
+    Begin
+      Result := TTypeHeader(i);
+      break;
+    End;
+  End;
+End;
 
 end.
 

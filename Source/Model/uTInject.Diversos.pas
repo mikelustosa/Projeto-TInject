@@ -29,10 +29,11 @@ interface
 
 function PrettyJSON(JsonString: String):String;
 
+
 implementation
 
 uses
-  System.JSON, REST.Json;
+  System.JSON, REST.Json, Vcl.Imaging.GIFImg,   Vcl.Graphics, Vcl.ExtCtrls;
 
 
 function PrettyJSON(JsonString: String):String;
@@ -43,5 +44,8 @@ begin
     result := TJSON.Format(AObj);
     AObj.Free;
 end;
+
+
+
 
 end.

@@ -81,6 +81,7 @@ type
       source: ustring; line: Integer; out Result: Boolean);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    Procedure ProcessQrCode(Var pClass: TObject);
   protected
     // You have to handle this two messages to call NotifyMoveOrResizeStarted or some page elements will be misaligned.
     procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
@@ -94,24 +95,18 @@ type
     { Private declarations }
     FConectado: Boolean;
     FTimerConnect: TTimer;
+    FOnResultMisc : TResulttMisc;
 
     procedure OnTimerConnect(Sender: TObject);
-    procedure ExecuteJS(PScript: WideString; Purl:String = 'about:blank'; pStartline: integer=0);
+    procedure ExecuteJS(PScript: WideString;  Purl:String = 'about:blank'; pStartline: integer=0);
     procedure LogConsoleMessage(const AMessage: String);
-    procedure SetAllContacts(JsonText: String);
-    procedure SetAllChats(JsonText: String);
-    procedure SetUnReadMessages(JsonText: String);
-    procedure SetQrCode(JsonText: String);
-    procedure SetQrCodeWEB(JsonText: String);
-    procedure SetBatteryLevel(JsonText: string);
-    procedure SetMyNumber(JsonText: string);
     procedure loadWEBQRCode(st: string);
-
   public
     { Public declarations }
     JS1 : string;
     _Qrcode, WEBQrCode: string;
     i: integer;
+    Property  OnResultMisc : TResulttMisc  Read FOnResultMisc  Write FOnResultMisc;
     Procedure Connect;
     Procedure DisConnect;
     procedure Send(vNum, vText:string);
@@ -198,7 +193,7 @@ begin
      Chromium1.NotifyMoveOrResizeStarted;
 end;
 
-procedure TFrmConsole.ExecuteJS(PScript: WideString; Purl:String = 'about:blank'; pStartline: integer=0);
+procedure TFrmConsole.ExecuteJS(PScript: WideString;  Purl:String; pStartline: integer);
 begin
   if Assigned(GlobalCEFApp) then
   Begin
@@ -210,7 +205,9 @@ begin
      raise Exception.Create(ConfigCEF_ExceptConnetWhats);
 
   if Chromium1.Browser <> nil then
-     Chromium1.Browser.MainFrame.ExecuteJavaScript(PScript, Purl, pStartline);
+  Begin
+    Chromium1.Browser.MainFrame.ExecuteJavaScript(PScript, Purl, pStartline);
+  End;
 end;
 
 procedure TFrmConsole.WEBmonitorQRCode;
@@ -237,6 +234,8 @@ begin
     If GlobalCEFApp.InjectWhatsApp.Auth then
     Begin
       ExecuteJS(GlobalCEFApp.InjectWhatsApp.InjectJS.JSScript.Text);
+      GetMyNumber;
+
       //Auto monitorar mensagens não lidas
       If GlobalCEFApp.InjectWhatsApp.Config.AutoMonitor then
          GlobalCEFApp.InjectWhatsApp.StartMonitor;
@@ -245,6 +244,46 @@ begin
   finally
     FTimerConnect.Enabled := lNovoStatus;
   end;
+end;
+
+procedure TFrmConsole.ProcessQrCode(var pClass: TObject);
+var
+  LQr: TResultQRCodeClass;
+begin
+  try
+    if not (pClass is TQrCodeClass) then    Exit;
+    If not assigned(FrmQRCode) then
+       Exit;
+
+    if (TQR_Http in TQrCodeClass(pClass).Tags) or (TQR_Img in TQrCodeClass(pClass).Tags) then
+    Begin
+      FrmQRCode.Close;
+      FreeAndNil(FrmQRCode);
+      Exit;
+    End;
+
+
+    LQr := TResultQRCodeClass(TQrCodeClass(pClass).Result);
+      //e difente.. portanto.. verificamos se existe imagem la no form.. se existir caimos fora!! se nao segue o fluxo
+    if not LQr.AImageDif then
+    Begin
+      if FrmQRCode.Timg_QrCode.Picture <> nil Then
+         Exit;
+    End;
+
+    FrmQRCode.Timg_QrCode.Picture.Assign(LQr.AQrCodeImage);
+    FrmQRCode.SetView(FrmQRCode.Timg_QrCode);
+    loadWEBQRCode(LQr.AQrCode);
+    If Assigned(GlobalCEFApp.InjectWhatsApp) Then
+    Begin
+      If Assigned(GlobalCEFApp.InjectWhatsApp.OnGetQrCode) then
+         GlobalCEFApp.InjectWhatsApp.OnGetQrCode(Self);
+    End;
+  Except
+    FrmQRCode.SetView(FrmQRCode.Timg_Animacao);
+    //pode receber um ABORT;
+  end;
+
 end;
 
 procedure TFrmConsole.GetAllContacts;
@@ -416,78 +455,91 @@ procedure TFrmConsole.Chromium1ConsoleMessage(Sender: TObject;
   const browser: ICefBrowser; level: Cardinal; const message, source: ustring;
   line: Integer; out Result: Boolean);
 var
-  AResponse: TResponseConsoleMessage;
+  AResponse  : TResponseConsoleMessage;
+  LOutClass  : TObject;
+  LResultStr : String;
 begin
-    begin
-      AResponse := TResponseConsoleMessage.FromJsonString( message );
-      if AResponse = nil then Exit;
-      try
-        try
-          if(AResponse.Result <> '{"result":[]}') then
-          begin
-            if assigned(AResponse) then
-            begin
-              if AResponse.Name = 'getAllContacts' then
-              begin
+  if (not Assigned(GlobalCEFApp.InjectWhatsApp)) or (Application.Terminated) then
+     Exit;
 
-                 begin
-                  LogConsoleMessage( PrettyJSON(AResponse.Result) );
-                  SetAllContacts( AResponse.Result );
-                 end;
-              end;
 
-              if AResponse.Name = 'getAllChats' then
-              begin
-                LogConsoleMessage( PrettyJSON(AResponse.Result) );
-                SetAllChats( AResponse.Result );
-              end;
+  AResponse := TResponseConsoleMessage.Create( message );
+  try
+    if AResponse = nil then
+       Exit;
 
-              if AResponse.Name = 'getUnreadMessages' then
-              begin
-                LogConsoleMessage( PrettyJSON(AResponse.Result) );
-                SetUnreadMessages( AResponse.Result );
-              end;
+    LResultStr := AResponse.Result;
+    case Aresponse.TypeHeader of
+      Th_getAllContacts   : Begin
+                              if Assigned(GlobalCEFApp.InjectWhatsApp.AllContacts) then
+                                 GlobalCEFApp.InjectWhatsApp.AllContacts.Free;
 
-              if AResponse.Name = 'getBatteryLevel' then
-              begin
-                if POS('undefined', AResponse.Result ) <= 0 then
-                begin
-                  LogConsoleMessage( PrettyJSON(AResponse.Result) );
-                  SetBatteryLevel( AResponse.Result );
-                end;
-              end;
+                              GlobalCEFApp.InjectWhatsApp.AllContacts := TRetornoAllContacts.Create(LResultStr);
+                              if Assigned(GlobalCEFApp.InjectWhatsApp.OnGetContactList ) then
+                                 GlobalCEFApp.InjectWhatsApp.OnGetContactList(Self);
+                            End;
 
-              if AResponse.name = 'getQrCode' then
-              begin
-                SetQrCode( message );
-              end;
+      Th_GetAllChats      : Begin
+                              if Assigned(GlobalCEFApp.InjectWhatsApp.AllChats) then
+                                 GlobalCEFApp.InjectWhatsApp.AllChats.Free;
 
-              if AResponse.name = 'getQrCodeWEB' then
-              begin
-                SetQrCodeWEB( message );
-              end;
+                              GlobalCEFApp.InjectWhatsApp.AllChats := TChatList.Create(LResultStr);
+                              if Assigned(GlobalCEFApp.InjectWhatsApp.OnGetChatList) then
+                                 GlobalCEFApp.InjectWhatsApp.OnGetChatList(Self);
+                            End;
 
-              if AResponse.Name = 'getMyNumber' then
-              begin
-                if POS('undefined', AResponse.Result ) <= 0 then
-                begin
-                  LogConsoleMessage( PrettyJSON(AResponse.Result) );
-                  SetMyNumber( AResponse.Result );
-                end;
-              end;
-            end;
-          end;
-          finally
-            FreeAndNil(AResponse);
-          end;
-        except
-          on E:Exception do
-          begin
-            Application.MessageBox(PChar(E.Message),'TInject', mb_iconError + mb_ok);
-            raise;
-          end;
-        end;
+      Th_getUnreadMessages: begin
+                               LOutClass := TChatList.Create(LResultStr);
+                               if Assigned(GlobalCEFApp.InjectWhatsApp.OnGetUnReadMessages ) then
+                                  GlobalCEFApp.InjectWhatsApp.OnGetUnReadMessages(TChatList(LOutClass));
+                               FreeAndNil(LOutClass);
+                            end;
+
+{
+      Th_getQrCodeForm :    Begin
+                              try
+                                LOutClass := TQrCodeClass.Create(message, [], []);
+                                ProcessQrCode(LOutClass);
+                              Except
+                              end;
+                            End;
+
+      Th_getQrCodeWEB     : Begin
+                              LOutClass := TQrCodeClass.Create(message, [], []);
+                              loadWEBQRCode(TQrCodeClass(LOutClass).Result.AQrCode);
+                            End;
+
+ }
+      Th_GetBatteryLevel  : begin
+//                              LOutClass := TRetornoAllContacts.Create(LResultStr);
+                              If Assigned(FOnResultMisc) Then
+                              Begin
+                                LOutClass := TResponseBattery.Create(LResultStr);
+                                if Assigned(FOnResultMisc) then
+                                   FOnResultMisc(Aresponse.TypeHeader, TResponseBattery(LOutClass).Result);
+                                FreeAndNil(LOutClass);
+                              End;
+                            end;
+
+      Th_getMyNumber      : Begin
+                              If Assigned(FOnResultMisc) Then
+                              Begin
+                                LOutClass := TResponseMyNumber.Create(LResultStr);
+                                if Assigned(FOnResultMisc) then
+                                   FOnResultMisc(Aresponse.TypeHeader, TResponseMyNumber(LOutClass).Result);
+                                FreeAndNil(LOutClass);
+                              End;
+                            End;
+
+            Th_Disconect  : Begin
+                              If Assigned(FOnResultMisc) Then
+                                 FOnResultMisc(Aresponse.TypeHeader, '');
+                            End;
+
     end;
+  finally
+    FreeAndNil(AResponse);
+  end;
 end;
 
 
@@ -629,69 +681,13 @@ end;
 
 procedure TFrmConsole.loadQRCode(st: string);
 begin
-  if assigned(FrmConsole) then
-     FrmQRCode.loadQRCode(st);
+
 end;
 
 procedure TFrmConsole.LogConsoleMessage(const AMessage: String);
 begin
 //Esse cara esta usando uma UNIT que ninguem TEM!!!   //uCEFWinControl   ->> uCEFChromiumCore,
 //  TFile.AppendAllText(ExtractFilePath(Application.ExeName) + 'ConsoleMessage.log',  AMessage, TEncoding.ASCII);
-end;
-
-procedure TFrmConsole.SetAllContacts(JsonText: String);
-begin
-  if not Assigned(GlobalCEFApp.InjectWhatsApp) then
-     Exit;
-
-  with GlobalCEFApp.InjectWhatsApp do
-  begin
-    if Assigned(AllContacts) then
-       AllContacts.Free;
-
-    AllContacts := TRetornoAllContacts.FromJsonString( JsonText );
-
-    //Dispara Notify
-    if Assigned( OnGetContactList ) then
-       OnGetContactList(Self);
-  end;
-end;
-
-procedure TFrmConsole.SetBatteryLevel(JsonText: string);
-var
-  AJson: TJSONObject;
-begin
-  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
-       Exit;
-
-  with GlobalCEFApp.InjectWhatsApp do
-  begin
-    AJson := TJSonObject.ParseJSONValue(JsonText) as TJSONObject;
-    AGetBatteryLevel := ( AJson.getValue('result').toJSON );
-
-     //Dispara Notify
-    if Assigned( OnGetBatteryLevel ) then
-        OnGetBatteryLevel(Self);
-  end;
-end;
-
-procedure TFrmConsole.SetMyNumber(JsonText: string);
-var
-  AJson: TJSONObject;
-begin
-  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
-       Exit;
-
-  with GlobalCEFApp.InjectWhatsApp do
-  begin
-    AJson := TJSonObject.ParseJSONValue(JsonText) as TJSONObject;
-    AGetMyNumber:= ( AJson.getValue('result').toJSON );
-
-     //Dispara Notify
-    if Assigned( OnGetMyNumber ) then
-        OnGetMyNumber(Self);
-  end;
-
 end;
 
 procedure TFrmConsole.loadWEBQRCode(st: string);
@@ -717,111 +713,6 @@ begin
     FreeAndNil(LOutput);
   end;
 end;
-
-procedure TFrmConsole.SetQrCode(JsonText: String);
-var
-  LQrCode: TQrCodeClass;
-  LCode :String;
-begin
-  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
-     Exit;
-  if not Assigned( FrmQRCode ) then
-     Exit;
-
-  with GlobalCEFApp.InjectWhatsApp do
-  begin
-    LCode :=  copy(JsonText, 42, 4);
-    if (LCode = 'http') or (LCode = '/img') then
-    begin
-      FrmQRCode.Timer1.Enabled := false;
-      FrmQRCode.close;
-      exit
-    end;
-
-    LQrCode := TQrCodeClass.FromJsonString( JsonText );
-    try
-      _Qrcode := LQrCode.result.AQrCode;
-      If assigned(FrmQRCode) then
-      begin
-        FrmQRCode.loadQRCode(_Qrcode);
-        FrmQRCode.Image2.visible := false;
-      End else
-      Begin
-        //Caso seja solicitação via API REST
-        loadWEBQRCode(_Qrcode);
-      End;
-
-      //Dispara Notify
-      If Assigned( OnGetQrCode ) then
-         OnGetQrCode(Self);
-    finally
-      FreeAndNil(LQrCode);
-    end;
-  end;
-end;
-
-procedure TFrmConsole.SetQrCodeWEB(JsonText: String);
-var
-   code: string;
-begin
-  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
-     Exit;
-
-  //if not Assigned( frm_view_qrcode ) then Exit;
-
-  with GlobalCEFApp.InjectWhatsApp do
-  begin
-    code :=  copy(JsonText, 42, 4);
-    if (code = 'http') or (code = '/img') then
-    begin
-      FrmQRCode.Timer1.Enabled := false;
-      FrmQRCode.close;
-      exit
-    end;
-
-    AQrCode := TQrCodeClass.FromJsonString( JsonText );
-    _Qrcode := AQrCode.result.AQrCode;
-    loadWEBQRCode(_Qrcode);
-  end;
-end;
-
-procedure TFrmConsole.SetUnReadMessages(JsonText: String);
-var
-  AChats: TChatList;
-begin
-  if not Assigned( GlobalCEFApp.InjectWhatsApp ) then
-     Exit;
-
-  AChats := TChatList.FromJsonString( JsonText );
-  try
-    with GlobalCEFApp.InjectWhatsApp do
-    begin
-      //Dispara Notify
-      if Assigned( OnGetUnReadMessages ) then
-         OnGetUnReadMessages( AChats );
-    end;
-  finally
-    AChats.Free;
-  end;
-end;
-
-procedure TFrmConsole.SetAllChats(JsonText: String);
-begin
-  if not Assigned(GlobalCEFApp.InjectWhatsApp) then
-     Exit;
-
-  With GlobalCEFApp.InjectWhatsApp do
-  begin
-    if Assigned(AllChats) then
-       AllChats.Free;
-
-    AllChats := TChatList.FromJsonString(JsonText);
-     //Dispara Notify
-    if Assigned(OnGetChatList) then
-       OnGetChatList(Self);
-  end;
-end;
-
 
 end.
 

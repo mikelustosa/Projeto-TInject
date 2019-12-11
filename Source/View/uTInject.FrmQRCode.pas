@@ -28,25 +28,23 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Imaging.GIFImg;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Imaging.GIFImg, JvGIF;
 
 type
   TFrmQRCode = class(TForm)
-    Image1: TImage;
-    Timer1: TTimer;
-    Image2: TImage;
+    Timg_QrCode: TImage;
+    Timg_Animacao: TImage;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure FormShow(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
     procedure FormCreate(Sender: TObject);
   private
+    FCaptionSucess: String;
+    FCaptionWait: String;
     { Private declarations }
-
   public
     { Public declarations }
-    qrCode: string;
-    procedure loadQRCode(st: string);
-
+    Procedure  SetView(Const PImage: TImage);
+    Property   CaptionWait   : String     Read  FCaptionWait    Write FCaptionWait;
+    Property   CaptionSucess : String     Read  FCaptionSucess  Write FCaptionSucess;
   end;
 
 var
@@ -54,7 +52,8 @@ var
 
 implementation
 
-uses uTInject, System.NetEncoding, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage;
+uses uTInject, System.NetEncoding, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage,
+  uTInject.ConfigCEF;
 
 {$R *.dfm}
 
@@ -66,69 +65,50 @@ end;
 
 procedure TFrmQRCode.FormCreate(Sender: TObject);
 begin
-  (Image2.Picture.Graphic as TGIFImage ).Animate       := True;
-  (Image2.Picture.Graphic as TGIFImage ).AnimationSpeed:= 500;
+  CaptionWait           := 'Carregando QRCode...';
+  CaptionSucess         := 'Aponte seu celular agora!';
+  Timg_QrCode.Picture   := Nil;
+  AutoSize              := False;
+  Timg_Animacao.Visible := True;
+  Timg_QrCode.Visible   := False;
+  (Timg_Animacao.Picture.Graphic as TGIFImage).AnimationSpeed  := 500;
+  (Timg_Animacao.Picture.Graphic as TGIFImage).Animate         := True;
+  SetView(Timg_Animacao);
 end;
 
-procedure TFrmQRCode.FormShow(Sender: TObject);
-begin
-  timer1.enabled := true;
-end;
-
-procedure TFrmQRCode.loadQRCode(st: string);
+procedure TFrmQRCode.SetView(const PImage: TImage);
 var
-  LInput: TMemoryStream;
-  LOutput: TMemoryStream;
-  stl: TStringList;
- {$IFNDEF VER330}
-  PNG: TpngImage;
- {$ENDIF}
+  LImage : TImage;
 begin
-  //by Aurino Inovatechi 19/11/2019 review Mike
-  LInput  := TMemoryStream.Create;
-  LOutput := TMemoryStream.Create;
-  stl     := TStringList.Create;
+  AutoSize := False;
   try
-    stl.Add(copy(st, 23, length(st)));
-    stl.SaveToStream(LInput);
-
-    LInput.Position := 0;
-    TNetEncoding.Base64.Decode( LInput, LOutput );
-    LOutput.Position := 0;
-
-    //Delphi 10.3
-    {$IFDEF VER330}
-      if LOutput.size > 0 then
-        Image1.Picture.LoadFromStream(LOutput);
-    {$ELSE}
-
-    PNG := TPngImage.Create;
-    try
-      //Delphi 10.1,2 ....
-      if LOutput.size > 0 then
-         PNG.LoadFromStream(LOutput);
-      image1.Picture.Graphic := PNG;
-    finally
-      PNG.Free;
-    end;
-    {$ENDIF}
-
+    if AnsiUpperCase(PImage.Name) = AnsiUpperCase('Timg_Animacao') then
+       Timg_Animacao.Visible := True else
+       Timg_Animacao.Visible := False;
+    Timg_QrCode.Visible := not Timg_Animacao.Visible;
   finally
-    LInput.Free;
-    LOutput.Free;
-    FreeAndNil(stl);
+    if not Timg_QrCode.Visible then
+    begin
+      LImage  := Timg_Animacao;
+      Caption := CaptionWait;
+      Timg_QrCode.Picture := Nil;
+    end else
+    begin
+      LImage  := Timg_QrCode;
+      Caption := CaptionSucess;
+    end;
+
+    LImage.Top       := Timg_QrCode.Margins.Top;
+    LImage.Left      := Timg_QrCode.Margins.Left;
+    LImage.AutoSize  := true;
+    LImage.AutoSize  := False;
+    LImage.Width     := LImage.Width  + Timg_QrCode.Margins.Left;
+    LImage.Height    := LImage.Height + Timg_QrCode.Margins.Top;
+    LImage.Center    := True;
+
+   (Timg_Animacao.Picture.Graphic as TGIFImage).Animate         := Timg_Animacao.Visible;
+    AutoSize := True;
   end;
 end;
-
-procedure TFrmQRCode.Timer1Timer(Sender: TObject);
-var
-  _inject : TInjectWhatsapp;
-begin
-  if assigned( _inject ) then
-     _inject.monitorQrCode;
-
-  if Image1.Picture.Graphic <> nil    then
-     FrmQRCode.Caption := 'TInject - Aponte seu celular agora!';
- end;
 
 end.

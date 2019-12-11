@@ -52,7 +52,9 @@ type
   public
     constructor Create(AOwner: TComponent); override;
 
-    Function  Format(PNum:String): String;
+    Function  FormatIn(PNum:String): String;
+    Function  FormatOut(PNum:String): String;
+
     property  LastType    : TTypeNumber     Read FLastType;
     property  LastAdjuste : String          Read FLastAdjuste;
     property  LastDDI     : String          Read FLastDDI;
@@ -77,7 +79,7 @@ uses
 { TAdjustNumber }
 
 
-function TInjectAdjusteNumber.Format(PNum: String): String;
+function TInjectAdjusteNumber.FormatIn(PNum: String): String;
 var
   LClearNum: String;
   i: Integer;
@@ -122,6 +124,20 @@ begin
 end;
 
 
+function TInjectAdjusteNumber.FormatOut(PNum: String): String;
+var
+  LDDi, LDDD, Lresto, LMask : String;
+begin
+ LDDi   := Copy(PNum, 0, FLengthDDI);
+ LDDD   := Copy(PNum, FLengthDDI + 1, FLengthDDD);
+ Lresto := Copy(PNum, FLengthDDI + FLengthDDD + 1, LengthPhone);
+ if LengthPhone <= 8 then
+    LMask := '0000\-0000;0;' else
+    LMask := '000\.0000\-0000;0;';
+
+ Result :=  '+' + LDDi + ' (' + LDDD + ') ' + FormatMaskText(LMask, Lresto );
+end;
+
 procedure TInjectAdjusteNumber.SetPhone(const Pnumero: String);
 begin
   FLastType         := TypUndefined;
@@ -146,7 +162,7 @@ begin
     FLastDDI :=  Copy(Pnumero, 0,           LengthDDI);
     FLastDDD :=  Copy(Pnumero, LengthDDI+1, LengthDDD);
     FLastNumber :=  Copy(Pnumero, LengthDDI+LengthDDD+1, LengthPhone);
-    FLastNumberFormat := '+' + FLastDDI + ' (' + FLastDDD + ') ' + FormatMaskText('0\.0000\-0000;0;', FLastNumber)
+    FLastNumberFormat := FormatOut(FLastNumber);
   End;
 end;
 

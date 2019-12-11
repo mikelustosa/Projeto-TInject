@@ -152,8 +152,9 @@ end;
 
 procedure TCEFConfig.UpdateIniFile(const PSection, PKey, PValue: String);
 begin
-  if LowerCase(FDefPathLocais.ReadString(PSection, PKey, '')) <> LowerCase(PValue) then
-  Begin
+  if (LowerCase(FDefPathLocais.ReadString(PSection, PKey, '')) <> LowerCase(PValue)) or
+     (FDefPathLocais.ValueExists(PSection, PKey) = false) Then
+   Begin
     FDefPathLocais.WriteString(PSection, PKey, PValue);
     Falterdo := true;
   End;
@@ -330,6 +331,7 @@ begin
     result := False;
     Exit;
   End;
+
 
   Self.EnableGPU              := SetEnableGPU;
   Self.DisableFeatures        := SetDisableFeatures;
