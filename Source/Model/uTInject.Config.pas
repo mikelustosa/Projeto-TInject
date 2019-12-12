@@ -30,47 +30,62 @@ unit uTInject.Config;
 interface
 
 uses
-  System.Classes;
+  System.Classes, uTInject.Classes;
 
 
 Type
   TInjectConfig = class(TComponent)
-  public
+  private
+    FControlSend    : Boolean;
     FAutoStart      : Boolean;
-    FAutoMonitor    : Boolean;
     FSecondsMonitor : Integer;
     FAutoDelete     : Boolean;
     FAutoDelay      : Integer;
     FSyncContacts   : Boolean;
     FShowRandom     : Boolean;
-  private
-    procedure SetAutoMonitor(const Value: Boolean);
+    FLowBattery: SmallInt;
+    FControlSendTimeSec: SmallInt;
     procedure SetSecondsMonitor(const Value: Integer);
+    procedure SetLowBattery(const Value: SmallInt);
+    procedure SetControlSendTimeSec(const Value: SmallInt);
   published
-    property AutoStart    : Boolean  read FAutoStart      write FAutoStart default False;
-    property AutoMonitor  : boolean  read FAutoMonitor    write SetAutoMonitor          default True;
-    property SecondsMonitor: Integer read FSecondsMonitor write SetSecondsMonitor default 3;
-    property AutoDelete   : Boolean  read FAutoDelete     write FAutoDelete;
-    property AutoDelay    : integer  read FAutoDelay      write FAutoDelay  default 2500;
-    property SyncContacts : Boolean  read FSyncContacts   write FSyncContacts;
-    property ShowRandom   : Boolean  read FShowRandom     write FShowRandom;
+    property ControlSend          : Boolean   read FControlSend           write FControlSend               default True;
+    property ControlSendTimeSec   : SmallInt  read FControlSendTimeSec    write SetControlSendTimeSec      default 8;
+    property AutoStart     : Boolean  read FAutoStart      write FAutoStart        default False;
+    property AutoDelete    : Boolean  read FAutoDelete     write FAutoDelete;
+    property AutoDelay     : integer  read FAutoDelay      write FAutoDelay        default 2500;
+
+    property LowBatteryIs  : SmallInt read FLowBattery     write SetLowBattery     default 30;
+    property SecondsMonitor: Integer  read FSecondsMonitor write SetSecondsMonitor default 3;
+    property SyncContacts  : Boolean  read FSyncContacts   write FSyncContacts;
+    property ShowRandom    : Boolean  read FShowRandom     write FShowRandom;
   end;
 
 implementation
 
+uses
+  System.SysUtils, uTInject.Constant;
+
 { TInjectConfig }
 
-procedure TInjectConfig.SetAutoMonitor(const Value: boolean);
+procedure TInjectConfig.SetControlSendTimeSec(const Value: SmallInt);
 begin
-  FAutoMonitor := Value;
-  if SecondsMonitor < 1 then
-     SecondsMonitor := 3; //Default Value;
+  FControlSendTimeSec := Value;
+  if FControlSendTimeSec < 3 then
+     FControlSendTimeSec := 3;
 end;
 
-procedure TInjectConfig.SetSecondsMonitor(const Value: Integer);
+procedure TInjectConfig.SetLowBattery(const Value: SmallInt);
+begin
+  if Not Value in [5..90] then
+    raise Exception.Create(Config_ExceptSetBatteryLow);
+  FLowBattery := Value;
+end;
+
+
+Procedure TInjectConfig.SetSecondsMonitor(const Value: Integer);
 begin
   FSecondsMonitor := Value;
-
   //Não permitir que fique zero ou negativo.
   if Value < 1 then
      FSecondsMonitor := 3;

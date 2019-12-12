@@ -93,6 +93,7 @@ type
     FStartTimeOut: Cardinal;
     FErrorInt: Boolean;
     FPathJsUpdate: TdateTime;
+    FLogConsole: String;
     procedure SetDefault;
     procedure SetPathCache   (const Value: String);
     procedure SetPathFrameworkDirPath(const Value: String);
@@ -103,14 +104,14 @@ type
     function  TestaOk                (POldValue, PNewValue: String): Boolean;
     procedure SetChromium            (const Value: TChromium);
     Function  VersaoCEF4Aceita: Boolean;
-    Procedure  UpdateIniFile(Const PSection, PKey, PValue :String);
+    Procedure UpdateIniFile(Const PSection, PKey, PValue :String);
   public
     SetEnableGPU         : Boolean;
     SetDisableFeatures   : String;
     SetLogSeverity       : Boolean;
     Procedure  UpdateDateIniFile;
     function   StartMainProcess : boolean;
-    procedure  FreeChromium;
+//    procedure  FreeChromium;
     Procedure  SetError;
 
     constructor Create;
@@ -118,7 +119,7 @@ type
 
     Function   PathJsOverdue        : Boolean;
     property   PathJsUpdate         : TdateTime         Read FPathJsUpdate;
-    Property   InjectWhatsApp       : TInjectWhatsapp   Read FInject         Write FInject;
+    Property   InjectWhatsApp       : TInjectWhatsapp   Read FInject          Write FInject;
     property   PathFrameworkDirPath : String       Read FPathFrameworkDirPath Write SetPathFrameworkDirPath;
     property   PathResourcesDirPath : String       Read FPathResourcesDirPath Write SetPathResourcesDirPath;
     property   PathLocalesDirPath   : String       Read FPathLocalesDirPath   Write SetPathLocalesDirPath;
@@ -126,6 +127,7 @@ type
     property   PathUserDataPath     : String       Read FPathUserDataPath     Write SetPathUserDataPath;
     property   PathLogFile          : String       Read FPathLogFile          Write SetPathLogFile;
     property   PathJs               : String       Read FPathJS;
+    property   LogConsole           : String       Read FLogConsole           Write FLogConsole;
     Property   StartTimeOut         : Cardinal     Read FStartTimeOut         Write FStartTimeOut;
     Property   Chromium             : TChromium    Read FChromium             Write SetChromium;
     Property   ChromiumForm         : TForm        Read FChromiumForm;
@@ -217,6 +219,10 @@ begin
   Pathcache               := FDefPathLocais.ReadString('Path Defines', 'Cache',     '');
   PathUserDataPath        := FDefPathLocais.ReadString('Path Defines', 'Data User', '');
   PathLogFile             := FDefPathLocais.ReadString('Path Defines', 'Log File',  '');
+  LogConsole              := FDefPathLocais.ReadString('Path Defines', 'Log Console',  '');
+  if LogConsole <> '' Then
+     LogConsole  := IncludeTrailingPathDelimiter(ExtractFilePath(LogConsole));
+
 
   Self.FrameworkDirPath   := '';
   Self.ResourcesDirPath   := '';
@@ -332,6 +338,9 @@ begin
     Exit;
   End;
 
+  if LogConsole <> '' Then
+     LogConsole  := IncludeTrailingPathDelimiter(ExtractFilePath(LogConsole));
+
 
   Self.EnableGPU              := SetEnableGPU;
   Self.DisableFeatures        := SetDisableFeatures;
@@ -359,6 +368,7 @@ begin
   UpdateIniFile('Path Defines', 'Log File',      Self.LogFile);
   UpdateIniFile('Path Defines', 'GPU',           SetEnableGPU.ToString);
   UpdateIniFile('Path Defines', 'Log Severity',  SetLogSeverity.ToString);
+  UpdateIniFile('Path Defines', 'Log Console',   LogConsole);
 
 
   UpdateIniFile('Tinject Comp', 'TInject Versão',   TInjectVersion);
@@ -411,12 +421,12 @@ end;
 destructor TCEFConfig.Destroy;
 begin
   FreeandNil(FDefPathLocais);
-  FreeChromium;
+//  FreeChromium;
 
   inherited;
 end;
 
-
+{
 procedure TCEFConfig.FreeChromium;
 var
   LVar        : Boolean;
@@ -456,6 +466,7 @@ begin
    Except
    end;
 end;
+}
 
 function TCEFConfig.PathJsOverdue: Boolean;
 begin

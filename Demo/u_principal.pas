@@ -29,22 +29,10 @@ type
     Timer1: TTimer;
     PageControl1: TPageControl;
     TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
-    whatsOff: TImage;
-    whatsOn: TImage;
-    chk_grupos: TCheckBox;
-    chk_apagarMsg: TCheckBox;
-    chk_AutoResposta: TCheckBox;
-    edtDelay: TEdit;
-    Label8: TLabel;
     memo_unReadMessagen: TMemo;
-    imgQrcode: TImage;
-    lblStatus: TLabel;
-    lblQrcode: TLabel;
     StatusBar1: TStatusBar;
-    lblNumeroConectado: TLabel;
     groupEnvioMsg: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
@@ -62,13 +50,34 @@ type
     listaContatos: TListView;
     Button2: TButton;
     Splitter1: TSplitter;
+    ed_num: TComboBox;
+    Pnl_Config: TPanel;
+    Label8: TLabel;
+    chk_grupos: TCheckBox;
+    chk_apagarMsg: TCheckBox;
+    chk_AutoResposta: TCheckBox;
+    edtDelay: TEdit;
     CheckBox1: TCheckBox;
     Pnl_FONE: TPanel;
     Edt_LengDDD: TLabeledEdit;
     Edt_LengDDI: TLabeledEdit;
     Edt_LengFone: TLabeledEdit;
     Edt_DDIPDR: TLabeledEdit;
-    ed_num: TComboBox;
+    CheckBox2: TCheckBox;
+    LabeledEdit1: TLabeledEdit;
+    LabeledEdit2: TLabeledEdit;
+    CheckBox3: TCheckBox;
+    LabeledEdit3: TLabeledEdit;
+    chk_AutoStart: TCheckBox;
+    LabeledEdit4: TLabeledEdit;
+    Panel2: TPanel;
+    whatsOn: TImage;
+    whatsOff: TImage;
+    imgQrcode: TImage;
+    lblStatus: TLabel;
+    lblQrcode: TLabel;
+    lblNumeroConectado: TLabel;
+    CheckBox4: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure whatsOnClick(Sender: TObject);
@@ -83,7 +92,6 @@ type
     procedure InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
     procedure listaChatsDblClick(Sender: TObject);
     procedure listaContatosDblClick(Sender: TObject);
-    procedure chk_apagarMsgClick(Sender: TObject);
     procedure TrayIcon1Click(Sender: TObject);
     procedure ApplicationEvents1Minimize(Sender: TObject);
     procedure btn_clearClick(Sender: TObject);
@@ -101,6 +109,9 @@ type
     procedure ed_numSelect(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure InjectWhatsapp1GetMyNumber(Sender: TObject);
+    procedure InjectWhatsapp1LowBattery(Const POnAlarm, PBatteryCharge: Integer);
+    procedure InjectWhatsapp1ErroAndWarning(Sender: TObject; const PError,
+      PInfoAdc: string);
   private
     { Private declarations }
     idMessageGlobal: string;
@@ -140,26 +151,41 @@ uses
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
-//  ReportMemoryLeaksOnShutdown := True;
+  ReportMemoryLeaksOnShutdown  := True;
 
   idMessageGlobal              := 'start';
   PageControl1.ActivePageIndex := 0;
 
   //Define os padrões DO BRASIL
-  InjectWhatsapp1.AjustNumber.AutoAdjust := True;
-  InjectWhatsapp1.AjustNumber.LengthDDI  := 2;
-  InjectWhatsapp1.AjustNumber.LengthDDD  := 2;
-  InjectWhatsapp1.AjustNumber.LengthPhone:= 8; //Whats antigo e 8 digitos
-  InjectWhatsapp1.AjustNumber.DDIDefault := 55;
-  TabSheet2.TabVisible                   := False;
+//  InjectWhatsapp1.AjustNumber.AutoAdjust := True;
+ // InjectWhatsapp1.AjustNumber.LengthDDI  := 2;
+ // InjectWhatsapp1.AjustNumber.LengthDDD  := 2;
+ // InjectWhatsapp1.AjustNumber.LengthPhone:= 8; //Whats antigo e 8 digitos
+ // InjectWhatsapp1.AjustNumber.DDIDefault := 55;
   TabSheet3.TabVisible                   := False;
   TabSheet4.TabVisible                   := False;
 
-  CheckBox1.Checked := InjectWhatsapp1.AjustNumber.AutoAdjust;
-  Edt_LengDDI.text  := InjectWhatsapp1.AjustNumber.LengthDDI.ToString;
-  Edt_LengDDD.text  := InjectWhatsapp1.AjustNumber.LengthDDD.ToString;
-  Edt_LengFone.Text := InjectWhatsapp1.AjustNumber.LengthPhone.ToString;
-  Edt_DDIPDR.Text   := InjectWhatsapp1.AjustNumber.DDIDefault.ToString;
+  edtDelay.Text         := injectWhatsapp1.Config.AutoDelay.ToString          ;
+  chk_apagarMsg.Checked := injectWhatsapp1.Config.AutoDelete         ;
+  chk_AutoStart.Checked := injectWhatsapp1.Config.AutoStart          ;
+  CheckBox2.Checked     := InjectWhatsapp1.Config.ControlSend        ;
+  LabeledEdit1.text     := InjectWhatsapp1.Config.ControlSendTimeSec.ToString ;
+  LabeledEdit2.Text     := InjectWhatsapp1.Config.SecondsMonitor.ToString     ;
+  LabeledEdit4.Text     := InjectWhatsapp1.Config.LowBatteryIs.ToString;
+
+//  injectWhatsapp1.Config.ShowRandom          := .Checked;
+//  injectWhatsapp1.Config.SyncContacts        := .Checked;
+
+  CheckBox3.Checked := InjectWhatsapp1.InjectJS.AutoUpdate       ;
+  LabeledEdit3.Text := InjectWhatsapp1.InjectJS.AutoUpdateTimeOut.ToString;
+
+  CheckBox1.Checked :=  injectWhatsapp1.AjustNumber.AutoAdjust   ;
+  Edt_LengDDI.text  := InjectWhatsapp1.AjustNumber.LengthDDI.ToString     ;
+  Edt_LengDDD.text  := InjectWhatsapp1.AjustNumber.LengthDDD.ToString     ;
+  Edt_LengFone.text := InjectWhatsapp1.AjustNumber.LengthPhone.ToString   ;
+  Edt_DDIPDR.text   := InjectWhatsapp1.AjustNumber.DDIDefault.ToString    ;
+  CheckBox4.Checked  := InjectWhatsapp1.AjustNumber.AllowOneDigitMore      ;
+
   InjectWhatsapp1.startWhatsapp;
 end;
 
@@ -170,6 +196,7 @@ end;
 
 procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  Timer1.Enabled := False;
   InjectWhatsapp1.ShutDown;
   Action := Cafree;
   //application.Terminate;
@@ -253,7 +280,8 @@ begin
       //sleep(1000);
       //InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
       vBase64File := nil;
-      application.MessageBox('Arquivo enviado com sucesso!','TInject whatsapp', mb_iconAsterisk + mb_ok);
+      mem_message.SelectAll;
+//      application.MessageBox('Arquivo enviado com sucesso!','TInject whatsapp', mb_iconAsterisk + mb_ok);
     end;
   finally
     ed_num.SelectAll;
@@ -306,9 +334,8 @@ begin
       abort;
     end;
 
-
     InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
-    application.MessageBox('Mensagem enviada com sucesso!','TInject', mb_iconAsterisk + mb_ok);
+    mem_message.SelectAll;
   finally
     ed_num.SelectAll;
     ed_num.SetFocus;
@@ -330,9 +357,7 @@ begin
     vBase64File := TBase64Encoding.Create;
     vFilestream := TMemoryStream.Create;
     vFilestream.LoadFromFile(openDialog1.FileName);
-
     vExtension := LowerCase(Copy(ExtractFileExt(openDialog1.FileName),2,5));
-
     vFileName  := ExtractFileName(openDialog1.FileName);
     vFileNameURL := dateToStr(date)+timeToStr(time)+'.'+vExtension;
     if (vExtension = 'pdf') or (vExtension = 'rar')  or (vExtension = 'zip') then
@@ -347,7 +372,6 @@ begin
     caminhoArquivo := openDialog1.FileName;
     vFilestream.Free;
   end;
-
 end;
 
 procedure TfrmPrincipal.CarregarChats;
@@ -362,15 +386,8 @@ end;
 
 procedure TfrmPrincipal.CheckBox1Click(Sender: TObject);
 begin
-  injectWhatsapp1.AjustNumber.AutoAdjust := CheckBox1.Checked;
   Pnl_FONE.Enabled  := CheckBox1.Checked;
 end;
-
-procedure TfrmPrincipal.chk_apagarMsgClick(Sender: TObject);
-begin
-  injectWhatsapp1.Config.FAutoDelete := chk_apagarMsg.Checked;
-end;
-
 
 procedure TfrmPrincipal.ed_numChange(Sender: TObject);
 var
@@ -417,7 +434,7 @@ procedure TfrmPrincipal.ed_numSelect(Sender: TObject);
 begin
   if (ed_num.ItemIndex >=0) and (ed_num.Items.Count > 0) then
   Begin
-   ed_num.AutoComplete  := False;
+    ed_num.AutoComplete := False;
     ed_num.Text         := ed_num.Items.Strings[ed_num.ItemIndex];
     ed_num.AutoComplete := True;
   End;
@@ -437,15 +454,37 @@ end;
 
 procedure TfrmPrincipal.Edt_DDIPDRExit(Sender: TObject);
 begin
-  InjectWhatsapp1.AjustNumber.LengthDDI   := StrToIntDef(Edt_LengDDI.text , 2);
-  InjectWhatsapp1.AjustNumber.LengthDDD   := StrToIntDef(Edt_LengDDD.text , 2);
-  InjectWhatsapp1.AjustNumber.LengthPhone := StrToIntDef(Edt_LengFone.text, 8);
-  InjectWhatsapp1.AjustNumber.DDIDefault  := StrToIntDef(Edt_DDIPDR.text  , 55);
+  injectWhatsapp1.Config.AutoDelay           := StrToIntDef(edtDelay.Text, 5);
+  injectWhatsapp1.Config.AutoDelete          := chk_apagarMsg.Checked;
+  injectWhatsapp1.Config.AutoStart           := chk_AutoStart.Checked;
+  InjectWhatsapp1.Config.ControlSend         := CheckBox2.Checked;
+  InjectWhatsapp1.Config.ControlSendTimeSec  := StrToIntDef(LabeledEdit1.Text, 8);
+  InjectWhatsapp1.Config.SecondsMonitor      := StrToIntDef(LabeledEdit2.Text, 3);
+  InjectWhatsapp1.Config.LowBatteryIs        := StrToIntDef(LabeledEdit4.Text, 30);
+
+//  injectWhatsapp1.Config.ShowRandom          := .Checked;
+//  injectWhatsapp1.Config.SyncContacts        := .Checked;
+
+  InjectWhatsapp1.InjectJS.AutoUpdate        := CheckBox3.Checked;
+  InjectWhatsapp1.InjectJS.AutoUpdateTimeOut := StrToIntDef(LabeledEdit3.Text, 4);
+
+  injectWhatsapp1.AjustNumber.AutoAdjust     := CheckBox1.Checked;
+  InjectWhatsapp1.AjustNumber.LengthDDI      := StrToIntDef(Edt_LengDDI.text , 2);
+  InjectWhatsapp1.AjustNumber.LengthDDD      := StrToIntDef(Edt_LengDDD.text , 2);
+  InjectWhatsapp1.AjustNumber.LengthPhone    := StrToIntDef(Edt_LengFone.text, 8);
+  InjectWhatsapp1.AjustNumber.DDIDefault     := StrToIntDef(Edt_DDIPDR.text  , 55);
+  InjectWhatsapp1.AjustNumber.AllowOneDigitMore := CheckBox4.Checked;
 end;
 
 Procedure TfrmPrincipal.imgQrcodeClick(Sender: TObject);
 begin
   InjectWhatsapp1.startQrCode;
+end;
+
+procedure TfrmPrincipal.InjectWhatsapp1ErroAndWarning(Sender: TObject;
+  const PError, PInfoAdc: string);
+begin
+  ShowMessage(Perror + Chr(13) + PInfoAdc);
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetBatteryLevel(Sender: TObject);
@@ -515,7 +554,6 @@ begin
     imgQrcode.Visible     := True;
     lblNumeroConectado.Visible   := False;
   end;
-  TabSheet2.TabVisible   := lblNumeroConectado.Visible;
   TabSheet3.TabVisible   := lblNumeroConectado.Visible;
   TabSheet4.TabVisible   := lblNumeroConectado.Visible;
  {
@@ -557,6 +595,11 @@ begin
     end;
 end;
 
+procedure TfrmPrincipal.InjectWhatsapp1LowBattery(Const POnAlarm, PBatteryCharge: Integer);
+begin
+  ShowMessage('Alarme de BATERIA.  Você está com ' + (PBatteryCharge).ToString + '%');
+end;
+
 procedure TfrmPrincipal.listaChatsDblClick(Sender: TObject);
 begin
   ed_num.Text := InjectWhatsapp1.AllChats.result[ listaChats.Selected.Index ].id;
@@ -573,7 +616,7 @@ begin
   begin
     if GlobalCEFApp.InjectWhatsApp.Auth = true then
     begin
-      lblStatus.Caption := 'Online';
+      lblStatus.Caption    := 'Online';
       lblStatus.Font.Color := $0000AE11;
 
       whatsOn.Visible := True;
@@ -586,8 +629,8 @@ begin
     end
     else
     begin
-      lblStatus.Caption := 'Offline';
-      lblStatus.Font.Color := $002894FF;
+      lblStatus.Caption     := 'Offline';
+      lblStatus.Font.Color  := $002894FF;
 
       whatsOff.Visible := True;
       whatsOn.Visible := False;

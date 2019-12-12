@@ -48,6 +48,7 @@ type
     FLengthPhone: Integer;
     FLastNumberFormat: String;
     FLastType: TTypeNumber;
+    FAllowOneDigit: Boolean;
     Procedure SetPhone(Const Pnumero:String);
   public
     constructor Create(AOwner: TComponent); override;
@@ -63,12 +64,14 @@ type
     property  LastNumberFormat: String      Read FLastNumberFormat;
     property  LastAdjustDt: TDateTime       Read FLastAdjustDt;
   published
-    property AutoAdjust : Boolean           read FAutoAdjust   write FAutoAdjust default True;
-    property LengthDDI  : Integer           read FLengthDDI    write FLengthDDI   default 2;
-    property LengthDDD  : Integer           read FLengthDDD    write FLengthDDD   default 2;
-    property LengthPhone: Integer           read FLengthPhone  write FLengthPhone default 9;
+    property AutoAdjust : Boolean           read FAutoAdjust    write FAutoAdjust    default True;
+    property LengthDDI  : Integer           read FLengthDDI     write FLengthDDI     default 2;
+    property LengthDDD  : Integer           read FLengthDDD     write FLengthDDD     default 2;
+    property LengthPhone: Integer           read FLengthPhone   write FLengthPhone   default 9;
+    property AllowOneDigitMore: Boolean         read FAllowOneDigit write FAllowOneDigit default True;
+
     property DDIDefault : Integer           read FDDIDefault   write FDDIDefault  Default 2;
-  end;
+    end;
 
 
 implementation
@@ -82,8 +85,11 @@ uses
 function TInjectAdjusteNumber.FormatIn(PNum: String): String;
 var
   LClearNum: String;
-  i: Integer;
+  i, LInc: Integer;
 begin
+  if FAllowOneDigit then
+     LInc := 1 else
+     LInc := 0;
   Result := Pnum;
   try
     if not AutoAdjust then
@@ -100,16 +106,22 @@ begin
 
     //O requisito minimo é possuir DDD + NUMERO (Fone 8 ou 9 digitos)
     //  if Length(LClearNum) < 10 then
-    if Length(LClearNum) < (LengthDDD + LengthPhone) then
+
+
+
+    if Length(LClearNum) < (LengthDDD + LengthPhone + LInc) then
     Begin
-      Result := '';
-      Exit;
+      if Length(LClearNum) < (LengthDDD + LengthPhone) then
+      Begin
+        Result := '';
+        Exit;
+      End;
     End;
 
     //Testa se é um grupo ou Lista Transmissao
-    if Length(LClearNum) <=  (LengthDDI + LengthDDD + LengthPhone + 1) Then //14 then
+    if Length(LClearNum) <=  (LengthDDI + LengthDDD + LengthPhone + 1 + LInc) Then //14 then
     begin
-      if (Length(LClearNum) <= (LengthDDD + LengthPhone)) or (Length(PNum) <= (LengthDDD + LengthPhone)) then
+      if (Length(LClearNum) <= (LengthDDD + LengthPhone+ LInc)) or (Length(PNum) <= (LengthDDD + LengthPhone+ LInc)) then
       begin
         if Copy(LClearNum, 0, LengthDDI) <> DDIDefault.ToString then
            LClearNum := DDIDefault.ToString + LClearNum;
@@ -154,14 +166,16 @@ begin
   end else
   Begin
     if Length(Pnumero) = (LengthDDI + LengthDDD + LengthPhone + Length(CardContact)) then
-       FLastType := TypContact;
+    Begin
+      FLastType := TypContact;
+    end;
   end;
 
   if FLastType = TypContact then
   Begin
-    FLastDDI :=  Copy(Pnumero, 0,           LengthDDI);
-    FLastDDD :=  Copy(Pnumero, LengthDDI+1, LengthDDD);
-    FLastNumber :=  Copy(Pnumero, LengthDDI+LengthDDD+1, LengthPhone);
+    FLastDDI          := Copy(Pnumero, 0,           LengthDDI);
+    FLastDDD          := Copy(Pnumero, LengthDDI+1, LengthDDD);
+    FLastNumber       := Copy(Pnumero, LengthDDI+LengthDDD+1, LengthPhone);
     FLastNumberFormat := FormatOut(FLastNumber);
   End;
 end;
@@ -174,6 +188,7 @@ begin
   FLastDDD     := '';
   FLastNumber  := '';
 
+  FAllowOneDigit := true;
   FAutoAdjust  := True;
   FDDIDefault  := 55;
   FLengthDDI   := 2;

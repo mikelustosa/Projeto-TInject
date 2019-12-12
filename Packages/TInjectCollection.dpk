@@ -82,6 +82,8 @@ contains
   uTInject.Emoticons in '..\Source\Model\uTInject.Emoticons.pas',
   uTInject.ExePath in '..\Source\Model\uTInject.ExePath.pas',
   uTInject.JS in '..\Source\Model\uTInject.JS.pas',
-  uCSV.Import in '..\Source\Model\uCSV.Import.pas';
+  uCSV.Import in '..\Source\Model\uCSV.Import.pas',
+  uTInject.ControlSend in '..\Source\Services\uTInject.ControlSend.pas';
 
 end.
+

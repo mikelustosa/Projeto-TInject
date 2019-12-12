@@ -54,17 +54,22 @@ Const
   ConfigCEF_ExceptConnetWhats     = 'Você não está conectado ao WhatsApp';
   ConfigCEF_ExceptConsoleNaoPronto= 'Console ainda não obteve os comandos de INJECT JS';
   ConfigCEF_ExceptVersaoErrada    = 'Sua versão do CEF4 não é compatível, por favor, atualize suas biblioteca em https://github.com/salvadordf/CEF4Delphi';
+  Config_ExceptSetBatteryLow      = 'O valor deve estar entre 5 e 90';
+  DuplicityDetected               = 'Enviando o mesmo comando em um intervalo pequeno';
   ConfigVersaoCompInvalida        = 'Sua versão do componente Tinject não é compatível com o novo JavaScript, por favor, atualize suas biblioteca em http://www.tinject.com.br/';
+  ConfigJS_ExceptUpdate           = 'Erro de servidor WEB. Não foi possível receber a atualização do JS.ABR';
+  ComunicJS_NotFound              = 'Retorno JS.ABR não conhecido';
 
   //Usado no TInjectJS               'https://raw.githubusercontent.com/mikelustosa/Projeto-TInject/master/Demo/BIN/js.abr'; //
   //TInjectJS_JSUrlPadrao            = 'http://www.tinject.com.br/viewtopic.php?f=3&t=10&p=17&sid=84550ac7f5d0134a129eb73144943991#p17';
-  TInjectJS_JSUrlPadrao            = 'https://raw.githubusercontent.com/mikelustosa/Projeto-TInject/master/Demo/BIN/js.abr';
+  TInjectJS_JSUrlPadrao            = 'https://raw.githubusercontent.com/mikelustosa/Projeto-TInject/master/Source/JS/js.abr';
   TInjectJS_JSLinhasMInimas        = 1400;
 
   //Usados em FrmConsole
   FrmConsole_Browser_Created       = WM_APP + $100;
   FrmConsole_Browser_ChildDestroy  = WM_APP + $101;
   FrmConsole_Browser_Destroy       = WM_APP + $102;
+  FrmConsole_Browser_Destroy2      = WM_APP + $103;
 
   FrmConsole_JS_URL                = 'https://web.whatsapp.com/';
   FrmConsole_JS_GetAllContacts     = 'window.WAPI.getAllContacts();';
@@ -74,7 +79,8 @@ Const
   FrmConsole_JS_GetAllChats        = 'window.WAPI.getAllChats();';
   FrmConsole_JS_WEBmonitorQRCode   = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
   FrmConsole_JS_monitorQRCode      = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
-  FrmConsole_JS_StopMonitor        = 'stopMonitor()';
+  FrmConsole_JS_StopMonitor        = 'stopMonitor();';
+  FrmConsole_JS_IsLoggedIn         = 'WAPI.isLoggedIn();';
   FrmConsole_JS_VAR_StartMonitor   = 'startMonitor(intervalSeconds=<#TEMPO#>)';
   FrmConsole_JS_VAR_ReadMessages   = 'window.WAPI.sendSeen("<#MSG_PHONE#>")';
   FrmConsole_JS_VAR_DeleteMessages = 'window.WAPI.deleteConversation("<#MSG_PHONE#>")';
@@ -168,6 +174,9 @@ Begin
       break;
     End;
   End;
+
+//  if (Result = Th_None) and (PText <> '') then
+//     ShowMessage(PText);
 End;
 
 end.

@@ -25,7 +25,7 @@
 
 
 unit uTInject.JS;
-//https://htmlformatter.com/
+//    https://htmlformatter.com/
 
 interface
 
@@ -57,8 +57,9 @@ type
     FOnUpdateJS     : TNotifyEvent;
     FInjectJSDefine : TInjectJSDefine;
     FTImeOutIndy    : TTimer;
-    FTimeOutGetJS   : Integer;
-    _Indy           : TIdHTTP;
+    FAutoUpdateTimeOut   : Integer;
+    _Indy                : TIdHTTP;
+    FOnErrorInternal     : TOnErroInternal;
 
     Function   ReadCSV(Const PLineCab, PLineValues: String): Boolean;
     procedure  SetInjectScript(const Value: TstringList);
@@ -72,20 +73,19 @@ type
     procedure Loaded; override;
   public
     constructor Create(AOwner: TComponent); override;
-    property    InjectJSDefine : TInjectJSDefine Read FInjectJSDefine;
-
+    property    InjectJSDefine  : TInjectJSDefine Read FInjectJSDefine;
+    property    OnErrorInternal : TOnErroInternal Read FOnErrorInternal  Write FOnErrorInternal;
     destructor  Destroy; override;
     Function    UpdateNow:Boolean;
     Procedure   DelFileTemp;
   published
-    property   TimeOutGetJS  : Integer        Read FTimeOutGetJS    Write SetTimeOutGetJS Default 4;
-
-    property   OnUpdateJS    : TNotifyEvent   Read FOnUpdateJS      Write FOnUpdateJS;
+    property   AutoUpdate         : Boolean   read FAutoUpdate           write FAutoUpdate       default True;
+    property   AutoUpdateTimeOut  : Integer   Read FAutoUpdateTimeOut    Write SetTimeOutGetJS   Default 4;
+    property   OnUpdateJS    : TNotifyEvent   Read FOnUpdateJS           Write FOnUpdateJS;
     property   Ready         : Boolean        read FReady;
-    property   AutoUpdate    : Boolean        read FAutoUpdate      write FAutoUpdate  default True;
     property   JSURL         : String         read FJSURL;
     property   JSVersion     : String         read FJSVersion;
-    property   JSScript      : TstringList    read FJSScript        Write SetInjectScript;
+    property   JSScript      : TstringList    read FJSScript             Write SetInjectScript;
   end;
 
 
@@ -134,7 +134,6 @@ begin
     End;
   finally
     Result        := (FJSScript.Count >= TInjectJS_JSLinhasMInimas);
-
     if Result then
     begin
       //Atualzia o arquivo interno
@@ -154,10 +153,10 @@ end;
 constructor TInjectJS.Create(AOwner: TComponent);
 begin
   inherited;
-  FTimeOutGetJS              := 4;
+  FAutoUpdateTimeOut         := 4;
   FTImeOutIndy               := TTimer.Create(Nil);
   FTImeOutIndy.OnTimer       := OnTimeOutIndy;
-  FTImeOutIndy.Interval      := FTimeOutGetJS * 1000;
+  FTImeOutIndy.Interval      := FAutoUpdateTimeOut * 1000;
   FTImeOutIndy.Enabled       := False;
   FJSScript                  := TstringList.create;
   FAutoUpdate                := True;
@@ -187,15 +186,14 @@ begin
     if Value.text <> FJSScript.text then
        raise Exception.Create('Não é possível modificar em Modo Designer');
   End;
-
   FJSScript := Value;
 end;
 
 
 procedure TInjectJS.SetTimeOutGetJS(const Value: Integer);
 begin
-  FTimeOutGetJS         := Value;
-  FTImeOutIndy.Interval := FTimeOutGetJS * 1000;
+  FAutoUpdateTimeOut         := Value;
+  FTImeOutIndy.Interval := FAutoUpdateTimeOut * 1000;
 end;
 
 function TInjectJS.UpdateNow: Boolean;
@@ -225,7 +223,6 @@ end;
 function TInjectJS.ValidaJs(const TValor: Tstrings): Boolean;
 var
   LVersaoCefFull:String;
-  LTemp1, LTemp2: String;
 begin
   Result := False;
   if Assigned(GlobalCEFApp) then
@@ -233,26 +230,13 @@ begin
     if GlobalCEFApp.ErrorInt Then
        Exit;
   end;
-
   if (TValor.Count < TInjectJS_JSLinhasMInimas) then    //nao tem linhas suficiente
      Exit;
 
   If Pos(AnsiUpperCase(';'),  AnsiUpperCase(TValor.Strings[0])) <= 0 then   //Nao tem a variavel
-//     Exit;
-  begin
-    //Evitar quebrar (Temporariamente) devido js do master não possuir trexo inicial como esta no forum.
-    //Alterar o js.abr do master em git...(Daniel/Mike) by JTheiller
-    LTemp1 := '//Version_JS;Version_TInjectMin;Version_CEF4Min';
-    LTemp2 := '//0.0.0.0;0.0.0.0;0.0.0';
-  end
-  else
-      begin
-        LTemp1 := TValor.Strings[0];
-        LTemp2 :=  TValor.Strings[1]
-      end;
+     Exit;
 
-
-  If not ReadCSV(LTemp1, LTemp2) Then
+  If not ReadCSV(TValor.Strings[0], TValor.Strings[1]) Then
      Exit;
 
   If (Pos(AnsiUpperCase('!window.Store'),       AnsiUpperCase(TValor.text))     <= 0) or
@@ -266,7 +250,8 @@ begin
     Begin
       if Assigned(GlobalCEFApp) then
          GlobalCEFApp.SetError;
-      Application.MessageBox(PWideChar(ConfigVersaoCompInvalida), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
+      if Assigned(FOnErrorInternal) then
+         Application.MessageBox(PWideChar(ConfigVersaoCompInvalida), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
       exit;
     End;
 
@@ -275,7 +260,9 @@ begin
     Begin
       if Assigned(GlobalCEFApp) then
          GlobalCEFApp.SetError;
-      Application.MessageBox(PWideChar(ConfigCEF_ExceptVersaoErrada), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
+
+      if Assigned(FOnErrorInternal) then
+         Application.MessageBox(PWideChar(ConfigCEF_ExceptVersaoErrada), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
       exit;
     End;
     Result := true;
@@ -312,22 +299,21 @@ begin
   Try
     DeleteFile(PwideChar(LSalvamento));
     try
-      LHttp       := TIdHTTP.Create(nil);
+      LHttp                     := TIdHTTP.Create(nil);
       with LHttp do
       begin
-        Request.Accept := 'text/html, */*';
+        Request.Accept          := 'text/html, */*';
         Request.ContentEncoding := 'raw';
-        HandleRedirects := True;
+        HandleRedirects         := True;
       end;
 
-      _Indy       := LHttp;
+      _Indy                := LHttp;
       FTImeOutIndy.Enabled := True;
-      LRet.text   := LHttp.Get(TInjectJS_JSUrlPadrao);
-
+      LRet.text            := LHttp.Get(TInjectJS_JSUrlPadrao);
       if not ValidaJs(LRet) Then
          LRet.Clear;
     Except
-      LRet.Clear
+      LRet.Clear;
     end;
   Finally
     FreeAndNil(IdAntiFreeze1);
@@ -386,6 +372,9 @@ begin
       _Indy.Disconnect(true);
   Except
   end;
+
+  if Assigned(FOnErrorInternal) then
+     FOnErrorInternal(Self, ConfigJS_ExceptUpdate, 'TimeOut exceeded');
 end;
 
 end.

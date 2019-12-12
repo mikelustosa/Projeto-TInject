@@ -27,21 +27,20 @@ unit uTInject.Classes;
 
 interface
 
-uses Generics.Collections, Rest.Json, uTInject.FrmQRCode, Vcl.Graphics,  
+uses Generics.Collections, Rest.Json, uTInject.FrmQRCode, Vcl.Graphics, System.IOUtils,
   System.Classes, uTInject.Constant;
 
 type
 
-  TQrCodeRet = (TQR_Http, TQR_Img, TQR_Data);
-  TQrCodeRets = set of TQrCodeRet;
-//forware
+  TQrCodeRet   = (TQR_Http, TQR_Img, TQR_Data);
+  TQrCodeRets  = set of TQrCodeRet;
   TChatClass   = class;   //forward
   TSenderClass = class;   //forward
   TTypeNumber  = (TypUndefined=0, TypContact=1, TypGroup=2);
   TFormaUpdate = (Tup_Local=0, Tup_Web=1);
 
-  TResulttMisc       = procedure(PTypeHeader: TTypeHeader; PValue: String) of object;
-
+  TResulttMisc        = procedure(PTypeHeader: TTypeHeader; PValue: String) of object;
+  TOnErroInternal     = procedure(Sender : TObject; Const PError: String; Const PInfoAdc:String)  of object;
 
   TClassPadrao = class
   private
@@ -88,16 +87,13 @@ type
 
   TResponseBattery = class(TClassPadraoString)
   end;
-  
-  TResponseMyNumber = class(TClassPadraoString)
-  private
-  public
-    constructor Create(pAJsonString: string);
-  end;  
-
-  
 
   TMediaDataClass = class(TClassPadrao)
+  end;
+
+  TResponseMyNumber = class(TClassPadraoString)
+  public
+    constructor Create(pAJsonString: string);
   end;
 
   TChatstatesClass = class(TClassPadrao)
@@ -142,7 +138,6 @@ type
   public
     constructor Create(pAJsonString: string);
     destructor Destroy; override;
-    
 
     property creation : Extended     read FCreation   write FCreation;
     property desc     : String       read FDesc       write FDesc;
@@ -338,15 +333,13 @@ Public
 end;
 
 TChatList = class(TClassPadraoList<TChatClass>)
-Public
-  property result: TArray<TChatClass> read FResult write FResult;
 end;
 
 
 TResultQRCodeClass = class(TClassPadrao)
 private
   FAQrCode, FUltimoQrCode: String;
-  FAQrCodeImage: TPicture;  
+  FAQrCodeImage: TPicture;
   FAQrCodeImageStream: TMemoryStream;
   FAQrCodeSucess: Boolean;
   FAImageDif    : Boolean;
@@ -420,7 +413,7 @@ implementation
 
 uses
   System.JSON, System.SysUtils, Vcl.Dialogs, System.NetEncoding, 
-  Vcl.Imaging.pngimage;
+  Vcl.Imaging.pngimage, uTInject.ConfigCEF;
 
 {TResultQRCodeClass}
 function TResultQRCodeClass.AQrCodeQuestion: Boolean;
@@ -473,8 +466,7 @@ end;
 destructor TResultQRCodeClass.Destroy;
 begin
   FreeAndNil(FAQrCodeImage);
-
-  FAQrCodeImageStream.free;
+  FreeAndNil(FAQrCodeImageStream);//.free;
   inherited;
 end;
 
@@ -526,12 +518,18 @@ var
 begin
   lAJsonObj := TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(pAJsonString),0);
   try
-    if not Assigned( lAJsonObj ) then
+    if not Assigned(lAJsonObj) then
        Exit;
 
    inherited Create(pAJsonString, [joDateIsUTC, joDateFormatISO8601]);
   finally
-    lAJsonObj.Free;
+    if Assigned(GlobalCEFApp) then
+    Begin
+      if Trim(GlobalCEFApp.LogConsole) <> ''  then
+         TFile.AppendAllText(GlobalCEFApp.LogConsole+ 'ConsoleMessage.log',  Result, TEncoding.ASCII);
+    End;
+    FreeAndNil(lAJsonObj);
+    //lAJsonObj.Free;
   end;
 end;
 
@@ -540,44 +538,34 @@ begin
   inherited Create(pAJsonString, [joDateIsUTC, joDateFormatISO8601]);
 end;
 
-{TContactClass}
-//procedure TContactClass.AfterConstruction;
-//begin
-//  inherited;
-//end;
-
 constructor TContactClass.Create(pAJsonString: string);
 begin
   FProfilePicThumbObj := TProfilePicThumbObjClass.Create(FJsonString, [TJsonOption.joIgnoreEmptyStrings]);
   inherited Create(pAJsonString, [TJsonOption.joIgnoreEmptyStrings]);
-
 end;
 
 destructor TContactClass.Destroy;
 begin
-  FProfilePicThumbObj.free;
+  FreeAndNil(FProfilePicThumbObj);//.free;
   inherited;
 end;
 
 {TResultClass}
-
 constructor TChatClass.Create(pAJsonString: string);
 begin
   FLastReceivedKey := TLastReceivedKeyClass.Create(JsonString);
   FContact         := TContactClass.Create(JsonString);
   FGroupMetadata   := TGroupMetadataClass.Create(JsonString);
-
   inherited Create(pAJsonString, [joDateIsUTC, joDateFormatISO8601]);
 end;
 
 destructor TChatClass.Destroy;
 begin
   ClearArray(FMessages);
-    
   FreeAndNil(FPresence);
-  FLastReceivedKey.free;
-  FContact.free;
-  FGroupMetadata.free;
+  FreeAndNil(FLastReceivedKey);//.free;
+  FreeAndNil(FContact);//.free;
+  FreeAndNil(FGroupMetadata);//.free;
   inherited;
 end;
 
@@ -596,39 +584,37 @@ end;
 
 destructor TSenderClass.Destroy;
 begin
-  FProfilePicThumbObj.free;
+  FreeAndNil(FProfilePicThumbObj);//.free;
   inherited;
 end;
 
 {TMessagesClass}
-
 constructor TMessagesClass.Create(pAJsonString: string);
 begin
   FSender    := TSenderClass.Create(JsonString);
   FChat      := TChatClass.Create(JsonString);
   FMediaData := TMediaDataClass.Create(JsonString);
-
   inherited Create(pAJsonString, [joDateIsUTC, joDateFormatISO8601]);
 end;
 
 destructor TMessagesClass.Destroy;
 begin
-  FSender.free;
-  FChat.free;
-  FMediaData.free;
+  FreeAndNil(FSender);//.free;
+  FreeAndNil(FChat);//.free;
+  FreeAndNil(FMediaData);//.free;
   inherited;
 end;
 
 { TQrCodeClass }
 constructor TQrCodeClass.Create(pAJsonString: string; PJsonOption: TJsonOptions; PTagRequired: TQrCodeRets);
 var
-  lCode : String;  
+  lCode : String;
   LAchou: Boolean;
 begin
   lCode  := copy(pAJsonString, 42, 4);
   LAchou := False;
   FTags  := [];
-  
+
   if PTagRequired <> [] Then
   Begin
     If PTagRequired = [TQR_Http]  Then
@@ -646,7 +632,6 @@ begin
       if (AnsiUpperCase(lCode) = AnsiUpperCase('data')) Then
          LAchou:= true;
     end;
-
     if Not LAchou Then
         Abort;
   End else
@@ -654,21 +639,28 @@ begin
     if (AnsiUpperCase(lCode) = AnsiUpperCase('http')) Then
        FTags := FTags + [TQR_Http];
     if (AnsiUpperCase(lCode) = AnsiUpperCase('/img')) Then
-       FTags := FTags + [TQR_Img];    
+       FTags := FTags + [TQR_Img];
     if (AnsiUpperCase(lCode) = AnsiUpperCase('data')) Then
-       FTags := FTags + [TQR_Data];    
+       FTags := FTags + [TQR_Data];
   end;
-
   inherited Create(pAJsonString, [joDateIsUTC, joDateFormatISO8601]);
   FResult.ProcessQRCodeImage;
 end;
 
 { TClassPadrao }
 constructor TClassPadrao.Create(pAJsonString: string; PJsonOption: TJsonOptions = [joDateIsUTC, joDateFormatISO8601]);
+var
+  lAJsonObj: TJSONValue;
 begin
-  TJson.JsonToObject(Self, TJSONObject(TJSONObject.ParseJSONValue(pAJsonString)),PJsonOption);
-  FJsonString := pAJsonString;
-  FTypeHeader := StrToTypeHeader(name);
+  lAJsonObj := TJSONObject.ParseJSONValue(pAJsonString);
+  try
+//    TJson.JsonToObject(Self, TJSONObject(TJSONObject.ParseJSONValue(pAJsonString)),PJsonOption);
+    TJson.JsonToObject(Self, TJSONObject(lAJsonObj) ,PJsonOption);
+    FJsonString := pAJsonString;
+    FTypeHeader := StrToTypeHeader(name);
+  finally
+    FreeAndNil(lAJsonObj);
+  end;
 end;
 
 destructor TClassPadrao.Destroy;
@@ -682,14 +674,14 @@ begin
 end;
 
 { TClassPadraoList<T> }
-
-procedure TClassPadraoList<T>.ClearArray(PArray: TArray<T>);
+procedure TClassPadraoList<T>.ClearArray(PArray: TArray<T>);
 var
   I: Integer;
 begin
    try
-     for I := 0 to Length(PArray) -1 do
-        FreeAndNil(PArray[i]);
+//     for I := 0 to Length(PArray) -1 do
+      for i:= Length(PArray)-1 downto 0 do
+          FreeAndNil(PArray[i]);
    finally
      SetLength(PArray, 0);
    end;
@@ -702,21 +694,18 @@ begin
 end;
 
 { TPresenceClass }
-
-constructor TPresenceClass.Create;
+constructor TPresenceClass.Create;
 begin
   inherited Create(pAJsonString, [joDateIsUTC, joDateFormatISO8601]);
   FResult := FChatstates;
 end;
 
 { TResponseMyNumber }
-
-constructor TResponseMyNumber.Create(pAJsonString: string);
+constructor TResponseMyNumber.Create(pAJsonString: string);
 begin
   inherited Create(pAJsonString, [joDateIsUTC, joDateFormatISO8601]);
   FResult := Copy(FResult, 0 , Pos('@', FResult)-1);
 end;
-
 
 destructor TGroupMetadataClass.Destroy;
 begin

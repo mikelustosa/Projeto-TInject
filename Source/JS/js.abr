@@ -1,12 +1,5 @@
-//var Versao = '1.0.0.3';
-//var TinjectVMinima = '1.0.0.9';
-//
-//
-//
-//
-//
-//
-//
+//Version_JS;Version_TInjectMin;Version_CEF4Min
+//1.0.0.3;1.0.0.9;78.3.0
 //
 //
 
@@ -16,7 +9,7 @@ function getMyNumber() {
 }
 
 //function getVersionJS() {
-//    SetConsoleMessage('getVersionJS', Versao);
+// SetConsoleMessage('getVersionJS', Versao);
 //}
 
 function SetConsoleMessage(jsName, resultValue) {

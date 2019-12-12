@@ -7,21 +7,22 @@ uses
   Forms,
   Windows,
   {$ENDIF }
-  u_principal           in 'u_principal.pas' {frmPrincipal},
-  uTInject              in '..\Source\Services\uTInject.pas',
-  uTInject.Console      in '..\Source\Services\uTInject.Console.pas' {FrmConsole},
-  uTInject.ConfigCEF    in '..\Source\Services\uTInject.ConfigCEF.pas',
-  uTInject.FrmQRCode    in '..\Source\View\uTInject.FrmQRCode.pas' {FrmQRCode},
-  UBase64               in '..\Source\Model\UBase64.pas',
-  uTInject.Classes      in '..\Source\Model\uTInject.Classes.pas',
-  uTInject.Constant     in '..\Source\Model\uTInject.Constant.pas',
-  uTInject.ExePath      in '..\Source\Model\uTInject.ExePath.pas',
-  uTInject.Emoticons    in '..\Source\Model\uTInject.Emoticons.pas',
-  uTInject.Diversos     in '..\Source\Model\uTInject.Diversos.pas',
-  uTInject.Config       in '..\Source\Model\uTInject.Config.pas',
+  u_principal in 'u_principal.pas' {frmPrincipal},
+  uTInject in '..\Source\Services\uTInject.pas',
+  uTInject.Console in '..\Source\Services\uTInject.Console.pas' {FrmConsole},
+  uTInject.ConfigCEF in '..\Source\Services\uTInject.ConfigCEF.pas',
+  uTInject.FrmQRCode in '..\Source\View\uTInject.FrmQRCode.pas' {FrmQRCode},
+  UBase64 in '..\Source\Model\UBase64.pas',
+  uTInject.Classes in '..\Source\Model\uTInject.Classes.pas',
+  uTInject.Constant in '..\Source\Model\uTInject.Constant.pas',
+  uTInject.ExePath in '..\Source\Model\uTInject.ExePath.pas',
+  uTInject.Emoticons in '..\Source\Model\uTInject.Emoticons.pas',
+  uTInject.Diversos in '..\Source\Model\uTInject.Diversos.pas',
+  uTInject.Config in '..\Source\Model\uTInject.Config.pas',
   uTInject.AdjustNumber in '..\Source\Model\uTInject.AdjustNumber.pas',
-  uTInject.JS           in '..\Source\Model\uTInject.JS.pas',
-  uCSV.Import           in '..\Source\Model\uCSV.Import.pas';
+  uTInject.JS in '..\Source\Model\uTInject.JS.pas',
+  uCSV.Import in '..\Source\Model\uCSV.Import.pas',
+  uTInject.ControlSend in '..\Source\Services\uTInject.ControlSend.pas';
 
 {$R *.res}
 
