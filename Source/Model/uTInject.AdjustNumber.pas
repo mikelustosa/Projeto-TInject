@@ -142,10 +142,10 @@ var
 begin
  LDDi   := Copy(PNum, 0, FLengthDDI);
  LDDD   := Copy(PNum, FLengthDDI + 1, FLengthDDD);
- Lresto := Copy(PNum, FLengthDDI + FLengthDDD + 1, LengthPhone);
- if LengthPhone <= 8 then
+ Lresto := Copy(PNum, FLengthDDI + FLengthDDD + 1); // + 1, LengthPhone);
+ if Length(Lresto) <= 8 then
     LMask := '0000\-0000;0;' else
-    LMask := '000\.0000\-0000;0;';
+    LMask := '0\.0000\-0000;0;';
 
  Result :=  '+' + LDDi + ' (' + LDDD + ') ' + FormatMaskText(LMask, Lresto );
 end;

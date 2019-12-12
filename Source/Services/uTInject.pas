@@ -543,6 +543,11 @@ begin
     FOnLowBattery         := Nil;
   End;
 
+  if Assigned(GlobalCEFApp.ChromiumForm) then
+  Begin
+    GlobalCEFApp.ChromiumForm.Close;
+  end;
+
   LVar        := True;
   LaAction    := cbaDelay;
   LaActionForm:= Cafree;

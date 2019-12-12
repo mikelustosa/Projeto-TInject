@@ -96,7 +96,7 @@ type
     Procedure ExecuteCommandConsole(Const PResponse: TResponseConsoleMessage);
   private
     { Private declarations }
-    FPodeFechar     : Boolean;
+    FCanClose     : Boolean;
     FClosing        : Boolean;
     FConectado      : Boolean;
     FTimerConnect   : TTimer;
@@ -483,7 +483,7 @@ end;
 procedure TFrmConsole.Chromium1BeforeClose(Sender: TObject;
   const browser: ICefBrowser);
 begin
-  FPodeFechar := True;
+  FCanClose := True;
   PostMessage(Handle, WM_CLOSE, 0, 0);
 end;
 
@@ -502,11 +502,12 @@ end;
 procedure TFrmConsole.Chromium1Close(Sender: TObject;
   const browser: ICefBrowser; var aAction: TCefCloseBrowserAction);
 begin
-  PostMessage(Handle, CEF_DESTROY, 0, 0);
-  PostMessage(Handle, FrmConsole_Browser_Created, 0, 0);
+  PostMessage(Handle, FrmConsole_Browser_Created     , 0, 0);
   PostMessage(Handle, FrmConsole_Browser_ChildDestroy, 0, 0);
-  PostMessage(Handle, FrmConsole_Browser_Destroy, 0, 0);
-  PostMessage(Handle, FrmConsole_Browser_Destroy2, 0, 0);
+  PostMessage(Handle, FrmConsole_Browser_Destroy     , 0, 0);
+  PostMessage(Handle, FrmConsole_Browser_Destroy2    , 0, 0);
+
+  PostMessage(Handle, CEF_DESTROY, 0, 0);
   aAction := cbaDelay;
 end;
 
@@ -704,13 +705,13 @@ procedure TFrmConsole.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
   action     := cafree;
-  FrmConsole := nil;
+//  FrmConsole := nil;
 end;
 
 procedure TFrmConsole.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
-  CanClose := FPodeFechar;
+  CanClose := FCanClose;
   if FClosing then
   Begin
     GlobalCEFApp.QuitMessageLoop
@@ -736,7 +737,7 @@ begin
   end;
 
   FClosing                  := False;
-  FPodeFechar               := False;
+  FCanClose               := False;
   FCountBattery             := 0;
   FControlSend              := TControlSend.Create(Self);
 
@@ -760,13 +761,13 @@ end;
 procedure TFrmConsole.FormDestroy(Sender: TObject);
 begin
   Chromium1.ShutdownDragAndDrop;
-  GlobalCEFApp.Chromium     := Nil;
   FTimerMonitoring.Enabled  := False;
 
   FreeAndNil(FTimerMonitoring);
-  PostMessage(Handle, FrmConsole_Browser_ChildDestroy, 0, 0);
+//  PostMessage(Handle, FrmConsole_Browser_ChildDestroy, 0, 0);
   FreeAndNil(FControlSend);
   FreeAndNil(FTimerConnect);
+  GlobalCEFApp.Chromium     := Nil;
 end;
 
 procedure TFrmConsole.FormShow(Sender: TObject);

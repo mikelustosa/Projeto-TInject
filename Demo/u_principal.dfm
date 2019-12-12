@@ -2,7 +2,7 @@ object frmPrincipal: TfrmPrincipal
   Left = 0
   Top = 0
   Caption = 'Demo TInject'
-  ClientHeight = 380
+  ClientHeight = 390
   ClientWidth = 836
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -17,23 +17,35 @@ object frmPrincipal: TfrmPrincipal
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
+  object Lbl_Avisos: TLabel
+    Left = 0
+    Top = 358
+    Width = 836
+    Height = 13
+    Align = alBottom
+    Caption = ' '
+    ExplicitTop = 348
+    ExplicitWidth = 3
+  end
   object PageControl1: TPageControl
     AlignWithMargins = True
     Left = 3
     Top = 3
     Width = 830
-    Height = 355
-    ActivePage = TabSheet1
+    Height = 352
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 0
+    ExplicitHeight = 355
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o'
+      ExplicitHeight = 327
       object Pnl_Config: TPanel
         AlignWithMargins = True
         Left = 325
         Top = 3
         Width = 494
-        Height = 321
+        Height = 318
         Align = alClient
         BorderStyle = bsSingle
         Caption = 'Pnl_Config'
@@ -41,7 +53,7 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 0
-        ExplicitTop = -13
+        ExplicitHeight = 321
         object Label8: TLabel
           Left = 16
           Top = 0
@@ -73,8 +85,6 @@ object frmPrincipal: TfrmPrincipal
           Width = 133
           Height = 17
           Caption = 'Auto Resposta (BOT)'
-          Checked = True
-          State = cbChecked
           TabOrder = 2
           OnExit = Edt_DDIPDRExit
         end
@@ -252,7 +262,7 @@ object frmPrincipal: TfrmPrincipal
         Left = 3
         Top = 3
         Width = 316
-        Height = 321
+        Height = 318
         Align = alLeft
         BorderStyle = bsSingle
         Caption = 'Panel2'
@@ -260,9 +270,10 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 1
+        ExplicitHeight = 321
         DesignSize = (
           314
-          319)
+          316)
         object whatsOn: TImage
           Left = 96
           Top = 55
@@ -3201,42 +3212,45 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet3: TTabSheet
       Caption = 'A'#231#245'es Manuais'
       ImageIndex = 2
+      ExplicitHeight = 327
       object groupEnvioMsg: TGroupBox
         Left = 0
         Top = 0
         Width = 218
-        Height = 259
+        Height = 256
         Align = alLeft
         Caption = 'Envio de Mensagem'
         TabOrder = 0
+        ExplicitHeight = 259
         DesignSize = (
           218
-          259)
+          256)
         object Label1: TLabel
           Left = 14
-          Top = 18
+          Top = 31
           Width = 91
           Height = 13
           Caption = 'N'#250'mero de Destino'
         end
         object Label2: TLabel
           Left = 14
-          Top = 60
+          Top = 77
           Width = 28
           Height = 13
           Caption = 'Texto'
         end
         object mem_message: TMemo
           Left = 14
-          Top = 75
+          Top = 96
           Width = 190
-          Height = 109
+          Height = 85
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 1
+          ExplicitHeight = 75
         end
         object ButtonSelecionarArquivo: TButton
           Left = 14
-          Top = 223
+          Top = 220
           Width = 34
           Height = 25
           Anchors = [akLeft, akBottom]
@@ -3245,10 +3259,11 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 2
           OnClick = ButtonSelecionarArquivoClick
+          ExplicitTop = 223
         end
         object btEnviaTextoArq: TButton
           Left = 51
-          Top = 223
+          Top = 220
           Width = 153
           Height = 25
           Anchors = [akLeft, akBottom]
@@ -3257,10 +3272,11 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 3
           OnClick = btEnviaTextoArqClick
+          ExplicitTop = 223
         end
         object btEnviaTexto: TButton
           Left = 14
-          Top = 192
+          Top = 189
           Width = 190
           Height = 25
           Anchors = [akLeft, akBottom]
@@ -3269,26 +3285,36 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 4
           OnClick = btEnviaTextoClick
+          ExplicitTop = 192
         end
         object ed_num: TComboBox
           Left = 14
-          Top = 32
+          Top = 47
           Width = 190
           Height = 21
           AutoDropDown = True
           AutoCloseUp = True
           Style = csSimple
           Anchors = [akLeft, akTop, akRight]
+          DropDownCount = 3
           Sorted = True
           TabOrder = 0
           OnChange = ed_numChange
           OnSelect = ed_numSelect
         end
+        object CheckBox5: TCheckBox
+          Left = 113
+          Top = 28
+          Width = 88
+          Height = 17
+          Caption = 'Auto Procurar'
+          TabOrder = 5
+        end
       end
       object GroupBox4: TGroupBox
         AlignWithMargins = True
         Left = 7
-        Top = 262
+        Top = 259
         Width = 808
         Height = 60
         Margins.Left = 7
@@ -3297,6 +3323,7 @@ object frmPrincipal: TfrmPrincipal
         Align = alBottom
         Caption = 'Outras Fun'#231#245'es'
         TabOrder = 1
+        ExplicitTop = 262
         object btStatusBat: TButton
           Left = 14
           Top = 21
@@ -3313,16 +3340,17 @@ object frmPrincipal: TfrmPrincipal
         Left = 218
         Top = 0
         Width = 604
-        Height = 259
+        Height = 256
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel1'
         ShowCaption = False
         TabOrder = 2
+        ExplicitHeight = 259
         object Splitter1: TSplitter
           Left = 297
           Top = 0
-          Height = 259
+          Height = 256
           ExplicitLeft = 240
           ExplicitTop = 72
           ExplicitHeight = 100
@@ -3331,7 +3359,7 @@ object frmPrincipal: TfrmPrincipal
           Left = 300
           Top = 0
           Width = 304
-          Height = 259
+          Height = 256
           Align = alClient
           Caption = 'Lista Conversas Abertas'
           Font.Charset = DEFAULT_CHARSET
@@ -3341,9 +3369,10 @@ object frmPrincipal: TfrmPrincipal
           Font.Style = []
           ParentFont = False
           TabOrder = 0
+          ExplicitHeight = 259
           DesignSize = (
             304
-            259)
+            256)
           object Button3: TButton
             AlignWithMargins = True
             Left = 11
@@ -3368,7 +3397,7 @@ object frmPrincipal: TfrmPrincipal
             Left = 11
             Top = 52
             Width = 283
-            Height = 196
+            Height = 193
             Anchors = [akLeft, akTop, akRight, akBottom]
             Columns = <>
             LargeImages = ImageList1
@@ -3379,25 +3408,27 @@ object frmPrincipal: TfrmPrincipal
             TabOrder = 1
             ViewStyle = vsSmallIcon
             OnDblClick = listaChatsDblClick
+            ExplicitHeight = 196
           end
         end
         object groupListaContatos: TGroupBox
           Left = 0
           Top = 0
           Width = 297
-          Height = 259
+          Height = 256
           Align = alLeft
           Caption = 'Lista de Contatos'
           TabOrder = 1
+          ExplicitHeight = 259
           DesignSize = (
             297
-            259)
+            256)
           object listaContatos: TListView
             AlignWithMargins = True
             Left = 12
             Top = 52
             Width = 272
-            Height = 196
+            Height = 193
             Anchors = [akLeft, akTop, akRight, akBottom]
             Columns = <>
             LargeImages = ImageList1
@@ -3408,6 +3439,7 @@ object frmPrincipal: TfrmPrincipal
             TabOrder = 0
             ViewStyle = vsSmallIcon
             OnDblClick = listaContatosDblClick
+            ExplicitHeight = 196
           end
           object Button2: TButton
             AlignWithMargins = True
@@ -3428,11 +3460,12 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
+      ExplicitHeight = 327
       object memo_unReadMessagen: TMemo
         Left = 0
         Top = 0
         Width = 822
-        Height = 327
+        Height = 324
         Align = alClient
         BorderStyle = bsNone
         Font.Charset = DEFAULT_CHARSET
@@ -3445,12 +3478,13 @@ object frmPrincipal: TfrmPrincipal
         ParentFont = False
         ReadOnly = True
         TabOrder = 0
+        ExplicitHeight = 327
       end
     end
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 361
+    Top = 371
     Width = 836
     Height = 19
     Panels = <
@@ -3462,8 +3496,10 @@ object frmPrincipal: TfrmPrincipal
         Text = 'Offline'
         Width = 50
       end>
+    ExplicitTop = 361
   end
   object InjectWhatsapp1: TInjectWhatsapp
+    InjectJS.AutoUpdateTimeOut = 10
     Config.AutoStart = True
     Config.AutoDelete = False
     Config.AutoDelay = 0
@@ -3552,5 +3588,12 @@ object frmPrincipal: TfrmPrincipal
     Interval = 4000
     OnTimer = Timer1Timer
     Left = 496
+  end
+  object Timer2: TTimer
+    Enabled = False
+    Interval = 4000
+    OnTimer = Timer2Timer
+    Left = 740
+    Top = 38
   end
 end

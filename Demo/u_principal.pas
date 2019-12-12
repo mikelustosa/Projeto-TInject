@@ -78,6 +78,9 @@ type
     lblQrcode: TLabel;
     lblNumeroConectado: TLabel;
     CheckBox4: TCheckBox;
+    Lbl_Avisos: TLabel;
+    Timer2: TTimer;
+    CheckBox5: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure whatsOnClick(Sender: TObject);
@@ -112,6 +115,7 @@ type
     procedure InjectWhatsapp1LowBattery(Const POnAlarm, PBatteryCharge: Integer);
     procedure InjectWhatsapp1ErroAndWarning(Sender: TObject; const PError,
       PInfoAdc: string);
+    procedure Timer2Timer(Sender: TObject);
   private
     { Private declarations }
     idMessageGlobal: string;
@@ -396,6 +400,9 @@ var
   Ltexto: String;
 begin
   //Esta processando outro CHANGE
+  if not CheckBox5.Checked then
+     Exit;
+
   if ed_num.AutoComplete = False Then
      Exit;
 
@@ -432,6 +439,9 @@ end;
 
 procedure TfrmPrincipal.ed_numSelect(Sender: TObject);
 begin
+  if not CheckBox5.Checked then
+     Exit;
+
   if (ed_num.ItemIndex >=0) and (ed_num.Items.Count > 0) then
   Begin
     ed_num.AutoComplete := False;
@@ -484,7 +494,11 @@ end;
 procedure TfrmPrincipal.InjectWhatsapp1ErroAndWarning(Sender: TObject;
   const PError, PInfoAdc: string);
 begin
-  ShowMessage(Perror + Chr(13) + PInfoAdc);
+  Timer2.Enabled := False;
+  Lbl_Avisos.Caption := Perror + ' -> ' + PInfoAdc;
+  Lbl_Avisos.Font.Color := clBlack;
+
+  Timer2.Enabled := True;
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetBatteryLevel(Sender: TObject);
@@ -597,7 +611,10 @@ end;
 
 procedure TfrmPrincipal.InjectWhatsapp1LowBattery(Const POnAlarm, PBatteryCharge: Integer);
 begin
-  ShowMessage('Alarme de BATERIA.  Você está com ' + (PBatteryCharge).ToString + '%');
+  Timer2.Enabled        := False;
+  Lbl_Avisos.Caption    := 'Alarme de BATERIA.  Você está com ' + (PBatteryCharge).ToString + '%';
+  Lbl_Avisos.Font.Color := clRed;
+  Timer2.Enabled        := True;
 end;
 
 procedure TfrmPrincipal.listaChatsDblClick(Sender: TObject);
@@ -641,6 +658,12 @@ begin
       StatusBar1.Panels[1].Text := 'Offline';
     end;
   end;
+end;
+
+procedure TfrmPrincipal.Timer2Timer(Sender: TObject);
+begin
+  Lbl_Avisos.Caption := '';
+  Timer2.Enabled := False;
 end;
 
 procedure TfrmPrincipal.TrayIcon1Click(Sender: TObject);

@@ -135,6 +135,8 @@ type
   end;
 
 
+   procedure DestroyGlobalCEFApp;
+
 var
   GlobalCEFApp: TCEFConfig = nil;
 
@@ -145,6 +147,12 @@ uses
   uCEFTypes, Vcl.Dialogs;
 
 { TCEFConfig }
+
+procedure DestroyGlobalCEFApp;
+begin
+  if (GlobalCEFApp <> nil) then
+      FreeAndNil(GlobalCEFApp);
+end;
 
 procedure TCEFConfig.UpdateDateIniFile;
 begin

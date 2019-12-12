@@ -319,7 +319,9 @@ begin
       on E : Exception do
       Begin
         LRet.Clear;
-        Showmessage(e.Message);
+        if pos(AnsiUpperCase('Cold not load SSL'), AnsiUpperCase(e.Message)) > 0 then
+           Application.MessageBox('Seu computador não possui as DLLs "libeay32.dll" e "ssleay32.dll". Para continuar coloque as DLL na pasta system ou dentro do diretório da aplicação.', PWideChar(Application.Title), MB_ICONERROR + mb_ok) else
+           Application.MessageBox(Pwidechar('Erro no GET js.abr ' + e.Message), PWideChar(Application.Title), MB_ICONWARNING + mb_ok);
       End;
     end;
   Finally
