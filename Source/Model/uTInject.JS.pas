@@ -153,7 +153,7 @@ end;
 constructor TInjectJS.Create(AOwner: TComponent);
 begin
   inherited;
-  FAutoUpdateTimeOut         := 4;
+  FAutoUpdateTimeOut         := 10;
   FTImeOutIndy               := TTimer.Create(Nil);
   FTImeOutIndy.OnTimer       := OnTimeOutIndy;
   FTImeOutIndy.Interval      := FAutoUpdateTimeOut * 1000;
@@ -305,6 +305,9 @@ begin
         Request.Accept          := 'text/html, */*';
         Request.ContentEncoding := 'raw';
         HandleRedirects         := True;
+        HTTPOptions := HTTPOptions + [hoForceEncodeParams];
+        ProtocolVersion := pv1_1;
+        Request.UserAgent := 'Mozilla/5.0 (compatible; Test)';
       end;
 
       _Indy                := LHttp;
