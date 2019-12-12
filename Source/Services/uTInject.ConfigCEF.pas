@@ -148,7 +148,8 @@ uses
 
 procedure TCEFConfig.UpdateDateIniFile;
 begin
-  FPathJsUpdate := Now;
+//  FPathJsUpdate := StrToDateTimeDef(FDefPathLocais.ReadString('Tinject Comp', 'Ultima interação', FormatDateTime('dd/mm/yy hh:nn:ss', Now)), now);
+  Now;
   UpdateIniFile('Tinject Comp', 'Ultima interação', FormatDateTime('dd/mm/yy hh:nn:ss', FPathJsUpdate));
 end;
 
@@ -172,7 +173,7 @@ begin
   FPathJS              := FDirApp + NomeArquivoInject;
   FErrorInt            := False;
   FStartTimeOut        := 5000; //(+- 5 Segundos)
-  Lx                   := FDefPathLocais.ReadString('Tinject Comp', 'Ultima interação', FormatDateTime('dd/mm/yy hh:nn:ss', Now));
+  Lx                   := FDefPathLocais.ReadString('Tinject Comp', 'Ultima interação', '01/01/1500 05:00:00');
   FPathJsUpdate        := StrToDateTimeDef(Lx, StrTodateTime('01/01/1500 00:00'));
   SetDefault;
 end;

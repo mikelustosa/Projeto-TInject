@@ -93,7 +93,7 @@ implementation
 
 uses uTInject.Constant, System.SysUtils, uTInject.ExePath, Vcl.Forms,
     IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
-  Winapi.Windows, uTInject.ConfigCEF, Vcl.IdAntiFreeze;
+  Winapi.Windows, uTInject.ConfigCEF, Vcl.IdAntiFreeze, Vcl.Dialogs;
 
 
 { TInjectAutoUpdate }
@@ -305,9 +305,9 @@ begin
         Request.Accept          := 'text/html, */*';
         Request.ContentEncoding := 'raw';
         HandleRedirects         := True;
-        HTTPOptions := HTTPOptions + [hoForceEncodeParams];
-        ProtocolVersion := pv1_1;
-        Request.UserAgent := 'Mozilla/5.0 (compatible; Test)';
+        HTTPOptions             := HTTPOptions + [hoForceEncodeParams];
+        ProtocolVersion         := pv1_1;
+        Request.UserAgent       := 'Mozilla/5.0 (compatible; Test)';
       end;
 
       _Indy                := LHttp;
@@ -316,7 +316,11 @@ begin
       if not ValidaJs(LRet) Then
          LRet.Clear;
     Except
-      LRet.Clear;
+      on E : Exception do
+      Begin
+        LRet.Clear;
+        Showmessage(e.Message);
+      End;
     end;
   Finally
     FreeAndNil(IdAntiFreeze1);
