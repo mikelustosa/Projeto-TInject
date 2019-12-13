@@ -49,9 +49,7 @@ begin
      Exit;
 
   Application.Initialize;
-  {$IFDEF DELPHI11_UP}
-      Application.MainFormOnTaskbar := True;
-  {$ENDIF}
+  Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfrmPrincipal, frmPrincipal);
   Application.Run;
 end.

@@ -349,24 +349,23 @@ public
   destructor  Destroy; override;
   constructor Create(pAJsonString: string);
 
-
-  property  AQrCode: String                    read FAQrCode               write FAQrCode;
+  property  AQrCode: String                    read FAQrCode                      write FAQrCode;
   property  AQrCodeImageStream: TMemoryStream  Read FAQrCodeImageStream;
-  property  AQrCodeImage: TPicture             read FAQrCodeImage;  
+  property  AQrCodeImage: TPicture             read FAQrCodeImage;
   property  AQrCodeSucess: Boolean             read FAQrCodeSucess;
   property  AImageDif:  Boolean                read FAImageDif;
   Function  AQrCodeQuestion: Boolean;
-
 end;
 
 TQrCodeClass = class(TClassPadrao)
 private
   FResult: TResultQRCodeClass;
-    FTags: TQrCodeRets;
+  FTags: TQrCodeRets;
 public
   constructor Create(pAJsonString: string; PJsonOption: TJsonOptions = [];  PTagRequired: TQrCodeRets=[]);
+  destructor  Destroy; override;
+
   property    Tags  :  TQrCodeRets        read FTags;
-  
   property    Result:  TResultQRCodeClass read FResult write FResult;
 end;
 {##########################################################################################}
@@ -409,13 +408,33 @@ public
 end;
 
 
+
+
 implementation
 
 uses
-  System.JSON, System.SysUtils, Vcl.Dialogs, System.NetEncoding, 
+  System.JSON, System.SysUtils, Vcl.Dialogs, System.NetEncoding,
   Vcl.Imaging.pngimage, uTInject.ConfigCEF;
 
-{TResultQRCodeClass}
+Procedure LogAdd(Pvalor:WideString; PCab:String = '');
+Var
+  LTmp:String;
+Begin
+  try
+    if Assigned(GlobalCEFApp) then
+    Begin
+      if PCab = '' then
+         LTmp:= '[' + FormatDateTime('dd/mm/yy hh:nn', now) + ']  ' else
+         LTmp:= '[' + FormatDateTime('dd/mm/yy hh:nn', now) + ' - ' + PCab + ']  ' + slinebreak;
+      TFile.AppendAllText(GlobalCEFApp.LogConsole+ 'ConsoleMessage.log', LTmp + Pvalor, TEncoding.ASCII);
+    End;
+  Except
+
+  end;
+End;
+
+
+  {TResultQRCodeClass}
 function TResultQRCodeClass.AQrCodeQuestion: Boolean;
 begin
   //Se sucesso e a imagem for diferenre!!
@@ -506,8 +525,8 @@ begin
     end;
   finally
     FAImageDif     := TRUE;
-    LMem.Free;
     FreeAndNil(LConvert);
+    LMem.Free;
   end;
 end;
 
@@ -521,13 +540,11 @@ begin
     if not Assigned(lAJsonObj) then
        Exit;
 
+    LogAdd('', ' PRE LEITURA - ' + SELF.ClassName);
    inherited Create(pAJsonString, [joDateIsUTC, joDateFormatISO8601]);
   finally
-    if Assigned(GlobalCEFApp) then
-    Begin
-      if Trim(GlobalCEFApp.LogConsole) <> ''  then
-         TFile.AppendAllText(GlobalCEFApp.LogConsole+ 'ConsoleMessage.log',  Result, TEncoding.ASCII);
-    End;
+    LogAdd(RESULT , ' PÓS LEITURA - ' + SELF.ClassName);
+
     FreeAndNil(lAJsonObj);
     //lAJsonObj.Free;
   end;
@@ -647,17 +664,38 @@ begin
   FResult.ProcessQRCodeImage;
 end;
 
+destructor TQrCodeClass.Destroy;
+begin
+  FreeandNil(FResult);
+
+  inherited;
+end;
+
 { TClassPadrao }
 constructor TClassPadrao.Create(pAJsonString: string; PJsonOption: TJsonOptions = [joDateIsUTC, joDateFormatISO8601]);
 var
   lAJsonObj: TJSONValue;
 begin
+  LogAdd(pAJsonString , ' PRÉ PEDIDO - ' + SELF.ClassName);
   lAJsonObj := TJSONObject.ParseJSONValue(pAJsonString);
   try
+   try
+    if NOT Assigned(lAJsonObj) then
+    Begin
+      LogAdd(pAJsonString , 'VAZIO');
+      eXIT;
+    End;
+
 //    TJson.JsonToObject(Self, TJSONObject(TJSONObject.ParseJSONValue(pAJsonString)),PJsonOption);
     TJson.JsonToObject(Self, TJSONObject(lAJsonObj) ,PJsonOption);
     FJsonString := pAJsonString;
+    LogAdd(pAJsonString , ' PÓS PEDIDO - ' + SELF.ClassName);
+
     FTypeHeader := StrToTypeHeader(name);
+   Except
+     on E : Exception do
+       ShowMessage(e.Message);
+   end;
   finally
     FreeAndNil(lAJsonObj);
   end;

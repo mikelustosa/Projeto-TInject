@@ -106,7 +106,7 @@ begin
     LImage.Height    := LImage.Height + Timg_QrCode.Margins.Top;
     LImage.Center    := True;
 
-   (Timg_Animacao.Picture.Graphic as TGIFImage).Animate         := Timg_Animacao.Visible;
+//     (Timg_Animacao.Picture.Graphic as TGIFImage).Animate         := Timg_Animacao.Visible;
     AutoSize := True;
   end;
 end;

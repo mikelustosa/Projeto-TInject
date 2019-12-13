@@ -65,7 +65,11 @@ uses
 
 type
   {Events}
-  TGetUnReadMessages = procedure(Chats: TChatList) of object;
+  TStatusType        = (Whats_Disconnected, Whats_Disconnecting, Whats_Connected,  Whats_Connecting,  Whats_ConnectingQrCode, Whats_ConnectingWeb, Whats_ErrorPhone);
+
+  TGetUnReadMessages = procedure(Const Chats: TChatList) of object;
+  TOnGetQrCode       = procedure(Const QrCode: TResultQRCodeClass) of object;
+  TOnAllContacts     = procedure(Const AllContacts: TRetornoAllContacts) of object;
   TOnLowBattery      = procedure(Const POnAlarm, PBatteryCharge: Integer) of object;
 
 
@@ -76,32 +80,29 @@ type
     FInjectJS             : TInjectJS;
     FEmoticons            : TInjectEmoticons;
     FAdjustNumber         : TInjectAdjusteNumber;
-    FAllContacts          : TRetornoAllContacts;
-    FAllChats             : TChatList;
-    FQrCodeClass          : TQrCodeClass;
 
     FMyNumber             : string;
     FGetBatteryLevel      : Integer;
     Fversion              : String;
     FAuth                 : Boolean;
     FPediuCOntados        : Boolean;
-
+    Fstatus               : TStatusType;
     { Private  declarations }
     Function  ConsolePronto:Boolean;
     procedure SetAuth(const Value: boolean);
-    procedure OnResultMisc(PTypeHeader: TTypeHeader; PValue: String);
     procedure SetOnLowBattery(const Value: TOnLowBattery);
     procedure Int_OnUpdateJS   (Sender : TObject);
     procedure Int_OnErroInterno(Sender : TObject; Const PError: String; Const PInfoAdc:String);
+    procedure Int_OnResultMisc(PTypeHeader: TTypeHeader; PValue: String);
   protected
     { Protected declarations }
     FOnGetUnReadMessages  : TGetUnReadMessages;
-    FOnGetContactList     : TNotifyEvent;
+    FOnGetAllContactList  : TOnAllContacts;
     FOnLowBattery         : TOnLowBattery;
     FOnGetBatteryLevel    : TNotifyEvent;
-    FOnGetQrCode          : TNotifyEvent;
+    FOnGetQrCode          : TOnGetQrCode;
     FOnUpdateJS           : TNotifyEvent;
-    FOnGetChatList        : TNotifyEvent;
+    FOnGetChatList        : TGetUnReadMessages;
     FOnGetNewMessage      : TNotifyEvent;
     FOnGetMyNumber        : TNotifyEvent;
     FOnGetStatus          : TNotifyEvent;
@@ -112,7 +113,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
-    Procedure ShutDown(PClearNotifyEvent: Boolean = False);
+    Procedure   ShutDown(PClearNotifyEvent: Boolean = False);
 
     procedure ReadMessages(vID: string);
 
@@ -129,16 +130,19 @@ type
     procedure GetBatteryStatus;
     procedure GetAllContacts;
     procedure GetContacts(PFind:String; Const PResult: TStrings);
+    Function  GetContact(Pindex: Integer): TContactClass;
+
     procedure GetAllChats;
+    Function  GetChat(Pindex: Integer):TChatClass;
+
     function  GetUnReadMessages: String;
 
     Property  BatteryLevel: Integer              Read FGetBatteryLevel;
     Property  MyNumber    : String               Read FMyNumber;
     Property  Emoticons   : TInjectEmoticons     Read FEmoticons          Write FEmoticons;
-    property  AllContacts : TRetornoAllContacts  read FAllContacts        write FAllContacts;
-    property  AQrCode     : TQrCodeClass         read FQrCodeClass        write FQrCodeClass;
-    property  AllChats    : TChatList            read FAllChats           write FAllChats;
-    property  Auth        : boolean              read FAuth               write SetAuth;
+    property  Auth        : boolean              read FAuth             ;//  write SetAuth;
+    property  Status      : TStatusType          read FStatus;
+
   published
     { Published declarations }
     Property Version              : String               Read Fversion;
@@ -146,9 +150,9 @@ type
     property Config               : TInjectConfig        read FInjectConfig;
     property AjustNumber          : TInjectAdjusteNumber read FAdjustNumber;
 
-    property OnGetContactList     : TNotifyEvent         read FOnGetContactList     write FOnGetContactList;
-    property OnGetQrCode          : TNotifyEvent         read FOnGetQrCode          write FOnGetQrCode;
-    property OnGetChatList        : TNotifyEvent         read FOnGetChatList        write FOnGetChatList;
+    property OnGetAllContactList  : TOnAllContacts       read FOnGetAllContactList  write FOnGetAllContactList;
+    property OnGetQrCode          : TOnGetQrCode         read FOnGetQrCode          write FOnGetQrCode;
+    property OnGetChatList        : TGetUnReadMessages   read FOnGetChatList        write FOnGetChatList;
     property OnGetNewMessage      : TNotifyEvent         read FOnGetNewMessage      write FOnGetNewMessage;
     property OnGetUnReadMessages  : TGetUnReadMessages   read FOnGetUnReadMessages  write FOnGetUnReadMessages;
     property OnGetStatus          : TNotifyEvent         read FOnGetStatus          write FOnGetStatus;
@@ -156,8 +160,8 @@ type
     property OnGetMyNumber        : TNotifyEvent         read FOnGetMyNumber        write FOnGetMyNumber;
     property OnUpdateJS           : TNotifyEvent         read FOnUpdateJS           write FOnUpdateJS;
     property OnLowBattery         : TOnLowBattery        read FOnLowBattery         write SetOnLowBattery;
-//    property OnConnected          : TNotifyEvent         read FOnConnected          write FOnConnected;
-//    property OnDisConnected       : TNotifyEvent         read FOnDisconnected       write FOnDisconnected;
+    property OnConnected          : TNotifyEvent         read FOnConnected          write FOnConnected;
+    property OnDisConnected       : TNotifyEvent         read FOnDisconnected       write FOnDisconnected;
     property OnErroAndWarning     : TOnErroInternal      read FOnErroInternal       write FOnErroInternal;
   end;
 
@@ -203,8 +207,8 @@ begin
       InjectJS.UpdateNow;
       if InjectJS.Ready then
       Begin
-        FrmConsole                  := TFrmConsole.Create(nil);
-        FrmConsole.OnResultMisc     := OnResultMisc;
+        FrmConsole                  := TFrmConsole.Create(self);
+        FrmConsole.OnResultMisc     := Int_OnResultMisc;
         FrmConsole.MonitorLowBattry := Assigned(FOnLowBattery);
         FrmConsole.OnErrorInternal  := Int_OnErroInterno;
         FrmConsole.Connect;
@@ -228,6 +232,7 @@ begin
   FInjectConfig.ControlSend        := True;
   FInjectConfig.LowBatteryis       := 30;
   FInjectConfig.ControlSendTimeSec := 8;
+  Fstatus                          := Whats_Disconnected;
   FInjectConfig.SetSubComponent(true);
 
 
@@ -246,12 +251,9 @@ end;
 destructor TInjectWhatsapp.Destroy;
 begin
   stopWhatsapp;
-  FreeAndNil(FrmConsole);
+//  FreeAndNil(FrmConsole);
   FreeAndNil(FrmQRCode);
 
-  FreeAndNil(FQrCodeClass);
-  FreeAndNil(FAllContacts);
-  FreeAndNil(FAllChats);
   FreeAndNil(FAdjustNumber);
   FreeAndNil(FInjectJS);
   FreeAndNil(FInjectConfig);
@@ -272,18 +274,43 @@ begin
   end;
 end;
 
+function TInjectWhatsapp.GetChat(Pindex: Integer): TChatClass;
+begin
+  Result := Nil;
+  if not Assigned(FrmConsole) then
+     Exit;
+  if not Assigned(FrmConsole.AllChats) then
+     Exit;
+
+  Result := FrmConsole.AllChats.result[Pindex]
+end;
+
+function TInjectWhatsapp.GetContact(Pindex: Integer): TContactClass;
+begin
+  Result := Nil;
+  if not Assigned(FrmConsole) then
+     Exit;
+  if not Assigned(FrmConsole.AllContacts) then
+     Exit;
+
+  Result := FrmConsole.AllContacts.result[Pindex];
+end;
+
 procedure TInjectWhatsapp.GetContacts(PFind: String; const PResult: TStrings);
 var
   LContato: TContactClass;
 begin
+  if not Assigned(FrmConsole) then
+     Exit;
+
   PResult.Clear;
   If Length(PFind) < 2 then
      Exit;
 
   PFind := Trim(PFind);
-  if Assigned(FAllContacts) then
+  if Assigned(FrmConsole.AllContacts) then
   Begin
-    if (Length(FAllContacts.result) <= 0) and (not FPediuCOntados) Then
+    if (Length(FrmConsole.AllContacts.result) <= 0) and (not FPediuCOntados) Then
     Begin
       //nao buscou ainda os contatos
       GetAllContacts;
@@ -296,7 +323,7 @@ begin
     Exit;
   end;
 
-  for LContato in FAllContacts.result do
+  for LContato in FrmConsole.AllContacts.result do
   Begin
     if (pos(PFind, LContato.formattedName) > 0) or (pos(PFind, LContato.id) > 0) then
     Begin
@@ -371,7 +398,7 @@ begin
 end;
 
 
-procedure TInjectWhatsapp.OnResultMisc(PTypeHeader: TTypeHeader; PValue: String);
+procedure TInjectWhatsapp.Int_OnResultMisc(PTypeHeader: TTypeHeader; PValue: String);
 begin
   if PTypeHeader = Th_getMyNumber then
   Begin
@@ -395,6 +422,28 @@ begin
       end
     end
   end ;
+
+
+  if PTypeHeader in [Th_Connected, Th_Disconnected]  then
+  Begin
+    if PTypeHeader = Th_Connected then
+       SetAuth(True) else
+       SetAuth(False);
+  end;
+
+  if PTypeHeader in [Th_Connecting, Th_ConnectingQrCode]  then
+  begin
+    Fstatus := Whats_Connecting;
+    if Assigned(OnGetStatus ) then
+       OnGetStatus(Self);
+  end;
+
+  if PTypeHeader in [Th_Disconnecting]  then
+  begin
+    Fstatus := Whats_Disconnecting;
+    if Assigned(OnGetStatus ) then
+       OnGetStatus(Self);
+  end;
 end;
 
 procedure TInjectWhatsapp.ReadMessages(vID: string);
@@ -492,20 +541,29 @@ begin
 
   if (Not FAuth) and (Value) then
   Begin
+    Fstatus := Whats_Connected;
      if Assigned(FOnConnected) then
          FOnConnected(Self);
   end;
 
   if (FAuth) and (not Value) then
   Begin
-     if Assigned(FOnDisconnected) then
-         FOnDisconnected(Self);
+    Fstatus := Whats_Disconnected;
+    if Assigned(FrmConsole) then
+    Begin
+      FAuth := Value;
+      FrmConsole.DisConnect;
+    end;
+
+    if Assigned(FOnDisconnected) then
+       FOnDisconnected(Self);
   end;
-
-
   FAuth := Value;
+
   if Assigned(OnGetStatus ) then
-     OnGetStatus(Self);
+  Begin
+    OnGetStatus(Self);
+  end;
 end;
 
 
@@ -521,7 +579,10 @@ begin
   if not startWhatsapp Then
      Exit;
   if Assigned(FrmConsole) then
-     FrmConsole.Show;
+  Begin
+    Int_OnResultMisc(Th_ConnectingWeb, '');
+    FrmConsole.Show;
+  end
 end;
 
 Procedure  TInjectWhatsapp.ShutDown(PClearNotifyEvent: Boolean = False);
@@ -534,7 +595,7 @@ begin
   if PClearNotifyEvent then
   Begin
     FOnGetUnReadMessages  := Nil;
-    FOnGetContactList     := Nil;
+    FOnGetAllContactList     := Nil;
     FOnGetQrCode          := Nil;
     FOnGetChatList        := Nil;
     FOnGetNewMessage      := Nil;
@@ -543,9 +604,18 @@ begin
     FOnLowBattery         := Nil;
   End;
 
-  if Assigned(GlobalCEFApp.ChromiumForm) then
+  if Assigned(FrmConsole) then
   Begin
-    GlobalCEFApp.ChromiumForm.Close;
+    FrmConsole.DisConnect;
+
+    while Status = Whats_Disconnecting do
+      SleepNoFreeze(20);
+
+    FPediuCOntados := False;
+    FreeAndNil(FrmQRCode);
+//    FrmConsole := Nil;
+//    FreeAndNil(FrmConsole);
+//    GlobalCEFApp.Chromium     := Nil;
   end;
 
   LVar        := True;
@@ -554,28 +624,30 @@ begin
   try
     if  Assigned(GlobalCEFApp) and (GlobalCEFApp <> nil) Then
     Begin
-      if Assigned(GlobalCEFApp.Chromium) then
-      Begin
-       if Assigned(GlobalCEFApp.ChromiumForm) then
-          TFrmConsole(GlobalCEFApp.ChromiumForm).DisConnect;
+      try
+       if Assigned(FrmConsole) then
+          FrmConsole.DisConnect;
 
-        GlobalCEFApp.Chromium.OnClose(GlobalCEFApp.Chromium, GlobalCEFApp.Chromium.Browser,  LaAction);
-        GlobalCEFApp.Chromium.CloseBrowser(True);
+        FrmConsole.Chromium1.OnClose(GlobalCEFApp.Chromium, FrmConsole.Chromium1.Browser,  LaAction);
+        FrmConsole.Chromium1.CloseBrowser(True);
 
         //Executa fecgamento FORM
-        GlobalCEFApp.ChromiumForm.OnCloseQuery(GlobalCEFApp.ChromiumForm, LVar);
-        GlobalCEFApp.ChromiumForm.OnClose     (GlobalCEFApp.ChromiumForm, LaActionForm);
-        GlobalCEFApp.ChromiumForm.Close;
-      End;
+        FrmConsole.OnCloseQuery(FrmConsole, LVar);
+        FrmConsole.OnClose     (FrmConsole, LaActionForm);
+        FrmConsole.Close;
+      Except
+      end;
       FPediuCOntados := False;
       FreeAndNil(FrmQRCode);
-      FreeAndNil(FrmConsole);
+//      FreeAndNil(FrmConsole);
       GlobalCEFApp.Chromium     := Nil;
     End;
   except
-  end
-end;
+  end;
+   FrmQRCode  := Nil;
+   FrmConsole := Nil;
 
+end;
 
 procedure TInjectWhatsapp.stopWhatsapp;
 begin
@@ -588,7 +660,8 @@ begin
   FPediuCOntados := False;
 end;
 
-procedure TInjectWhatsapp.startQrCode;
+
+Procedure TInjectWhatsapp.startQrCode;
 begin
   If Application.Terminated Then
      Exit;
@@ -598,18 +671,20 @@ begin
 
   if Assigned(FrmConsole) then
   begin
+    monitorQrCode;
+    SleepNoFreeze(30);
+
+
     if not Assigned(FrmQRCode) then
     begin
+      Int_OnResultMisc(Th_ConnectingQrCode, '');
       FrmQRCode         := TFrmQRCode.Create(nil);
       FrmQRCode.Show;
     end;
-    monitorQrCode;
   end;
 end;
 
 Function TInjectWhatsapp.startWhatsapp: Boolean;
-var
-  I: Integer;
 begin
   Result := False;
   If Application.Terminated Then
@@ -621,12 +696,7 @@ begin
     Exit;
   end;
   //Faz uma parada forçada para que tudo seja concluido
-
-  for I := 0 to 10 do
-  Begin
-     Sleep(10);
-     Application.ProcessMessages;
-  end;
+  SleepNoFreeze(30);
   Result := True;
 end;
 

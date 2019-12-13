@@ -105,17 +105,28 @@ type
     FControlSend    : TControlSend;
     FCountBattery   : Integer;
     FCountBatteryMax: Integer;
+
+    FAllContacts : TRetornoAllContacts  ;
+    FAQrCode     : TResultQRCodeClass   ;
+    FChatList    : TChatList            ;
+
+
     Li: integer;
     FMonitorLowBattry: Boolean;
     FOnErrorInternal: TOnErroInternal;
-
     Function  GetAutoBatteryLeveL: Boolean;
     Procedure ISLoggedin;
-    procedure ExecuteJS(PScript: WideString;  Purl:String = 'about:blank'; pStartline: integer=0);
+    procedure ExecuteJS(PScript: WideString; PCanRepeat: Boolean = false; Purl:String = 'about:blank'; pStartline: integer=0);
     procedure loadWEBQRCode(st: string);
   public
     { Public declarations }
+
     property  OnErrorInternal : TOnErroInternal Read FOnErrorInternal          Write FOnErrorInternal;
+
+    Property  AllContacts : TRetornoAllContacts   Read FAllContacts;
+    Property  AQrCode     : TResultQRCodeClass    Read FAQrCode;
+    Property  AllChats    : TChatList             Read FChatList;
+
 
     Property  MonitorLowBattry : Boolean   Read FMonitorLowBattry  Write FMonitorLowBattry;
     Property  OnResultMisc : TResulttMisc  Read FOnResultMisc      Write FOnResultMisc;
@@ -206,25 +217,34 @@ begin
 end;
 
 
-procedure TFrmConsole.ExecuteJS(PScript: WideString;  Purl:String; pStartline: integer);
+procedure TFrmConsole.ExecuteJS(PScript: WideString;   PCanRepeat: Boolean;  Purl:String; pStartline: integer);
 begin
   if Assigned(GlobalCEFApp) then
   Begin
     if GlobalCEFApp.ErrorInt Then
        Exit;
   end;
-  If Application.Terminated Then
-     Exit;
+//  If Application.Terminated Then
+//     Exit;
 
   if not FConectado then
      raise Exception.Create(ConfigCEF_ExceptConnetWhats);
 
   if Chromium1.Browser <> nil then
   begin
-     if Assigned(FControlSend) then
-       if FControlSend.CanSend(PScript) Then
-          Chromium1.Browser.MainFrame.ExecuteJavaScript(PScript, Purl, pStartline) else
-          OnErrorInternal(self, DuplicityDetected, PScript);
+     if not PCanRepeat Then
+     Begin
+       if Assigned(FControlSend) then
+       Begin
+          if not FControlSend.CanSend(PScript) Then
+          Begin
+            OnErrorInternal(self, DuplicityDetected, PScript);
+            Exit;
+          End;
+       End;
+     End;
+     //Chegou ate aqui é porque pode enviar
+     Chromium1.Browser.MainFrame.ExecuteJavaScript(PScript, Purl, pStartline)
   end;
 end;
 
@@ -287,37 +307,38 @@ begin
 end;
 
 procedure TFrmConsole.ProcessQrCode(var pClass: TObject);
-var
-  LQr: TResultQRCodeClass;
 begin
+  if not (pClass is TQrCodeClass) then    Exit;
+  If not assigned(FrmQRCode) then
+     Exit;
+
+  if (TQR_Http in TQrCodeClass(pClass).Tags) or (TQR_Img in TQrCodeClass(pClass).Tags) then
+  Begin
+    FrmQRCode.Close;
+    FreeAndNil(FrmQRCode);
+    Exit;
+  End;
+
   try
-    if not (pClass is TQrCodeClass) then    Exit;
-    If not assigned(FrmQRCode) then
-       Exit;
+   if Assigned(FAQrCode) then
+      FreeAndNil(FAQrCode);
 
-    if (TQR_Http in TQrCodeClass(pClass).Tags) or (TQR_Img in TQrCodeClass(pClass).Tags) then
-    Begin
-      FrmQRCode.Close;
-      FreeAndNil(FrmQRCode);
-      Exit;
-    End;
-
-
-    LQr := TResultQRCodeClass(TQrCodeClass(pClass).Result);
-      //e difente.. portanto.. verificamos se existe imagem la no form.. se existir caimos fora!! se nao segue o fluxo
-    if not LQr.AImageDif then
+    FAQrCode := TResultQRCodeClass(TQrCodeClass(pClass).Result);
+    //e difente.. portanto.. verificamos se existe imagem la no form.. se existir caimos fora!! se nao segue o fluxo
+    if not FAQrCode.AImageDif then
     Begin
       if FrmQRCode.Timg_QrCode.Picture <> nil Then
          Exit;
     End;
 
-    FrmQRCode.Timg_QrCode.Picture.Assign(LQr.AQrCodeImage);
+    FrmQRCode.Timg_QrCode.Picture.Assign(FAQrCode.AQrCodeImage);
     FrmQRCode.SetView(FrmQRCode.Timg_QrCode);
-    loadWEBQRCode(LQr.AQrCode);
+
+    loadWEBQRCode(FAQrCode.AQrCode);
     If Assigned(GlobalCEFApp.InjectWhatsApp) Then
     Begin
       If Assigned(GlobalCEFApp.InjectWhatsApp.OnGetQrCode) then
-         GlobalCEFApp.InjectWhatsApp.OnGetQrCode(Self);
+         GlobalCEFApp.InjectWhatsApp.OnGetQrCode(FAQrCode);
     End;
   Except
     FrmQRCode.SetView(FrmQRCode.Timg_Animacao);
@@ -399,10 +420,15 @@ begin
   if not FConectado then
      Exit;
 
+  If Assigned(OnResultMisc) then
+     OnResultMisc(Th_Disconnecting, '');
+
   StopMonitor;
+  Chromium1.StopLoad;
+  Chromium1.Browser.StopLoad;
   Chromium1.CloseBrowser(True);
-  GlobalCEFApp.InjectWhatsApp.Auth := False;
   FConectado                       := False;
+
 end;
 
 //Marca como lida e deleta a conversa
@@ -517,32 +543,43 @@ var
   LResultStr : String;
 begin
   LResultStr := PResponse.Result;
-  if PResponse.TypeHeader = Th_None then
+  if (PResponse.TypeHeader = Th_None) then
   Begin
     if LResultStr <> '' then
        FOnErrorInternal(Self, ComunicJS_NotFound, LResultStr);
     exit;
   End;
 
+  if (LResultStr = '') and (PResponse.JsonString = '') then
+     Exit;
+
+   If not (PResponse.TypeHeader in [Th_getQrCodeWEB, Th_getQrCodeForm]) Then
+   Begin
+     If assigned(FrmQRCode) then
+     Begin
+       FrmQRCode.Close;
+       FreeAndNil(FrmQRCode);
+     End;
+   End;
 
 
-  Case PResponse.TypeHeader of
+   Case PResponse.TypeHeader of
     Th_getAllContacts   : Begin
-                            if Assigned(GlobalCEFApp.InjectWhatsApp.AllContacts) then
-                               GlobalCEFApp.InjectWhatsApp.AllContacts.Free;
+                            if Assigned(FAllContacts) then
+                               FAllContacts.Free;
 
-                            GlobalCEFApp.InjectWhatsApp.AllContacts := TRetornoAllContacts.Create(LResultStr);
-                            if Assigned(GlobalCEFApp.InjectWhatsApp.OnGetContactList ) then
-                               GlobalCEFApp.InjectWhatsApp.OnGetContactList(Self);
+                            FAllContacts := TRetornoAllContacts.Create(LResultStr);
+                            if Assigned(GlobalCEFApp.InjectWhatsApp.OnGetAllContactList ) then
+                               GlobalCEFApp.InjectWhatsApp.OnGetAllContactList(FAllContacts);
                           End;
 
     Th_GetAllChats      : Begin
-                            if Assigned(GlobalCEFApp.InjectWhatsApp.AllChats) then
-                               GlobalCEFApp.InjectWhatsApp.AllChats.Free;
+                            if Assigned(FChatList) then
+                               FChatList.Free;
 
-                            GlobalCEFApp.InjectWhatsApp.AllChats := TChatList.Create(LResultStr);
+                            FChatList := TChatList.Create(LResultStr);
                             if Assigned(GlobalCEFApp.InjectWhatsApp.OnGetChatList) then
-                               GlobalCEFApp.InjectWhatsApp.OnGetChatList(Self);
+                               GlobalCEFApp.InjectWhatsApp.OnGetChatList(FChatList);
                           End;
 
     Th_getUnreadMessages: begin
@@ -552,21 +589,13 @@ begin
                             FreeAndNil(LOutClass);
                           end;
 
-{
+    Th_getQrCodeWEB,
     Th_getQrCodeForm :    Begin
-                            try
-                              LOutClass := TQrCodeClass.Create(message, [], []);
-                              ProcessQrCode(LOutClass);
-                            Except
-                            end;
+                            LOutClass := TQrCodeClass.Create(PResponse.JsonString, [], []);
+                            ProcessQrCode(LOutClass);
                           End;
 
-    Th_getQrCodeWEB     : Begin
-                            LOutClass := TQrCodeClass.Create(message, [], []);
-                            loadWEBQRCode(TQrCodeClass(LOutClass).Result.AQrCode);
-                          End;
 
-}
     Th_GetBatteryLevel  : begin
                             If Assigned(FOnResultMisc) Then
                             Begin
@@ -587,11 +616,11 @@ begin
                             End;
                           End;
 
-          Th_Disconect  : Begin
+          Th_Disconnected  : Begin
                             DisConnect;
                           End;
 
-  end;
+   end;
 
 end;
 
@@ -603,8 +632,12 @@ procedure TFrmConsole.Chromium1ConsoleMessage(Sender: TObject;
 var
   AResponse  : TResponseConsoleMessage;
 begin
-  if (not Assigned(GlobalCEFApp.InjectWhatsApp)) or (Application.Terminated) then
+  if (trim(message) = '') or (message = JSRetornoVazio) then
+      Exit;
+
+  if (not Assigned(GlobalCEFApp.InjectWhatsApp)) then
      Exit;
+
 
   AResponse := TResponseConsoleMessage.Create( message );
   try
@@ -648,7 +681,8 @@ begin
   li := li + 1;
   if li > 3 then
   begin
-    GlobalCEFApp.InjectWhatsApp.Auth := true
+    If Assigned(OnResultMisc) then
+       OnResultMisc(Th_Connected, '');
   end;
 end;
 
@@ -666,7 +700,10 @@ begin
     if FConectado then
        Exit;
 
-    LInicio      := GetTickCount;
+    If Assigned(OnResultMisc) then
+       OnResultMisc(Th_Connecting, '');
+
+    LInicio    := GetTickCount;
     FConectado := Chromium1.CreateBrowser(CEFWindowParent1);
     Repeat
       FConectado := (Chromium1.Initialized);
@@ -681,7 +718,11 @@ begin
   finally
     FTimerMonitoring.Enabled  := FConectado;
     if not FConectado then
-       raise Exception.Create(ConfigCEF_ExceptBrowse);
+    begin
+      If Assigned(OnResultMisc) then
+         OnResultMisc(Th_Disconnected, '');
+      raise Exception.Create(ConfigCEF_ExceptBrowse);
+    end;
   end;
 end;
 
@@ -765,9 +806,20 @@ begin
 
   FreeAndNil(FTimerMonitoring);
 //  PostMessage(Handle, FrmConsole_Browser_ChildDestroy, 0, 0);
+
+  FreeAndNil(FAllContacts);
+  FreeAndNil(FAQrCode);
+  FreeAndNil(FChatList);
+
   FreeAndNil(FControlSend);
   FreeAndNil(FTimerConnect);
   GlobalCEFApp.Chromium     := Nil;
+
+//  FreeAndNil(CEFWindowParent1);
+//  FreeAndNil(Chromium1);
+
+  If Assigned(OnResultMisc) then
+     OnResultMisc(Th_Disconnected, '');
 end;
 
 procedure TFrmConsole.FormShow(Sender: TObject);
@@ -802,6 +854,7 @@ begin
     TNetEncoding.Base64.Decode( LInput, LOutput );
     LOutput.Position := 0;
   finally
+    FreeAndNil(stl);
     FreeAndNil(LInput);
     FreeAndNil(LOutput);
   end;

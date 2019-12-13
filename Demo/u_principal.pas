@@ -24,9 +24,7 @@ type
     InjectWhatsapp1: TInjectWhatsapp;
     OpenDialog1: TOpenDialog;
     TrayIcon1: TTrayIcon;
-    ApplicationEvents1: TApplicationEvents;
     ImageList1: TImageList;
-    Timer1: TTimer;
     PageControl1: TPageControl;
     TabSheet1: TTabSheet;
     TabSheet3: TTabSheet;
@@ -81,6 +79,9 @@ type
     Lbl_Avisos: TLabel;
     Timer2: TTimer;
     CheckBox5: TCheckBox;
+    Button1: TButton;
+    Button4: TButton;
+    Label3: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure whatsOnClick(Sender: TObject);
@@ -88,8 +89,6 @@ type
     procedure btEnviaTextoClick(Sender: TObject);
     procedure btEnviaTextoArqClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure InjectWhatsapp1GetContactList(Sender: TObject);
-    procedure InjectWhatsapp1GetChatList(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
     procedure InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
@@ -103,8 +102,6 @@ type
     procedure edtDelayKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ButtonSelecionarArquivoClick(Sender: TObject);
     procedure btStatusBatClick(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure InjectWhatsapp1GetBatteryLevel(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
     procedure Edt_DDIPDRExit(Sender: TObject);
@@ -116,6 +113,9 @@ type
     procedure InjectWhatsapp1ErroAndWarning(Sender: TObject; const PError,
       PInfoAdc: string);
     procedure Timer2Timer(Sender: TObject);
+    procedure InjectWhatsapp1GetAllContactList(
+      const AllContacts: TRetornoAllContacts);
+    procedure InjectWhatsapp1GetChatList(const Chats: TChatList);
   private
     { Private declarations }
     idMessageGlobal: string;
@@ -155,7 +155,7 @@ uses
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
-  ReportMemoryLeaksOnShutdown  := True;
+//  ReportMemoryLeaksOnShutdown  := True;
 
   idMessageGlobal              := 'start';
   PageControl1.ActivePageIndex := 0;
@@ -193,14 +193,8 @@ begin
   InjectWhatsapp1.startWhatsapp;
 end;
 
-procedure TfrmPrincipal.FormShow(Sender: TObject);
-begin
-  timer1.Enabled := true;
-end;
-
 procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  Timer1.Enabled := False;
   InjectWhatsapp1.ShutDown;
   Action := Cafree;
   //application.Terminate;
@@ -295,11 +289,13 @@ end;
 
 procedure TfrmPrincipal.Button1Click(Sender: TObject);
 begin
-  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
-  begin
+  if not InjectWhatsapp1.Auth then
+  Begin
     application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
-  end;
+  End;
+
+  InjectWhatsapp1.ShutDown();
 end;
 
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
@@ -501,32 +497,14 @@ begin
   Timer2.Enabled := True;
 end;
 
-procedure TfrmPrincipal.InjectWhatsapp1GetBatteryLevel(Sender: TObject);
-begin
-  btStatusBat.caption := 'Nível da bateria: '+injectWhatsapp1.BatteryLevel.ToString + '%';
-end;
-
-procedure TfrmPrincipal.InjectWhatsapp1GetChatList(Sender: TObject);
-var
-  AChat: TChatClass;
-begin
-  listaChats.Clear;
-
-  for AChat in InjectWhatsapp1.AllChats.result do
-  begin
-    AddChatList('('+ AChat.unreadCount.ToString + ') '
-               + AChat.name
-               + ' - ' + AChat.id);
-  end;
-end;
-
-procedure TfrmPrincipal.InjectWhatsapp1GetContactList(Sender: TObject);
+procedure TfrmPrincipal.InjectWhatsapp1GetAllContactList(
+  const AllContacts: TRetornoAllContacts);
 var
   AContact: TContactClass;
 begin
   listaContatos.Clear;
 
-  for AContact in InjectWhatsapp1.AllContacts.result do
+  for AContact in AllContacts.result do
   begin
     if chk_grupos.Checked = true then
     begin
@@ -538,43 +516,59 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.InjectWhatsapp1GetBatteryLevel(Sender: TObject);
+begin
+  btStatusBat.caption := 'Nível da bateria: '+ TInjectWhatsapp(Sender).BatteryLevel.ToString + '%';
+end;
+
+procedure TfrmPrincipal.InjectWhatsapp1GetChatList(const Chats: TChatList);
+var
+  AChat: TChatClass;
+begin
+  listaChats.Clear;
+  for AChat in Chats.result do
+  begin
+    AddChatList('('+ AChat.unreadCount.ToString + ') '
+               + AChat.name
+               + ' - ' + AChat.id);
+  end;
+end;
+
 procedure TfrmPrincipal.InjectWhatsapp1GetMyNumber(Sender: TObject);
 begin
-  lblNumeroConectado.Caption :=  injectWhatsapp1.MyNumber;
+  lblNumeroConectado.Caption :=   TInjectWhatsapp(Sender).MyNumber;
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetStatus(Sender: TObject);
 begin
+  TabSheet3.TabVisible   := TInjectWhatsapp(Sender).Auth;
+  TabSheet4.TabVisible   := TInjectWhatsapp(Sender).Auth;
+
   If Application.Terminated Then
      Exit;
 
-  if InjectWhatsapp1.Auth = True then
+  if TInjectWhatsapp(Sender).Auth = True then
   begin
     lblStatus.Caption            := 'Online';
     lblStatus.Font.Color         := $0000AE11;
-    whatsOn.Visible              := True;
-
-    lblQrcode.Visible            := False;
-    imgQrcode.Visible            := False;
-    lblNumeroConectado.Visible   := True;
   end
   else
   begin
-    lblStatus.Caption     := 'Offline';
-    lblStatus.Font.Color  := $002894FF;
-    whatsOff.Visible      := True;
-
-    lblQrcode.Visible     := True;
-    imgQrcode.Visible     := True;
-    lblNumeroConectado.Visible   := False;
+    lblStatus.Caption            := 'Offline';
+    lblStatus.Font.Color         := $002894FF;
   end;
-  TabSheet3.TabVisible   := lblNumeroConectado.Visible;
-  TabSheet4.TabVisible   := lblNumeroConectado.Visible;
- {
-  if lblNumeroConectado.Visible then
-     PageControl1.ActivePageIndex := 2 Else
+  whatsOn.Visible            := TInjectWhatsapp(Sender).Auth;
+  lblNumeroConectado.Visible := whatsOn.Visible;
+  whatsOff.Visible           := Not whatsOn.Visible;
+  lblQrcode.Visible          := whatsOff.Visible;
+  imgQrcode.Visible          := whatsOff.Visible;
+
+  Label3.Visible := (TInjectWhatsapp(Sender).Status in [Whats_Connecting, Whats_ConnectingQrCode, Whats_ConnectingWeb]);
+
+
+  if TInjectWhatsapp(Sender).Auth then
+     PageControl1.ActivePageIndex := 1 Else
      PageControl1.ActivePageIndex := 0;
- }
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
@@ -619,45 +613,12 @@ end;
 
 procedure TfrmPrincipal.listaChatsDblClick(Sender: TObject);
 begin
-  ed_num.Text := InjectWhatsapp1.AllChats.result[ listaChats.Selected.Index ].id;
+  ed_num.Text := InjectWhatsapp1.GetChat(listaChats.Selected.Index).id;
 end;
 
 procedure TfrmPrincipal.listaContatosDblClick(Sender: TObject);
 begin
-  ed_num.Text := InjectWhatsapp1.AllContacts.result[ listaContatos.Selected.Index ].id;
-end;
-
-procedure TfrmPrincipal.Timer1Timer(Sender: TObject);
-begin
-  if Assigned(FrmConsole) then
-  begin
-    if GlobalCEFApp.InjectWhatsApp.Auth = true then
-    begin
-      lblStatus.Caption    := 'Online';
-      lblStatus.Font.Color := $0000AE11;
-
-      whatsOn.Visible := True;
-      whatsOff.Visible := False;
-
-      lblQrcode.Visible := False;
-      imgQrcode.Visible := False;
-      lblNumeroConectado.Visible := True;
-      StatusBar1.Panels[1].Text := 'Online';
-    end
-    else
-    begin
-      lblStatus.Caption     := 'Offline';
-      lblStatus.Font.Color  := $002894FF;
-
-      whatsOff.Visible := True;
-      whatsOn.Visible := False;
-
-      lblQrcode.Visible := True;
-      imgQrcode.Visible := True;
-      lblNumeroConectado.Visible := False;
-      StatusBar1.Panels[1].Text := 'Offline';
-    end;
-  end;
+  ed_num.Text := InjectWhatsapp1.GetContact(listaContatos.Selected.Index).id;
 end;
 
 procedure TfrmPrincipal.Timer2Timer(Sender: TObject);

@@ -59,6 +59,7 @@ Const
   ConfigVersaoCompInvalida        = 'Sua versão do componente Tinject não é compatível com o novo JavaScript, por favor, atualize suas biblioteca em http://www.tinject.com.br/';
   ConfigJS_ExceptUpdate           = 'Erro de servidor WEB. Não foi possível receber a atualização do JS.ABR';
   ComunicJS_NotFound              = 'Retorno JS.ABR não conhecido';
+  JSRetornoVazio                  = '{"result":[]}';
 
   //Usado no TInjectJS               'https://raw.githubusercontent.com/mikelustosa/Projeto-TInject/master/Demo/BIN/js.abr'; //
   //TInjectJS_JSUrlPadrao            = 'http://www.tinject.com.br/viewtopic.php?f=3&t=10&p=17&sid=84550ac7f5d0134a129eb73144943991#p17';
@@ -98,17 +99,20 @@ Const
     TTypeHeader = (Th_None = 0,
                      Th_getAllContacts  = 1,  Th_GetAllChats = 2,     Th_getUnreadMessages = 3,
                      Th_GetBatteryLevel = 4,  Th_getQrCodeForm = 5,   Th_getQrCodeWEB = 6,
-                     Th_getMyNumber = 7,      Th_Disconect= 8
+                     Th_getMyNumber = 7,
+                     Th_Disconnected= 8,    Th_Disconnecting= 9,    Th_Connected= 10    ,
+                     Th_Connecting=11,      Th_ConnectingQrCode=12, Th_ConnectingWeb=13
                      );
 
     Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
     Function   FrmConsole_JS_AlterVar(var PScript:String;  PNomeVar: String;  Const PValor:String):String;
     function   StrToTypeHeader(PText: string): TTypeHeader;
+    Procedure  SleepNoFreeze(Ptime:Integer);
 
 implementation
 
 uses
-  System.JSON, System.Classes, Vcl.Dialogs;
+  System.JSON, System.Classes, Vcl.Dialogs, Vcl.Forms;
 
 
 Function VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
@@ -157,6 +161,22 @@ Begin
   PScript := StringReplace(PScript, PNomeVar, PValor, [rfReplaceAll, rfIgnoreCase]);
   result  := PScript;
 end;
+
+
+Procedure SleepNoFreeze(Ptime:Integer);
+var
+  Lexecutado: Integer;
+Begin
+  if Ptime < 10  then
+    Ptime := 10;
+  Lexecutado := 0;
+  While Lexecutado < Ptime do
+  Begin
+    Sleep(10);
+    Application.ProcessMessages;
+    Lexecutado := Lexecutado + 10;
+  End;
+End;
 
 
 function   StrToTypeHeader(PText: string): TTypeHeader;

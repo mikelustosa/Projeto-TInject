@@ -14,7 +14,6 @@ object frmPrincipal: TfrmPrincipal
   Position = poOwnerFormCenter
   OnClose = FormClose
   OnCreate = FormCreate
-  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Lbl_Avisos: TLabel
@@ -24,7 +23,6 @@ object frmPrincipal: TfrmPrincipal
     Height = 13
     Align = alBottom
     Caption = ' '
-    ExplicitTop = 348
     ExplicitWidth = 3
   end
   object PageControl1: TPageControl
@@ -33,13 +31,11 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 830
     Height = 352
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
-    ExplicitHeight = 355
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o'
-      ExplicitHeight = 327
       object Pnl_Config: TPanel
         AlignWithMargins = True
         Left = 325
@@ -53,10 +49,9 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 0
-        ExplicitHeight = 321
         object Label8: TLabel
           Left = 16
-          Top = 0
+          Top = 20
           Width = 87
           Height = 13
           Caption = 'Delay de resposta'
@@ -181,7 +176,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object CheckBox2: TCheckBox
           Left = 133
-          Top = 222
+          Top = 212
           Width = 229
           Height = 17
           Caption = 'Evitar Duplicidade ou Loop de Envio'
@@ -190,7 +185,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object LabeledEdit1: TLabeledEdit
           Left = 168
-          Top = 253
+          Top = 252
           Width = 80
           Height = 19
           EditLabel.Width = 57
@@ -201,8 +196,8 @@ object frmPrincipal: TfrmPrincipal
           OnExit = Edt_DDIPDRExit
         end
         object LabeledEdit2: TLabeledEdit
-          Left = 13
-          Top = 277
+          Left = 16
+          Top = 253
           Width = 80
           Height = 19
           EditLabel.Width = 71
@@ -245,8 +240,8 @@ object frmPrincipal: TfrmPrincipal
           OnExit = Edt_DDIPDRExit
         end
         object LabeledEdit4: TLabeledEdit
-          Left = 329
-          Top = 277
+          Left = 377
+          Top = 253
           Width = 80
           Height = 19
           EditLabel.Width = 81
@@ -255,6 +250,15 @@ object frmPrincipal: TfrmPrincipal
           NumbersOnly = True
           TabOrder = 12
           OnExit = Edt_DDIPDRExit
+        end
+        object Button4: TButton
+          Left = 147
+          Top = 278
+          Width = 129
+          Height = 27
+          Caption = 'Desconectar'
+          TabOrder = 13
+          OnClick = Button1Click
         end
       end
       object Panel2: TPanel
@@ -270,7 +274,6 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 1
-        ExplicitHeight = 321
         DesignSize = (
           314
           316)
@@ -3207,12 +3210,25 @@ object frmPrincipal: TfrmPrincipal
           ParentFont = False
           Visible = False
         end
+        object Label3: TLabel
+          Left = 32
+          Top = 135
+          Width = 249
+          Height = 23
+          Caption = 'AGUARDE CONECTANDO..'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -19
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          Visible = False
+        end
       end
     end
     object TabSheet3: TTabSheet
       Caption = 'A'#231#245'es Manuais'
       ImageIndex = 2
-      ExplicitHeight = 327
       object groupEnvioMsg: TGroupBox
         Left = 0
         Top = 0
@@ -3221,7 +3237,6 @@ object frmPrincipal: TfrmPrincipal
         Align = alLeft
         Caption = 'Envio de Mensagem'
         TabOrder = 0
-        ExplicitHeight = 259
         DesignSize = (
           218
           256)
@@ -3246,7 +3261,6 @@ object frmPrincipal: TfrmPrincipal
           Height = 85
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 1
-          ExplicitHeight = 75
         end
         object ButtonSelecionarArquivo: TButton
           Left = 14
@@ -3259,7 +3273,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 2
           OnClick = ButtonSelecionarArquivoClick
-          ExplicitTop = 223
         end
         object btEnviaTextoArq: TButton
           Left = 51
@@ -3272,7 +3285,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 3
           OnClick = btEnviaTextoArqClick
-          ExplicitTop = 223
         end
         object btEnviaTexto: TButton
           Left = 14
@@ -3285,7 +3297,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 4
           OnClick = btEnviaTextoClick
-          ExplicitTop = 192
         end
         object ed_num: TComboBox
           Left = 14
@@ -3323,7 +3334,6 @@ object frmPrincipal: TfrmPrincipal
         Align = alBottom
         Caption = 'Outras Fun'#231#245'es'
         TabOrder = 1
-        ExplicitTop = 262
         object btStatusBat: TButton
           Left = 14
           Top = 21
@@ -3334,6 +3344,15 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 0
           OnClick = btStatusBatClick
+        end
+        object Button1: TButton
+          Left = 676
+          Top = 16
+          Width = 129
+          Height = 41
+          Caption = 'Desconectar'
+          TabOrder = 1
+          OnClick = Button1Click
         end
       end
       object Panel1: TPanel
@@ -3346,7 +3365,6 @@ object frmPrincipal: TfrmPrincipal
         Caption = 'Panel1'
         ShowCaption = False
         TabOrder = 2
-        ExplicitHeight = 259
         object Splitter1: TSplitter
           Left = 297
           Top = 0
@@ -3369,7 +3387,6 @@ object frmPrincipal: TfrmPrincipal
           Font.Style = []
           ParentFont = False
           TabOrder = 0
-          ExplicitHeight = 259
           DesignSize = (
             304
             256)
@@ -3408,7 +3425,6 @@ object frmPrincipal: TfrmPrincipal
             TabOrder = 1
             ViewStyle = vsSmallIcon
             OnDblClick = listaChatsDblClick
-            ExplicitHeight = 196
           end
         end
         object groupListaContatos: TGroupBox
@@ -3419,7 +3435,6 @@ object frmPrincipal: TfrmPrincipal
           Align = alLeft
           Caption = 'Lista de Contatos'
           TabOrder = 1
-          ExplicitHeight = 259
           DesignSize = (
             297
             256)
@@ -3439,7 +3454,6 @@ object frmPrincipal: TfrmPrincipal
             TabOrder = 0
             ViewStyle = vsSmallIcon
             OnDblClick = listaContatosDblClick
-            ExplicitHeight = 196
           end
           object Button2: TButton
             AlignWithMargins = True
@@ -3460,7 +3474,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
-      ExplicitHeight = 327
       object memo_unReadMessagen: TMemo
         Left = 0
         Top = 0
@@ -3478,7 +3491,6 @@ object frmPrincipal: TfrmPrincipal
         ParentFont = False
         ReadOnly = True
         TabOrder = 0
-        ExplicitHeight = 327
       end
     end
   end
@@ -3496,7 +3508,6 @@ object frmPrincipal: TfrmPrincipal
         Text = 'Offline'
         Width = 50
       end>
-    ExplicitTop = 361
   end
   object InjectWhatsapp1: TInjectWhatsapp
     InjectJS.AutoUpdateTimeOut = 10
@@ -3507,7 +3518,7 @@ object frmPrincipal: TfrmPrincipal
     Config.ShowRandom = False
     AjustNumber.LengthPhone = 8
     AjustNumber.DDIDefault = 55
-    OnGetContactList = InjectWhatsapp1GetContactList
+    OnGetAllContactList = InjectWhatsapp1GetAllContactList
     OnGetChatList = InjectWhatsapp1GetChatList
     OnGetUnReadMessages = InjectWhatsapp1GetUnReadMessages
     OnGetStatus = InjectWhatsapp1GetStatus
@@ -3524,10 +3535,6 @@ object frmPrincipal: TfrmPrincipal
   object TrayIcon1: TTrayIcon
     OnClick = TrayIcon1Click
     Left = 376
-  end
-  object ApplicationEvents1: TApplicationEvents
-    OnMinimize = ApplicationEvents1Minimize
-    Left = 560
   end
   object ImageList1: TImageList
     ColorDepth = cdDefault
@@ -3583,17 +3590,11 @@ object frmPrincipal: TfrmPrincipal
       E00FFFFFFE01FC01F83FFFFFFE03FF0D00000000000000000000000000000000
       000000000000}
   end
-  object Timer1: TTimer
-    Enabled = False
-    Interval = 4000
-    OnTimer = Timer1Timer
-    Left = 496
-  end
   object Timer2: TTimer
     Enabled = False
     Interval = 4000
     OnTimer = Timer2Timer
-    Left = 740
-    Top = 38
+    Left = 636
+    Top = 94
   end
 end
