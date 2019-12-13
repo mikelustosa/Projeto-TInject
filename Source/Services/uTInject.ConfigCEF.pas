@@ -157,7 +157,7 @@ end;
 procedure TCEFConfig.UpdateDateIniFile;
 begin
 //  FPathJsUpdate := StrToDateTimeDef(FDefPathLocais.ReadString('Tinject Comp', 'Ultima interação', FormatDateTime('dd/mm/yy hh:nn:ss', Now)), now);
-  Now;
+  FPathJsUpdate := Now;
   UpdateIniFile('Tinject Comp', 'Ultima interação', FormatDateTime('dd/mm/yy hh:nn:ss', FPathJsUpdate));
 end;
 

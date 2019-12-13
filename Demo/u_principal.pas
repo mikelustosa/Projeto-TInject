@@ -291,7 +291,7 @@ procedure TfrmPrincipal.Button1Click(Sender: TObject);
 begin
   if not InjectWhatsapp1.Auth then
   Begin
-    application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
+    application.MessageBox('Você não está conectado.','TInject', mb_iconwarning + mb_ok);
     abort;
   End;
 
@@ -484,7 +484,8 @@ end;
 
 Procedure TfrmPrincipal.imgQrcodeClick(Sender: TObject);
 begin
-  InjectWhatsapp1.startQrCode;
+  InjectWhatsapp1.QrCodeStyle := TQS_Form;
+  InjectWhatsapp1.StartQrCode;
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1ErroAndWarning(Sender: TObject;
@@ -563,8 +564,19 @@ begin
   lblQrcode.Visible          := whatsOff.Visible;
   imgQrcode.Visible          := whatsOff.Visible;
 
-  Label3.Visible := (TInjectWhatsapp(Sender).Status in [Whats_Connecting, Whats_ConnectingQrCode, Whats_ConnectingWeb]);
+  Label3.Caption := 'Aguarde, Conectando..';
+  Label3.Visible := (TInjectWhatsapp(Sender).Status in [Whats_Connecting,
+                                                        Whats_ConnectingQrCode,
+                                                        Whats_ConnectingWeb,
+                                                        Whats_ConnectingNoPhone
+                                                        ]);
 
+  if TInjectWhatsapp(Sender).Status = Whats_ConnectingNoPhone Then
+  Begin
+    if TInjectWhatsapp(Sender).QrCodeStyle = TQS_Form then
+       TInjectWhatsapp(Sender).StopQrCode else
+       Label3.Caption   := 'Telefone Desconectado';
+  End;
 
   if TInjectWhatsapp(Sender).Auth then
      PageControl1.ActivePageIndex := 1 Else
@@ -663,12 +675,13 @@ end;
 
 procedure TfrmPrincipal.whatsOffClick(Sender: TObject);
 begin
-  InjectWhatsapp1.ShowWebApp;
+  InjectWhatsapp1.QrCodeStyle := TQS_Web;
+  InjectWhatsapp1.StartQrCode;
 end;
 
 procedure TfrmPrincipal.whatsOnClick(Sender: TObject);
 begin
-  InjectWhatsapp1.ShowWebApp;
+  InjectWhatsapp1.StopQrCode;
 end;
 
 end.

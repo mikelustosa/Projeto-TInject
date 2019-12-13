@@ -408,6 +408,7 @@ public
 end;
 
 
+Procedure LogAdd(Pvalor:WideString; PCab:String = '');
 
 
 implementation
@@ -416,7 +417,7 @@ uses
   System.JSON, System.SysUtils, Vcl.Dialogs, System.NetEncoding,
   Vcl.Imaging.pngimage, uTInject.ConfigCEF;
 
-Procedure LogAdd(Pvalor:WideString; PCab:String = '');
+Procedure LogAdd(Pvalor:WideString; PCab:String);
 Var
   LTmp:String;
 Begin
@@ -426,7 +427,7 @@ Begin
       if PCab = '' then
          LTmp:= '[' + FormatDateTime('dd/mm/yy hh:nn', now) + ']  ' else
          LTmp:= '[' + FormatDateTime('dd/mm/yy hh:nn', now) + ' - ' + PCab + ']  ' + slinebreak;
-      TFile.AppendAllText(GlobalCEFApp.LogConsole+ 'ConsoleMessage.log', LTmp + Pvalor, TEncoding.ASCII);
+      TFile.AppendAllText(GlobalCEFApp.LogConsole+ 'ConsoleMessage.log', slinebreak + LTmp + Pvalor, TEncoding.ASCII);
     End;
   Except
 
@@ -540,10 +541,10 @@ begin
     if not Assigned(lAJsonObj) then
        Exit;
 
-    LogAdd('', ' PRE LEITURA - ' + SELF.ClassName);
+//    LogAdd('', ' PRE LEITURA - ' + SELF.ClassName);
    inherited Create(pAJsonString, [joDateIsUTC, joDateFormatISO8601]);
   finally
-    LogAdd(RESULT , ' PÓS LEITURA - ' + SELF.ClassName);
+//    LogAdd(RESULT , ' PÓS LEITURA - ' + SELF.ClassName);
 
     FreeAndNil(lAJsonObj);
     //lAJsonObj.Free;
@@ -676,20 +677,19 @@ constructor TClassPadrao.Create(pAJsonString: string; PJsonOption: TJsonOptions 
 var
   lAJsonObj: TJSONValue;
 begin
-  LogAdd(pAJsonString , ' PRÉ PEDIDO - ' + SELF.ClassName);
+//  LogAdd(pAJsonString , ' PRÉ PEDIDO - ' + SELF.ClassName);
   lAJsonObj := TJSONObject.ParseJSONValue(pAJsonString);
   try
    try
     if NOT Assigned(lAJsonObj) then
     Begin
-      LogAdd(pAJsonString , 'VAZIO');
+//      LogAdd(pAJsonString , 'VAZIO');
       eXIT;
     End;
 
-//    TJson.JsonToObject(Self, TJSONObject(TJSONObject.ParseJSONValue(pAJsonString)),PJsonOption);
     TJson.JsonToObject(Self, TJSONObject(lAJsonObj) ,PJsonOption);
     FJsonString := pAJsonString;
-    LogAdd(pAJsonString , ' PÓS PEDIDO - ' + SELF.ClassName);
+//    LogAdd(pAJsonString , ' PÓS PEDIDO - ' + SELF.ClassName);
 
     FTypeHeader := StrToTypeHeader(name);
    Except

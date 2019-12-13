@@ -2874,8 +2874,8 @@ object frmPrincipal: TfrmPrincipal
           OnClick = whatsOffClick
         end
         object imgQrcode: TImage
-          Left = 108
-          Top = 228
+          Left = 113
+          Top = 231
           Width = 74
           Height = 75
           Cursor = crHandPoint
@@ -3181,7 +3181,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object lblQrcode: TLabel
           Left = 72
-          Top = 198
+          Top = 203
           Width = 158
           Height = 23
           Anchors = [akTop, akRight]
@@ -3195,7 +3195,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object lblNumeroConectado: TLabel
           Left = 8
-          Top = 164
+          Top = 174
           Width = 292
           Height = 29
           Alignment = taCenter
@@ -3212,7 +3212,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object Label3: TLabel
           Left = 32
-          Top = 135
+          Top = 157
           Width = 249
           Height = 23
           Caption = 'AGUARDE CONECTANDO..'

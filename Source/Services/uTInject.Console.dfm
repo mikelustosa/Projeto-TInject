@@ -250,9 +250,11 @@ object FrmConsole: TFrmConsole
     end
   end
   object Chromium1: TChromium
+    OnTextResultAvailable = Chromium1TextResultAvailable
     OnLoadEnd = Chromium1LoadEnd
     OnTitleChange = Chromium1TitleChange
     OnConsoleMessage = Chromium1ConsoleMessage
+    OnJsdialog = Chromium1Jsdialog
     OnBeforePopup = Chromium1BeforePopup
     OnAfterCreated = Chromium1AfterCreated
     OnBeforeClose = Chromium1BeforeClose

@@ -65,7 +65,8 @@ uses
 
 type
   {Events}
-  TStatusType        = (Whats_Disconnected, Whats_Disconnecting, Whats_Connected,  Whats_Connecting,  Whats_ConnectingQrCode, Whats_ConnectingWeb, Whats_ErrorPhone);
+  TStatusType        = (Whats_Disconnected, Whats_Disconnecting, Whats_Connected,  Whats_Connecting, Whats_ConnectingNoPhone , Whats_ConnectingQrCode, Whats_ConnectingWeb, Whats_ErrorPhone);
+  TQrCodeStyle       = (TQS_Form, TQS_Web);
 
   TGetUnReadMessages = procedure(Const Chats: TChatList) of object;
   TOnGetQrCode       = procedure(Const QrCode: TResultQRCodeClass) of object;
@@ -80,7 +81,7 @@ type
     FInjectJS             : TInjectJS;
     FEmoticons            : TInjectEmoticons;
     FAdjustNumber         : TInjectAdjusteNumber;
-
+    FQrCodeStyle          : TQrCodeStyle;
     FMyNumber             : string;
     FGetBatteryLevel      : Integer;
     Fversion              : String;
@@ -117,13 +118,14 @@ type
 
     procedure ReadMessages(vID: string);
 
-    procedure startQrCode;
+    procedure StartQrCode;
+    procedure  StopQrCode;
+
     procedure monitorQrCode;
 
     Function  startWhatsapp: Boolean;
     procedure stopWhatsapp;
 
-    procedure ShowWebApp;
     procedure send(vNum, vMess: string);
     procedure sendBase64(vBase64, vNum, vFileName, vMess: string);
 
@@ -139,9 +141,10 @@ type
 
     Property  BatteryLevel: Integer              Read FGetBatteryLevel;
     Property  MyNumber    : String               Read FMyNumber;
-    Property  Emoticons   : TInjectEmoticons     Read FEmoticons          Write FEmoticons;
-    property  Auth        : boolean              read FAuth             ;//  write SetAuth;
+    property  Auth        : boolean              read FAuth;
     property  Status      : TStatusType          read FStatus;
+    Property  Emoticons   : TInjectEmoticons     Read FEmoticons          Write FEmoticons;
+    property  QrCodeStyle : TQrCodeStyle         read FQrCodeStyle        Write FQrCodeStyle;
 
   published
     { Published declarations }
@@ -224,6 +227,7 @@ constructor TInjectWhatsapp.Create(AOwner: TComponent);
 begin
   inherited;
   FGetBatteryLevel                 := -1;
+  FQrCodeStyle                     := TQS_Web;
   Fversion                         := TInjectVersion;
   FInjectConfig                    := TInjectConfig.Create(self);
   FInjectConfig.Name               := 'AutoInject';
@@ -424,6 +428,14 @@ begin
   end ;
 
 
+  if PTypeHeader in [Th_ConnectingNoPhone]  then
+  Begin
+    Fstatus := Whats_ConnectingNoPhone;
+    if Assigned(OnGetStatus ) then
+       OnGetStatus(Self);
+  end;
+
+
   if PTypeHeader in [Th_Connected, Th_Disconnected]  then
   Begin
     if PTypeHeader = Th_Connected then
@@ -574,28 +586,19 @@ begin
      FrmConsole.MonitorLowBattry := Assigned(FOnLowBattery);
 end;
 
-procedure TInjectWhatsapp.ShowWebApp;
-begin
-  if not startWhatsapp Then
-     Exit;
-  if Assigned(FrmConsole) then
-  Begin
-    Int_OnResultMisc(Th_ConnectingWeb, '');
-    FrmConsole.Show;
-  end
-end;
 
 Procedure  TInjectWhatsapp.ShutDown(PClearNotifyEvent: Boolean = False);
 var
   LVar        : Boolean;
   LaAction    : TCefCloseBrowserAction;
   LaActionForm: TCloseAction;
+  LIni: Cardinal;
 begin
   //Executa o SHutDown
   if PClearNotifyEvent then
   Begin
     FOnGetUnReadMessages  := Nil;
-    FOnGetAllContactList     := Nil;
+    FOnGetAllContactList  := Nil;
     FOnGetQrCode          := Nil;
     FOnGetChatList        := Nil;
     FOnGetNewMessage      := Nil;
@@ -607,9 +610,12 @@ begin
   if Assigned(FrmConsole) then
   Begin
     FrmConsole.DisConnect;
-
-    while Status = Whats_Disconnecting do
+    LIni := GetTickCount;
+    Repeat
       SleepNoFreeze(20);
+      if (GetTickCount - LIni) >= 1000 then //Retirado do EXEMPLO do CEF para dar tempo de todas as thread recebem a ordem de finalização
+         Break;
+    Until Status <> Whats_Disconnecting;
 
     FPediuCOntados := False;
     FreeAndNil(FrmQRCode);
@@ -661,27 +667,30 @@ begin
 end;
 
 
-Procedure TInjectWhatsapp.startQrCode;
+Procedure TInjectWhatsapp.StartQrCode;
 begin
-  If Application.Terminated Then
+  If (Application.Terminated) and (not startWhatsapp) Then
+     Exit;
+  if not Assigned(FrmConsole) then
      Exit;
 
-  if not startWhatsapp Then
-     Exit;
-
-  if Assigned(FrmConsole) then
+  SleepNoFreeze(10);
+  if QrCodeStyle = TQS_Web then
   begin
-    monitorQrCode;
+    Int_OnResultMisc(Th_ConnectingWeb, '');
+    FrmConsole.Show;
+  end Else
+  Begin
     SleepNoFreeze(30);
-
-
     if not Assigned(FrmQRCode) then
     begin
       Int_OnResultMisc(Th_ConnectingQrCode, '');
-      FrmQRCode         := TFrmQRCode.Create(nil);
-      FrmQRCode.Show;
+      FrmQRCode         := TFrmQRCode.Create(Self);
     end;
-  end;
+    if not FrmQRCode.Showing then
+       FrmQRCode.Show;
+    monitorQrCode;
+  end
 end;
 
 Function TInjectWhatsapp.startWhatsapp: Boolean;
@@ -698,6 +707,23 @@ begin
   //Faz uma parada forçada para que tudo seja concluido
   SleepNoFreeze(30);
   Result := True;
+end;
+
+procedure TInjectWhatsapp.StopQrCode;
+begin
+  If (Application.Terminated) and (not startWhatsapp) Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  if QrCodeStyle = TQS_Web then
+  begin
+    FrmConsole.DisConnect;
+  end else
+  Begin
+    if Assigned(FrmQRCode) then
+       FrmQRCode.Close;
+   end
 end;
 
 end.

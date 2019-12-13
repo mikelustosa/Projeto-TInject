@@ -72,6 +72,8 @@ Const
   FrmConsole_Browser_Destroy       = WM_APP + $102;
   FrmConsole_Browser_Destroy2      = WM_APP + $103;
 
+  FrmConsole_Browser_ContextPhoneOff = '<div class="_1fpj- app-wrapper-web">';
+
   FrmConsole_JS_URL                = 'https://web.whatsapp.com/';
   FrmConsole_JS_GetAllContacts     = 'window.WAPI.getAllContacts();';
   FrmConsole_JS_GetBatteryLevel    = 'window.WAPI.getBatteryLevel();';
@@ -101,7 +103,8 @@ Const
                      Th_GetBatteryLevel = 4,  Th_getQrCodeForm = 5,   Th_getQrCodeWEB = 6,
                      Th_getMyNumber = 7,
                      Th_Disconnected= 8,    Th_Disconnecting= 9,    Th_Connected= 10    ,
-                     Th_Connecting=11,      Th_ConnectingQrCode=12, Th_ConnectingWeb=13
+                     Th_Connecting=11,      Th_ConnectingQrCode=12, Th_ConnectingWeb=13,
+                     Th_ConnectingNoPhone=14
                      );
 
     Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;

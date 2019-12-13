@@ -39,6 +39,9 @@ type
   private
     FCaptionSucess: String;
     FCaptionWait: String;
+    FTimerSolQrCode : Ttimer;
+    procedure OnTImer(Sender: TObject);
+
     { Private declarations }
   public
     { Public declarations }
@@ -59,6 +62,9 @@ uses uTInject, System.NetEncoding, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage,
 
 procedure TFrmQRCode.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  FTimerSolQrCode.Enabled := False;
+  FreeAndNil(FTimerSolQrCode);
+
   action    := cafree;
   FrmQRCode := nil;
 end;
@@ -71,9 +77,24 @@ begin
   AutoSize              := False;
   Timg_Animacao.Visible := True;
   Timg_QrCode.Visible   := False;
-  (Timg_Animacao.Picture.Graphic as TGIFImage).AnimationSpeed  := 500;
+  (Timg_Animacao.Picture.Graphic as TGIFImage).AnimationSpeed  := 400;
   (Timg_Animacao.Picture.Graphic as TGIFImage).Animate         := True;
   SetView(Timg_Animacao);
+  FTimerSolQrCode          := TTimer.Create(Nil);
+  FTimerSolQrCode.Interval := 2000;
+  FTimerSolQrCode.OnTimer  := OnTImer;
+  FTimerSolQrCode.Enabled  := True;
+end;
+
+procedure TFrmQRCode.OnTImer(Sender: TObject);
+begin
+  FTimerSolQrCode.Enabled  := False;
+  try
+    if Owner is TInjectWhatsapp then
+       TInjectWhatsapp(owner).StartQrCode;
+  finally
+    FTimerSolQrCode.Enabled  := True;
+  end;
 end;
 
 procedure TFrmQRCode.SetView(const PImage: TImage);

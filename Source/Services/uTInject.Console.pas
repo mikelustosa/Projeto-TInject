@@ -82,6 +82,12 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     Procedure ProcessQrCode(Var pClass: TObject);
+    procedure Chromium1Jsdialog(Sender: TObject; const browser: ICefBrowser;
+      const originUrl: ustring; dialogType: TCefJsDialogType; const messageText,
+      defaultPromptText: ustring; const callback: ICefJsDialogCallback;
+      out suppressMessage, Result: Boolean);
+    procedure Chromium1TextResultAvailable(Sender: TObject;
+      const aText: ustring);
   protected
     // You have to handle this two messages to call NotifyMoveOrResizeStarted or some page elements will be misaligned.
     procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
@@ -96,7 +102,7 @@ type
     Procedure ExecuteCommandConsole(Const PResponse: TResponseConsoleMessage);
   private
     { Private declarations }
-    FCanClose     : Boolean;
+    FCanClose       : Boolean;
     FClosing        : Boolean;
     FConectado      : Boolean;
     FTimerConnect   : TTimer;
@@ -255,7 +261,7 @@ end;
 
 procedure TFrmConsole.monitorQRCode;
 begin
-  ExecuteJS(FrmConsole_JS_monitorQRCode);
+  ExecuteJS(FrmConsole_JS_monitorQRCode, true);
 end;
 
 procedure TFrmConsole.OnTimerConnect(Sender: TObject);
@@ -289,7 +295,10 @@ begin
   FTimerMonitoring.Enabled := False;
   try
     if not GlobalCEFApp.InjectWhatsApp.Auth then
-       Exit;
+    begin
+      Chromium1.RetrieveHTML;
+      Exit;
+    end;
 
 
     If MonitorLowBattry THen
@@ -308,9 +317,15 @@ end;
 
 procedure TFrmConsole.ProcessQrCode(var pClass: TObject);
 begin
-  if not (pClass is TQrCodeClass) then    Exit;
-  If not assigned(FrmQRCode) then
+  if not (pClass is TQrCodeClass) then
      Exit;
+
+  If not assigned(FrmQRCode) then
+  Begin
+    if GlobalCEFApp.InjectWhatsApp.QrCodeStyle = TQS_Form then
+       monitorQrCode;
+     Exit;
+  End;
 
   if (TQR_Http in TQrCodeClass(pClass).Tags) or (TQR_Img in TQrCodeClass(pClass).Tags) then
   Begin
@@ -424,11 +439,13 @@ begin
      OnResultMisc(Th_Disconnecting, '');
 
   StopMonitor;
+  FTimerConnect.Enabled    := False;
+  FTimerMonitoring.Enabled := False;
+
   Chromium1.StopLoad;
   Chromium1.Browser.StopLoad;
   Chromium1.CloseBrowser(True);
   FConectado                       := False;
-
 end;
 
 //Marca como lida e deleta a conversa
@@ -653,9 +670,22 @@ begin
 end;
 
 
+procedure TFrmConsole.Chromium1Jsdialog(Sender: TObject;
+  const browser: ICefBrowser; const originUrl: ustring;
+  dialogType: TCefJsDialogType; const messageText, defaultPromptText: ustring;
+  const callback: ICefJsDialogCallback; out suppressMessage, Result: Boolean);
+begin
+  LogAdd(originUrl  +' - ' + messageText, ' Jsdialog');
+
+  ShowMessage(messageText);
+end;
+
 procedure TFrmConsole.Chromium1LoadEnd(Sender: TObject;
   const browser: ICefBrowser; const frame: ICefFrame; httpStatusCode: Integer);
   begin
+  LogAdd(browser.MainFrame.Url, 'CAPTURANDO');
+  Chromium1.RetrieveHTML;
+
  //Injeto o código para verificar se está logado
  // JS := 'WAPI.isLoggedIn();';
  // if Chromium1.Browser <> nil then
@@ -669,6 +699,23 @@ procedure TFrmConsole.Chromium1OpenUrlFromTab(Sender: TObject;
 begin
  //Bloqueia popup do windows e novas abas
   Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
+end;
+
+procedure TFrmConsole.Chromium1TextResultAvailable(Sender: TObject;
+  const aText: ustring);
+var
+  Ltmp: String;
+begin
+  Ltmp:= LowerCase(Copy(aText, 3500, 1000));
+  LogAdd(atext, 'PAGINA');
+
+  LogAdd(Ltmp, 'copiado');
+
+  if pos(FrmConsole_Browser_ContextPhoneOff, Ltmp) > 0 Then
+  Begin
+    If Assigned(OnResultMisc) then
+       OnResultMisc(Th_ConnectingNoPhone, '');
+  End;
 end;
 
 procedure TFrmConsole.Chromium1TitleChange(Sender: TObject;

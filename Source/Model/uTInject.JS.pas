@@ -138,7 +138,7 @@ begin
     begin
       //Atualzia o arquivo interno
       GlobalCEFApp.UpdateDateIniFile;
-      if UpperCase(GlobalCEFApp.PathJs) <> UpperCase(GlobalCEFApp.PathJs) then
+      if UpperCase(GlobalCEFApp.PathJs) <> UpperCase(Ltmp) then
          FJSScript.SaveToFile(GlobalCEFApp.PathJs, TEncoding.UTF8);
       if Assigned(FOnUpdateJS) Then
          FOnUpdateJS(Self);
