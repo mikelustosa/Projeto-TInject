@@ -1,10 +1,10 @@
 [Stats]
 <<<<<<< .mine
-EditorSecs=4469
-DesignerSecs=96
+EditorSecs=4267
+DesignerSecs=19
 InspectorSecs=27
-CompileSecs=240099
-OtherSecs=252
+CompileSecs=272072
+OtherSecs=232
 ||||||| .r112
 EditorSecs=565
 DesignerSecs=95

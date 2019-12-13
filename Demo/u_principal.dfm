@@ -2957,10 +2957,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'Configura'#231#245'es'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label8: TLabel
         Left = 12
         Top = 10
@@ -3151,7 +3147,7 @@ object frmPrincipal: TfrmPrincipal
           object Button3: TButton
             AlignWithMargins = True
             Left = 11
-            Top = 22
+            Top = 18
             Width = 251
             Height = 25
             Anchors = [akLeft, akTop, akRight]
@@ -3232,10 +3228,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object memo_unReadMessagen: TMemo
         Left = 0
         Top = 0

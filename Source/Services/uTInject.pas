@@ -302,7 +302,7 @@ var
   AId: String;
   lThread : TThread;
 begin
-  vNum := AjustNumber.Format(vNum);
+  //vNum := AjustNumber.Format(vNum);
   lThread := TThread.CreateAnonymousThread(procedure
       begin
         if Config.AutoDelay > 0 then
@@ -327,7 +327,7 @@ Var
   lThread : TThread;
 begin
   inherited;
-  vNum := AjustNumber.Format(vNum);
+  //vNum := AjustNumber.Format(vNum);
   lThread := TThread.CreateAnonymousThread(procedure
       begin
          if Config.AutoDelay > 0 then

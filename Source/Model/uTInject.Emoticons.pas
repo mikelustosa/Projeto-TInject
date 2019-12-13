@@ -9,6 +9,7 @@ interface
 
 type
   TInjectEmoticons = record
+    const Sol              = '☀';
     const Sorridente       = '😄';
     const SorridenteLingua = '😝';
     const Impressionado    = '😱';
