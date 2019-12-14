@@ -98,15 +98,20 @@ Const
 
 
   type
+    TFormQrCodeType    = (Ft_Desktop, Ft_Http);  //Form ou RestDataWare
+
+
+    TStatusType        = (Whats_Disconnected, Whats_Disconnecting,
+                          Whats_Connected,  Whats_Connecting, Whats_ConnectingNoPhone , Whats_ConnectingReaderCode, Whats_TimeOut);
+
     TTypeHeader = (Th_None = 0,
                      Th_getAllContacts  = 1,  Th_GetAllChats = 2,     Th_getUnreadMessages = 3,
                      Th_GetBatteryLevel = 4,  Th_getQrCodeForm = 5,   Th_getQrCodeWEB = 6,
                      Th_getMyNumber = 7,
                      Th_Disconnected= 8,    Th_Disconnecting= 9,    Th_Connected= 10    ,
-                     Th_Connecting=11,      Th_ConnectingQrCode=12, Th_ConnectingWeb=13,
+                     Th_Connecting=11,      Th_ConnectingFt_Desktop=12, Th_ConnectingFt_HTTP=13,
                      Th_ConnectingNoPhone=14
                      );
-
     Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
     Function   FrmConsole_JS_AlterVar(var PScript:String;  PNomeVar: String;  Const PValor:String):String;
     function   StrToTypeHeader(PText: string): TTypeHeader;

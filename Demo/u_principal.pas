@@ -149,7 +149,7 @@ var
 implementation
 
 uses
-  uTInject.Console, System.StrUtils, uTInject.Constant;
+  uTInject.Console, System.StrUtils, uTInject.Constant, uTInject.Diversos;
 
 {$R *.dfm}
 
@@ -189,8 +189,6 @@ begin
   Edt_LengFone.text := InjectWhatsapp1.AjustNumber.LengthPhone.ToString   ;
   Edt_DDIPDR.text   := InjectWhatsapp1.AjustNumber.DDIDefault.ToString    ;
   CheckBox4.Checked  := InjectWhatsapp1.AjustNumber.AllowOneDigitMore      ;
-
-  InjectWhatsapp1.startWhatsapp;
 end;
 
 procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -484,8 +482,8 @@ end;
 
 Procedure TfrmPrincipal.imgQrcodeClick(Sender: TObject);
 begin
-  InjectWhatsapp1.QrCodeStyle := TQS_Form;
-  InjectWhatsapp1.StartQrCode;
+  InjectWhatsapp1.FormQrCodeType := Ft_Desktop;
+  InjectWhatsapp1.FormQrCodeStart;
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1ErroAndWarning(Sender: TObject;
@@ -548,7 +546,7 @@ begin
   If Application.Terminated Then
      Exit;
 
-  if TInjectWhatsapp(Sender).Auth = True then
+  if InjectWhatsapp1.Auth = True then
   begin
     lblStatus.Caption            := 'Online';
     lblStatus.Font.Color         := $0000AE11;
@@ -558,25 +556,37 @@ begin
     lblStatus.Caption            := 'Offline';
     lblStatus.Font.Color         := $002894FF;
   end;
-  whatsOn.Visible            := TInjectWhatsapp(Sender).Auth;
+  whatsOn.Visible            := InjectWhatsapp1.Auth;
   lblNumeroConectado.Visible := whatsOn.Visible;
   whatsOff.Visible           := Not whatsOn.Visible;
   lblQrcode.Visible          := whatsOff.Visible;
   imgQrcode.Visible          := whatsOff.Visible;
 
   Label3.Caption := 'Aguarde, Conectando..';
-  Label3.Visible := (TInjectWhatsapp(Sender).Status in [Whats_Connecting,
-                                                        Whats_ConnectingQrCode,
-                                                        Whats_ConnectingWeb,
+  Label3.Visible := (InjectWhatsapp1.Status in [Whats_Connecting,
+                                                        Whats_ConnectingReaderCode,
                                                         Whats_ConnectingNoPhone
                                                         ]);
 
-  if TInjectWhatsapp(Sender).Status = Whats_ConnectingNoPhone Then
+  If InjectWhatsapp1.Status in [Whats_ConnectingNoPhone, Whats_TimeOut] Then
   Begin
-    if TInjectWhatsapp(Sender).QrCodeStyle = TQS_Form then
-       TInjectWhatsapp(Sender).StopQrCode else
-       Label3.Caption   := 'Telefone Desconectado';
-  End;
+    if TInjectWhatsapp(Sender).FormQrCodeType = Ft_Desktop then
+    Begin
+       if InjectWhatsapp1.Status = Whats_ConnectingNoPhone then
+          InjectWhatsapp1.FormQrCodeStop;
+    end else
+    Begin
+      if InjectWhatsapp1.Status = Whats_ConnectingNoPhone then
+      Begin
+        if not InjectWhatsapp1.FormQrCodeShowing then
+           InjectWhatsapp1.FormQrCodeShowing := True;
+      end else
+      begin
+        InjectWhatsapp1.FormQrCodeReloader;
+      end;
+    end;
+  end;
+
 
   if TInjectWhatsapp(Sender).Auth then
      PageControl1.ActivePageIndex := 1 Else
@@ -665,7 +675,7 @@ begin
         InjectWhatsapp1.Emoticons.Dois           +' Consultar CEP\n\n'+
         InjectWhatsapp1.Emoticons.Tres           +' Financeiro\n\n'+
         InjectWhatsapp1.Emoticons.Quatro         +' Horários de atendimento\n\n';
-        vBase64Str := 'data:image/png;base64,' + FrmConsole.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\softmais.png');
+        vBase64Str := 'data:image/png;base64,' + convertBase64(ExtractFileDir(Application.ExeName)+'\Img\softmais.png');
         InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, '', mensagem);
         Result := True;
         exit;
@@ -675,13 +685,14 @@ end;
 
 procedure TfrmPrincipal.whatsOffClick(Sender: TObject);
 begin
-  InjectWhatsapp1.QrCodeStyle := TQS_Web;
-  InjectWhatsapp1.StartQrCode;
+  InjectWhatsapp1.FormQrCodeType := Ft_Http;
+  InjectWhatsapp1.FormQrCodeStart;
 end;
 
 procedure TfrmPrincipal.whatsOnClick(Sender: TObject);
 begin
-  InjectWhatsapp1.StopQrCode;
+ if not InjectWhatsapp1.FormQrCodeShowing then
+    InjectWhatsapp1.FormQrCodeShowing := True;
 end;
 
 end.

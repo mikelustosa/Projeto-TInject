@@ -263,4 +263,9 @@ object FrmConsole: TFrmConsole
     Left = 56
     Top = 136
   end
+  object CEFSentinel1: TCEFSentinel
+    OnClose = CEFSentinel1Close
+    Left = 48
+    Top = 72
+  end
 end

@@ -36,16 +36,23 @@ type
     Timg_Animacao: TImage;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormShow(Sender: TObject);
+    procedure FormHide(Sender: TObject);
   private
-    FCaptionSucess: String;
-    FCaptionWait: String;
-    FTimerSolQrCode : Ttimer;
-    procedure OnTImer(Sender: TObject);
-
+    FCaptionSucess  : String;
+    FCaptionWait    : String;
+    FShow           : Boolean;
+    FPodeFechar: Boolean;
     { Private declarations }
   public
+    FTimerGetQrCode : Ttimer;
     { Public declarations }
-    Procedure  SetView(Const PImage: TImage);
+    Property   PodeFechar: Boolean        Read FPodeFechar      Write FpodeFechar;
+    Procedure  ShowForm;
+
+    Procedure  SetView     (Const PImage: TImage);
     Property   CaptionWait   : String     Read  FCaptionWait    Write FCaptionWait;
     Property   CaptionSucess : String     Read  FCaptionSucess  Write FCaptionSucess;
   end;
@@ -56,17 +63,24 @@ var
 implementation
 
 uses uTInject, System.NetEncoding, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage,
-  uTInject.ConfigCEF;
+  uTInject.ConfigCEF, uTInject.Console;
 
 {$R *.dfm}
 
 procedure TFrmQRCode.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  FTimerSolQrCode.Enabled := False;
-  FreeAndNil(FTimerSolQrCode);
+  if not FpodeFechar then
+  Begin
+    action    := caHide;
+  end;
+  FTimerGetQrCode.Enabled := False;
+end;
 
-  action    := cafree;
-  FrmQRCode := nil;
+procedure TFrmQRCode.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+begin
+  CanClose                := FpodeFechar;
+  FTimerGetQrCode.Enabled := False;
+  Hide;
 end;
 
 procedure TFrmQRCode.FormCreate(Sender: TObject);
@@ -74,28 +88,47 @@ begin
   CaptionWait           := 'Carregando QRCode...';
   CaptionSucess         := 'Aponte seu celular agora!';
   Timg_QrCode.Picture   := Nil;
+  FShow                 := False;
   AutoSize              := False;
   Timg_Animacao.Visible := True;
   Timg_QrCode.Visible   := False;
+  FpodeFechar           := False;
   (Timg_Animacao.Picture.Graphic as TGIFImage).AnimationSpeed  := 400;
   (Timg_Animacao.Picture.Graphic as TGIFImage).Animate         := True;
+
+  FTimerGetQrCode          := TTimer.Create(nil);
+  FTimerGetQrCode.Interval := 300;
+  FTimerGetQrCode.Enabled  := False;
+  Hide;
+
   SetView(Timg_Animacao);
-  FTimerSolQrCode          := TTimer.Create(Nil);
-  FTimerSolQrCode.Interval := 2000;
-  FTimerSolQrCode.OnTimer  := OnTImer;
-  FTimerSolQrCode.Enabled  := True;
 end;
 
-procedure TFrmQRCode.OnTImer(Sender: TObject);
+
+procedure TFrmQRCode.FormDestroy(Sender: TObject);
 begin
-  FTimerSolQrCode.Enabled  := False;
-  try
-    if Owner is TInjectWhatsapp then
-       TInjectWhatsapp(owner).StartQrCode;
-  finally
-    FTimerSolQrCode.Enabled  := True;
-  end;
+  FTimerGetQrCode.Enabled := False;
+  FTimerGetQrCode.OnTimer := Nil;
+  FreeAndNil(FTimerGetQrCode);
 end;
+
+
+procedure TFrmQRCode.FormHide(Sender: TObject);
+begin
+  FTimerGetQrCode.Enabled  := False;
+end;
+
+procedure TFrmQRCode.FormShow(Sender: TObject);
+begin
+  if not FShow then
+  Begin
+    FShow := true;
+    FTimerGetQrCode.OnTimer(FTimerGetQrCode);
+    FTimerGetQrCode.Interval := 2000;
+    FTimerGetQrCode.Enabled  := True;
+  End;
+end;
+
 
 procedure TFrmQRCode.SetView(const PImage: TImage);
 var
@@ -132,4 +165,12 @@ begin
   end;
 end;
 
+procedure TFrmQRCode.ShowForm;
+begin
+  FShow := False;
+  FTimerGetQrCode.Interval := 300;
+  Show;
+end;
+
 end.
+

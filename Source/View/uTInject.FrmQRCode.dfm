@@ -14,9 +14,13 @@ object FrmQRCode: TFrmQRCode
   Font.Style = []
   FormStyle = fsStayOnTop
   OldCreateOrder = False
-  Position = poOwnerFormCenter
+  Position = poScreenCenter
   OnClose = FormClose
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnHide = FormHide
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Timg_QrCode: TImage

@@ -30,16 +30,16 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, StrUtils,
 
-  uCEFWinControl, uCEFChromiumCore,
-  uCEFInterfaces, uCEFConstants, uCEFWindowParent, uCEFChromium,
+  uCEFWinControl, uCEFChromiumCore,   uCEFTypes,
+  uCEFInterfaces, uCEFConstants,      uCEFWindowParent, uCEFChromium,
 
   //units adicionais obrigatórias
-  uTInject.Classes, uTInject, uTInject.FrmQRCode, uTInject.constant,
-  uCEFTypes, uTInject.ConfigCEF, uTInject.Diversos,
+  uTInject.Classes,  uTInject.constant, uTInject.Diversos,
+
 
   Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, System.JSON,
   Vcl.Buttons, Vcl.Imaging.pngimage, Rest.Json,
-  Vcl.Imaging.jpeg, uTInject.ControlSend;
+  Vcl.Imaging.jpeg, uTInject.ControlSend, uCEFSentinel, uTInject.FrmQRCode;
 
 var
  vContacts :Array of String;
@@ -53,6 +53,7 @@ type
     Image2: TImage;
     Image1: TImage;
     Label1: TLabel;
+    CEFSentinel1: TCEFSentinel;
     procedure Chromium1AfterCreated(Sender: TObject;      const browser: ICefBrowser);
     procedure Chromium1BeforeClose(Sender: TObject; const browser: ICefBrowser);
     procedure Chromium1BeforePopup(Sender: TObject; const browser: ICefBrowser;
@@ -88,6 +89,7 @@ type
       out suppressMessage, Result: Boolean);
     procedure Chromium1TextResultAvailable(Sender: TObject;
       const aText: ustring);
+    procedure CEFSentinel1Close(Sender: TObject);
   protected
     // You have to handle this two messages to call NotifyMoveOrResizeStarted or some page elements will be misaligned.
     procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
@@ -99,7 +101,9 @@ type
     procedure BrowserDestroyMsg(var aMessage : TMessage); message CEF_DESTROY;
     Procedure OnTimerMonitoring(Sender: TObject);
     procedure OnTimerConnect(Sender: TObject);
+    procedure OnTimerGetQrCode(Sender: TObject);
     Procedure ExecuteCommandConsole(Const PResponse: TResponseConsoleMessage);
+
   private
     { Private declarations }
     FCanClose       : Boolean;
@@ -111,6 +115,9 @@ type
     FControlSend    : TControlSend;
     FCountBattery   : Integer;
     FCountBatteryMax: Integer;
+    FrmQRCode       : TFrmQRCode;
+    FFormType       : TFormQrCodeType;
+
 
     FAllContacts : TRetornoAllContacts  ;
     FAQrCode     : TResultQRCodeClass   ;
@@ -123,16 +130,21 @@ type
     Function  GetAutoBatteryLeveL: Boolean;
     Procedure ISLoggedin;
     procedure ExecuteJS(PScript: WideString; PCanRepeat: Boolean = false; Purl:String = 'about:blank'; pStartline: integer=0);
-    procedure loadWEBQRCode(st: string);
+    procedure QRCodeForm_Start;
+    procedure QRCodeWeb_Start;
   public
     { Public declarations }
 
-    property  OnErrorInternal : TOnErroInternal Read FOnErrorInternal          Write FOnErrorInternal;
+    Procedure StartQrCode(PQrCodeType :TFormQrCodeType; PViewForm:Boolean);
+    Procedure StopQrCode(PQrCodeType: TFormQrCodeType);
 
+    Property  FormQrCode : TFrmQRCode              Read FrmQRCode;
+
+
+    property  OnErrorInternal : TOnErroInternal   Read FOnErrorInternal          Write FOnErrorInternal;
     Property  AllContacts : TRetornoAllContacts   Read FAllContacts;
     Property  AQrCode     : TResultQRCodeClass    Read FAQrCode;
     Property  AllChats    : TChatList             Read FChatList;
-
 
     Property  MonitorLowBattry : Boolean   Read FMonitorLowBattry  Write FMonitorLowBattry;
     Property  OnResultMisc : TResulttMisc  Read FOnResultMisc      Write FOnResultMisc;
@@ -140,20 +152,20 @@ type
     Procedure DisConnect;
     procedure Send(vNum, vText:string);
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
-    function  ConvertBase64(vFile: string): string;
-    function  caractersWhats(vText: string): string;
+
+    procedure ReloaderWeb;
 
     procedure GetAllContacts;
     procedure GetAllChats;
     procedure GetUnreadMessages;
     procedure GetBatteryLevel;
     procedure GetMyNumber;
-    procedure monitorQRCode;
+
     //Para monitorar o qrcode via REST
-    procedure WEBmonitorQRCode;
     procedure ReadMessages(vID: string);
     procedure DeleteMessages(vID: string);
     procedure ReadMessagesAndDelete(vID: string);
+
     procedure StartMonitor(Seconds: Integer);
     procedure StopMonitor;
   end;
@@ -164,7 +176,7 @@ var
 implementation
 
 uses
-  System.NetEncoding, Vcl.Dialogs;
+  System.NetEncoding, Vcl.Dialogs, uTInject.ConfigCEF;
 
 {$R *.dfm}
 
@@ -183,25 +195,6 @@ begin
    end;
 end;
 
-function removeCaracter(texto : String) : String;
-Begin
-  While pos('-', Texto) <> 0 Do
-    delete(Texto,pos('-', Texto),1);
-  While pos('/', Texto) <> 0 Do
-    delete(Texto,pos('/', Texto),1);
-  While pos(',', Texto) <> 0 Do
-    delete(Texto,pos(',', Texto),1);
-  Result := Texto;
-end;
-
-function TFrmConsole.caractersWhats(vText: string): string;
-begin
-  vText  := StringReplace(vText, sLineBreak,'\n',[rfReplaceAll]);
-  vText  := StringReplace((vText), #13,'',[rfReplaceAll]);
-  vText  := StringReplace((vText), '"','\"',[rfReplaceAll]);
-  vText  := StringReplace((vText), #$A, '', [rfReplaceAll]);
-  Result := vText;
-end;
 
 procedure TFrmConsole.BrowserDestroyMsg(var aMessage : TMessage);
 begin
@@ -230,8 +223,6 @@ begin
     if GlobalCEFApp.ErrorInt Then
        Exit;
   end;
-//  If Application.Terminated Then
-//     Exit;
 
   if not FConectado then
      raise Exception.Create(ConfigCEF_ExceptConnetWhats);
@@ -254,15 +245,16 @@ begin
   end;
 end;
 
-procedure TFrmConsole.WEBmonitorQRCode;
+procedure TFrmConsole.QRCodeWeb_Start;
 begin
   ExecuteJS(FrmConsole_JS_WEBmonitorQRCode);
 end;
 
-procedure TFrmConsole.monitorQRCode;
+procedure TFrmConsole.QRCodeForm_Start;
 begin
   ExecuteJS(FrmConsole_JS_monitorQRCode, true);
 end;
+
 
 procedure TFrmConsole.OnTimerConnect(Sender: TObject);
 var
@@ -289,16 +281,31 @@ begin
   end;
 end;
 
+procedure TFrmConsole.OnTimerGetQrCode(Sender: TObject);
+begin
+  TTimer(Sender).Enabled := False;
+  try
+    try
+      if (FFormType = Ft_Desktop) Then
+        QRCodeForm_Start else
+        QRCodeWeb_Start;
+    Except
+    end;
+  finally
+    TTimer(Sender).Enabled := True;
+  end;
+end;
+
 procedure TFrmConsole.OnTimerMonitoring(Sender: TObject);
 begin
   //Testa se existe alguma desconexão por parte do aparelho...
   FTimerMonitoring.Enabled := False;
   try
-    if not GlobalCEFApp.InjectWhatsApp.Auth then
-    begin
-      Chromium1.RetrieveHTML;
-      Exit;
-    end;
+//    if not GlobalCEFApp.InjectWhatsApp.Auth then
+//    begin
+//      Chromium1.RetrieveHTML;
+//      Exit;
+//    end;
 
 
     If MonitorLowBattry THen
@@ -317,20 +324,14 @@ end;
 
 procedure TFrmConsole.ProcessQrCode(var pClass: TObject);
 begin
+   //Retorno do CODIGO QRCODE..
+   //Se a janela estiver aberta ele envia a imagem..
   if not (pClass is TQrCodeClass) then
      Exit;
 
-  If not assigned(FrmQRCode) then
-  Begin
-    if GlobalCEFApp.InjectWhatsApp.QrCodeStyle = TQS_Form then
-       monitorQrCode;
-     Exit;
-  End;
-
   if (TQR_Http in TQrCodeClass(pClass).Tags) or (TQR_Img in TQrCodeClass(pClass).Tags) then
   Begin
-    FrmQRCode.Close;
-    FreeAndNil(FrmQRCode);
+    FrmQRCode.hide;
     Exit;
   End;
 
@@ -409,9 +410,38 @@ begin
   ExecuteJS(FrmConsole_JS_AlterVar(LJS, '#TEMPO#' , Seconds.ToString));
 end;
 
+procedure TFrmConsole.StartQrCode(PQrCodeType: TFormQrCodeType; PViewForm: Boolean);
+begin
+  FFormType := PQrCodeType;
+  if PQrCodeType = Ft_Http then
+  begin
+    FrmQRCode.hide;
+
+    If Assigned(OnResultMisc) then
+       OnResultMisc(Th_ConnectingFt_HTTP, '');
+    QRCodeWeb_Start;
+    if PViewForm then
+       Show;
+  end Else
+  Begin
+    SleepNoFreeze(30);
+    If Assigned(OnResultMisc) then
+       OnResultMisc(Th_ConnectingFt_Desktop, '');
+    if not FrmQRCode.Showing then
+      FrmQRCode.ShowForm;
+  end;
+end;
+
 procedure TFrmConsole.StopMonitor;
 begin
   ExecuteJS(FrmConsole_JS_StopMonitor);
+end;
+
+procedure TFrmConsole.StopQrCode(PQrCodeType: TFormQrCodeType);
+begin
+  FrmQRCode.HIDE;
+  if PQrCodeType = Ft_Http then
+     DisConnect;
 end;
 
 procedure TFrmConsole.ReadMessages(vID: string);
@@ -433,18 +463,22 @@ end;
 Procedure TFrmConsole.DisConnect;
 begin
   if not FConectado then
-     Exit;
+  Begin
+    If Assigned(OnResultMisc) then
+       OnResultMisc(Th_Disconnecting, '');
+  End;
 
-  If Assigned(OnResultMisc) then
-     OnResultMisc(Th_Disconnecting, '');
+  try
+    StopMonitor;
+    FTimerConnect.Enabled    := False;
+    FTimerMonitoring.Enabled := False;
 
-  StopMonitor;
-  FTimerConnect.Enabled    := False;
-  FTimerMonitoring.Enabled := False;
+    Chromium1.StopLoad;
+    Chromium1.Browser.StopLoad;
+    Chromium1.CloseBrowser(True);
+  Except
 
-  Chromium1.StopLoad;
-  Chromium1.Browser.StopLoad;
-  Chromium1.CloseBrowser(True);
+  end;
   FConectado                       := False;
 end;
 
@@ -453,6 +487,15 @@ procedure TFrmConsole.ReadMessagesAndDelete(vID: string);
 begin
   ReadMessages  (Trim(vID));
   DeleteMessages(Trim(vID));
+end;
+
+procedure TFrmConsole.ReloaderWeb;
+begin
+  if not FConectado then
+     Exit;
+
+  Chromium1.StopLoad;
+  Chromium1.Browser.ReloadIgnoreCache;
 end;
 
 procedure TFrmConsole.SendBase64(vBase64, vNum, vFileName, vText: string);
@@ -513,6 +556,12 @@ begin
      GlobalCEFApp.OsmodalLoop := False;
 end;
 
+procedure TFrmConsole.CEFSentinel1Close(Sender: TObject);
+begin
+  FCanClose := True;
+  PostMessage(Handle, WM_CLOSE, 0, 0);
+end;
+
 procedure TFrmConsole.Chromium1AfterCreated(Sender: TObject;
   const browser: ICefBrowser);
 begin
@@ -526,8 +575,8 @@ end;
 procedure TFrmConsole.Chromium1BeforeClose(Sender: TObject;
   const browser: ICefBrowser);
 begin
-  FCanClose := True;
-  PostMessage(Handle, WM_CLOSE, 0, 0);
+  CEFSentinel1.Start;
+//  PostMessage(Handle, WM_CLOSE, 0, 0);
 end;
 
 procedure TFrmConsole.Chromium1BeforePopup(Sender: TObject;
@@ -545,10 +594,10 @@ end;
 procedure TFrmConsole.Chromium1Close(Sender: TObject;
   const browser: ICefBrowser; var aAction: TCefCloseBrowserAction);
 begin
-  PostMessage(Handle, FrmConsole_Browser_Created     , 0, 0);
-  PostMessage(Handle, FrmConsole_Browser_ChildDestroy, 0, 0);
-  PostMessage(Handle, FrmConsole_Browser_Destroy     , 0, 0);
-  PostMessage(Handle, FrmConsole_Browser_Destroy2    , 0, 0);
+//  PostMessage(Handle, FrmConsole_Browser_Created     , 0, 0);
+//  PostMessage(Handle, FrmConsole_Browser_ChildDestroy, 0, 0);
+//  PostMessage(Handle, FrmConsole_Browser_Destroy     , 0, 0);
+//  PostMessage(Handle, FrmConsole_Browser_Destroy2    , 0, 0);
 
   PostMessage(Handle, CEF_DESTROY, 0, 0);
   aAction := cbaDelay;
@@ -570,14 +619,8 @@ begin
   if (LResultStr = '') and (PResponse.JsonString = '') then
      Exit;
 
-   If not (PResponse.TypeHeader in [Th_getQrCodeWEB, Th_getQrCodeForm]) Then
-   Begin
-     If assigned(FrmQRCode) then
-     Begin
-       FrmQRCode.Close;
-       FreeAndNil(FrmQRCode);
-     End;
-   End;
+   If not (PResponse.TypeHeader in [Th_getQrCodeForm, Th_getQrCodeWEB]) Then
+      FrmQRCode.Hide;
 
 
    Case PResponse.TypeHeader of
@@ -606,10 +649,13 @@ begin
                             FreeAndNil(LOutClass);
                           end;
 
+
     Th_getQrCodeWEB,
     Th_getQrCodeForm :    Begin
                             LOutClass := TQrCodeClass.Create(PResponse.JsonString, [], []);
                             ProcessQrCode(LOutClass);
+                            If Assigned(OnResultMisc) then
+                               OnResultMisc(Th_getQrCodeWEB, '');
                           End;
 
 
@@ -633,7 +679,7 @@ begin
                             End;
                           End;
 
-          Th_Disconnected  : Begin
+       Th_Disconnected  : Begin
                             DisConnect;
                           End;
 
@@ -675,16 +721,15 @@ procedure TFrmConsole.Chromium1Jsdialog(Sender: TObject;
   dialogType: TCefJsDialogType; const messageText, defaultPromptText: ustring;
   const callback: ICefJsDialogCallback; out suppressMessage, Result: Boolean);
 begin
-  LogAdd(originUrl  +' - ' + messageText, ' Jsdialog');
-
-  ShowMessage(messageText);
+//  LogAdd(originUrl  +' - ' + messageText, ' Jsdialog');
+//  ShowMessage(messageText);
 end;
 
 procedure TFrmConsole.Chromium1LoadEnd(Sender: TObject;
   const browser: ICefBrowser; const frame: ICefFrame; httpStatusCode: Integer);
   begin
-  LogAdd(browser.MainFrame.Url, 'CAPTURANDO');
-  Chromium1.RetrieveHTML;
+//  LogAdd(browser.MainFrame.Url, 'CAPTURANDO');
+//  Chromium1.RetrieveHTML;
 
  //Injeto o código para verificar se está logado
  // JS := 'WAPI.isLoggedIn();';
@@ -706,10 +751,11 @@ procedure TFrmConsole.Chromium1TextResultAvailable(Sender: TObject;
 var
   Ltmp: String;
 begin
-  Ltmp:= LowerCase(Copy(aText, 3500, 1000));
-  LogAdd(atext, 'PAGINA');
+//   if FConectado then
+     eXIT;
+//  Ltmp:= LowerCase(Copy(aText, 3500, 1000));
+//  LogAdd(atext, 'PAGINA');
 
-  LogAdd(Ltmp, 'copiado');
 
   if pos(FrmConsole_Browser_ContextPhoneOff, Ltmp) > 0 Then
   Begin
@@ -773,21 +819,7 @@ begin
   end;
 end;
 
-function TFrmConsole.ConvertBase64(vFile: string): string;
-var
-  vFilestream: TMemoryStream;
-  vBase64File: TBase64Encoding;
-begin
-  vBase64File := TBase64Encoding.Create;
-  vFilestream := TMemoryStream.Create;
-  try
-    vFilestream.LoadFromFile(vFile);
-    result :=  vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
-  finally
-    FreeAndNil(vBase64File);
-    FreeAndNil(vFilestream);
-  end;
-end;
+
 
 procedure TFrmConsole.FormClose(Sender: TObject;
   var Action: TCloseAction);
@@ -800,11 +832,11 @@ procedure TFrmConsole.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
 begin
   CanClose := FCanClose;
-  if FClosing then
+  if not FClosing then
   Begin
-    GlobalCEFApp.QuitMessageLoop
-  end else
-  begin
+//    GlobalCEFApp.QuitMessageLoop
+//  end else
+//  begin
     FClosing := True;
     Visible  := False;
     DisConnect;
@@ -825,9 +857,13 @@ begin
   end;
 
   FClosing                  := False;
-  FCanClose               := False;
+  FCanClose                 := False;
   FCountBattery             := 0;
   FControlSend              := TControlSend.Create(Self);
+  FrmQRCode                         := TFrmQRCode.Create(Self);
+  FrmQRCode.FTimerGetQrCode.OnTimer := OnTimerGetQrCode;
+  FrmQRCode.hide;
+
 
   GlobalCEFApp.Chromium     := Chromium1;
   Chromium1.DefaultURL      := FrmConsole_JS_URL;
@@ -837,10 +873,11 @@ begin
   FTimerMonitoring.OnTimer  := OnTimerMonitoring;
 
 
-  FTimerConnect          := TTimer.Create(nil);
-  FTimerConnect.Interval := 1000;
-  FTimerConnect.Enabled  := False;
-  FTimerConnect.OnTimer  := OnTimerConnect;
+  FTimerConnect            := TTimer.Create(nil);
+  FTimerConnect.Interval   := 1000;
+  FTimerConnect.Enabled    := False;
+  FTimerConnect.OnTimer    := OnTimerConnect;
+
   //Pega Qntos ciclos o timer vai ser executado em um MINUTO...
   Lciclo                 := 60 div (FTimerMonitoring.Interval div 1000);
   FCountBatteryMax       := Lciclo * 3; //(Ser executado a +- cada 3minutos)
@@ -848,6 +885,9 @@ end;
 
 procedure TFrmConsole.FormDestroy(Sender: TObject);
 begin
+  FrmQRCode.PodeFechar := True;
+  FrmQRCode.close;
+  FreeAndNil(FAQrCode);
   Chromium1.ShutdownDragAndDrop;
   FTimerMonitoring.Enabled  := False;
 
@@ -855,7 +895,6 @@ begin
 //  PostMessage(Handle, FrmConsole_Browser_ChildDestroy, 0, 0);
 
   FreeAndNil(FAllContacts);
-  FreeAndNil(FAQrCode);
   FreeAndNil(FChatList);
 
   FreeAndNil(FControlSend);
@@ -864,10 +903,10 @@ begin
 
 //  FreeAndNil(CEFWindowParent1);
 //  FreeAndNil(Chromium1);
-
   If Assigned(OnResultMisc) then
      OnResultMisc(Th_Disconnected, '');
 end;
+
 
 procedure TFrmConsole.FormShow(Sender: TObject);
 begin
@@ -876,7 +915,7 @@ end;
 
 procedure TFrmConsole.Image1Click(Sender: TObject);
 begin
-  FrmConsole.Hide;
+  Hide;
 end;
 
 Procedure TFrmConsole.ISLoggedin;
@@ -884,27 +923,6 @@ begin
   ExecuteJS(FrmConsole_JS_IsLoggedIn);
 end;
 
-procedure TFrmConsole.loadWEBQRCode(st: string);
-var
-  LInput : TMemoryStream;
-  LOutput: TMemoryStream;
-  stl    : TStringList;
-begin
-  LInput  := TMemoryStream.Create;
-  LOutput := TMemoryStream.Create;
-  try
-    stl := TStringList.Create;
-    stl.Add(copy(st, 23, length(st)));
-    stl.SaveToStream(LInput);
 
-    LInput.Position  := 0;
-    TNetEncoding.Base64.Decode( LInput, LOutput );
-    LOutput.Position := 0;
-  finally
-    FreeAndNil(stl);
-    FreeAndNil(LInput);
-    FreeAndNil(LOutput);
-  end;
-end;
 end.
 
