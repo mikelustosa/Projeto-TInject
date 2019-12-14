@@ -157,7 +157,7 @@ type
     Property InjectJS             : TInjectJS            Read FInjectJS;
     property Config               : TInjectConfig        read FInjectConfig;
     property AjustNumber          : TInjectAdjusteNumber read FAdjustNumber;
-    property FormQrCodeType       : TFormQrCodeType         read FQrCodeStyle          Write FQrCodeStyle;
+    property FormQrCodeType       : TFormQrCodeType      read FQrCodeStyle          Write FQrCodeStyle;
 
     property OnGetAllContactList  : TOnAllContacts       read FOnGetAllContactList  write FOnGetAllContactList;
     property OnGetQrCode          : TOnGetQrCode         read FOnGetQrCode          write FOnGetQrCode;
@@ -667,6 +667,8 @@ function TInjectWhatsapp.GetWhatsAppShowing: Boolean;
 var
   lForm: Tform;
 begin
+  Result := False;
+  lForm  := nil;
   try
     try
       case FQrCodeStyle of
@@ -686,6 +688,7 @@ procedure TInjectWhatsapp.SetWhatsAppShowing(const Value: Boolean);
 var
   lForm: Tform;
 begin
+  lForm := Nil;
   try
     case FQrCodeStyle of
       Ft_Desktop : lForm := FrmConsole.FormQrCode;
@@ -780,7 +783,7 @@ begin
   if not Assigned(FrmConsole) then
      Exit;
 
-  FrmConsole.StopQrCode;
+  FrmConsole.StopQrCode(FQrCodeStyle);
 end;
 
 end.

@@ -229,17 +229,24 @@ begin
 
   if Chromium1.Browser <> nil then
   begin
-     if not PCanRepeat Then
+     //Testa para saber se esta controlando os envio..
+     if GlobalCEFApp.InjectWhatsApp.Config.ControlSend then
      Begin
-       if Assigned(FControlSend) then
+       //Mesmo que controle se o comando e do tipo ser ignorado, ele envia igual...
+       if (not PCanRepeat) Then
        Begin
-          if not FControlSend.CanSend(PScript) Then
-          Begin
-            OnErrorInternal(self, DuplicityDetected, PScript);
-            Exit;
-          End;
+         if Assigned(FControlSend) then
+         Begin
+            if not FControlSend.CanSend(PScript) Then
+            Begin
+              //Ja enviado
+              OnErrorInternal(self, DuplicityDetected, PScript);
+              Exit;
+            End;
+         End;
        End;
      End;
+
      //Chegou ate aqui é porque pode enviar
      Chromium1.Browser.MainFrame.ExecuteJavaScript(PScript, Purl, pStartline)
   end;
@@ -379,7 +386,6 @@ begin
     Result        := true;
     FCountBattery := 0;
   End;
-
 end;
 
 procedure TFrmConsole.GetBatteryLevel;
@@ -825,7 +831,6 @@ procedure TFrmConsole.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
   action     := cafree;
-//  FrmConsole := nil;
 end;
 
 procedure TFrmConsole.FormCloseQuery(Sender: TObject;
@@ -834,9 +839,7 @@ begin
   CanClose := FCanClose;
   if not FClosing then
   Begin
-//    GlobalCEFApp.QuitMessageLoop
-//  end else
-//  begin
+    GlobalCEFApp.QuitMessageLoop;
     FClosing := True;
     Visible  := False;
     DisConnect;
@@ -864,7 +867,6 @@ begin
   FrmQRCode.FTimerGetQrCode.OnTimer := OnTimerGetQrCode;
   FrmQRCode.hide;
 
-
   GlobalCEFApp.Chromium     := Chromium1;
   Chromium1.DefaultURL      := FrmConsole_JS_URL;
   FTimerMonitoring          := TTimer.Create(nil);
@@ -888,11 +890,11 @@ begin
   FrmQRCode.PodeFechar := True;
   FrmQRCode.close;
   FreeAndNil(FAQrCode);
+
   Chromium1.ShutdownDragAndDrop;
   FTimerMonitoring.Enabled  := False;
 
   FreeAndNil(FTimerMonitoring);
-//  PostMessage(Handle, FrmConsole_Browser_ChildDestroy, 0, 0);
 
   FreeAndNil(FAllContacts);
   FreeAndNil(FChatList);
@@ -901,8 +903,6 @@ begin
   FreeAndNil(FTimerConnect);
   GlobalCEFApp.Chromium     := Nil;
 
-//  FreeAndNil(CEFWindowParent1);
-//  FreeAndNil(Chromium1);
   If Assigned(OnResultMisc) then
      OnResultMisc(Th_Disconnected, '');
 end;
