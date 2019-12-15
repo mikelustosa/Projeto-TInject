@@ -94,6 +94,7 @@ type
     FErrorInt: Boolean;
     FPathJsUpdate: TdateTime;
     FLogConsole: String;
+    FHandleFrm   :HWND;
     procedure SetDefault;
     procedure SetPathCache   (const Value: String);
     procedure SetPathFrameworkDirPath(const Value: String);
@@ -205,8 +206,13 @@ begin
     LObj     := FChromium;
     Repeat
       if LObj.Owner is Tform then
-         FChromiumForm := Tform(LObj.Owner) else    //Achou
-         LObj          := LObj.Owner                //Nao Achou entao, continua procurando
+      Begin
+        FChromiumForm := Tform(LObj.Owner);
+        FHandleFrm    := FChromiumForm.Handle;
+      end else    //Achou
+      begin
+        LObj          := LObj.Owner                //Nao Achou entao, continua procurando
+      end;
     Until FChromiumForm <> Nil;
   Except
     //Esse erro nunca deve acontecer.. o TESTADOR nao conseguiu pelo menos..
@@ -430,6 +436,7 @@ end;
 destructor TCEFConfig.Destroy;
 begin
   FreeandNil(FDefPathLocais);
+
 //  FreeChromium;
 
   inherited;

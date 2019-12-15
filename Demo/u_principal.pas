@@ -17,7 +17,7 @@ uses
 
   Vcl.StdCtrls, System.ImageList, Vcl.ImgList, Vcl.AppEvnts, Vcl.ComCtrls,
   Vcl.Imaging.pngimage, Vcl.Buttons, IdBaseComponent, IdAntiFreezeBase,
-  IdAntiFreeze, Vcl.Mask;
+  IdAntiFreeze, Vcl.Mask, uTInject.Constant;
 
 type
   TfrmPrincipal = class(TForm)
@@ -98,7 +98,7 @@ type
     procedure ApplicationEvents1Minimize(Sender: TObject);
     procedure btn_clearClick(Sender: TObject);
     procedure imgQrcodeClick(Sender: TObject);
-    procedure InjectWhatsapp1GetStatus(Sender: TObject);
+    procedure InjectWhatsapp1GetStatus(Const PStatus : TStatusType; Const PFormQrCode: TFormQrCodeType);
     procedure edtDelayKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ButtonSelecionarArquivoClick(Sender: TObject);
     procedure btStatusBatClick(Sender: TObject);
@@ -118,15 +118,13 @@ type
     procedure InjectWhatsapp1GetChatList(const Chats: TChatList);
   private
     { Private declarations }
-    idMessageGlobal: string;
+//    idMessageGlobal: string;
     vExtension,  vFileName: string;
     vBase64File: TBase64Encoding;
     procedure CarregarContatos;
     procedure CarregarChats;
   public
     { Public declarations }
-    nOpcao                                : string;
-    JS1, JS2, contato , fone              : string;
     vBase64Str, vFileNameURL              : string;
 
     //Video aula
@@ -149,7 +147,7 @@ var
 implementation
 
 uses
-  uTInject.Console, System.StrUtils, uTInject.Constant, uTInject.Diversos;
+  uTInject.Console, System.StrUtils, uTInject.Diversos;
 
 {$R *.dfm}
 
@@ -157,7 +155,7 @@ procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
 //  ReportMemoryLeaksOnShutdown  := True;
 
-  idMessageGlobal              := 'start';
+//  idMessageGlobal              := 'start';
   PageControl1.ActivePageIndex := 0;
 
   //Define os padrões DO BRASIL
@@ -193,9 +191,9 @@ end;
 
 procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+//  Halt;
   InjectWhatsapp1.ShutDown;
-  Action := Cafree;
-  //application.Terminate;
+  application.Terminate;
 end;
 
 Procedure TfrmPrincipal.AddChatList(ANumber: String);
@@ -257,7 +255,7 @@ end;
 procedure TfrmPrincipal.btEnviaTextoArqClick(Sender: TObject);
 begin
   try
-    if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
+    if not GlobalCEFApp.InjectWhatsApp.Auth then
     begin
       application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
       abort;
@@ -308,7 +306,7 @@ end;
 
 procedure TfrmPrincipal.btStatusBatClick(Sender: TObject);
 begin
-  if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
+  if not GlobalCEFApp.InjectWhatsApp.Auth then
   begin
     application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
@@ -320,7 +318,7 @@ end;
 procedure TfrmPrincipal.btEnviaTextoClick(Sender: TObject);
 begin
   try
-    if (not Assigned(FrmConsole)) or (Assigned(FrmConsole) and (not GlobalCEFApp.InjectWhatsApp.Auth)) then
+    if not GlobalCEFApp.InjectWhatsApp.Auth then
     begin
       application.MessageBox('Você não está autenticado.','TInject', mb_iconwarning + mb_ok);
       abort;
@@ -538,15 +536,15 @@ begin
   lblNumeroConectado.Caption :=   TInjectWhatsapp(Sender).MyNumber;
 end;
 
-procedure TfrmPrincipal.InjectWhatsapp1GetStatus(Sender: TObject);
+procedure TfrmPrincipal.InjectWhatsapp1GetStatus(Const PStatus : TStatusType; Const PFormQrCode: TFormQrCodeType);
 begin
-  TabSheet3.TabVisible   := TInjectWhatsapp(Sender).Auth;
-  TabSheet4.TabVisible   := TInjectWhatsapp(Sender).Auth;
+  try
+    TabSheet3.TabVisible   := (PStatus = Whats_Connected);
+    TabSheet4.TabVisible   := (PStatus = Whats_Connected);
+  Except
+  end;
 
-  If Application.Terminated Then
-     Exit;
-
-  if InjectWhatsapp1.Auth = True then
+  if (PStatus = Whats_Connected) then
   begin
     lblStatus.Caption            := 'Online';
     lblStatus.Font.Color         := $0000AE11;
@@ -556,23 +554,34 @@ begin
     lblStatus.Caption            := 'Offline';
     lblStatus.Font.Color         := $002894FF;
   end;
-  whatsOn.Visible            := InjectWhatsapp1.Auth;
+  whatsOn.Visible            := (PStatus = Whats_Connected);
   lblNumeroConectado.Visible := whatsOn.Visible;
   whatsOff.Visible           := Not whatsOn.Visible;
   lblQrcode.Visible          := whatsOff.Visible;
   imgQrcode.Visible          := whatsOff.Visible;
 
-  Label3.Caption := 'Aguarde, Conectando..';
-  Label3.Visible := (InjectWhatsapp1.Status in [Whats_Connecting,
-                                                        Whats_ConnectingReaderCode,
-                                                        Whats_ConnectingNoPhone
-                                                        ]);
 
-  If InjectWhatsapp1.Status in [Whats_ConnectingNoPhone, Whats_TimeOut] Then
+  Label3.Visible := False;
+  case pstatus of
+    Whats_Disconnected        : Label3.Caption := '';
+    Whats_Disconnecting       : Label3.Caption := '';
+    Whats_Connected           : Label3.Caption := '';
+    Whats_Connecting          : Label3.Caption := 'Aguarde, Conectando..';
+    Whats_ConnectingNoPhone   : Label3.Caption := 'Telefone Desligado';
+    Whats_ConnectingReaderCode: Label3.Caption := 'Aguardando Leitura QRCODE';
+    Whats_TimeOut             : Label3.Caption := 'Timeout Leitura';
+    Whats_Destroying          : Label3.Caption := 'Finalizando Sessão';
+    Whats_Destroy             : Label3.Visible := False;
+  end;
+  If Label3.Caption <> '' Then
+     Label3.Visible := true;
+
+
+  If PStatus in [Whats_ConnectingNoPhone, Whats_TimeOut] Then
   Begin
-    if TInjectWhatsapp(Sender).FormQrCodeType = Ft_Desktop then
+    if PFormQrCode = Ft_Desktop then
     Begin
-       if InjectWhatsapp1.Status = Whats_ConnectingNoPhone then
+       if PStatus = Whats_ConnectingNoPhone then
           InjectWhatsapp1.FormQrCodeStop;
     end else
     Begin
@@ -586,11 +595,6 @@ begin
       end;
     end;
   end;
-
-
-  if TInjectWhatsapp(Sender).Auth then
-     PageControl1.ActivePageIndex := 1 Else
-     PageControl1.ActivePageIndex := 0;
 end;
 
 procedure TfrmPrincipal.InjectWhatsapp1GetUnReadMessages(Chats: TChatList);

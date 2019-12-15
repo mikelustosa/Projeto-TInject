@@ -1603,7 +1603,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object whatsOff: TImage
           Left = 96
-          Top = 55
+          Top = 47
           Width = 103
           Height = 104
           Cursor = crHandPoint
@@ -3511,13 +3511,13 @@ object frmPrincipal: TfrmPrincipal
   end
   object InjectWhatsapp1: TInjectWhatsapp
     InjectJS.AutoUpdateTimeOut = 10
-    Config.AutoStart = True
     Config.AutoDelete = False
     Config.AutoDelay = 0
     Config.SyncContacts = False
     Config.ShowRandom = False
     AjustNumber.LengthPhone = 8
     AjustNumber.DDIDefault = 55
+    FormQrCodeType = Ft_Http
     OnGetAllContactList = InjectWhatsapp1GetAllContactList
     OnGetChatList = InjectWhatsapp1GetChatList
     OnGetUnReadMessages = InjectWhatsapp1GetUnReadMessages

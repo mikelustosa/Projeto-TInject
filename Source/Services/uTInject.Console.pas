@@ -306,13 +306,16 @@ end;
 procedure TFrmConsole.OnTimerMonitoring(Sender: TObject);
 begin
   //Testa se existe alguma desconexão por parte do aparelho...
+  if Application.Terminated then
+     Exit;
+
   FTimerMonitoring.Enabled := False;
   try
-//    if not GlobalCEFApp.InjectWhatsApp.Auth then
-//    begin
-//      Chromium1.RetrieveHTML;
-//      Exit;
-//    end;
+    if not GlobalCEFApp.InjectWhatsApp.Auth then
+    begin
+      Chromium1.RetrieveHTML;
+      Exit;
+    end;
 
 
     If MonitorLowBattry THen
@@ -468,13 +471,11 @@ end;
 
 Procedure TFrmConsole.DisConnect;
 begin
-  if not FConectado then
-  Begin
-    If Assigned(OnResultMisc) then
-       OnResultMisc(Th_Disconnecting, '');
-  End;
-
   try
+    if not FConectado then
+       Exit;
+
+    GlobalCEFApp.QuitMessageLoop;
     StopMonitor;
     FTimerConnect.Enabled    := False;
     FTimerMonitoring.Enabled := False;
@@ -605,7 +606,9 @@ begin
 //  PostMessage(Handle, FrmConsole_Browser_Destroy     , 0, 0);
 //  PostMessage(Handle, FrmConsole_Browser_Destroy2    , 0, 0);
 
-  PostMessage(Handle, CEF_DESTROY, 0, 0);
+  Chromium1.ShutdownDragAndDrop;
+  If Assigned(OnResultMisc) then
+     OnResultMisc(Th_Disconnected, '');
   aAction := cbaDelay;
 end;
 
@@ -757,11 +760,11 @@ procedure TFrmConsole.Chromium1TextResultAvailable(Sender: TObject;
 var
   Ltmp: String;
 begin
-//   if FConectado then
+  if not FConectado then
      eXIT;
-//  Ltmp:= LowerCase(Copy(aText, 3500, 1000));
-//  LogAdd(atext, 'PAGINA');
 
+  Ltmp:= LowerCase(Copy(aText, 3500, 1000));
+  LogAdd(atext, 'PAGINA');
 
   if pos(FrmConsole_Browser_ContextPhoneOff, Ltmp) > 0 Then
   Begin
@@ -830,7 +833,7 @@ end;
 procedure TFrmConsole.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
-  action     := cafree;
+ action     := cafree;
 end;
 
 procedure TFrmConsole.FormCloseQuery(Sender: TObject;
@@ -891,7 +894,6 @@ begin
   FrmQRCode.close;
   FreeAndNil(FAQrCode);
 
-  Chromium1.ShutdownDragAndDrop;
   FTimerMonitoring.Enabled  := False;
 
   FreeAndNil(FTimerMonitoring);
@@ -901,10 +903,10 @@ begin
 
   FreeAndNil(FControlSend);
   FreeAndNil(FTimerConnect);
-  GlobalCEFApp.Chromium     := Nil;
 
+  GlobalCEFApp.Chromium := Nil;
   If Assigned(OnResultMisc) then
-     OnResultMisc(Th_Disconnected, '');
+     OnResultMisc(TH_Destroy, '');
 end;
 
 

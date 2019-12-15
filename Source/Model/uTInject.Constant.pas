@@ -102,7 +102,8 @@ Const
 
 
     TStatusType        = (Whats_Disconnected, Whats_Disconnecting,
-                          Whats_Connected,  Whats_Connecting, Whats_ConnectingNoPhone , Whats_ConnectingReaderCode, Whats_TimeOut);
+                          Whats_Connected,    Whats_Connecting,      Whats_ConnectingNoPhone, Whats_ConnectingReaderCode,
+                          Whats_TimeOut,      Whats_Destroying,      Whats_Destroy);
 
     TTypeHeader = (Th_None = 0,
                      Th_getAllContacts  = 1,  Th_GetAllChats = 2,     Th_getUnreadMessages = 3,
@@ -110,7 +111,7 @@ Const
                      Th_getMyNumber = 7,
                      Th_Disconnected= 8,    Th_Disconnecting= 9,    Th_Connected= 10    ,
                      Th_Connecting=11,      Th_ConnectingFt_Desktop=12, Th_ConnectingFt_HTTP=13,
-                     Th_ConnectingNoPhone=14
+                     Th_ConnectingNoPhone=14, TH_Destroy=15
                      );
     Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
     Function   FrmConsole_JS_AlterVar(var PScript:String;  PNomeVar: String;  Const PValor:String):String;

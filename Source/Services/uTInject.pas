@@ -69,6 +69,7 @@ type
   TOnGetQrCode       = procedure(Const QrCode: TResultQRCodeClass) of object;
   TOnAllContacts     = procedure(Const AllContacts: TRetornoAllContacts) of object;
   TOnLowBattery      = procedure(Const POnAlarm, PBatteryCharge: Integer) of object;
+  TOnGetStatus       = procedure(Const PStatus : TStatusType; Const PFormQrCode: TFormQrCodeType) of object;
 
 
 
@@ -85,7 +86,7 @@ type
     FAuth                 : Boolean;
     FPediuCOntados        : Boolean;
     Fstatus               : TStatusType;
-    FrmConsole            : TFrmConsole;
+    FDestruido            : Boolean;
     { Private  declarations }
     Function  ConsolePronto:Boolean;
     procedure SetAuth(const Value: boolean);
@@ -107,7 +108,7 @@ type
     FOnGetChatList        : TGetUnReadMessages;
     FOnGetNewMessage      : TNotifyEvent;
     FOnGetMyNumber        : TNotifyEvent;
-    FOnGetStatus          : TNotifyEvent;
+    FOnGetStatus          : TOnGetStatus;
     FOnConnected          : TNotifyEvent;
     FOnDisconnected       : TNotifyEvent;
     FOnErroInternal       : TOnErroInternal;
@@ -116,7 +117,7 @@ type
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
-    Procedure   ShutDown(PClearNotifyEvent: Boolean = False);
+    Procedure   ShutDown;
 
     procedure ReadMessages(vID: string);
 
@@ -164,7 +165,7 @@ type
     property OnGetChatList        : TGetUnReadMessages   read FOnGetChatList        write FOnGetChatList;
     property OnGetNewMessage      : TNotifyEvent         read FOnGetNewMessage      write FOnGetNewMessage;
     property OnGetUnReadMessages  : TGetUnReadMessages   read FOnGetUnReadMessages  write FOnGetUnReadMessages;
-    property OnGetStatus          : TNotifyEvent         read FOnGetStatus          write FOnGetStatus;
+    property OnGetStatus          : TOnGetStatus         read FOnGetStatus          write FOnGetStatus;
     property OnGetBatteryLevel    : TNotifyEvent         read FOnGetBatteryLevel    write FOnGetBatteryLevel;
     property OnGetMyNumber        : TNotifyEvent         read FOnGetMyNumber        write FOnGetMyNumber;
     property OnUpdateJS           : TNotifyEvent         read FOnUpdateJS           write FOnUpdateJS;
@@ -181,7 +182,8 @@ procedure Register;
 implementation
 
 uses
-  uCEFTypes,   uTInject.ConfigCEF, Winapi.Windows;
+  uCEFTypes,   uTInject.ConfigCEF, Winapi.Windows, Winapi.Messages,
+  uCEFConstants;
 
 
 procedure Register;
@@ -209,12 +211,12 @@ begin
          Exit;
     end;
 
-    Result := Assigned(FrmConsole);
     if not Assigned(FrmConsole) Then
     Begin
       InjectJS.UpdateNow;
       if InjectJS.Ready then
       Begin
+        FDestruido                  := False;
         FrmConsole                  := TFrmConsole.Create(self);
         FrmConsole.OnResultMisc     := Int_OnResultMisc;
         FrmConsole.MonitorLowBattry := Assigned(FOnLowBattery);
@@ -231,6 +233,7 @@ end;
 constructor TInjectWhatsapp.Create(AOwner: TComponent);
 begin
   inherited;
+  FDestruido                       := False;
   FGetBatteryLevel                 := -1;
   FQrCodeStyle                     := Ft_Http;
   Fversion                         := TInjectVersion;
@@ -258,7 +261,7 @@ end;
 
 destructor TInjectWhatsapp.Destroy;
 begin
-  stopWhatsapp;
+  FormQrCodeStop;
 //  FreeAndNil(FrmConsole);
   FreeAndNil(FAdjustNumber);
   FreeAndNil(FInjectJS);
@@ -438,20 +441,20 @@ begin
        SetAuth(False);
   end;
 
-  if PTypeHeader in [Th_Connecting, Th_Disconnecting, Th_ConnectingNoPhone, Th_getQrCodeForm, Th_getQrCodeForm ]  then
+  if PTypeHeader in [Th_Connecting, Th_Disconnecting, Th_ConnectingNoPhone, Th_getQrCodeForm, Th_getQrCodeForm, TH_Destroy ]  then
   begin
     case PTypeHeader of
       Th_Connecting            : Fstatus := Whats_Connecting;
       Th_Disconnecting         : Fstatus := Whats_Disconnecting;
       Th_ConnectingNoPhone     : Fstatus := Whats_ConnectingNoPhone;
-
+      TH_Destroy               : Fstatus := Whats_Destroy;
       Th_ConnectingFt_Desktop,
       Th_getQrCodeForm         : Fstatus := Whats_ConnectingReaderCode;
     end;
 
 
     if Assigned(OnGetStatus ) then
-       OnGetStatus(Self);
+       OnGetStatus(Fstatus, FQrCodeStyle);
   end;
 
 end;
@@ -572,7 +575,7 @@ begin
 
   if Assigned(OnGetStatus ) then
   Begin
-    OnGetStatus(Self);
+    OnGetStatus(Fstatus, FQrCodeStyle);
   end;
 end;
 
@@ -586,30 +589,50 @@ end;
 
 
 
-procedure  TInjectWhatsapp.ShutDown(PClearNotifyEvent: Boolean = False);
+procedure  TInjectWhatsapp.ShutDown;
 var
-  LVar        : Boolean;
-  LaAction    : TCefCloseBrowserAction;
-  LaActionForm: TCloseAction;
   LIni: Cardinal;
+  LHandle: HWND;
 begin
-  //Executa o SHutDown
-  if PClearNotifyEvent then
-  Begin
-    FOnGetUnReadMessages  := Nil;
-    FOnGetAllContactList  := Nil;
-    FOnGetQrCode          := Nil;
-    FOnGetChatList        := Nil;
-    FOnGetNewMessage      := Nil;
-    FOnGetBatteryLevel    := Nil;
-    FOnGetStatus          := Nil;
-    FOnLowBattery         := Nil;
-  End;
+  if FDestruido then
+     Exit;
 
+  FDestruido := true;
+  if Assigned(FrmConsole) then
+  Begin
+    try
+      LHandle := FrmConsole.Handle;
+    Except
+      Exit;
+    end;
+    FrmConsole.DisConnect;
+    Fstatus := Whats_Disconnecting;
+    LIni    := GetTickCount;
+    PostMessage(LHandle, WM_CLOSE, 0, 0);
+    Repeat
+      SleepNoFreeze(20);
+      if (GetTickCount - LIni) >= 3000 then //Retirado do EXEMPLO do CEF para dar tempo de todas as thread recebem a ordem de finalização
+         Break;
+    Until Status = Whats_Disconnected;
+    FPediuCOntados := False;
+  end;
+
+  FStatus := Whats_Destroying;
+  PostMessage(LHandle, CEF_DESTROY, 0, 0);
+  Repeat
+    SleepNoFreeze(10);
+  Until Status = Whats_Destroy;
+  GlobalCEFApp.Chromium     := Nil;
+  FrmConsole := Nil;
+
+
+
+{
   if Assigned(FrmConsole) then
   Begin
     FrmConsole.DisConnect;
     LIni := GetTickCount;
+    FrmConsole.close;
     Repeat
       SleepNoFreeze(20);
       if (GetTickCount - LIni) >= 2000 then //Retirado do EXEMPLO do CEF para dar tempo de todas as thread recebem a ordem de finalização
@@ -617,7 +640,6 @@ begin
     Until Status <> Whats_Disconnecting;
 
     FPediuCOntados := False;
-//    FrmConsole := Nil;
 //    FreeAndNil(FrmConsole);
 //    GlobalCEFApp.Chromium     := Nil;
   end;
@@ -648,16 +670,16 @@ begin
   except
   end;
   FrmConsole := Nil;
-
-end;
+}
+ end;
 
 procedure TInjectWhatsapp.stopWhatsapp;
 begin
   if Assigned(FrmConsole) then
   begin
     FrmConsole.DisConnect;
-    FrmConsole.close;
-    FreeAndNil(FrmConsole);
+    //FrmConsole.close;
+    //FreeAndNil(FrmConsole);
   end;
   FPediuCOntados := False;
 end;
@@ -691,7 +713,11 @@ begin
   lForm := Nil;
   try
     case FQrCodeStyle of
-      Ft_Desktop : lForm := FrmConsole.FormQrCode;
+      Ft_Desktop : Begin
+                     if Status = Whats_Connected then
+                        lForm := FrmConsole else
+                        lForm := FrmConsole.FormQrCode;
+                   end;
       Ft_Http    : lForm := FrmConsole;
     end;
 
@@ -720,7 +746,14 @@ begin
      Exit;
   LState := Assigned(FrmConsole);
 
-  if Status in [Whats_Disconnected] then
+  if Status in [Whats_Destroying, Whats_Disconnecting] then
+  Begin
+    Application.MessageBox(PWideChar('A sessão anterior ainda está sendo finalizada, tente novamente mais tarde'), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
+    Exit;
+  end;
+
+
+  if Status in [Whats_Disconnected, Whats_Destroy] then
   Begin
     if not ConsolePronto then
     Begin
@@ -746,7 +779,8 @@ procedure TInjectWhatsapp.FormQrCodeStop;
 begin
   if not Assigned(FrmConsole) then
      Exit;
-
+  FrmConsole.StopQrCode(FormQrCodeType);
+  FPediuCOntados := False;
 end;
 
 procedure TInjectWhatsapp.StartQrCode(PViewForm:Boolean);
