@@ -1,4 +1,4 @@
-# Componente TInject chatbots
+# Componente TInject
 Componente para criação de chatBots com delphi e o whatsapp<br></br><br></br>
 
 INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
