@@ -8,6 +8,10 @@ function getMyNumber() {
     return true;
 }
 
+//function getVersionJS() {
+// SetConsoleMessage('getVersionJS', Versao);
+//}
+
 function SetConsoleMessage(jsName, resultValue) {
     Obj = {
         name: jsName,

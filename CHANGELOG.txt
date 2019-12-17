@@ -1,6 +1,69 @@
+-------------------------------------------------------------------------
+1.0.0.10
+09/12/2019
+Rep Revisao 153
+ - Classe CefConfig agora pode ser configurada por arquivo .INI;
+ - Melhorias no instalador do componente;
+ - JS.ABR não é baixado mais de uma vez (no mesmo aplicativo);
+ - Incluso no JS.ABR comunicaçao com o software atraves de variaveis separada como ; (ponto e virgula)  
+
+06/12/2019
+Rep Revisao 148
+  - Inclusao do icone no componente;
+  - Estrutura basica para recebimento do JS por web;
+
+Rep Revisao 145
+  - Função de Desconectar do WhatsApp;
+  - Função de procurar o numero ou NOME na agenda por um conteudo chave;
+
+
+Rep Revisao 142
+ - Refactory na unit uTInject.Console
+   
+
+Rep Revisao 141
+ - Unificação das Constant em um só local;
+ - Captura em modo DESIGNER da versão do JS utilizado;
+ - Melhorias no instalador do componente  
+
+
+
+Rep Revisao 136 e 137
+- Retirada de arquivos Não necessário ao projeto (Arquivos de backup, temporários, etc.) 
+- Melhorias no form PRINCIPAL escondendo as abas, para evitar má interpretação achando que pode enviar MSG sem estar conectado.
+- Novos Exemplos de PATH de configuração;
+- Evento shutdown que finaliza com segurança o CONSOLE;
+ 
+05/12/2019
+Rep Revisao 135
+    - Troca dos nomes das UNITS para um novo Padrão 
+
+Rep Revisao 132 
+    - Retirado Units que não são utilizadas(\service\ UnitCEFLoadHandlerChromium.pas e UnitCEFHandlerSessionChromium.pas);
+
+Rep Revisao 131 
+    - Unificado a ideia de Daniel Rodrigues e Joathan Theiller;
+    
+
+   
+04/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
+Melhorias:     
+     - Implementado o controle das pasta do FrameWork do CEF;
+     - Adicionado uma classe que controla e destroi todas as THREAD ativas,
+       eliminando assim qualquer PROCESSO ZUMBI(Zombie process);
+     - Adicionado novas opções no DEMO;
+     
 
 Criada branch testRelease para realizações de commit para controle de qualidade de versão
-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+
+1.0.0.9   
+04/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
+Melhorias:     
+     - Opçao de configurar a formatação do numero Whats de acordo com o país;
+     
+-------------------------------------------------------------------------
+     
 1.0.0.8   
 03/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
 Correções:

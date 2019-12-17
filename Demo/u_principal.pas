@@ -1,58 +1,37 @@
-Ôªøunit u_principal;
+unit u_principal;
 
 interface
 
 uses
+
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, uCEFWinControl, uCEFWindowParent,
-  Vcl.ExtCtrls, uCEFChromium, system.JSON, uClasses,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs,  Vcl.ExtCtrls,
 
-  //############ ATEN√á√ÉO AQUI ####################
-  //############ ATEN√á√ÉO AQUI ####################
-  //############ ATEN√á√ÉO AQUI ####################
-  //units adicionais obrigat√≥rias
-  uCEFApplication, uCefMiscFunctions, uCEFInterfaces, uCEFConstants, uCEFTypes, UnitCEFLoadHandlerChromium,
-  Vcl.StdCtrls, Vcl.ComCtrls, System.ImageList, Vcl.ImgList, uTInject,
-  Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.WinXCtrls, System.NetEncoding,
-  Vcl.Imaging.jpeg, Vcl.AppEvnts;
+  //############ ATEN«√O AQUI ####################
+  //units adicionais obrigatÛrias
+   uTInject.ConfigCEF, uCEFWinControl,  uTInject,
 
-  //############ ATEN√á√ÉO AQUI ####################
-  //############ ATEN√á√ÉO AQUI ####################
-  //############ ATEN√á√ÉO AQUI ####################
-  //Constantes obrigat√≥rias para controle do destroy do TChromium
-//  const
-//  CEFBROWSER_CREATED          = WM_APP + $100;
-//  CEFBROWSER_CHILDDESTROYED   = WM_APP + $101;
-//  CEFBROWSER_DESTROY          = WM_APP + $102;
+  //units Opcionais (dependendo do que ir· fazer)
+   System.NetEncoding, uTInject.Classes,
+  //###############################################
+
+  Vcl.StdCtrls, System.ImageList, Vcl.ImgList, Vcl.AppEvnts, Vcl.ComCtrls,
+  Vcl.Imaging.pngimage, Vcl.Buttons, IdBaseComponent, IdAntiFreezeBase,
+  IdAntiFreeze, Vcl.Mask, uTInject.Constant;
 
 type
   TfrmPrincipal = class(TForm)
     InjectWhatsapp1: TInjectWhatsapp;
     OpenDialog1: TOpenDialog;
     TrayIcon1: TTrayIcon;
-    ApplicationEvents1: TApplicationEvents;
     ImageList1: TImageList;
-    Timer1: TTimer;
     PageControl1: TPageControl;
     TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
-    whatsOff: TImage;
-    whatsOn: TImage;
-    chk_grupos: TCheckBox;
-    chk_apagarMsg: TCheckBox;
-    chk_AutoResposta: TCheckBox;
-    edtDelay: TEdit;
-    Label8: TLabel;
     memo_unReadMessagen: TMemo;
-    imgQrcode: TImage;
-    lblStatus: TLabel;
-    lblQrcode: TLabel;
     StatusBar1: TStatusBar;
-    lblNumeroConectado: TLabel;
     groupEnvioMsg: TGroupBox;
-    ed_num: TEdit;
     Label1: TLabel;
     Label2: TLabel;
     mem_message: TMemo;
@@ -69,6 +48,40 @@ type
     listaContatos: TListView;
     Button2: TButton;
     Splitter1: TSplitter;
+    ed_num: TComboBox;
+    Pnl_Config: TPanel;
+    Label8: TLabel;
+    chk_AutoResposta: TCheckBox;
+    edtDelay: TEdit;
+    CheckBox1: TCheckBox;
+    Pnl_FONE: TPanel;
+    Edt_LengDDD: TLabeledEdit;
+    Edt_LengDDI: TLabeledEdit;
+    Edt_LengFone: TLabeledEdit;
+    Edt_DDIPDR: TLabeledEdit;
+    CheckBox3: TCheckBox;
+    LabeledEdit3: TLabeledEdit;
+    Panel2: TPanel;
+    whatsOn: TImage;
+    whatsOff: TImage;
+    imgQrcode: TImage;
+    lblStatus: TLabel;
+    lblQrcode: TLabel;
+    lblNumeroConectado: TLabel;
+    CheckBox4: TCheckBox;
+    Lbl_Avisos: TLabel;
+    Timer2: TTimer;
+    CheckBox5: TCheckBox;
+    Button1: TButton;
+    Button4: TButton;
+    Label3: TLabel;
+    Panel3: TPanel;
+    LabeledEdit2: TLabeledEdit;
+    LabeledEdit1: TLabeledEdit;
+    LabeledEdit4: TLabeledEdit;
+    CheckBox2: TCheckBox;
+    chk_grupos: TCheckBox;
+    chk_apagarMsg: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure whatsOnClick(Sender: TObject);
@@ -76,53 +89,42 @@ type
     procedure btEnviaTextoClick(Sender: TObject);
     procedure btEnviaTextoArqClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
-    procedure InjectWhatsapp1GetContactList(Sender: TObject);
-    procedure InjectWhatsapp1GetChatList(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
     procedure InjectWhatsapp1GetUnReadMessages(Chats: TChatList);
     procedure listaChatsDblClick(Sender: TObject);
     procedure listaContatosDblClick(Sender: TObject);
-    procedure chk_apagarMsgClick(Sender: TObject);
     procedure TrayIcon1Click(Sender: TObject);
     procedure ApplicationEvents1Minimize(Sender: TObject);
     procedure btn_clearClick(Sender: TObject);
     procedure imgQrcodeClick(Sender: TObject);
-    procedure edtDelayKeyPress(Sender: TObject; var Key: Char);
-    procedure InjectWhatsapp1GetStatus(Sender: TObject);
+    procedure InjectWhatsapp1GetStatus(Const PStatus : TStatusType; Const PFormQrCode: TFormQrCodeType);
     procedure edtDelayKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ButtonSelecionarArquivoClick(Sender: TObject);
     procedure btStatusBatClick(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure InjectWhatsapp1GetBatteryLevel(Sender: TObject);
-
-  protected
-
-    //############ ATEN√á√ÉO AQUI ####################
-    //############ ATEN√á√ÉO AQUI ####################
-    //############ ATEN√á√ÉO AQUI ####################
-    // Essas vari√°veis e procedures ajudam √† monitorar o destroy correto do TChromium.
-    FCanClose : boolean;  // Defina como True em TChromium.OnBeforeClose
-    FClosing  : boolean;  // Defina como True no evento CloseQuery.
-    procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
-    procedure WMMoving(var aMessage : TMessage); message WM_MOVING;
-    procedure WMEnterMenuLoop(var aMessage: TMessage); message WM_ENTERMENULOOP;
-    procedure WMExitMenuLoop(var aMessage: TMessage); message WM_EXITMENULOOP;
-
+    procedure CheckBox1Click(Sender: TObject);
+    procedure Edt_DDIPDRExit(Sender: TObject);
+    procedure ed_numChange(Sender: TObject);
+    procedure ed_numSelect(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure InjectWhatsapp1GetMyNumber(Sender: TObject);
+    procedure InjectWhatsapp1LowBattery(Const POnAlarm, PBatteryCharge: Integer);
+    procedure InjectWhatsapp1ErroAndWarning(Sender: TObject; const PError,
+      PInfoAdc: string);
+    procedure Timer2Timer(Sender: TObject);
+    procedure InjectWhatsapp1GetAllContactList(
+      const AllContacts: TRetornoAllContacts);
+    procedure InjectWhatsapp1GetChatList(const Chats: TChatList);
   private
     { Private declarations }
-    idMessageLocal, idMessageGlobal: string;
-    vSessao, vSessao2: integer;
-    ChromiumStarted: Boolean;
-    vExtension, vBase64, vFileName, IDMessage: string;
+//    idMessageGlobal: string;
+    vExtension,  vFileName: string;
     vBase64File: TBase64Encoding;
     procedure CarregarContatos;
     procedure CarregarChats;
   public
     { Public declarations }
-    nOpcao                                : string;
-    JS1, JS2, contato , fone              : string;
     vBase64Str, vFileNameURL              : string;
 
     //Video aula
@@ -145,28 +147,52 @@ var
 implementation
 
 uses
-  u_servicesWhats, System.StrUtils;
+  uTInject.Console, System.StrUtils, uTInject.Diversos;
 
 {$R *.dfm}
 
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
-  idMessageGlobal := 'start';
-  PageControl1.ActivePageIndex := 0;
-  InjectWhatsapp1.startWhatsapp;
-end;
+//  ReportMemoryLeaksOnShutdown  := True;
 
-procedure TfrmPrincipal.FormShow(Sender: TObject);
-begin
-  timer1.Enabled := true;
+//  idMessageGlobal              := 'start';
+  PageControl1.ActivePageIndex := 0;
+
+  //Define os padrıes DO BRASIL
+//  InjectWhatsapp1.AjustNumber.AutoAdjust := True;
+ // InjectWhatsapp1.AjustNumber.LengthDDI  := 2;
+ // InjectWhatsapp1.AjustNumber.LengthDDD  := 2;
+ // InjectWhatsapp1.AjustNumber.LengthPhone:= 8; //Whats antigo e 8 digitos
+ // InjectWhatsapp1.AjustNumber.DDIDefault := 55;
+  TabSheet3.TabVisible                   := False;
+  TabSheet4.TabVisible                   := False;
+
+  edtDelay.Text         := injectWhatsapp1.Config.AutoDelay.ToString          ;
+  chk_apagarMsg.Checked := injectWhatsapp1.Config.AutoDelete         ;
+  CheckBox2.Checked     := InjectWhatsapp1.Config.ControlSend        ;
+  LabeledEdit1.text     := InjectWhatsapp1.Config.ControlSendTimeSec.ToString ;
+  LabeledEdit2.Text     := InjectWhatsapp1.Config.SecondsMonitor.ToString     ;
+  LabeledEdit4.Text     := InjectWhatsapp1.Config.LowBatteryIs.ToString;
+
+  CheckBox3.Checked := InjectWhatsapp1.InjectJS.AutoUpdate       ;
+  LabeledEdit3.Text := InjectWhatsapp1.InjectJS.AutoUpdateTimeOut.ToString;
+
+  CheckBox1.Checked :=  injectWhatsapp1.AjustNumber.AutoAdjust   ;
+  Edt_LengDDI.text  := InjectWhatsapp1.AjustNumber.LengthDDI.ToString     ;
+  Edt_LengDDD.text  := InjectWhatsapp1.AjustNumber.LengthDDD.ToString     ;
+  Edt_LengFone.text := InjectWhatsapp1.AjustNumber.LengthPhone.ToString   ;
+  Edt_DDIPDR.text   := InjectWhatsapp1.AjustNumber.DDIDefault.ToString    ;
+  CheckBox4.Checked  := InjectWhatsapp1.AjustNumber.AllowOneDigitMore      ;
 end;
 
 procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-    application.Terminate;
+//  Halt;
+  InjectWhatsapp1.ShutDown;
+  application.Terminate;
 end;
 
-procedure TfrmPrincipal.AddChatList(ANumber: String);
+Procedure TfrmPrincipal.AddChatList(ANumber: String);
 var
   Item: TListItem;
 begin
@@ -202,67 +228,66 @@ begin
 end;
 
 procedure TfrmPrincipal.btn_clearClick(Sender: TObject);
-var i, j, f, controle: integer;
+var
+  i: integer;
 begin
-  controle := 1;
   for i := 0 to  length(arrayTimer) -1 do
   begin
     if arrayTimer[i] <> '' then
     begin
       if (time - strToTime(arrayTimer[i])) >= strToTime('00:00:10') then
       begin
-        mensagem := 'Seu n√∫mero *'+arrayFila[i]+'* foi removido da fila de atendimento.\n\n*Obrigado* por entrar em _contato_ e at√© breve!';
+        mensagem := 'Seu n˙mero *'+arrayFila[i]+'* foi removido da fila de atendimento.\n\n*Obrigado* por entrar em _contato_ e atÈ breve!';
         injectWhatsapp1.send(arrayFila[i], mensagem);
         arrayFila[i]    := '';
         arraySessao[i]  := '';
         arrayTimer[i]   := '';
-        controle := 0;
       end;
     end;
   end;
 end;
 
-procedure TfrmPrincipal.WMMove(var aMessage : TWMMove);
-begin
-  inherited;
-end;
-
-procedure TfrmPrincipal.WMMoving(var aMessage : TMessage);
-begin
-  inherited;
-end;
-
-procedure TfrmPrincipal.WMEnterMenuLoop(var aMessage: TMessage);
-begin
-  inherited;
-
-  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then GlobalCEFApp.OsmodalLoop := True;
-end;
-
-procedure TfrmPrincipal.WMExitMenuLoop(var aMessage: TMessage);
-begin
-  inherited;
-
-  if (aMessage.wParam = 0) and (GlobalCEFApp <> nil) then GlobalCEFApp.OsmodalLoop := False;
-end;
-
 
 procedure TfrmPrincipal.btEnviaTextoArqClick(Sender: TObject);
 begin
-  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
-  begin
-    application.MessageBox('Voc√™ n√£o est√° autenticado.','TInject', mb_iconwarning + mb_ok);
-    abort;
-  end;
+  try
+    if not InjectWhatsapp1.Auth then
+    begin
+      application.MessageBox('VocÍ n„o est· autenticado.','TInject', mb_iconwarning + mb_ok);
+      abort;
+    end;
 
-  if vBase64File <> nil then
-  begin
-    InjectWhatsapp1.sendBase64(vBase64Str, ed_num.Text, vFileName, mem_message.Text);
-    //sleep(1000);
-    //InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
-    vBase64File := nil;
-    application.MessageBox('Arquivo enviado com sucesso!','TInject whatsapp', mb_iconAsterisk + mb_ok);
+    if (Trim(ed_num.Text) = '') or (Trim(mem_message.Text) = '') or (vBase64Str = '') then
+    begin
+      application.MessageBox('N„o existe nenhum conteudo a ser enviado.','TInject', mb_iconwarning + mb_ok);
+      abort;
+    end;
+
+
+    if vBase64File <> nil then
+    begin
+      InjectWhatsapp1.sendBase64(vBase64Str, ed_num.Text, vFileName, mem_message.Text);
+      //sleep(1000);
+      //InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
+      vBase64File := nil;
+      mem_message.SelectAll;
+//      application.MessageBox('Arquivo enviado com sucesso!','TInject whatsapp', mb_iconAsterisk + mb_ok);
+    end;
+  finally
+    ed_num.SelectAll;
+    ed_num.SetFocus;
   end;
+end;
+
+procedure TfrmPrincipal.Button1Click(Sender: TObject);
+begin
+  if not InjectWhatsapp1.Auth then
+  Begin
+    application.MessageBox('VocÍ n„o est· conectado.','TInject', mb_iconwarning + mb_ok);
+    abort;
+  End;
+
+  InjectWhatsapp1.ShutDown();
 end;
 
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
@@ -277,25 +302,36 @@ end;
 
 procedure TfrmPrincipal.btStatusBatClick(Sender: TObject);
 begin
-  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
+  if not InjectWhatsapp1.Auth then
   begin
-    application.MessageBox('Voc√™ n√£o est√° autenticado.','TInject', mb_iconwarning + mb_ok);
+    application.MessageBox('VocÍ n„o est· autenticado.','TInject', mb_iconwarning + mb_ok);
     abort;
   end;
 
-  InjectWhatsapp1.batteryStatus;
+  InjectWhatsapp1.GetBatteryStatus;
 end;
 
 procedure TfrmPrincipal.btEnviaTextoClick(Sender: TObject);
 begin
-  if (not Assigned(frm_servicesWhats)) or (Assigned(frm_servicesWhats) and (frm_servicesWhats.vAuth = false)) then
-  begin
-    application.MessageBox('Voc√™ n√£o est√° autenticado.','TInject', mb_iconwarning + mb_ok);
-    abort;
-  end;
+  try
+    if not InjectWhatsapp1.Auth then
+    begin
+      application.MessageBox('VocÍ n„o est· autenticado.','TInject', mb_iconwarning + mb_ok);
+      abort;
+    end;
 
-  InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
-  application.MessageBox('Mensagem enviada com sucesso!','TInject', mb_iconAsterisk + mb_ok);
+    if (Trim(ed_num.Text) = '') or (Trim(mem_message.Text) = '') then
+    begin
+      application.MessageBox('N„o existe nenhum conteudo a ser enviado.','TInject', mb_iconwarning + mb_ok);
+      abort;
+    end;
+
+    InjectWhatsapp1.send(ed_num.Text, mem_message.Text);
+
+  finally
+    ed_num.SelectAll;
+    ed_num.SetFocus;
+  end;
 end;
 
 procedure TfrmPrincipal.Button7Click(Sender: TObject);
@@ -313,24 +349,21 @@ begin
     vBase64File := TBase64Encoding.Create;
     vFilestream := TMemoryStream.Create;
     vFilestream.LoadFromFile(openDialog1.FileName);
-
     vExtension := LowerCase(Copy(ExtractFileExt(openDialog1.FileName),2,5));
-
     vFileName  := ExtractFileName(openDialog1.FileName);
     vFileNameURL := dateToStr(date)+timeToStr(time)+'.'+vExtension;
     if (vExtension = 'pdf') or (vExtension = 'rar')  or (vExtension = 'zip') then
     begin
-      vBase64Str := 'data:application/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
+      vBase64Str := 'data:application/'+vExtension+';base64,'+ String(vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size));
     end else
     Begin
       if (vExtension = 'mp4') or (vExtension = 'mp3') then
-         vBase64Str := 'data:application/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size)  Else
-         vBase64Str := 'data:image/'+vExtension+';base64,'+vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size);
+         vBase64Str := 'data:application/'+vExtension+';base64,'+ String(vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size))  Else
+         vBase64Str := 'data:image/'+vExtension+';base64,' + String(vBase64File.EncodeBytesToString(vFilestream.Memory, vFilestream.Size));
     End;
     caminhoArquivo := openDialog1.FileName;
     vFilestream.Free;
   end;
-
 end;
 
 procedure TfrmPrincipal.CarregarChats;
@@ -343,19 +376,66 @@ begin
   InjectWhatsapp1.getAllContacts;
 end;
 
-procedure TfrmPrincipal.chk_apagarMsgClick(Sender: TObject);
+procedure TfrmPrincipal.CheckBox1Click(Sender: TObject);
 begin
- if chk_apagarMsg.Checked then
-  injectWhatsapp1.Config.FAutoDelete := true
- else
-  injectWhatsapp1.Config.FAutoDelete := false;
+  Pnl_FONE.Enabled  := CheckBox1.Checked;
 end;
 
-
-procedure TfrmPrincipal.edtDelayKeyPress(Sender: TObject; var Key: Char);
+procedure TfrmPrincipal.ed_numChange(Sender: TObject);
+var
+  LRet: TStringList;
+  I: Integer;
+  Ltexto: String;
 begin
-  if ((key in ['0'..'9'] = false) and (word(key) <> vk_back)) then
-    key := #0;
+  //Esta processando outro CHANGE
+  if not CheckBox5.Checked then
+     Exit;
+
+  if ed_num.AutoComplete = False Then
+     Exit;
+
+  {
+   ##### modo 1
+  InjectWhatsapp1.GetContacts(ComboBox1.Text, ComboBox1.Items);
+  if ComboBox1.Items.Count <= 0 then
+     ComboBox1.Style := csSimple else
+     ComboBox1.Style := csOwnerDrawFixed;
+
+
+  ##### modo 2
+   }
+
+  LRet:= TStringList.Create;
+  ed_num.AutoComplete := False;
+  Ltexto                 := ed_num.Text;
+  try
+    ed_num.Items.Clear;
+    InjectWhatsapp1.GetContacts(Ltexto, LRet);
+    if LRet.Count <= 0 then
+       ed_num.Style := csSimple else
+       ed_num.Style := csDropDown;
+
+    for I := 0 to LRet.Count -1 do
+       ed_num.Items.Add(LRet.Strings[i]);
+  finally
+    ed_num.Text         := Ltexto;
+    ed_num.SelStart     := Length(Ltexto);
+    ed_num.AutoComplete := True;
+    FreeAndNil(LRet);
+  end;
+end;
+
+procedure TfrmPrincipal.ed_numSelect(Sender: TObject);
+begin
+  if not CheckBox5.Checked then
+     Exit;
+
+  if (ed_num.ItemIndex >=0) and (ed_num.Items.Count > 0) then
+  Begin
+    ed_num.AutoComplete := False;
+    ed_num.Text         := ed_num.Items.Strings[ed_num.ItemIndex];
+    ed_num.AutoComplete := True;
+  End;
 end;
 
 procedure TfrmPrincipal.edtDelayKeyUp(Sender: TObject; var Key: Word;
@@ -370,37 +450,54 @@ begin
   end;
 end;
 
-procedure TfrmPrincipal.imgQrcodeClick(Sender: TObject);
+procedure TfrmPrincipal.Edt_DDIPDRExit(Sender: TObject);
 begin
-  InjectWhatsapp1.startQrCode;
+  injectWhatsapp1.Config.AutoDelay           := StrToIntDef(edtDelay.Text, 5);
+  injectWhatsapp1.Config.AutoDelete          := chk_apagarMsg.Checked;
+  //injectWhatsapp1.Config.AutoStart           := chk_AutoStart.Checked;
+  InjectWhatsapp1.Config.ControlSend         := CheckBox2.Checked;
+  InjectWhatsapp1.Config.ControlSendTimeSec  := StrToIntDef(LabeledEdit1.Text, 8);
+  InjectWhatsapp1.Config.SecondsMonitor      := StrToIntDef(LabeledEdit2.Text, 3);
+  InjectWhatsapp1.Config.LowBatteryIs        := StrToIntDef(LabeledEdit4.Text, 30);
+
+//  injectWhatsapp1.Config.ShowRandom          := .Checked;
+//  injectWhatsapp1.Config.SyncContacts        := .Checked;
+
+  InjectWhatsapp1.InjectJS.AutoUpdate        := CheckBox3.Checked;
+  InjectWhatsapp1.InjectJS.AutoUpdateTimeOut := StrToIntDef(LabeledEdit3.Text, 4);
+
+  injectWhatsapp1.AjustNumber.AutoAdjust     := CheckBox1.Checked;
+  InjectWhatsapp1.AjustNumber.LengthDDI      := StrToIntDef(Edt_LengDDI.text , 2);
+  InjectWhatsapp1.AjustNumber.LengthDDD      := StrToIntDef(Edt_LengDDD.text , 2);
+  InjectWhatsapp1.AjustNumber.LengthPhone    := StrToIntDef(Edt_LengFone.text, 8);
+  InjectWhatsapp1.AjustNumber.DDIDefault     := StrToIntDef(Edt_DDIPDR.text  , 55);
+  InjectWhatsapp1.AjustNumber.AllowOneDigitMore := CheckBox4.Checked;
 end;
 
-procedure TfrmPrincipal.InjectWhatsapp1GetBatteryLevel(Sender: TObject);
+Procedure TfrmPrincipal.imgQrcodeClick(Sender: TObject);
 begin
-  btStatusBat.caption := 'N√≠vel da bateria: '+injectWhatsapp1.AGetBatteryLevel + '%';
+  InjectWhatsapp1.FormQrCodeType := Ft_Desktop;
+  InjectWhatsapp1.FormQrCodeStart;
 end;
 
-procedure TfrmPrincipal.InjectWhatsapp1GetChatList(Sender: TObject);
-var
-  AChat: TChatClass;
+procedure TfrmPrincipal.InjectWhatsapp1ErroAndWarning(Sender: TObject;
+  const PError, PInfoAdc: string);
 begin
-  listaChats.Clear;
+  Timer2.Enabled := False;
+  Lbl_Avisos.Caption := Perror + ' -> ' + PInfoAdc;
+  Lbl_Avisos.Font.Color := clBlack;
 
-  for AChat in InjectWhatsapp1.AllChats.result do
-  begin
-    AddChatList('('+ AChat.unreadCount.ToString + ') '
-               + AChat.name
-               + ' - ' + AChat.id);
-  end;
+  Timer2.Enabled := True;
 end;
 
-procedure TfrmPrincipal.InjectWhatsapp1GetContactList(Sender: TObject);
+procedure TfrmPrincipal.InjectWhatsapp1GetAllContactList(
+  const AllContacts: TRetornoAllContacts);
 var
   AContact: TContactClass;
 begin
   listaContatos.Clear;
 
-  for AContact in InjectWhatsapp1.AllContacts.result do
+  for AContact in AllContacts.result do
   begin
     if chk_grupos.Checked = true then
     begin
@@ -412,27 +509,87 @@ begin
   end;
 end;
 
-procedure TfrmPrincipal.InjectWhatsapp1GetStatus(Sender: TObject);
+procedure TfrmPrincipal.InjectWhatsapp1GetBatteryLevel(Sender: TObject);
 begin
-  if InjectWhatsapp1.Auth = True then
-  begin
-    lblStatus.Caption := 'Online';
-    lblStatus.Font.Color := $0000AE11;
-    whatsOn.Visible  := True;
+  btStatusBat.caption := 'NÌvel da bateria: '+ TInjectWhatsapp(Sender).BatteryLevel.ToString + '%';
+end;
 
-    lblQrcode.Visible := False;
-    imgQrcode.Visible := False;
-    lblNumeroConectado.Visible := True;
+procedure TfrmPrincipal.InjectWhatsapp1GetChatList(const Chats: TChatList);
+var
+  AChat: TChatClass;
+begin
+  listaChats.Clear;
+  for AChat in Chats.result do
+  begin
+    AddChatList('('+ AChat.unreadCount.ToString + ') '
+               + AChat.name
+               + ' - ' + AChat.id);
+  end;
+end;
+
+procedure TfrmPrincipal.InjectWhatsapp1GetMyNumber(Sender: TObject);
+begin
+  lblNumeroConectado.Caption :=   TInjectWhatsapp(Sender).MyNumber;
+end;
+
+procedure TfrmPrincipal.InjectWhatsapp1GetStatus(Const PStatus : TStatusType; Const PFormQrCode: TFormQrCodeType);
+begin
+  try
+    TabSheet3.TabVisible   := (PStatus = Whats_Connected);
+    TabSheet4.TabVisible   := (PStatus = Whats_Connected);
+  Except
+  end;
+
+  if (PStatus = Whats_Connected) then
+  begin
+    lblStatus.Caption            := 'Online';
+    lblStatus.Font.Color         := $0000AE11;
   end
   else
   begin
-    lblStatus.Caption := 'Offline';
-    lblStatus.Font.Color := $002894FF;
-    whatsOff.Visible := True;
+    lblStatus.Caption            := 'Offline';
+    lblStatus.Font.Color         := $002894FF;
+  end;
+  whatsOn.Visible            := (PStatus = Whats_Connected);
+  lblNumeroConectado.Visible := whatsOn.Visible;
+  whatsOff.Visible           := Not whatsOn.Visible;
+  lblQrcode.Visible          := whatsOff.Visible;
+  imgQrcode.Visible          := whatsOff.Visible;
 
-    lblQrcode.Visible := True;
-    imgQrcode.Visible := True;
-    lblNumeroConectado.Visible := False;
+
+  Label3.Visible := False;
+  case pstatus of
+    Whats_Disconnected        : Label3.Caption := '';
+    Whats_Disconnecting       : Label3.Caption := '';
+    Whats_Connected           : Label3.Caption := '';
+    Whats_Connecting          : Label3.Caption := 'Aguarde, Conectando..';
+    Whats_ConnectingNoPhone   : Label3.Caption := 'Telefone Desligado';
+    Whats_ConnectingReaderCode: Label3.Caption := 'Aguardando Leitura QRCODE';
+    Whats_TimeOut             : Label3.Caption := 'Timeout Leitura';
+    Whats_Destroying          : Label3.Caption := 'Finalizando Sess„o';
+    Whats_Destroy             : Label3.Visible := False;
+  end;
+  If Label3.Caption <> '' Then
+     Label3.Visible := true;
+
+
+  If PStatus in [Whats_ConnectingNoPhone, Whats_TimeOut] Then
+  Begin
+    if PFormQrCode = Ft_Desktop then
+    Begin
+       if PStatus = Whats_ConnectingNoPhone then
+          InjectWhatsapp1.FormQrCodeStop;
+    end else
+    Begin
+      if InjectWhatsapp1.Status = Whats_ConnectingNoPhone then
+      Begin
+        if not InjectWhatsapp1.FormQrCodeShowing then
+           InjectWhatsapp1.FormQrCodeShowing := True;
+      end else
+      begin
+        InjectWhatsapp1.FormQrCodeReloader;
+      end;
+    end;
   end;
 end;
 
@@ -446,9 +603,9 @@ begin
     begin
       for AMessage in AChat.messages do
       begin
-        if not AChat.isGroup then //N√£o exibe mensages de grupos
+        if not AChat.isGroup then //N„o exibe mensages de grupos
         begin
-          if not AMessage.sender.isMe then  //N√£o exibe mensages enviadas por mim
+          if not AMessage.sender.isMe then  //N„o exibe mensages enviadas por mim
           begin
             memo_unReadMessagen.Clear;
             //memo_unReadMessagen.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
@@ -468,47 +625,28 @@ begin
     end;
 end;
 
+procedure TfrmPrincipal.InjectWhatsapp1LowBattery(Const POnAlarm, PBatteryCharge: Integer);
+begin
+  Timer2.Enabled        := False;
+  Lbl_Avisos.Caption    := 'Alarme de BATERIA.  VocÍ est· com ' + (PBatteryCharge).ToString + '%';
+  Lbl_Avisos.Font.Color := clRed;
+  Timer2.Enabled        := True;
+end;
+
 procedure TfrmPrincipal.listaChatsDblClick(Sender: TObject);
 begin
-  ed_num.Text := InjectWhatsapp1.AllChats.result[ listaChats.Selected.Index ].id;
+  ed_num.Text := InjectWhatsapp1.GetChat(listaChats.Selected.Index).id;
 end;
 
 procedure TfrmPrincipal.listaContatosDblClick(Sender: TObject);
 begin
-  ed_num.Text := InjectWhatsapp1.AllContacts.result[ listaContatos.Selected.Index ].id;
+  ed_num.Text := InjectWhatsapp1.GetContact(listaContatos.Selected.Index).id;
 end;
 
-procedure TfrmPrincipal.Timer1Timer(Sender: TObject);
+procedure TfrmPrincipal.Timer2Timer(Sender: TObject);
 begin
-  if Assigned(frm_servicesWhats) then
-  begin
-    if frm_servicesWhats.vAuth = true then
-    begin
-      lblStatus.Caption := 'Online';
-      lblStatus.Font.Color := $0000AE11;
-
-      whatsOn.Visible := True;
-      whatsOff.Visible := False;
-
-      lblQrcode.Visible := False;
-      imgQrcode.Visible := False;
-      lblNumeroConectado.Visible := True;
-      StatusBar1.Panels[1].Text := 'Online';
-    end
-    else
-    begin
-      lblStatus.Caption := 'Offline';
-      lblStatus.Font.Color := $002894FF;
-
-      whatsOff.Visible := True;
-      whatsOn.Visible := False;
-
-      lblQrcode.Visible := True;
-      imgQrcode.Visible := True;
-      lblNumeroConectado.Visible := False;
-      StatusBar1.Panels[1].Text := 'Offline';
-    end;
-  end;
+  Lbl_Avisos.Caption := '';
+  Timer2.Enabled := False;
 end;
 
 procedure TfrmPrincipal.TrayIcon1Click(Sender: TObject);
@@ -522,22 +660,24 @@ end;
 function TfrmPrincipal.VerificaPalavraChave(pMensagem, pSessao, pTelefone,
   pContato: String): Boolean;
 begin
-   if ( POS('OLA', AnsiUpperCase(pMensagem))        > 0 ) or ( POS('OL√Å', AnsiUpperCase(pMensagem))       > 0 ) or
+  Result := False;
+   if ( POS('OLA', AnsiUpperCase(pMensagem))        > 0 ) or ( POS('OL¡', AnsiUpperCase(pMensagem))       > 0 ) or
       ( POS('BOM DIA', AnsiUpperCase(pMensagem))    > 0 ) or ( POS('BOA TARDE', AnsiUpperCase(pMensagem)) > 0 ) or
-      ( POS('BOA NOITE', AnsiUpperCase(pMensagem))  > 0 ) or ( POS('IN√çCIO', AnsiUpperCase(pMensagem))    > 0 ) or
+      ( POS('BOA NOITE', AnsiUpperCase(pMensagem))  > 0 ) or ( POS('INÕCIO', AnsiUpperCase(pMensagem))    > 0 ) or
       ( POS('HELLO', AnsiUpperCase(pMensagem))      > 0 ) or ( POS('HI', AnsiUpperCase(pMensagem))        > 0 ) or
       ( POS('INICIO', AnsiUpperCase(pMensagem))     > 0 ) or ( POS('OI', AnsiUpperCase(pMensagem))        > 0 )then
       begin
         mensagem :=
-        InjectWhatsapp1.Emoticons.AtendenteH+ 'Ol√° *'+pContato+'!*\n\n'+
-        'Voc√™ est√° no auto atendimento do *TInject*!\n\n'+
-        'Digite um n√∫mero:\n\n'+
+        InjectWhatsapp1.Emoticons.AtendenteH+ 'Ol· *'+pContato+'!*\n\n'+
+        'VocÍ est· no auto atendimento do *TInject*!\n\n'+
+        'Digite um n˙mero:\n\n'+
         InjectWhatsapp1.Emoticons.Um             +' Suporte\n\n'+
         InjectWhatsapp1.Emoticons.Dois           +' Consultar CEP\n\n'+
         InjectWhatsapp1.Emoticons.Tres           +' Financeiro\n\n'+
-        InjectWhatsapp1.Emoticons.Quatro         +' Hor√°rios de atendimento\n\n';
-        vBase64Str := 'data:image/png;base64,' +frm_servicesWhats.convertBase64(ExtractFileDir(Application.ExeName)+'\Img\softmais.png');
+        InjectWhatsapp1.Emoticons.Quatro         +' Hor·rios de atendimento\n\n';
+        vBase64Str := 'data:image/png;base64,' + convertBase64(ExtractFileDir(Application.ExeName)+'\Img\softmais.png');
         InjectWhatsapp1.sendBase64(vBase64Str, pTelefone, '', mensagem);
+        Result := True;
         exit;
       end;
    exit;
@@ -545,12 +685,14 @@ end;
 
 procedure TfrmPrincipal.whatsOffClick(Sender: TObject);
 begin
-  InjectWhatsapp1.ShowWebApp;
+  InjectWhatsapp1.FormQrCodeType := Ft_Http;
+  InjectWhatsapp1.FormQrCodeStart;
 end;
 
 procedure TfrmPrincipal.whatsOnClick(Sender: TObject);
 begin
-  InjectWhatsapp1.ShowWebApp;
+ if not InjectWhatsapp1.FormQrCodeShowing then
+    InjectWhatsapp1.FormQrCodeShowing := True;
 end;
 
 end.

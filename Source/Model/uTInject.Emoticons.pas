@@ -1,4 +1,30 @@
-﻿//Remover do componente principal controles e comportamentos
+﻿{####################################################################################################################
+                         TINJECT - Componente de comunicação WhatsApp (Não Oficial WhatsApp)
+                                           www.tinject.com.br
+                                            Novembro de 2019
+####################################################################################################################
+    Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
+    Developer.: Joathan Theiller           - jtheiller@hotmail.com   -
+                Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
+####################################################################################################################
+  Obs:
+     - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores;
+     - Colocar na evolução as Modificação juntamente com as informaçoes do colaborador: Data, Nova Versao, Autor;
+     - Mantenha sempre a versao mais atual acima das demais;
+     - Todo Commit ao repositório deverá ser declarado as mudança na UNIT e ainda o Incremento da Versão de
+       compilação (último digito);
+
+####################################################################################################################
+                                  Evolução do Código
+####################################################################################################################
+  Autor........:
+  Email........:
+  Modificação..:
+####################################################################################################################
+}
+
+
+//Remover do componente principal controles e comportamentos
 //de textos. Uso do Record evita ter que instanciar objeto
 //devido utilização simples dessa necessidade;
 
@@ -9,7 +35,6 @@ interface
 
 type
   TInjectEmoticons = record
-    const Sol              = '☀';
     const Sorridente       = '😄';
     const SorridenteLingua = '😝';
     const Impressionado    = '😱';

@@ -1,46 +1,27 @@
 ﻿{** Douglas Colombo
   * Classe de conversão de arquivos em texto
   * e de Texto em Arquivos, BASE64
+  
+  * MODIFICADO 04/12/2019 POR Daniel Rodrigues (ajustes de plataforma) 
+  *
+  *
 **}
 
 unit UBase64;
 
 interface
 
-uses System.Classes, System.netEncoding, System.SysUtils, FMX.Graphics;
+uses System.Classes, System.netEncoding, System.SysUtils, VCL.Graphics;
 
-
-//Type
-  // tBase64 = class
-
-   //public
-     procedure Base64ToFile(Arquivo, caminhoSalvar : String);
-     function Base64ToStream(imagem : String) : TMemoryStream;
-     //function Base64ToBitmap(imagem : String) : TBitmap;
-     function BitmapToBase64(imagem : TBitmap) : String;
-     function FileToBase64(Arquivo : String) : String;
-     function StreamToBase64(STream : TMemoryStream) : String;
-//end;
+   procedure Base64ToFile  (Arquivo, caminhoSalvar : String);
+   function  Base64ToStream(imagem : String) : TMemoryStream;
+   function  BitmapToBase64(imagem : TBitmap) : String;
+   function  FileToBase64  (Arquivo : String) : String;
+   function  StreamToBase64(STream : TMemoryStream) : String;
 
 implementation
 
 
-//{ tBase64 }
-//function tBase64.Base64ToBitmap(imagem: String): TBitmap;
-//Var sTream : TMemoryStream;
-//begin
-//  if (trim(imagem) <> '') then
-//  begin
-//     Try
-//        sTream := Base64ToStream(imagem);
-//        result := TBitmap.CreateFromStream(sTream);
-//     Finally
-//        sTream.DisposeOf;
-//        sTream := nil;
-//     End;
-//  end else
-//  exit;
-//end;
 
 procedure Base64ToFile(Arquivo, caminhoSalvar : String);
 Var sTream : TMemoryStream;
@@ -49,8 +30,7 @@ begin
     sTream := Base64ToStream(Arquivo);
     sTream.SaveToFile(caminhoSalvar);
   Finally
-    sTream.free;
-    sTream:=nil;
+    FreeAndNil(sTream);
   End;
 end;
 
@@ -64,8 +44,7 @@ begin
     result := TBytesStream.Create(bytes);
     result.Seek(0, 0);
   Finally
-    Base64.Free;
-    Base64:=nil;
+    FreeAndNil(Base64);
     SetLength(bytes, 0);
   End;
 end;
@@ -74,16 +53,18 @@ function BitmapToBase64(imagem: TBitmap): String;
 Var sTream : TMemoryStream;
 begin
   result := '';
-
-  if not (imagem.IsEmpty) then
+  if not (imagem.Empty) then
   begin
      Try
-        sTream := TMemoryStream.Create;
-        imagem.SaveToStream(sTream);
-        result := StreamToBase64(sTream);
-        sTream.DisposeOf;
-        sTream := nil;
-     Except End;
+       sTream := TMemoryStream.Create;
+       try
+         imagem.SaveToStream(sTream);
+         result := StreamToBase64(sTream);
+       finally
+        FreeAndNil(Stream);
+       end;
+     Except
+     End;
   end;
 end;
 
@@ -95,8 +76,7 @@ begin
     sTream.LoadFromFile(Arquivo);
     result := StreamToBase64(sTream);
   Finally
-    Stream.Free;
-    Stream:=nil;
+    FreeAndNil(Stream);
   End;
 end;
 
@@ -108,8 +88,7 @@ begin
     Base64 := TBase64Encoding.Create;
     Result := Base64.EncodeBytesToString(sTream.Memory, sTream.Size);
   Finally
-    Base64.Free;
-    Base64:=nil;
+    FreeAndNil(Stream);
   End;
 end;
 
