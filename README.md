@@ -3,7 +3,7 @@ Componente para criação de chatBots com delphi e o whatsapp<br></br><br></br>
 
 INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
 
-Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br></br>
+Compatibilidade testada nas versões do Delphi: XE8, Seattle, Berlim, Tokyo e Rio.<br></br>
 
 Tutorial de instalação no youtube:<br>
 https://www.youtube.com/watch?v=4fbSepeZPDU&t=2s
@@ -11,23 +11,19 @@ https://www.youtube.com/watch?v=4fbSepeZPDU&t=2s
 
 1-Clonar o repositório Projeto-TInject
 <br></br>
-2-Baixar e instalar o CEF4Delphi em: http://www.softmaisbrasil.com.br/#blog
+2-Instalar o CEF4Delphi(Encontra-se na pasta CEF4Bin arquivo: CEF4Delphi-master.zip)
 <br></br>
-3-Baixar a pasta BIN em: http://www.softmaisbrasil.com.br/#blog
+3-Adicione a pasta Source do CEF4Delphi ao library Path 32 bits do Delphi
 <br></br>
-4-Copiar todo o conteúdo baixado da pasta BIN no passo 3 para a pasta BIN na raiz do projeto (Caso não exista a pasta BIN em seu projeto Crie)
+4-Extraia todo o conteúdo do arquivo CEF4Bin.rar para a mesma pasta do executável do demo (Encontram-se na pasta CEF4Bin) 
 <br></br>
-5-Adicione ao libary path do Delphi a pasta TInject-whatsapp-delphi e todas as subpastas
+5-Execute o instalador TInjectInstall.exe
 <br><br>
-6-Clique no menu *Component* > *Install component*. Selecione a unit uTinject pasta(service) e selecionar a opção *install into a new package*. Por fim, digite o nome TInject em *Package name*.
-<br><br>
-7-Dê um Compile e depois dê um build
-<br><br>
-8-Abra o arquivo demo Tinject.dproj
+6-Abra o arquivo demo Tinject.dproj
+<br></br>
+7-Divirta-se!
 <br></br><br></br>
 
-<br><br>Melhorar a estabilidade na respostas automáticas das mensagens.
-<br><br>
 
 *Nota 1: O TInject é de código aberto, e não possui *nenhum outro componente* de terceiro além do TChromium vinculado ao código, nem muito menos utilização de *licenças* ou afins de outros componentes. Baixem os *fontes* para comprovar.
 <br><br>
