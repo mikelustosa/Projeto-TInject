@@ -41,10 +41,9 @@ uses
 ###########################################################################################
                                     EVOLUÇÃO
 ###########################################################################################
-1.0.0.11 =  08/12/2019 - Mike Lustosa
-     - Implementado o getMyNumber função que retorna o número do telefone logado no whatsapp
 
-1.0.0.10 =  04/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
+1.0.0.10 =  17/12/2019 - Revisão Mike Lustosa - comercial.softmais@gmail.com
+1.0.0.10 =  17/12/2019 - Daniel Rodrigues - Dor_poa@hotmail.com
      - Implementado o controle das pasta do FrameWork do CEF;
      - Adicionado uma classe que controla e destroi todas as THREAD ativas,
        eliminando assim qualquer PROCESSO ZUMBI(Zombie process);
@@ -755,8 +754,10 @@ begin
   if not Assigned(FrmConsole) then
      Exit;
 
-  FrmConsole.StopQrCode(FQrCodeStyle);
-end;
+
+  FrmConsole.StopQrCode(FQrCodeStyle);
+
+end;
 
 end.
 
