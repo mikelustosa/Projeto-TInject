@@ -6,7 +6,7 @@ INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
 Compatibilidade testada nas versões do Delphi: XE8, Seattle, Berlim, Tokyo e Rio.<br></br>
 
 Tutorial de instalação no youtube:<br>
-https://www.youtube.com/watch?v=4fbSepeZPDU&t=2s
+https://youtu.be/u9H-HKIlNIo
 
 
 1-Clonar o repositório Projeto-TInject
