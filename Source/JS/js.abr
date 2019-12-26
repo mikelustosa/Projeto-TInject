@@ -23,13 +23,20 @@ function SetConsoleMessage(jsName, resultValue) {
 var intervalMonitor;
 
 function startMonitor(intervalSeconds = 0) {
-    if (intervalSeconds >= 1) {
-        //Imediatelly
-        //monitorUnReadMessages();
+    var verifyLogin = WAPI.isLoggedIn();
+	
+	if (result = verifyLogin) {
+		console.log(result);
+		if (intervalSeconds >= 1) {
+			//Imediatelly
+			monitorUnReadMessages();
 
-        //Loop time
-        intervalMonitor = window.setInterval(monitorUnReadMessages, intervalSeconds * 1000);
-    }
+			//Loop time
+			intervalMonitor = window.setInterval(monitorUnReadMessages, intervalSeconds * 1000);
+		}		
+	}	else {
+			console.log(result);
+		}
 }
 
 function stopMonitor() {
@@ -1091,7 +1098,7 @@ window.WAPI.getBatteryLevel = function(done) {
         if (done !== undefined) {
             done(100);
         }
-        return 100;
+        return "Charging...";
     }
     output = window.Store.Conn.battery;
     if (done !== undefined) {
