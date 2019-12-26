@@ -1098,8 +1098,8 @@ window.WAPI.getBatteryLevel = function(done) {
         if (done !== undefined) {
             done(100);
         }
-        SetConsoleMessage("getBatteryLevel", JSON.stringify(output));
-	return "Charging...";
+	output = 100;
+	return SetConsoleMessage("getBatteryLevel", JSON.stringify(output));
     }
     output = window.Store.Conn.battery;
     if (done !== undefined) {
