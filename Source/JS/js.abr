@@ -24,7 +24,6 @@ var intervalMonitor;
 
 function startMonitor(intervalSeconds = 0) {
 	
-		console.log(result);
 		if (intervalSeconds >= 1) {
 			//Imediatelly
 			//monitorUnReadMessages();
