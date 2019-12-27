@@ -27,7 +27,7 @@ function startMonitor(intervalSeconds = 0) {
 		console.log(result);
 		if (intervalSeconds >= 1) {
 			//Imediatelly
-			monitorUnReadMessages();
+			//monitorUnReadMessages();
 
 			//Loop time
 			intervalMonitor = window.setInterval(monitorUnReadMessages, intervalSeconds * 1000);
