@@ -415,7 +415,7 @@ window.WAPI.getChatById = function(id, done) {
 };
 
 /**
- * Retorno todas as mensagens não lidas de um bate-papo solicitado e as marca como lidas.
+ * Retorno todas as mensagens nao lidas de um bate-papo solicitado e as marca como lidas.
  *
  * :param id: chat id
  * :type id: string
@@ -750,7 +750,7 @@ window.WAPI.ReplyMessage = function(idMessage, message, done) {
     }
 };
 
-//Função desativada em 27/11/2019 by Mike
+//Funcao desativada em 27/11/2019 by Mike
 /*window.WAPI.sendMessageToID = function (id, message, done) {
 try {
 window.getContact = (id) => {
@@ -860,7 +860,7 @@ window.WAPI.sendMessage2 = function(id, message, done) {
     return false;
 };
 
-//Função desativada em 27/11/2019 by Mike
+//Funcao desativada em 27/11/2019 by Mike
 /*window.WAPI.sendSeen = function (id, done) {
 var chat = window.WAPI.getChat(id);
 if (chat !== undefined) {
@@ -941,7 +941,7 @@ window.WAPI.getUnreadMessages = function(includeMe, includeNotifications, use_un
             output.push(messageGroup);
         } else { // no messages with isNewMsg true
             if (use_unread_count) {
-                let n = messageGroupObj.unreadCount; // usará o atributo unreadCount para buscar as últimas n mensagens do remetente
+                let n = messageGroupObj.unreadCount; // usara o atributo unreadCount para buscar as ultimas n mensagens do remetente
                 for (let i = messages.length - 1; i >= 0; i--) {
                     let messageObj = messages[i];
                     if (n > 0) {
@@ -1196,7 +1196,7 @@ window.WAPI._newMessagesListener = window.Store.Msg.on('add', (newMessage) => {
             window.WAPI._newMessagesBuffer.push(message);
         }
 
-        // Starts debouncer time to don't call a callback for each message if more than one message arrives
+        // Starts debouncer time to don t call a callback for each message if more than one message arrives
         // in the same second
         if (!window.WAPI._newMessagesDebouncer && window.WAPI._newMessagesQueue.length > 0) {
             window.WAPI._newMessagesDebouncer = setTimeout(() => {
@@ -1492,7 +1492,7 @@ window.WAPI.demoteParticipantAdminGroup = function(idGroup, idParticipant, done)
     })
 }
 
-//Nova função alternativa para enviar mensagens(Não envia para grupos)
+//Nova funcao alternativa para enviar mensagens(Nao envia para grupos)
 //Criada em 27/11/2019 Mike
 window.WAPI.sendMessageToID2 = function(id, msgText) {
     try {
