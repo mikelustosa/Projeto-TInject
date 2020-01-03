@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min
-//1.0.0.3;1.0.0.9;78.3.0
+//1.0.0.4;1.0.0.9;78.3.0
 //
 //
 
@@ -21,16 +21,17 @@ function SetConsoleMessage(jsName, resultValue) {
 }
 
 var intervalMonitor;
+var isLoggedStatus = false;
 
 function startMonitor(intervalSeconds = 0) {
-	
-		if (intervalSeconds >= 1) {
-			//Imediatelly
-			//monitorUnReadMessages();
+	isLoggedStatus = WAPI.isLoggedIn();
+    if (intervalSeconds >= 1) {
+        //Imediatelly
+        //monitorUnReadMessages();
 
-			//Loop time
-			intervalMonitor = window.setInterval(monitorUnReadMessages, intervalSeconds * 1000);
-		}	
+        //Loop time
+        intervalMonitor = window.setInterval(monitorUnReadMessages, intervalSeconds * 1000);
+    }
 }
 
 function stopMonitor() {
@@ -38,7 +39,15 @@ function stopMonitor() {
 }
 
 function monitorUnReadMessages() {
-    WAPI.getUnreadMessages(includeMe = "true", includeNotifications = "true", use_unread_count = "true");
+    var currentStatus = WAPI.isLoggedIn();
+	if (currentStatus != isLoggedStatus) {
+		isLoggedStatus = WAPI.isLoggedIn();
+		SetConsoleMessage("OnChangeConnect", JSON.stringify(isLoggedStatus));
+	}
+	
+	if (isLoggedStatus){
+		WAPI.getUnreadMessages(includeMe = "true", includeNotifications = "true", use_unread_count = "true");
+	}
 }
 
 if (!window.Store) {
