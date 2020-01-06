@@ -3477,7 +3477,7 @@ object frmPrincipal: TfrmPrincipal
     OnLowBattery = TInject1LowBattery
     OnDisconnectedBrute = TInject1DisconnectedBrute
     OnErroAndWarning = TInject1ErroAndWarning
-    Left = 616
-    Top = 264
+    Left = 496
+    Top = 256
   end
 end
