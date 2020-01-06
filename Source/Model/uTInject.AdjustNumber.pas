@@ -1,25 +1,30 @@
-{####################################################################################################################
-                         TINJECT - Componente de comunicaÁ„o WhatsApp (N„o Oficial WhatsApp)
+Ôªø{####################################################################################################################
+                              TINJECT - Componente de comunica√ß√£o (N√£o Oficial)
                                            www.tinject.com.br
                                             Novembro de 2019
 ####################################################################################################################
-    Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
+    Owner.....: Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
     Developer.: Joathan Theiller           - jtheiller@hotmail.com   -
-                Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
-####################################################################################################################
-  Obs:
-     - CÛdigo aberto a comunidade Delphi, desde que mantenha os dados dos autores;
-     - Colocar na evoluÁ„o as ModificaÁ„o juntamente com as informaÁoes do colaborador: Data, Nova Versao, Autor;
-     - Mantenha sempre a versao mais atual acima das demais;
-     - Todo Commit ao repositÛrio dever· ser declarado as mudanÁa na UNIT e ainda o Incremento da Vers„o de
-       compilaÁ„o (˙ltimo digito);
+                Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
+                Robson Andr√© de Morais     - robinhodemorais@gmail.com
 
 ####################################################################################################################
-                                  EvoluÁ„o do CÛdigo
+  Obs:
+     - C√≥digo aberto a comunidade Delphi, desde que mantenha os dados dos autores e mantendo sempre o nome do IDEALIZADOR
+       Mike W. Lustosa;
+     - Colocar na evolu√ß√£o as Modifica√ß√£o juntamente com as informa√ßoes do colaborador: Data, Nova Versao, Autor;
+     - Mantenha sempre a versao mais atual acima das demais;
+     - Todo Commit ao reposit√≥rio dever√° ser declarado as mudan√ßa na UNIT e ainda o Incremento da Vers√£o de
+       compila√ß√£o (√∫ltimo digito);
+
+####################################################################################################################
+                                  Evolu√ß√£o do C√≥digo
 ####################################################################################################################
   Autor........:
   Email........:
-  ModificaÁ„o..:
+  Data.........:
+  Identificador:
+  Modifica√ß√£o..:
 ####################################################################################################################
 }
 
@@ -29,11 +34,12 @@ unit uTInject.AdjustNumber;
 interface
 
 uses
-  System.Classes, uTInject.Classes, System.MaskUtils;
+  System.Classes, uTInject.Classes, System.MaskUtils, uTInject.Diversos;
 
+
+{$M+}{$TYPEINFO ON}
 type
-
-  TInjectAdjusteNumber  = class(TComponent)
+  TInjectAdjusteNumber  = class(TPersistent)
   private
     FLastAdjustDt: TDateTime;
     FLastAdjuste: String;
@@ -49,9 +55,10 @@ type
     FLastNumberFormat: String;
     FLastType: TTypeNumber;
     FAllowOneDigit: Boolean;
+    Owner: TComponent;
     Procedure SetPhone(Const Pnumero:String);
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(AOwner: TComponent);
 
     Function  FormatIn(PNum:String): String;
     Function  FormatOut(PNum:String): String;
@@ -85,7 +92,7 @@ uses
 function TInjectAdjusteNumber.FormatIn(PNum: String): String;
 var
   LClearNum: String;
-  i, LInc: Integer;
+  LInc:Integer;
 begin
   if FAllowOneDigit then
      LInc := 1 else
@@ -97,17 +104,7 @@ begin
 
     //Garante valores LIMPOS (sem mascaras, letras, etc) apenas NUMEROS
     Result := PNum;
-    for I := 1 to Length(PNum) do
-    begin
-//      if PNum[I] in ['0'..'9'] then
-      if  (CharInSet(PNum[I] ,['0'..'9'])) Then
-          LClearNum := LClearNum + PNum[I];
-    end;
-
-    //O requisito minimo È possuir DDD + NUMERO (Fone 8 ou 9 digitos)
-    //  if Length(LClearNum) < 10 then
-
-
+    LClearNum := TrazApenasNumeros(pnum);
 
     if Length(LClearNum) < (LengthDDD + LengthPhone + LInc) then
     Begin
@@ -118,7 +115,7 @@ begin
       End;
     End;
 
-    //Testa se È um grupo ou Lista Transmissao
+    //Testa se √© um grupo ou Lista Transmissao
     if Length(LClearNum) <=  (LengthDDI + LengthDDD + LengthPhone + 1 + LInc) Then //14 then
     begin
       if (Length(LClearNum) <= (LengthDDD + LengthPhone+ LInc)) or (Length(PNum) <= (LengthDDD + LengthPhone+ LInc)) then
@@ -130,7 +127,7 @@ begin
     end;
   finally
     if Result = '' then
-       raise Exception.Create('N˙mero inv·lido');
+       raise Exception.Create(MSG_ExceptPhoneNumberError);
     SetPhone(Result);
   end;
 end;
@@ -182,18 +179,17 @@ end;
 
 constructor TInjectAdjusteNumber.Create(AOwner: TComponent);
 begin
-  inherited;
-  FLastAdjuste := '';
-  FLastDDI     := '';
-  FLastDDD     := '';
-  FLastNumber  := '';
-
+  Owner          := Aowner;
+  FLastAdjuste   := '';
+  FLastDDI       := '';
+  FLastDDD       := '';
+  FLastNumber    := '';
   FAllowOneDigit := true;
-  FAutoAdjust  := True;
-  FDDIDefault  := 55;
-  FLengthDDI   := 2;
-  FLengthDDD   := 2;
-  FLengthPhone := 8;
+  FAutoAdjust    := True;
+  FDDIDefault    := 55;
+  FLengthDDI     := 2;
+  FLengthDDD     := 2;
+  FLengthPhone   := 8;
 end;
 
 end.

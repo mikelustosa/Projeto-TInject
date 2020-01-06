@@ -1,5 +1,5 @@
-{####################################################################################################################
-                         TINJECT - Componente de comunicação WhatsApp (Não Oficial WhatsApp)
+ï»¿{####################################################################################################################
+                              TINJECT - Componente de comunicaÃ§Ã£o (NÃ£o Oficial)
                                            www.tinject.com.br
                                             Novembro de 2019
 ####################################################################################################################
@@ -8,72 +8,56 @@
                 Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
 ####################################################################################################################
   Obs:
-     - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores;
-     - Colocar na evolução as Modificação juntamente com as informaçoes do colaborador: Data, Nova Versao, Autor;
+     - CÃ³digo aberto a comunidade Delphi, desde que mantenha os dados dos autores e mantendo sempre o nome do IDEALIZADOR
+       Mike W. Lustosa;
+     - Colocar na evoluÃ§Ã£o as ModificaÃ§Ã£o juntamente com as informaÃ§oes do colaborador: Data, Nova Versao, Autor;
      - Mantenha sempre a versao mais atual acima das demais;
-     - Todo Commit ao repositório deverá ser declarado as mudança na UNIT e ainda o Incremento da Versão de
-       compilação (último digito);
+     - Todo Commit ao repositÃ³rio deverÃ¡ ser declarado as mudanÃ§a na UNIT e ainda o Incremento da VersÃ£o de
+       compilaÃ§Ã£o (Ãºltimo digito);
 
 ####################################################################################################################
-                                  Evolução do Código
+                                  EvoluÃ§Ã£o do CÃ³digo
 ####################################################################################################################
   Autor........:
   Email........:
-  Modificação..:
+  Data.........:
+  Identificador:
+  ModificaÃ§Ã£o..:
 ####################################################################################################################
 }
 unit uTInject.Constant;
 
 interface
 
-Uses Winapi.Messages, System.SysUtils, typinfo;
+Uses Winapi.Messages, System.SysUtils, typinfo, REST.Json;
 
 Const
   //Uso GLOBAL
-  TInjectVersion                  = '1.0.0.10'; //  04/12/2019  //Alterado por Daniel Rodrigues
+  TInjectVersion                  = '1.0.2.18'; //  04/01/2019  //Alterado por Daniel Rodrigues
   CardContact                     = '@c.us';
   CardGroup                       = '@g.us';
+  CardList                        = '@broadcast';
   NomeArquivoInject               = 'js.abr';
-  NomeArquivoIni                  = 'ConfTinject.ini';
-  MsMaxFindJSinDesigner           = 5000;
+  NomeArquivoIni                  = 'ConfTInject.ini';
+  MsMaxFindJSinDesigner           = 15000;
   VersaoMinima_CF4_Major          = 78;
   VersaoMinima_CF4_Minor          = 3;
   VersaoMinima_CF4_Release        = 0;
-
   Versao0porCasas                 = 3;
   MinutosCOnsideradoObsoletooJS   = 50;
   ConfigCEF_Path_Locales          = 'locales';
   ConfigCEF_Path_Cache            = 'cache';
   ConfigCEF_Path_UserData         = 'User Data';
-
-  //Usados em ConfigCEF
-  ConfigCEF_ExceptNotFoundJS      = 'Arquivo ' + NomeArquivoInject + ' não localizado';
-  ConfigCEF_ExceptNotFoundPATH    = 'Não é possível realizar essa operação após a inicialização do componente';
-  ConfigCEF_ExceptConnection      = 'Erro ao conectar com componente';
-  ConfigCEF_ExceptBrowse          = 'Erro ao criar browser';
-  ConfigCEF_ExceptConnetWhats     = 'Você não está conectado ao WhatsApp';
-  ConfigCEF_ExceptConsoleNaoPronto= 'Console ainda não obteve os comandos de INJECT JS';
-  ConfigCEF_ExceptVersaoErrada    = 'Sua versão do CEF4 não é compatível, por favor, atualize suas biblioteca em https://github.com/salvadordf/CEF4Delphi';
-  Config_ExceptSetBatteryLow      = 'O valor deve estar entre 5 e 90';
-  DuplicityDetected               = 'Enviando o mesmo comando em um intervalo pequeno';
-  ConfigVersaoCompInvalida        = 'Sua versão do componente Tinject não é compatível com o novo JavaScript, por favor, atualize suas biblioteca em http://www.tinject.com.br/';
-  ConfigJS_ExceptUpdate           = 'Erro de servidor WEB. Não foi possível receber a atualização do JS.ABR';
-  ComunicJS_NotFound              = 'Retorno JS.ABR não conhecido';
-  JSRetornoVazio                  = '{"result":[]}';
-
-  //Usado no TInjectJS               'https://raw.githubusercontent.com/mikelustosa/Projeto-TInject/master/Demo/BIN/js.abr'; //
-  //TInjectJS_JSUrlPadrao            = 'http://www.tinject.com.br/viewtopic.php?f=3&t=10&p=17&sid=84550ac7f5d0134a129eb73144943991#p17';
-  TInjectJS_JSUrlPadrao            = 'https://raw.githubusercontent.com/mikelustosa/Projeto-TInject/master/Source/JS/js.abr';
-  TInjectJS_JSLinhasMInimas        = 1400;
-
-  //Usados em FrmConsole
-  FrmConsole_Browser_Created       = WM_APP + $100;
-  FrmConsole_Browser_ChildDestroy  = WM_APP + $101;
-  FrmConsole_Browser_Destroy       = WM_APP + $102;
-  FrmConsole_Browser_Destroy2      = WM_APP + $103;
-
+  JsonOptionClassPadrao           = [joDateIsUTC, joDateFormatISO8601, joIgnoreEmptyStrings, joIgnoreEmptyArrays];
+//  ConsoleRetornText_Disconect     = 'failed: WebSocket is closed before the connection is established';
   FrmConsole_Browser_ContextPhoneOff = '<div class="_1fpj- app-wrapper-web">';
 
+  FrmConsole_Browser_Created       = WM_APP + $100;
+  FrmConsole_Browser_Direto        = WM_APP + $101;
+  TInjectJS_JSUrlPadrao            = 'https://raw.githubusercontent.com/mikelustosa/Projeto-TInject/master/Source/JS/js.abr';
+  TInjectJS_JSLinhasMInimas        = 1400;
+  FrmConsole_JS_RetornoVazio       = '{"result":[]}';
+  FrmConsole_JS_Ignorar            = '{"name":"getUnreadMessages","result":"{\"result\":[]}"}';
   FrmConsole_JS_URL                = 'https://web.whatsapp.com/';
   FrmConsole_JS_GetAllContacts     = 'window.WAPI.getAllContacts();';
   FrmConsole_JS_GetBatteryLevel    = 'window.WAPI.getBatteryLevel();';
@@ -97,64 +81,174 @@ Const
   //FrmConsole_JS_
 
 
-  type
-    TFormQrCodeType    = (Ft_Desktop, Ft_Http);  //Form ou RestDataWare
 
+resourcestring
+  MSG_ConfigCEF_ExceptNotFoundJS       = '';
+  MSG_ConfigCEF_ExceptNotFoundPATH     = '';
+  MSG_ConfigCEF_ExceptConnection       = '';
+  MSG_ConfigCEF_ExceptBrowse           = '';
+  MSG_ConfigCEF_ExceptConnetServ       = '';
+  MSG_ConfigCEF_ExceptConsoleNaoPronto = '';
+  MSG_ConfigCEF_ExceptVersaoErrada     = '';
+  MSG_ConfigCEF_ExceptVersaoErrada_L2  = '';
+  MSG_ExceptSetBatteryLow              = '';
+  MSG_ExceptOnAlterQrCodeStyle         = '';
+  MSG_ExceptConfigVersaoCompInvalida   = '';
+  MSG_ExceptUpdate                     = '';
+  MSG_WarningDuplicityDetected         = '';
+  MSG_ExceptJS_ABRUnknown              = '';
+  MSG_ExceptNotAssignedOnGetQrCode     = '';
+  Text_FrmClose_Caption                = '';
+  Text_FrmClose_Label                  = '';
+  Text_FrmClose_WarningClose           = '';
+  Text_FrmQRCode_CaptionStart          = '';
+  Text_FrmQRCode_CaptionSucess         = '';
+  Text_FrmQRCode_OnCLose               = '';
+  MSG_ExceptPhoneNumberError           = '';
+  MSG_ExceptAlterDesigner              = '';
+  MSG_ExceptCOntactNotFound            = '';
+  MSG_ExceptCOntactSaveFile            = '';
+  MSG_ExceptAlterInicialized           = '';
+  MSG_ExceptErrorLocateForm            = '';
+  MSG_ExceptPath                       = '';
+  MSG_ExceptGlobalCef                  = '';
+  MSG_WarningClosing                   = '';
+  MSG_ExceptMisc                       = '';
+  Text_FrmConsole_Caption              = '';
+  Text_FrmConsole_LblMsg               = '';
+  MSG_WarningClassUnknown              = '';
+  MSG_Exceptlibeay32dll                = '';
+  Text_Vcard_Comments1                 = '';
+  Text_Vcard_Comments2                 = '';
+  Text_Vcard_Comments3                 = '';
+  MSG_WarningQrCodeStart1              = '';
+  Text_Status_Serv_Initialized         = '';
+  Text_Status_Serv_Initializing        = '';
+  Text_Status_Serv_Disconnected        = '';
+  Text_Status_Serv_Disconnecting       = '';
+  Text_Status_Serv_Connected           = '';
+  Text_Status_Serv_ConnectedDown       = '';
+  Text_Status_Serv_Connecting          = '';
+  Text_Status_Serv_ConnectingNoPhone   = '';
+  Text_Status_Serv_ConnectingReaderQR  = '';
+  Text_Status_Serv_TimeOut             = '';
+  Text_Status_Serv_Destroying          = '';
+  Text_Status_Serv_Destroy             = '';
+  MSG_WarningNothingtoSend             = '';
+  MSG_WarningErrorFile                 = '';
+  MSG_Except_Data_TypeObj              = '';
+  MSG_Except_DATA_ConnectRepass        = '';
+  MSG_Except_DATA_ConnectionNull       = '';
+  MSG_Except_AtribuicaoInvalida        = '';
+  MSG_WarningDeveloper                 = '';
+  Text_DefaultPathDown                 = '';
+  Text_DefaultError                    = '';
+  MSG_Except_SaveAttached              = '';
+  MSG_Except_CefNull                   = '';
+  Text_System_memUse                   = '';
+  Text_System_memTot                   = '';
+  Text_System_memFree                  = '';
+  Text_System_memLoad                  = '';
 
-    TStatusType        = (Whats_Disconnected, Whats_Disconnecting,
-                          Whats_Connected,    Whats_Connecting,      Whats_ConnectingNoPhone, Whats_ConnectingReaderCode,
-                          Whats_TimeOut,      Whats_Destroying,      Whats_Destroy);
+  Text_FrmConfigNetWork_Caption        = '';
+  Text_FrmConfigNetWork_ProxyTypeLbl   = '';
+  Text_FrmConfigNetWork_ProxyServerLbl = '';
+  Text_FrmConfigNetWork_ProxyPortLbl   = '';
+  Text_FrmConfigNetWork_ProxyUsernameLbl            = '';
+  Text_FrmConfigNetWork_ProxyPasswordLbl            = '';
+  Text_FrmConfigNetWork_ProxyScriptURLLbl           = '';
+  Text_FrmConfigNetWork_ProxyByPassListLbl          = '';
+  Text_FrmConfigNetWork_MaxConnectionsPerProxyLbl   = '';
+  Text_FrmConfigNetWork_GroupBox2        = '';
+  Text_FrmConfigNetWork_HeaderNameLbl    = '';
+  Text_FrmConfigNetWork_HeaderValueLbl   = '';
+  Text_FrmConfigNetWork_BntOK            = '';
+  Text_FrmConfigNetWork_BntCancel        = '';
+  Text_FrmConfigNetWork_QuestionSave     = '';
+  Text_FrmConfigNetWork_PrtocolLbl       = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+//  Text_FrmQRCode_OnCLose                 = '';
+
+type
+    TLanguageInject       = (TL_Portugues_BR=0,  TL_English=1, TL_Espanol=2, TL_Farsi=3);
+    TConnectionDBType     = (TCon_None=0, TCon_Memory=1,  TCon_FireDAC=2, TCon_DBExpress=3, TCon_ADO=4);
+
+    TFormQrCodeType       = (Ft_Desktop=0,       Ft_Http=1,    Ft_None=2);  //Form ou RestDataWare
+    TSendFile_Image       = (Tsf_Jpg=0, Tsf_Jpeg=1, Tsf_Tif=2, Tsf_Ico=3, Tsf_Bmp=4, Tsf_Png=5, Tsf_Raw=6);
+
+    TStatusType           = (Inject_Initialized,            Inject_Initializing,       Inject_Destroying,      Inject_Destroy,
+                             Server_Disconnected,           Server_Disconnecting,
+                             Server_Connected,              Server_ConnectedDown,
+                             Server_Connecting,             Server_ConnectingNoPhone,
+                             Server_ConnectingReaderCode,   Server_TimeOut
+                            );
 
     TTypeHeader = (Th_None = 0,
-                     Th_getAllContacts  = 1,  Th_GetAllChats = 2,     Th_getUnreadMessages = 3,
-                     Th_GetBatteryLevel = 4,  Th_getQrCodeForm = 5,   Th_getQrCodeWEB = 6,
-                     Th_getMyNumber = 7,
-                     Th_Disconnected= 8,    Th_Disconnecting= 9,    Th_Connected= 10    ,
-                     Th_Connecting=11,      Th_ConnectingFt_Desktop=12, Th_ConnectingFt_HTTP=13,
-                     Th_ConnectingNoPhone=14, TH_Destroy=15
-                     );
+                   //Eventos de Retornos
+                   Th_GetAllContacts=1,     Th_GetAllChats=2,                      Th_GetUnreadMessages=3,
+                   Th_GetBatteryLevel=4,    Th_GetQrCodeForm=5,                    Th_GetQrCodeWEB=6,
+                   Th_GetMyNumber=7,        Th_OnChangeConnect=8,                  Th_GetReserv1=9,
+                   Th_GetReserv2=10,        Th_GetReserv3=11,                      Th_GetReserv4=12,
+                   Th_GetReserv5=13,        Th_GetReserv6=14,                      Th_GetReserv7=15,
+
+                   //Eventos Conexao
+                   Th_Disconnected=16,      Th_Disconnecting=17,         Th_Connected=18,
+                   Th_ConnectedDown=19,     Th_Connecting=20,            Th_ConnectingFt_Desktop=21,
+                   Th_ConnectingFt_HTTP=22, Th_ConnectingNoPhone=23,     Th_Destroy=24,       Th_Destroying=25,
+                   Th_NewSyncContact=26,    Th_Initializing=27,          Th_Initialized=28,
+                   Th_Abort=29,             Th_ForceDisconnect=30,       Th_AlterConfig=31
+                   );
+
     Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
     Function   FrmConsole_JS_AlterVar(var PScript:String;  PNomeVar: String;  Const PValor:String):String;
     function   StrToTypeHeader(PText: string): TTypeHeader;
-    Procedure  SleepNoFreeze(Ptime:Integer);
+    Procedure  SleepNoFreeze(PTimeOut:Integer);
+    Function   StrExtFile_Base64Type(PFileName: String): String;
 
 implementation
 
 uses
-  System.JSON, System.Classes, Vcl.Dialogs, Vcl.Forms;
+  System.JSON, System.Classes, Vcl.Dialogs, Vcl.Forms, Winapi.Windows;
 
 
 Function VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
 Var
-  Lob1 : TStringList;
-  Lob2 : TStringList;
-  I : Integer;
-  lVersao1, Lversao2: String;
+  LVersionInt : TStringList;
+  LVersionExt : TStringList;
+  LInt, LExt: String;
+  I: Integer;
 Begin
-  Result := False;
-  lVersao1       := StringReplace(PVersaoExterna, ',', '.',    [rfReplaceAll, rfIgnoreCase]);
-  Lversao2       := StringReplace(PversaoInterna, ',', '.',    [rfReplaceAll, rfIgnoreCase]);
-
-  Lob1 := TStringList.Create;
-  Lob2 := TStringList.Create;
+  LVersionInt := TStringList.Create;
+  LVersionExt := TStringList.Create;
   try
-    Lob1.Delimiter      := '.';
-    Lob2.Delimiter      := '.';
-    Lob1.DelimitedText  := lVersao1;
-    Lob2.DelimitedText  := Lversao2;
-    for I := 0 to Lob1.Count -1 do
-    Begin
-      try// 1     5
-        if StrToIntDef(Lob1.Strings[i], 0) > StrToIntDef(Lob2.Strings[i], -2)  then
-           Exit;
-      Except
-        Exit;
-      end;
-    End;
-    Result := True;
+    PVersaoExterna   := StringReplace(PVersaoExterna, ',', '.',    [rfReplaceAll, rfIgnoreCase]);
+    PversaoInterna   := StringReplace(PversaoInterna, ',', '.',    [rfReplaceAll, rfIgnoreCase]);
+
+    ExtractStrings(['.'],[], PWideChar(PversaoInterna), LVersionInt);
+    ExtractStrings(['.'],[], PWideChar(PVersaoExterna), LVersionExt);
+    for I := 0 to LVersionInt.count -1 do
+      LInt := LInt + Copy(LVersionInt.Strings[i] + '00000000', 0, Versao0porCasas);
+
+    for I := 0 to LVersionExt.count -1 do
+      LExt := LExt + Copy(LVersionExt.Strings[i] + '00000000', 0, Versao0porCasas);
+
   finally
-    FreeAndNil(Lob1);
-    FreeAndNil(Lob2);
+    Result := Not (StrToInt64def(LExt, 0) > StrToInt64def(LInt, 0));
+    FreeAndNil(LVersionInt);
+    FreeAndNil(LVersionExt);
   end;
 End;
 
@@ -172,41 +266,86 @@ Begin
 end;
 
 
-Procedure SleepNoFreeze(Ptime:Integer);
+Procedure SleepNoFreeze(PtimeOut:Integer);
 var
-  Lexecutado: Integer;
+  LIni: Cardinal;
+  Lpass : Integer;
 Begin
-  if Ptime < 10  then
-    Ptime := 10;
-  Lexecutado := 0;
-  While Lexecutado < Ptime do
-  Begin
-    Sleep(10);
-    Application.ProcessMessages;
-    Lexecutado := Lexecutado + 10;
-  End;
+  LIni := GetTickCount;
+  Lpass:= 0;
+  Application.ProcessMessages;
+  Repeat
+    inc(Lpass);
+    Sleep(1);
+    if (Lpass > 10) then
+    Begin
+      Lpass:= 0;
+      Application.ProcessMessages;
+    end;
+  Until (GetTickCount - LIni) >= Cardinal(PtimeOut) ;
 End;
 
 
+Function  StrExtFile_Base64Type(PFileName: String): String;
+var
+  I: Integer;
+  LExt: String;
+  Ltmp: String;
+Begin
+  LExt   := LowerCase(Copy(ExtractFileExt(PFileName),2,50));
+  Result := 'data:application/';
+  try
+    for I := 0 to 10 do
+    begin
+      Ltmp := LowerCase(Copy(GetEnumName(TypeInfo(TSendFile_Image), ord(TSendFile_Image(i))), 3, 50));
+      if pos(LExt, Ltmp) > 0 Then
+      Begin
+        Result := 'data:image/';
+        Exit;
+      end
+    end;
+  finally
+     Result := Result + LExt + ';base64,' ;
+  end;
+End;
+
 function   StrToTypeHeader(PText: string): TTypeHeader;
+const LmaxCount = 30;
 var
   I: Integer;
   LNome: String;
 Begin
+  PText   := LowerCase(Trim(Ptext));
   Result  := Th_None;
-  for I := 0 to 20 do
+  if Trim(PText) = '' then
+     Exit;
+  for I := 0 to LmaxCount do
   Begin
     LNome   := LowerCase(GetEnumName(TypeInfo(TTypeHeader), ord(TTypeHeader(i))));
-    if POs(LowerCase(PText), LNome) > 0 then
+    LNome   := Copy(LNome, 4, 50); //tira o TH_
+    if PText = LNome then
     Begin
       Result := TTypeHeader(i);
       break;
     End;
   End;
 
-//  if (Result = Th_None) and (PText <> '') then
-//     ShowMessage(PText);
+  if Result  = Th_None Then
+  Begin
+    //Acha por semelhanÃ§a
+    for I := 0 to LmaxCount do
+    Begin
+      LNome   := LowerCase(GetEnumName(TypeInfo(TTypeHeader), ord(TTypeHeader(i))));
+      if POs(LowerCase(PText), LNome) > 0 then
+      Begin
+        Result := TTypeHeader(i);
+        break;
+      End;
+    End;
+  End;
 End;
+
+
 
 end.
 

@@ -1,25 +1,22 @@
-{####################################################################################################################
-                         TINJECT - Componente de comunicação WhatsApp (Não Oficial WhatsApp)
-                                           www.tinject.com.br
-                                            Novembro de 2019
-####################################################################################################################
-    Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
-    Developer.: Joathan Theiller           - jtheiller@hotmail.com   -
-                Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
+ï»¿{####################################################################################################################
+    Owner.....: Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
 ####################################################################################################################
   Obs:
-     - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores;
-     - Colocar na evolução as Modificação juntamente com as informaçoes do colaborador: Data, Nova Versao, Autor;
+     - CÃ³digo aberto a comunidade Delphi, desde que mantenha os dados dos autores;
+       DANIEL OLIVEIRA RODRIGUES
+     - Colocar na evoluÃ§Ã£o as ModificaÃ§Ã£o juntamente com as informaÃ§oes do colaborador: Data, Nova Versao, Autor;
      - Mantenha sempre a versao mais atual acima das demais;
-     - Todo Commit ao repositório deverá ser declarado as mudança na UNIT e ainda o Incremento da Versão de
-       compilação (último digito);
+     - Todo Commit ao repositÃ³rio deverÃ¡ ser declarado as mudanÃ§a na UNIT e ainda o Incremento da VersÃ£o de
+       compilaÃ§Ã£o (Ãºltimo digito);
 
 ####################################################################################################################
-                                  Evolução do Código
+                                  EvoluÃ§Ã£o do CÃ³digo
 ####################################################################################################################
   Autor........:
   Email........:
-  Modificação..:
+  Data.........:
+  Identificador:
+  ModificaÃ§Ã£o..:
 ####################################################################################################################
 }
 

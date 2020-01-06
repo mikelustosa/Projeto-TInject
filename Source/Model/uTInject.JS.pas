@@ -1,14 +1,16 @@
 ﻿{####################################################################################################################
-                         TINJECT - Componente de comunicação WhatsApp (Não Oficial WhatsApp)
+                              TINJECT - Componente de comunicação (Não Oficial)
                                            www.tinject.com.br
                                             Novembro de 2019
 ####################################################################################################################
     Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
     Developer.: Joathan Theiller           - jtheiller@hotmail.com   -
-                Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
+                Robson André de Morais     - robinhodemorais@gmail.com
+
 ####################################################################################################################
   Obs:
-     - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores;
+     - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores e mantendo sempre o nome do IDEALIZADOR
+       Mike W. Lustosa;
      - Colocar na evolução as Modificação juntamente com as informaçoes do colaborador: Data, Nova Versao, Autor;
      - Mantenha sempre a versao mais atual acima das demais;
      - Todo Commit ao repositório deverá ser declarado as mudança na UNIT e ainda o Incremento da Versão de
@@ -19,6 +21,8 @@
 ####################################################################################################################
   Autor........:
   Email........:
+  Data.........:
+  Identificador:
   Modificação..:
 ####################################################################################################################
 }
@@ -31,8 +35,9 @@ interface
 
 uses
   System.Classes, uTInject.Classes, System.MaskUtils, Data.DB, uCSV.Import,
-  FireDAC.Comp.Client, Vcl.ExtCtrls, IdHTTP;
+  Vcl.ExtCtrls, IdHTTP, uTInject.Diversos;
 
+{$M+}{$TYPEINFO ON}
 type
     TInjectJSDefine  = class
     private
@@ -47,7 +52,7 @@ type
 
 
 
-  TInjectJS  = class(TComponent)
+  TInjectJS  = class(TPersistent)
   private
     FAutoUpdate     : Boolean;
     FJSScript       : TstringList;
@@ -56,10 +61,9 @@ type
     FReady          : Boolean;
     FOnUpdateJS     : TNotifyEvent;
     FInjectJSDefine : TInjectJSDefine;
-    FTImeOutIndy    : TTimer;
     FAutoUpdateTimeOut   : Integer;
-    _Indy                : TIdHTTP;
     FOnErrorInternal     : TOnErroInternal;
+    Owner: TComponent;
 
     Function   ReadCSV(Const PLineCab, PLineValues: String): Boolean;
     procedure  SetInjectScript(const Value: TstringList);
@@ -67,24 +71,21 @@ type
     function   PegarLocalJS_Web: String;
     Function   AtualizarInternamente(PForma: TFormaUpdate):Boolean;
     Function   ValidaJs(Const TValor: Tstrings): Boolean;
-    Procedure  OnTimeOutIndy(Sender: TObject);
-
-    procedure SetTimeOutGetJS(const Value: Integer);  protected
-    procedure Loaded; override;
+  protected
+//    procedure Loaded; override;
   public
-    constructor Create(AOwner: TComponent); override;
+    constructor Create(POwner: TComponent);
     property    InjectJSDefine  : TInjectJSDefine Read FInjectJSDefine;
     property    OnErrorInternal : TOnErroInternal Read FOnErrorInternal  Write FOnErrorInternal;
     destructor  Destroy; override;
     Function    UpdateNow:Boolean;
     Procedure   DelFileTemp;
-  published
-    property   AutoUpdate         : Boolean   read FAutoUpdate           write FAutoUpdate       default True;
-    property   AutoUpdateTimeOut  : Integer   Read FAutoUpdateTimeOut    Write SetTimeOutGetJS   Default 4;
+ published
+    property   AutoUpdate         : Boolean   read FAutoUpdate           write FAutoUpdate          default True;
+    property   AutoUpdateTimeOut  : Integer   Read FAutoUpdateTimeOut    Write FAutoUpdateTimeOut   Default 4;
     property   OnUpdateJS    : TNotifyEvent   Read FOnUpdateJS           Write FOnUpdateJS;
     property   Ready         : Boolean        read FReady;
     property   JSURL         : String         read FJSURL;
-    property   JSVersion     : String         read FJSVersion;
     property   JSScript      : TstringList    read FJSScript             Write SetInjectScript;
   end;
 
@@ -92,8 +93,8 @@ type
 implementation
 
 uses uTInject.Constant, System.SysUtils, uTInject.ExePath, Vcl.Forms,
-    IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
-  Winapi.Windows, uTInject.ConfigCEF, Vcl.IdAntiFreeze, Vcl.Dialogs;
+     IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
+     Winapi.Windows, uTInject.ConfigCEF, Vcl.Dialogs;
 
 
 { TInjectAutoUpdate }
@@ -109,7 +110,7 @@ begin
                 End;
 
       Tup_Web:  Begin
-                  if (csDesigning in ComponentState) then
+                  if (csDesigning in Owner.ComponentState) then
                      Ltmp := PegarLocalJS_Designer  Else   //Em modo Desenvolvimento
                      Ltmp := PegarLocalJS_Web;             //Rodando.. Pega na WEB
                 end;
@@ -150,19 +151,16 @@ begin
   end;
 end;
 
-constructor TInjectJS.Create(AOwner: TComponent);
+constructor TInjectJS.Create(POwner: TComponent);
 begin
-  inherited;
+  Owner                      := POwner;
   FAutoUpdateTimeOut         := 10;
-  FTImeOutIndy               := TTimer.Create(Nil);
-  FTImeOutIndy.OnTimer       := OnTimeOutIndy;
-  FTImeOutIndy.Interval      := FAutoUpdateTimeOut * 1000;
-  FTImeOutIndy.Enabled       := False;
   FJSScript                  := TstringList.create;
   FAutoUpdate                := True;
   FJSURL                     := TInjectJS_JSUrlPadrao;
   FInjectJSDefine            := TInjectJSDefine.Create;
   FReady                     := False;
+  UpdateNow;
 end;
 
 procedure TInjectJS.DelFileTemp;
@@ -173,7 +171,6 @@ end;
 destructor TInjectJS.Destroy;
 begin
   DelFileTemp;
-  FreeAndNil(FTImeOutIndy);
   FreeAndNil(FInjectJSDefine);
   FreeAndNil(FJSScript);
   inherited;
@@ -181,20 +178,14 @@ end;
 
 procedure TInjectJS.SetInjectScript(const Value: TstringList);
 begin
-  if (csDesigning in ComponentState) then
+  if (csDesigning in Owner.ComponentState) then
   Begin
     if Value.text <> FJSScript.text then
-       raise Exception.Create('Não é possível modificar em Modo Designer');
+       raise Exception.Create(MSG_ExceptAlterDesigner);
   End;
   FJSScript := Value;
 end;
 
-
-procedure TInjectJS.SetTimeOutGetJS(const Value: Integer);
-begin
-  FAutoUpdateTimeOut         := Value;
-  FTImeOutIndy.Interval := FAutoUpdateTimeOut * 1000;
-end;
 
 function TInjectJS.UpdateNow: Boolean;
 begin
@@ -251,20 +242,25 @@ begin
       if Assigned(GlobalCEFApp) then
          GlobalCEFApp.SetError;
       if Assigned(FOnErrorInternal) then
-         Application.MessageBox(PWideChar(ConfigVersaoCompInvalida), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
+         Application.MessageBox(PWideChar(MSG_ExceptConfigVersaoCompInvalida), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
       exit;
     End;
 
-    LVersaoCefFull :=  VersaoMinima_CF4_Major.ToString + '.' + VersaoMinima_CF4_Minor.ToString + '.' + VersaoMinima_CF4_Release.ToString;
+    LVersaoCefFull :=  IntToStr(VersaoMinima_CF4_Major) + '.' + IntToStr(VersaoMinima_CF4_Minor) + '.' + IntToStr(VersaoMinima_CF4_Release);
     if not VerificaCompatibilidadeVersao(InjectJSDefine.FVersion_CEF4Min, LVersaoCefFull) then
     Begin
       if Assigned(GlobalCEFApp) then
          GlobalCEFApp.SetError;
 
       if Assigned(FOnErrorInternal) then
-         Application.MessageBox(PWideChar(ConfigCEF_ExceptVersaoErrada), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
+         Application.MessageBox(PWideChar(MSG_ConfigCEF_ExceptVersaoErrada), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
       exit;
     End;
+
+    LogAdd('Versao TInject: ' + TInjectVersion);
+    LogAdd('Versao  JS.ABR: ' + InjectJSDefine.FVersion_JS);
+    LogAdd('Versao     CEF: ' + LVersaoCefFull);
+    LogAdd(' ');
     Result := true;
   End;
 end;
@@ -274,9 +270,9 @@ var
   LDados: TDadosApp;
 begin
   try
-    LDados  := TDadosApp.Create(True);
+    LDados  := TDadosApp.Create(Owner);
     try
-      Result  := LDados.LocalEXE;
+      Result  := LDados.LocalProject;
     finally
       FreeAndNil(LDados);
     end;
@@ -288,45 +284,28 @@ end;
 
 function TInjectJS.PegarLocalJS_Web: String;
 var
-  LHttp        : TIdHTTP;
+  LHttp        : TUrlIndy;
   LSalvamento  : String;
   LRet         : TStringList;
-  IdAntiFreeze1: TIdAntiFreeze;
 begin
   LSalvamento   := IncludeTrailingPathDelimiter(GetEnvironmentVariable('Temp'))+'GetTInject.tmp';
   LRet          := TStringList.Create;
-  IdAntiFreeze1 := TIdAntiFreeze.Create(nil);
-  Try
+  LHttp         := TUrlIndy.Create;
+  try
     DeleteFile(PwideChar(LSalvamento));
-    try
-      LHttp                     := TIdHTTP.Create(nil);
-      with LHttp do
-      begin
-        Request.Accept          := 'text/html, */*';
-        Request.ContentEncoding := 'raw';
-        HandleRedirects         := True;
-        HTTPOptions             := HTTPOptions + [hoForceEncodeParams];
-        ProtocolVersion         := pv1_1;
-        Request.UserAgent       := 'Mozilla/5.0 (compatible; Test)';
-      end;
+    LHttp.HTTPOptions := LHttp.HTTPOptions + [hoForceEncodeParams] ;
+    LHttp.Request.Accept          := 'text/html, */*';
+    LHttp.Request.ContentEncoding := 'raw';
 
-      _Indy                := LHttp;
-      FTImeOutIndy.Enabled := True;
-      LRet.text            := LHttp.Get(TInjectJS_JSUrlPadrao);
+    LHttp.TimeOut     := AutoUpdateTimeOut;
+    if LHttp.GetUrl(TInjectJS_JSUrlPadrao) = true Then
+    Begin
+      LRet.LoadFromStream(LHttp.ReturnUrl);
       if not ValidaJs(LRet) Then
          LRet.Clear;
-    Except
-      on E : Exception do
-      Begin
-        LRet.Clear;
-        if pos(AnsiUpperCase('Cold not load SSL'), AnsiUpperCase(e.Message)) > 0 then
-           Application.MessageBox('Seu computador não possui as DLLs "libeay32.dll" e "ssleay32.dll". Para continuar coloque as DLL na pasta system ou dentro do diretório da aplicação.', PWideChar(Application.Title), MB_ICONERROR + mb_ok) else
-           Application.MessageBox(Pwidechar('Erro no GET js.abr ' + e.Message), PWideChar(Application.Title), MB_ICONWARNING + mb_ok);
-      End;
-    end;
-  Finally
-    FreeAndNil(IdAntiFreeze1);
-    FTImeOutIndy.Enabled := False;
+    End;
+  finally
+    FreeAndNil(LHttp);
     if LRet.Count > 1 then
     Begin
       if not FileExists(LSalvamento) then
@@ -336,8 +315,7 @@ begin
       End;
     End;
     FreeAndNil(LRet);
-    FreeAndNil(LHttp);
-  End;
+  end;
 end;
 
 function TInjectJS.ReadCSV(const PLineCab, PLineValues: String): Boolean;
@@ -367,24 +345,6 @@ begin
   end;
 end;
 
-procedure TInjectJS.Loaded;
-begin
-  inherited;
-  UpdateNow;
-end;
-
-procedure TInjectJS.OnTimeOutIndy(Sender: TObject);
-begin
-  FTImeOutIndy.Enabled   := False;
-  try
-    if Assigned(_Indy) then
-      _Indy.Disconnect(true);
-  Except
-  end;
-
-  if Assigned(FOnErrorInternal) then
-     FOnErrorInternal(Self, ConfigJS_ExceptUpdate, 'TimeOut exceeded');
-end;
 
 end.
 

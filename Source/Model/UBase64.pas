@@ -61,7 +61,7 @@ begin
          imagem.SaveToStream(sTream);
          result := StreamToBase64(sTream);
        finally
-        FreeAndNil(Stream);
+        FreeAndNil(sTream);
        end;
      Except
      End;

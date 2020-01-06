@@ -1,4 +1,4 @@
-//Version_JS;Version_TInjectMin;Version_CEF4Min
+﻿//Version_JS;Version_TInjectMin;Version_CEF4Min
 //1.0.0.4;1.0.0.9;78.3.0
 //
 //
@@ -7,10 +7,6 @@ function getMyNumber() {
     SetConsoleMessage('getMyNumber', localStorage.getItem('last-wid'));
     return true;
 }
-
-//function getVersionJS() {
-// SetConsoleMessage('getVersionJS', Versao);
-//}
 
 function SetConsoleMessage(jsName, resultValue) {
     Obj = {
@@ -24,12 +20,8 @@ var intervalMonitor;
 var isLoggedStatus = false;
 
 function startMonitor(intervalSeconds = 0) {
-	isLoggedStatus = WAPI.isLoggedIn();
+    isLoggedStatus = WAPI.isLoggedIn();
     if (intervalSeconds >= 1) {
-        //Imediatelly
-        //monitorUnReadMessages();
-
-        //Loop time
         intervalMonitor = window.setInterval(monitorUnReadMessages, intervalSeconds * 1000);
     }
 }
@@ -38,16 +30,35 @@ function stopMonitor() {
     window.clearInterval(intervalMonitor)
 }
 
+function removeElementsByClass(elementClass) {
+    var elements = document.getElementsByClassName(elementClass);
+    if (typeof elements !== 'undefined' && elements.length > 0) {
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].parentNode.removeChild(elements[i]);
+        }
+    }
+}
+
+function moveElementsToParentParentElement(elementClass) {
+    var elements = document.getElementsByClassName(elementClass);
+    if (typeof elements !== 'undefined' && elements.length > 0) {
+        for (var i = 0; i < elements.length; i++) {
+            var element = elements[i];
+            element.parentNode.parentNode.appendChild(element);
+        }
+    }
+}
+
 function monitorUnReadMessages() {
     var currentStatus = WAPI.isLoggedIn();
-	if (currentStatus != isLoggedStatus) {
-		isLoggedStatus = WAPI.isLoggedIn();
-		SetConsoleMessage("OnChangeConnect", JSON.stringify(isLoggedStatus));
-	}
-	
-	if (isLoggedStatus){
-		WAPI.getUnreadMessages(includeMe = "true", includeNotifications = "true", use_unread_count = "true");
-	}
+    if (currentStatus != isLoggedStatus) {
+        isLoggedStatus = WAPI.isLoggedIn();
+        SetConsoleMessage("OnChangeConnect", JSON.stringify(isLoggedStatus));
+    }
+
+    if (isLoggedStatus) {
+        WAPI.getUnreadMessages(includeMe = "true", includeNotifications = "true", use_unread_count = "true");
+    }
 }
 
 if (!window.Store) {
@@ -1101,8 +1112,8 @@ window.WAPI.getBatteryLevel = function(done) {
         if (done !== undefined) {
             done(100);
         }
-	output = 100;
-	return SetConsoleMessage("getBatteryLevel", JSON.stringify(output));
+        output = 100;
+        return SetConsoleMessage("getBatteryLevel", JSON.stringify(output));
     }
     output = window.Store.Conn.battery;
     if (done !== undefined) {

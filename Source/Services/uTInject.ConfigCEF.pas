@@ -1,14 +1,17 @@
 ﻿{####################################################################################################################
-                         TINJECT - Componente de comunicação WhatsApp (Não Oficial WhatsApp)
+                              TINJECT - Componente de comunicação (Não Oficial)
                                            www.tinject.com.br
                                             Novembro de 2019
 ####################################################################################################################
-    Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
-    Developer.: Joathan Theiller           - jtheiller@hotmail.com   -
+    Owner.....: Joathan Theiller           - jtheiller@hotmail.com   -
+    Developer.: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
                 Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
+                Robson André de Morais     - robinhodemorais@gmail.com
+
 ####################################################################################################################
   Obs:
-     - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores;
+     - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores e mantendo sempre o nome do IDEALIZADOR
+       Mike W. Lustosa;
      - Colocar na evolução as Modificação juntamente com as informaçoes do colaborador: Data, Nova Versao, Autor;
      - Mantenha sempre a versao mais atual acima das demais;
      - Todo Commit ao repositório deverá ser declarado as mudança na UNIT e ainda o Incremento da Versão de
@@ -19,37 +22,11 @@
 ####################################################################################################################
   Autor........:
   Email........:
+  Data.........:
+  Identificador:
   Modificação..:
 ####################################################################################################################
 }
-
-//Recommended to set subfolders CEFLib other than root.
-//Do this in your project's .DRP
-//Exemple:
-//program TInject-Demo;
-//uses
-//  Forms,
-//  Windows,
-//  uTInject.ConfigCEF;
-//
-//Begin
-//  {$R *.res}
-//  //Colocar arquivos CEFLib junto a pasta binária da aplicação (Nao definir ou passar vazio)
-//  // GlobalCEFApp.PathFrameworkDirPath := '';
-//  // GlobalCEFApp.PathResourcesDirPath := '';
-//  // GlobalCEFApp.PathLocalesDirPath   := '';
-//  // GlobalCEFApp.Pathcache            := '';
-//  // GlobalCEFApp.PathUserDataPath     := '';
-//  // GlobalCEFApp.PathLogFile          := '';
-//  If not GlobalCEFApp.StartMainProcess then
-//     Exit;
-//  Application.Initialize;
-//  {$IFDEF DELPHI11_UP}
-//      Application.MainFormOnTaskbar := True;
-//  {$ENDIF}
-//  Application.CreateForm(TfrmPrincipal, frmPrincipal);
-//  Application.Run;
-
 
 ///CEF DOCUMENTAÇÃO
 //https://www.briskbard.com/index.php?lang=en&pageid=cef
@@ -65,10 +42,10 @@ uses
   DateUtils,
   IniFiles,
   uCEFApplication, uCEFConstants,
-  uCEFChromium, 
+  uCEFChromium,
 
   uTInject,
-  uTInject.constant ;
+  uTInject.constant, Vcl.ExtCtrls, uTInject.Classes ;
 
 
 
@@ -78,9 +55,9 @@ type
   private
     FChromium            : TChromium;
     FChromiumForm        : TForm;
-    FDefPathLocais       : TIniFile;
+    FIniFIle             : TIniFile;
     Falterdo             : Boolean;
-
+    FInject              : TInject;
 
     FPathFrameworkDirPath: String;
     FPathResourcesDirPath: String;
@@ -89,11 +66,13 @@ type
     FPathUserDataPath    : String;
     FPathLogFile         : String;
     FPathJS              : String;
-    FStartTimeOut: Cardinal;
-    FErrorInt: Boolean;
-    FPathJsUpdate: TdateTime;
-    FLogConsole: String;
-    FHandleFrm   :HWND;
+    FStartTimeOut        : Cardinal;
+    FErrorInt            : Boolean;
+    FPathJsUpdate        : TdateTime;
+    FLogConsole          : String;
+    FHandleFrm           : HWND;
+    FInDesigner          : Boolean;
+    FLogConsoleActive    : Boolean;
     procedure SetDefault;
     procedure SetPathCache   (const Value: String);
     procedure SetPathFrameworkDirPath(const Value: String);
@@ -104,21 +83,24 @@ type
     function  TestaOk                (POldValue, PNewValue: String): Boolean;
     procedure SetChromium            (const Value: TChromium);
     Function  VersaoCEF4Aceita: Boolean;
-    Procedure UpdateIniFile(Const PSection, PKey, PValue :String);
+    procedure SetLogConsole(const Value: String);
+    procedure SetLogConsoleActive(const Value: Boolean);
   public
     SetEnableGPU         : Boolean;
     SetDisableFeatures   : String;
     SetLogSeverity       : Boolean;
+    Procedure UpdateIniFile(Const PSection, PKey, PValue :String);
+
     Procedure  UpdateDateIniFile;
     function   StartMainProcess : boolean;
-//    procedure  FreeChromium;
     Procedure  SetError;
 
     constructor Create;
     destructor  Destroy; override;
 
     Function   PathJsOverdue        : Boolean;
-    property   PathJsUpdate         : TdateTime         Read FPathJsUpdate;
+    property   PathJsUpdate         : TdateTime    Read FPathJsUpdate;
+    property   IniFIle              : TIniFile     Read FIniFIle              Write FIniFIle;
     property   PathFrameworkDirPath : String       Read FPathFrameworkDirPath Write SetPathFrameworkDirPath;
     property   PathResourcesDirPath : String       Read FPathResourcesDirPath Write SetPathResourcesDirPath;
     property   PathLocalesDirPath   : String       Read FPathLocalesDirPath   Write SetPathLocalesDirPath;
@@ -126,11 +108,13 @@ type
     property   PathUserDataPath     : String       Read FPathUserDataPath     Write SetPathUserDataPath;
     property   PathLogFile          : String       Read FPathLogFile          Write SetPathLogFile;
     property   PathJs               : String       Read FPathJS;
-    property   LogConsole           : String       Read FLogConsole           Write FLogConsole;
+    property   LogConsole           : String       Read FLogConsole           Write SetLogConsole;
+    property   LogConsoleActive     : Boolean      Read FLogConsoleActive     Write SetLogConsoleActive;
     Property   StartTimeOut         : Cardinal     Read FStartTimeOut         Write FStartTimeOut;
     Property   Chromium             : TChromium    Read FChromium             Write SetChromium;
     Property   ChromiumForm         : TForm        Read FChromiumForm;
     Property   ErrorInt             : Boolean      Read FErrorInt;
+
   end;
 
 
@@ -143,7 +127,7 @@ var
 implementation
 
 uses
-  uCEFTypes, Vcl.Dialogs;
+  uCEFTypes, Vcl.Dialogs, uTInject.Diversos;
 
 { TCEFConfig }
 
@@ -155,88 +139,90 @@ end;
 
 procedure TCEFConfig.UpdateDateIniFile;
 begin
-//  FPathJsUpdate := StrToDateTimeDef(FDefPathLocais.ReadString('Tinject Comp', 'Ultima interação', FormatDateTime('dd/mm/yy hh:nn:ss', Now)), now);
   FPathJsUpdate := Now;
   UpdateIniFile('Tinject Comp', 'Ultima interação', FormatDateTime('dd/mm/yy hh:nn:ss', FPathJsUpdate));
 end;
 
 procedure TCEFConfig.UpdateIniFile(const PSection, PKey, PValue: String);
 begin
-  if (LowerCase(FDefPathLocais.ReadString(PSection, PKey, '')) <> LowerCase(PValue)) or
-     (FDefPathLocais.ValueExists(PSection, PKey) = false) Then
+  if FInDesigner then
+     Exit;
+
+  if (LowerCase(FIniFIle.ReadString(PSection, PKey, '')) <> LowerCase(PValue)) or
+     (FIniFIle.ValueExists(PSection, PKey) = false) Then
    Begin
-    FDefPathLocais.WriteString(PSection, PKey, PValue);
+    FIniFIle.WriteString(PSection, PKey, PValue);
     Falterdo := true;
   End;
 end;
 
 constructor TCEFConfig.Create;
-Var
-  FDirApp, Lx: String;
 begin
-  FDirApp := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
+  FInDesigner          := True;
   inherited;
-  FDefPathLocais       := TIniFile.create(FDirApp + NomeArquivoIni);
-  FPathJS              := FDirApp + NomeArquivoInject;
-  FErrorInt            := False;
-  FStartTimeOut        := 5000; //(+- 5 Segundos)
-  Lx                   := FDefPathLocais.ReadString('Tinject Comp', 'Ultima interação', '01/01/1500 05:00:00');
-  FPathJsUpdate        := StrToDateTimeDef(Lx, StrTodateTime('01/01/1500 00:00'));
-  SetDefault;
 end;
 
 procedure TCEFConfig.SetChromium(const Value: TChromium);
 Var
   LObj: TCOmponent;
 begin
-  if FChromium = Value then
-     Exit;
-  FChromium := Value;
-  if FChromium = Nil then
-  Begin
-    FChromiumForm := Nil;
-    Exit;
-  End;
-
-
   //Acha o FORM que esta o componente
   try
-    LObj     := FChromium;
-    Repeat
-      if LObj.Owner is Tform then
-      Begin
-        FChromiumForm := Tform(LObj.Owner);
-        FHandleFrm    := FChromiumForm.Handle;
-      end else    //Achou
-      begin
-        LObj          := LObj.Owner                //Nao Achou entao, continua procurando
-      end;
-    Until FChromiumForm <> Nil;
+    if FChromium = Value then
+       Exit;
+
+    FChromium := Value;
+    if FChromium = Nil then
+    Begin
+      FChromiumForm := Nil;
+      Exit;
+    End;
+
+    try
+      LObj     := FChromium;
+      Repeat
+        if LObj.Owner is Tform then
+        Begin
+          FChromiumForm := Tform(LObj.Owner);
+          FHandleFrm    := FChromiumForm.Handle;
+          if FChromiumForm.Owner is TInject then
+             FInject := TInject(FChromiumForm.Owner);
+        end else    //Achou
+        begin
+          LObj          := LObj.Owner                //Nao Achou entao, continua procurando
+        end;
+      Until FChromiumForm <> Nil;
+    Except
+      raise Exception.Create(MSG_ExceptErrorLocateForm);
+    end;
   Except
-    //Esse erro nunca deve acontecer.. o TESTADOR nao conseguiu pelo menos..
-    raise Exception.Create('Erro ao localizar FORM');
+     //Esse erro nunca deve acontecer.. o TESTADOR nao conseguiu pelo menos..
   end;
 end;
 
 
 Procedure TCEFConfig.SetDefault;
 begin
-  //Default Values
-//  PATH_ROOT            := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
-  SetDisableFeatures      := 'NetworkService,OutOfBlinkCors';
-  SetEnableGPU            := FDefPathLocais.ReadBool  ('Path Defines', 'GPU',           True);
-  SetLogSeverity          := FDefPathLocais.ReadBool  ('Path Defines', 'Log Severity',  False);
-  PathFrameworkDirPath    := FDefPathLocais.ReadString('Path Defines', 'FrameWork', '');
-  PathResourcesDirPath    := FDefPathLocais.ReadString('Path Defines', 'Binary',    '');
-  PathLocalesDirPath      := FDefPathLocais.ReadString('Path Defines', 'Locales',   '');
-  Pathcache               := FDefPathLocais.ReadString('Path Defines', 'Cache',     '');
-  PathUserDataPath        := FDefPathLocais.ReadString('Path Defines', 'Data User', '');
-  PathLogFile             := FDefPathLocais.ReadString('Path Defines', 'Log File',  '');
-  LogConsole              := FDefPathLocais.ReadString('Path Defines', 'Log Console',  '');
-  if LogConsole <> '' Then
-     LogConsole  := IncludeTrailingPathDelimiter(ExtractFilePath(LogConsole));
+  if not FInDesigner then
+  Begin
+    FIniFIle.WriteString ('Informacao', 'Aplicativo vinculado',    Application.ExeName);
+    FIniFIle.WriteBool   ('Informacao', 'Valor True',    True);
+    FIniFIle.WriteBool   ('Informacao', 'Valor False',   False);
 
-
+    SetDisableFeatures      := 'NetworkService,OutOfBlinkCors';
+    SetEnableGPU            := FIniFIle.ReadBool  ('Path Defines', 'GPU',                 True);
+    SetLogSeverity          := FIniFIle.ReadBool  ('Path Defines', 'Log Severity',        False);
+    LogConsoleActive        := FIniFIle.ReadBool  ('Path Defines', 'Log Console Active',  False);
+    PathFrameworkDirPath    := FIniFIle.ReadString('Path Defines', 'FrameWork', '');
+    PathResourcesDirPath    := FIniFIle.ReadString('Path Defines', 'Binary',    '');
+    PathLocalesDirPath      := FIniFIle.ReadString('Path Defines', 'Locales',   '');
+    Pathcache               := FIniFIle.ReadString('Path Defines', 'Cache',     '');
+    PathUserDataPath        := FIniFIle.ReadString('Path Defines', 'Data User', '');
+    PathLogFile             := FIniFIle.ReadString('Path Defines', 'Log File',  '');
+    LogConsole              := FIniFIle.ReadString('Path Defines', 'Log Console',  '');
+    if LogConsole = '' then
+       LogConsole            := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName))+'LogTinject\';
+  End;
   Self.FrameworkDirPath   := '';
   Self.ResourcesDirPath   := '';
   Self.LocalesDirPath     := 'locales';
@@ -250,6 +236,25 @@ begin
   FErrorInt := True;
 end;
 
+procedure TCEFConfig.SetLogConsole(const Value: String);
+begin
+  if Value <> '' then
+  Begin
+    FLogConsole := IncludeTrailingPathDelimiter(ExtractFilePath(Value));
+    ForceDirectories(FLogConsole);
+  end else
+  Begin
+    FLogConsole := '';
+  End;
+end;
+
+procedure TCEFConfig.SetLogConsoleActive(const Value: Boolean);
+begin
+  FLogConsoleActive := Value;
+  if (LogConsoleActive) and (LogConsole <> '') then
+     ForceDirectories(LogConsole);
+end;
+
 function TCEFConfig.TestaOk(POldValue, PNewValue: String):Boolean;
 var
   LDir : String;
@@ -261,13 +266,10 @@ begin
   End;
 
   LDir := ExtractFilePath(PNewValue);
-
   if Self.status = asInitialized then
-     raise Exception.Create(ConfigCEF_ExceptNotFoundPATH);
-
+     raise Exception.Create(MSG_ConfigCEF_ExceptNotFoundPATH);
   if not DirectoryExists(LDir) then
-    raise Exception.Create('O Path ' + LDir + ' inválido');
-
+    raise Exception.Create(Format(MSG_ExceptPath, [LDir]));
   Result := true;
 end;
 
@@ -332,6 +334,8 @@ end;
 function TCEFConfig.StartMainProcess: boolean;
 var
   Linicio: Cardinal;
+  LVReque, LVerIdent: String;
+  FDirApp, Lx: String;
 begin
   Result  := (Self.status = asInitialized);
   if (Result) Then
@@ -340,20 +344,28 @@ begin
     Exit;
   end;
 
+  FInDesigner          := False;
+  FDirApp              := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
+  FIniFIle             := TIniFile.create(FDirApp + NomeArquivoIni);
+  Lx                   := FIniFIle.ReadString('Tinject Comp', 'Ultima interação', '01/01/1500 05:00:00');
+  FPathJS              := FDirApp + NomeArquivoInject;
+  FErrorInt            := False;
+  FStartTimeOut        := 5000; //(+- 5 Segundos)
+  FPathJsUpdate        := StrToDateTimeDef(Lx, StrTodateTime('01/01/1500 00:00'));
+  SetDefault;
+
   if not VersaoCEF4Aceita then
   Begin
     FErrorInt := true;
-    Application.MessageBox(PWideChar(ConfigCEF_ExceptVersaoErrada + Chr(13) +
-                           '   Requerida: ' + VersaoMinima_CF4_Major.ToString + '.' + VersaoMinima_CF4_Minor.ToString + '.' + VersaoMinima_CF4_Release.ToString + Chr(13) +
-                           '            Atual: ' + CEF_SUPPORTED_VERSION_MAJOR.ToString + '.' + CEF_SUPPORTED_VERSION_MINOR.ToString + '.' + CEF_SUPPORTED_VERSION_BUILD.ToString),
-    PWideChar(Application.Title), MB_ICONERROR + mb_ok);
+    LVReque   := IntToStr(VersaoMinima_CF4_Major)      + '.' + IntToStr(VersaoMinima_CF4_Minor)      + '.' + IntToStr(VersaoMinima_CF4_Release);
+    LVerIdent := IntToStr(CEF_SUPPORTED_VERSION_MAJOR) + '.' + IntToStr(CEF_SUPPORTED_VERSION_MINOR) + '.' + IntToStr(CEF_SUPPORTED_VERSION_BUILD);
+
+    Application.MessageBox(PWideChar(Format(MSG_ConfigCEF_ExceptVersaoErrada, [LVReque, LVerIdent])),
+                           PWideChar(Application.Title), MB_ICONERROR + mb_ok
+                          );
     result := False;
     Exit;
   End;
-
-  if LogConsole <> '' Then
-     LogConsole  := IncludeTrailingPathDelimiter(ExtractFilePath(LogConsole));
-
 
   Self.EnableGPU              := SetEnableGPU;
   Self.DisableFeatures        := SetDisableFeatures;
@@ -372,6 +384,7 @@ begin
      Self.LogFile             := PathLogFile;
   If SetLogSeverity then
      Self.LogSeverity := LOGSEVERITY_INFO;
+  DestroyApplicationObject   := true;
 
   UpdateIniFile('Path Defines', 'FrameWork',     Self.FrameworkDirPath);
   UpdateIniFile('Path Defines', 'Binary',        Self.ResourcesDirPath);
@@ -379,15 +392,16 @@ begin
   UpdateIniFile('Path Defines', 'Cache',         Self.cache);
   UpdateIniFile('Path Defines', 'Data User',     Self.UserDataPath);
   UpdateIniFile('Path Defines', 'Log File',      Self.LogFile);
-  UpdateIniFile('Path Defines', 'GPU',           SetEnableGPU.ToString);
-  UpdateIniFile('Path Defines', 'Log Severity',  SetLogSeverity.ToString);
   UpdateIniFile('Path Defines', 'Log Console',   LogConsole);
 
+  FIniFIle.WriteBool('Path Defines', 'GPU',                  SetEnableGPU);
+  FIniFIle.WriteBool('Path Defines', 'Log Severity',         SetLogSeverity);
+  FIniFIle.WriteBool('Path Defines', 'Log Console Active',   LogConsoleActive);
 
   UpdateIniFile('Tinject Comp', 'TInject Versão',   TInjectVersion);
   UpdateIniFile('Tinject Comp', 'Caminho JS'    ,   TInjectJS_JSUrlPadrao);
-  UpdateIniFile('Tinject Comp', 'CEF4 Versão'   ,   CEF_SUPPORTED_VERSION_MAJOR.ToString +'.'+ CEF_SUPPORTED_VERSION_MINOR.ToString +'.'+ CEF_SUPPORTED_VERSION_RELEASE.ToString +'.'+ CEF_SUPPORTED_VERSION_BUILD.ToString );
-  UpdateIniFile('Tinject Comp', 'CHROME Versão' ,   CEF_CHROMEELF_VERSION_MAJOR.ToString +'.'+ CEF_CHROMEELF_VERSION_MINOR.ToString +'.'+ CEF_CHROMEELF_VERSION_RELEASE.ToString +'.'+ CEF_CHROMEELF_VERSION_BUILD.ToString );
+  UpdateIniFile('Tinject Comp', 'CEF4 Versão'   ,   IntToStr(CEF_SUPPORTED_VERSION_MAJOR) +'.'+ IntToStr(CEF_SUPPORTED_VERSION_MINOR)  +'.'+ IntToStr(CEF_SUPPORTED_VERSION_RELEASE) +'.'+ IntToStr(CEF_SUPPORTED_VERSION_BUILD));
+  UpdateIniFile('Tinject Comp', 'CHROME Versão' ,   IntToStr(CEF_CHROMEELF_VERSION_MAJOR) +'.'+ IntToStr(CEF_CHROMEELF_VERSION_MINOR)  +'.'+ IntToStr(CEF_CHROMEELF_VERSION_RELEASE) +'.'+ IntToStr(CEF_CHROMEELF_VERSION_BUILD));
   UpdateIniFile('Tinject Comp', 'Dlls'          ,   LIBCEF_DLL + ' / ' + CHROMEELF_DLL);
   if Falterdo then
     UpdateDateIniFile;
@@ -396,13 +410,8 @@ begin
   //Chegou aqui, é porque os PATH são validos e pode continuar
   inherited;  //Dispara a THREAD la do objeto PAI
 
-
   if Self.status <> asInitialized then
-  Begin
-    //estado invalido!!!! pode trer dado erro acima
-    Exit;
-  End;
-
+    Exit; //estado invalido!!!! pode trer dado erro acima
 
   Linicio := GetTickCount;
   try
@@ -417,9 +426,7 @@ begin
   finally
     Result  := (Self.status = asInitialized);
     if not Result then
-    Begin
-      Application.MessageBox(ConfigCEF_ExceptConnection, PWideChar(Application.Title), MB_ICONERROR + mb_ok);
-    End;
+       Application.MessageBox(PWideChar(MSG_ConfigCEF_ExceptConnection), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
   end;
 end;
 
@@ -433,54 +440,11 @@ end;
 
 destructor TCEFConfig.Destroy;
 begin
-  FreeandNil(FDefPathLocais);
-
-//  FreeChromium;
-
+  if not FInDesigner then
+     FreeandNil(FIniFIle);
   inherited;
 end;
 
-{
-procedure TCEFConfig.FreeChromium;
-var
-  LVar        : Boolean;
-  LaAction    : TCefCloseBrowserAction;
-  LaActionForm: TCloseAction;
-begin
-  //Se nao excecutado o SHTDOWN natural.. ele processa
-  if FChromium = nil then
-     Exit;
-  if not Assigned(FChromium) then
-     Exit;
-
-  if FChromiumForm = nil then
-     Exit;
-  if not Assigned(FChromiumForm) then
-     Exit;
-
-   //manda um CLOSEForm (caso tenham esquecido)
-   try
-     LVar        := True;
-     LaAction    := cbaDelay;
-     LaActionForm:= Cafree;
-     if Assigned(FChromiumForm.OnCloseQuery) then
-     Begin
-       //Envia os comandos
-       FChromium.StopLoad;
-       //Gaarante a execução de códigos obrigatorios pelo CEF
-       PostMessage(FChromiumForm.Handle, CEF_DESTROY, 0, 0);
-       PostMessage(FChromiumForm.Handle, $0010      , 0, 0);
-       FChromium.OnClose(FChromium, FChromium.Browser,  LaAction);
-       FChromium.CloseBrowser(True);
-
-       //Executa fecgamento FORM
-       FChromiumForm.OnCloseQuery(FChromiumForm, LVar);
-       FChromiumForm.OnClose     (FChromiumForm, LaActionForm);
-     End;
-   Except
-   end;
-end;
-}
 
 function TCEFConfig.PathJsOverdue: Boolean;
 begin
