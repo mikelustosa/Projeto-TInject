@@ -5,6 +5,7 @@ uses
   Windows,
   uTInject.ConfigCEF,
   u_principal in 'u_principal.pas' {frmPrincipal};
+
 {$R *.res}
 
 begin

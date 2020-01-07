@@ -1171,7 +1171,7 @@ end;
 procedure TFrmConsole.Form_Normal;
 begin
   SetZoom(TInject(FOwner).Config.Zoom);
-  Pnl_Geral.Enabled        := False;
+  Pnl_Geral.Enabled        := true;
   Height                   := 605; //580
   Width                    := 1000; //680
   BorderStyle              := bsSizeable;
