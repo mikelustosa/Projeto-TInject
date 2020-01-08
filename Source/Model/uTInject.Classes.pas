@@ -1,4 +1,4 @@
-﻿{####################################################################################################################
+{####################################################################################################################
                               TINJECT - Componente de comunicação (Não Oficial)
                                            www.tinject.com.br
                                             Novembro de 2019
@@ -964,7 +964,7 @@ end;
 
 { TUrlIndy }
 
-constructor TUrlIndy.Create;
+constructor TUrlIndy.Create(Aowner: Tcomponent);
 begin
   inherited;
   FTimeOut                := 10;
