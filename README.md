@@ -9,7 +9,9 @@ Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br
 Tutorial de instalação no youtube:<br>
 https://www.youtube.com/watch?v=4fbSepeZPDU&t=2s
 
+NOVO: Agora o componente possui um instalador, não sendo necessário seguir mais os passos abaixo.<br><br>
 
+Instalaçao opcional:<br>
 1-Clonar o repositório Projeto-TInject
 <br></br>
 2-Baixar e instalar o CEF4Delphi em: http://www.softmaisbrasil.com.br/#blog
