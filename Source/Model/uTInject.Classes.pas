@@ -964,7 +964,7 @@ end;
 
 { TUrlIndy }
 
-constructor TUrlIndy.Create(Aowner: Tcomponent);
+constructor TUrlIndy.Create;
 begin
   inherited;
   FTimeOut                := 10;
