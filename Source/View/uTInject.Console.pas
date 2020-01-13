@@ -882,7 +882,7 @@ procedure TFrmConsole.Chromium1ConsoleMessage(Sender: TObject;
 var
   AResponse  : TResponseConsoleMessage;
 begin
- //testa se e um JASON de forma RAPIDA!
+ //testa se e um JSON de forma RAPIDA!
   if (Copy(message, 0, 2) <> '{"') then
   Begin
     LogAdd(message, 'CONSOLE IGNORADO');

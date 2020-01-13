@@ -1,4 +1,4 @@
-{####################################################################################################################
+﻿{####################################################################################################################
                               TINJECT - Componente de comunicação (Não Oficial)
                                            www.tinject.com.br
                                             Novembro de 2019
@@ -375,6 +375,8 @@ type
     FStar            : Boolean;
     FRecvFresh       : Boolean;
 
+    FLat             : Extended;
+    FLng             : Extended;
     FCaption         : String;
     FclientUrl       : String;
     FdirectPath      : String;
@@ -422,6 +424,10 @@ type
     property isMMS      : Boolean             read FIsMMS              write FIsMMS;
     property isMedia    : Boolean             read FIsMedia            write FIsMedia;
     property isNewMsg   : Boolean             read FIsNewMsg           write FIsNewMsg;
+
+    property lat        : Extended            read FLat                write FLat;
+    property lng        : Extended            read FLng                write FLng;
+
     property isNotification: Boolean          read FIsNotification     write FIsNotification;
     property isPSA      : Boolean             read FIsPSA              write FIsPSA;
     property labels     : TArray<String>      read FLabels             write FLabels;

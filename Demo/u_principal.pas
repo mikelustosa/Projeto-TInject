@@ -79,6 +79,7 @@ type
     CheckBox4: TCheckBox;
     chk_grupos: TCheckBox;
     Button4: TButton;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btEnviaTextoClick(Sender: TObject);
@@ -219,10 +220,11 @@ end;
 
 procedure TfrmPrincipal.Button1Click(Sender: TObject);
 begin
-  if not TInject1.Auth then
-     Exit;
+//  if not TInject1.Auth then
+//     Exit;
+//
+//  TInject1.Disconnect();
 
-  TInject1.Disconnect();
 end;
 
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
@@ -497,6 +499,7 @@ var
   AChat: TChatClass;
   AMessage: TMessagesClass;
   contato, telefone: string;
+  blobURL: TMediaData_BlobClass;
 begin
     for AChat in Chats.result do
     begin
@@ -509,7 +512,10 @@ begin
             memo_unReadMessagen.Clear;
             //memo_unReadMessagen.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
             //memo_unReadMessagen.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
-            memo_unReadMessagen.Lines.Add(PChar(AMessage.body));
+            memo_unReadMessagen.Lines.Add(PChar(AMessage.mediaData.&type) + 'Lat: '+AMessage.lat.ToString + ' Long: '+ AMessage.lng.ToString);
+
+            //isMedia: 0(false) or -1(true) Image
+            //isMMS:   0(false) or -1(true) Audio
             //memo_unReadMessagen.Lines.Add(PChar( 'ID Message  : ' + AMessage.t.ToString));
             //memo_unReadMessagen.Lines.Add('__________________________________');
             telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
