@@ -31,7 +31,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 833
     Height = 405
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -3068,7 +3068,7 @@ object frmPrincipal: TfrmPrincipal
           Caption = 'Desconectar'
           Enabled = False
           TabOrder = 1
-          OnClick = Button1Click
+          OnClick = Button4Click
         end
       end
     end
@@ -3369,15 +3369,6 @@ object frmPrincipal: TfrmPrincipal
         Caption = 'Apagar mensagens ap'#243's receber'
         TabOrder = 1
         OnExit = Edt_DDIPDRExit
-      end
-      object Button1: TButton
-        Left = 664
-        Top = 26
-        Width = 75
-        Height = 25
-        Caption = 'Button1'
-        TabOrder = 2
-        OnClick = Button1Click
       end
     end
   end

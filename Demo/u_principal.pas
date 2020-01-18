@@ -79,7 +79,6 @@ type
     CheckBox4: TCheckBox;
     chk_grupos: TCheckBox;
     Button4: TButton;
-    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btEnviaTextoClick(Sender: TObject);
@@ -98,7 +97,6 @@ type
     procedure Edt_DDIPDRExit(Sender: TObject);
     procedure ed_numChange(Sender: TObject);
     procedure ed_numSelect(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure TInject1GetMyNumber(Sender: TObject);
     procedure TInject1ErroAndWarning(Sender: TObject; const PError,
       PInfoAdc: string);
@@ -113,6 +111,7 @@ type
     procedure TInject1DisconnectedBrute(Sender: TObject);
     procedure chk_3Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
   private
     { Private declarations }
     FIniciando: Boolean;
@@ -218,15 +217,6 @@ Begin
   end;
 end;
 
-procedure TfrmPrincipal.Button1Click(Sender: TObject);
-begin
-//  if not TInject1.Auth then
-//     Exit;
-//
-//  TInject1.Disconnect();
-
-end;
-
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
 begin
   TInject1.getAllContacts;
@@ -235,6 +225,14 @@ end;
 procedure TfrmPrincipal.Button3Click(Sender: TObject);
 begin
   TInject1.getAllChats;
+end;
+
+procedure TfrmPrincipal.Button4Click(Sender: TObject);
+begin
+  if not TInject1.auth then
+    exit;
+
+   TInject1.Disconnect;
 end;
 
 procedure TfrmPrincipal.Button6Click(Sender: TObject);
@@ -512,7 +510,9 @@ begin
             memo_unReadMessagen.Clear;
             //memo_unReadMessagen.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
             //memo_unReadMessagen.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
-            memo_unReadMessagen.Lines.Add(PChar(AMessage.mediaData.&type) + 'Lat: '+AMessage.lat.ToString + ' Long: '+ AMessage.lng.ToString);
+            //memo_unReadMessagen.Lines.Add(PChar(AMessage.mediaData.&type) + 'Lat: '+AMessage.lat.ToString + ' Long: '+ AMessage.lng.ToString);
+            memo_unReadMessagen.Lines.Add(PChar(AMessage.body));
+
 
             //isMedia: 0(false) or -1(true) Image
             //isMMS:   0(false) or -1(true) Audio

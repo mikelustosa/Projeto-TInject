@@ -64,6 +64,10 @@ type
     const Palmas           = '👏🏻';
     const LoiraFazerOq     = '🤷‍♀' ;
     const LoiraMaoNoRosto  = '🤦‍♀' ;
+    const LoiraNotebook    = '👩🏼‍💻';
+    const LoiraOla         = '🙋🏼‍♀';
+    const LoiraAteLogo     = '💁🏼‍♀';
+    const LoiraTriste      = '🙍🏼‍♀';
     const Macarrao         = '🍜';
     const AtendenteH       = '👨🏼‍💼';
     const AtendenteM       = '👩🏼‍💼';
@@ -116,6 +120,7 @@ type
     const ApontaCima       = '👆🏻';
     const ApontaBaixo      = '👇🏻';
     const PanelaComComida  = '🥘';
+    const Estrela          = '⭐';
   end;
 
 //function EmoticonToUTF8Encode(Value: WideString): WideString;
