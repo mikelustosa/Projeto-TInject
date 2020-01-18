@@ -332,7 +332,7 @@ end;
 
 procedure TfrmPrincipal.ExecuteFilter;
 begin
-
+//
 end;
 
 procedure TfrmPrincipal.Edt_DDIPDRExit(Sender: TObject);

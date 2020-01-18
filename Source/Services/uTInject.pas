@@ -60,6 +60,7 @@ type
     Fversion                : String;
     Fstatus                 : TStatusType;
     FDestruido              : Boolean;
+    //Typing                  : Boolean;
     FLanguageInject         : TLanguageInject;
     FOnDisconnectedBrute: TNotifyEvent;
     { Private  declarations }
@@ -94,6 +95,7 @@ type
     FOnErroInternal             : TOnErroInternal;
     FOnAfterInjectJs            : TNotifyEvent;
     FOnAfterInitialize          : TNotifyEvent;
+
     procedure Int_OnNotificationCenter(PTypeHeader: TTypeHeader; PValue: String; Const PReturnClass : TObject= nil);
 
     procedure Loaded; override;
@@ -126,6 +128,7 @@ type
     Function  StatusToStr       : String;
     Property  Emoticons         : TInjectEmoticons     Read FEmoticons                     Write FEmoticons;
     property  FormQrCodeShowing : Boolean              read GetAppShowing                  Write SetAppShowing;
+    //property  Typing            : Boolean              read FTyping                        Write FTyping;
     Procedure FormQrCodeStart(PViewForm:Boolean = true);
     Procedure FormQrCodeStop;
     Procedure FormQrCodeReloader;

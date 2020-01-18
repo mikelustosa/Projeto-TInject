@@ -73,6 +73,7 @@ Const
   FrmConsole_JS_VAR_DeleteMessages = 'window.WAPI.deleteConversation("<#MSG_PHONE#>")';
   FrmConsole_JS_VAR_SendBase64     = 'window.WAPI.sendImage("<#MSG_BASE64#>","<#MSG_PHONE#>", "<#MSG_NOMEARQUIVO#>", "<#MSG_CORPO#>")';
   FrmConsole_JS_VAR_SendMsg        = 'window.WAPI.sendMessageToID("<#MSG_PHONE#>","<#MSG_CORPO#>")';
+  FrmConsole_JS_VAR_SendTyping     = 'Store.WapQuery.sendChatstateComposing("<#MSG_PHONE#>");';
   //FrmConsole_JS_VAR_
   //FrmConsole_JS_VAR_
   //FrmConsole_JS_
