@@ -9,6 +9,16 @@ Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br
 Tutorial de instalação no youtube:<br>
 https://www.youtube.com/watch?v=4fbSepeZPDU&t=2s
 
+<br>
+Vídeos demo:
+<br>
+https://youtu.be/YEmwghSGoFA
+<br>
+https://youtu.be/07RoReOHaT4
+<br>
+https://youtu.be/cbWW7VNYwEo
+<br><br>
+
 NOVO: Agora o componente possui um instalador, não sendo necessário seguir mais os passos abaixo.<br><br>
 
 Instalaçao opcional:<br>
