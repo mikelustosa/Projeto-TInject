@@ -974,7 +974,7 @@ constructor TUrlIndy.Create;
 begin
   {$IFDEF DELPHI23}
     inherited create;
-  {$ELSEIF DELPHI25_UP}
+  {$ELSE}
     inherited;
   {$ENDIF}
   
