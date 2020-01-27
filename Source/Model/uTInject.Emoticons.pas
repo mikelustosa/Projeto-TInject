@@ -1,4 +1,4 @@
-﻿{####################################################################################################################
+{####################################################################################################################
                               TINJECT - Componente de comunicação (Não Oficial)
                                            www.tinject.com.br
                                             Novembro de 2019
@@ -40,8 +40,10 @@ interface
 
 type
   TInjectEmoticons = record
-    const Sorridente       = '😄';
-    const SorridenteLingua = '😝';
+
+    const Sorridente       = '😄';
+
+    const SorridenteLingua = '😝';
     const Impressionado    = '😱';
     const Irritado         = '😤';
     const Triste           = '😢';
@@ -57,7 +59,8 @@ type
     const Fone             = '📞';
     const Onibus           = '🚍';
     const Aviao            = '✈';
-    const Legal            = '👍🏻';
+    const Like             = '👍🏻';
+    const Deslike          = '👎🏻';
     const ApertoDeMao      = '🤝🏻';
     const PazEAmor         = '✌🏻';
     const Sono             = '😴';
@@ -120,12 +123,19 @@ type
     const ApontaCima       = '👆🏻';
     const ApontaBaixo      = '👇🏻';
     const PanelaComComida  = '🥘';
-    const Estrela          = '⭐';
-  end;
+
+    const Estrela          = '⭐';
+
+    const Erro             = '❌';
+
+    const Duvida           = '⁉';
+
+  end;
 
 //function EmoticonToUTF8Encode(Value: WideString): WideString;
 
-implementation
+
+implementation
 
 //function EmoticonToUTF8Encode(Value: WideString): WideString;
 //begin
