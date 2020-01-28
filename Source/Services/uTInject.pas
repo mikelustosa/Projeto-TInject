@@ -38,7 +38,8 @@ uses
   uTInject.AdjustNumber, UBase64,
 
   System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, System.MaskUtils,
-  System.UiTypes,  Generics.Collections,   System.TypInfo, Data.DB, Vcl.ExtCtrls, uTInject.Diversos;
+  System.UiTypes,  Generics.Collections,   System.TypInfo, Data.DB, Vcl.ExtCtrls,
+   uTInject.Diversos;
 
 
 type

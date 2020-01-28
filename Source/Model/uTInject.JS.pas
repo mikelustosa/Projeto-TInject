@@ -38,6 +38,8 @@ uses
   Vcl.ExtCtrls, IdHTTP, uTInject.Diversos;
 
 {$M+}{$TYPEINFO ON}
+{$I cef.inc}
+
 type
     TInjectJSDefine  = class
     private
@@ -289,6 +291,7 @@ var
   LRet         : TStringList;
 begin
   LSalvamento   := IncludeTrailingPathDelimiter(GetEnvironmentVariable('Temp'))+'GetTInject.tmp';
+
   LRet          := TStringList.Create;
   LHttp         := TUrlIndy.Create;
   try

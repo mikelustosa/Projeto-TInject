@@ -337,6 +337,7 @@ var
   LVReque, LVerIdent: String;
   FDirApp, Lx: String;
 begin
+//ta lento pq estou conectado em um tunel estou daki ao meu pc.;. do meu pc a
   Result  := (Self.status = asInitialized);
   if (Result) Then
   Begin
