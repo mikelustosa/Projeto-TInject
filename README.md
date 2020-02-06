@@ -37,9 +37,9 @@ Instalaçao opcional:<br>
 7-Dê um Compile e depois dê um build
 <br><br>
 8-Abra o arquivo demo Tinject.dproj
-<br></br><br></br>
+<br></br>
 
-<br><br>
+Recursos / Resources<br>
 1 - Enviar mensagens de texto para números fora da agenda- Send text message - OK<br>
 2 - Enviar mensagens para grupos - Send group messages - OK<br>
 3 - Enviar MP3 - Send MP3 - OK<br>
