@@ -41,6 +41,19 @@ Instalaçao opcional:<br>
 
 <br><br>Melhorar a estabilidade na respostas automáticas das mensagens.
 <br><br>
+1 - Enviar mensagens de texto para números fora da agenda- Send text message - OK<br>
+2 - Enviar mensagens para grupos - Send group messages - OK<br>
+3 - Enviar MP3 - Send MP3 - OK<br>
+4 - Enviar MP4 - Send MP4 - OK<br>
+5 - Enviar IMG - Send IMG - OK<br>
+6 - Enviar RAR - Send RAR - OK<br>
+7 - Listar contatos - Contact list - OK<br>
+8 - Listar bate papos - Conversation list - OK<br>
+9 - Status da bateria - Battery status - OK<br>
+10 - Simular digitando - Typing simulation - OK<br>
+11 - Recebimento de novas mensagem - Receiving new messages - OK<br>
+12 - Receiving new messages - OK<br>
+
 
 *Nota 1: O TInject é de código aberto, e não possui *nenhum outro componente* de terceiro além do TChromium vinculado ao código, nem muito menos utilização de *licenças* ou afins de outros componentes. Baixem os *fontes* para comprovar.
 <br><br>
