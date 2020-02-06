@@ -51,7 +51,7 @@ Recursos / Resources<br>
 9 - Status da bateria - Battery status - OK<br>
 10 - Simular digitando - Typing simulation - OK<br>
 11 - Recebimento de novas mensagem - Receiving new messages - OK<br>
-12 - Receiving new messages - OK<br>
+12 - Configurações de DDI - International number configuration - OK<br>
 
 
 *Nota 1: O TInject é de código aberto, e não possui *nenhum outro componente* de terceiro além do TChromium vinculado ao código, nem muito menos utilização de *licenças* ou afins de outros componentes. Baixem os *fontes* para comprovar.
