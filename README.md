@@ -39,7 +39,6 @@ Instalaçao opcional:<br>
 8-Abra o arquivo demo Tinject.dproj
 <br></br><br></br>
 
-<br><br>Melhorar a estabilidade na respostas automáticas das mensagens.
 <br><br>
 1 - Enviar mensagens de texto para números fora da agenda- Send text message - OK<br>
 2 - Enviar mensagens para grupos - Send group messages - OK<br>
