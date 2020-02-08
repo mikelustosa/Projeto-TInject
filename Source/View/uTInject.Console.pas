@@ -165,6 +165,7 @@ type
     Procedure DisConnect;
     procedure Send(vNum, vText:string);
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
+    procedure Logout();
     procedure ReloaderWeb;
     procedure StopWebBrowser;
     procedure GetAllContacts(PIgnorarLeitura1: Boolean = False);
@@ -912,6 +913,7 @@ procedure TFrmConsole.Chromium1DownloadUpdated(Sender: TObject;
   const browser: ICefBrowser; const downloadItem: ICefDownloadItem;
   const callback: ICefDownloadItemCallback);
 begin
+
  {
   if not(Chromium1.IsSameBrowser(browser)) then exit;
   if not Assigned(FDownloadFila) then Exit;
@@ -1211,6 +1213,17 @@ begin
                   Text_System_memFree + inttostr(GlobalCEFApp.AvailableSystemMemory div BYTES_PER_MEGABYTE) + ' Mb' + #13 +
                   Text_System_memFree + inttostr(GlobalCEFApp.SystemMemoryLoad) + ' %';
   Lbl_Versao.Hint := LTempMessage;
+end;
+
+procedure TFrmConsole.Logout;
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_Logout;
+  ExecuteJS(LJS, true);
 end;
 
 end.

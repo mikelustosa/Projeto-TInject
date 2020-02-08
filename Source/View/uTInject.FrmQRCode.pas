@@ -107,6 +107,7 @@ begin
   (Timg_Animacao.Picture.Graphic as TGIFImage).AnimationSpeed  := 400;
   (Timg_Animacao.Picture.Graphic as TGIFImage).Animate         := True;
 
+
   FTimerGetQrCode          := TTimer.Create(nil);
   FTimerGetQrCode.Interval := 300;
   FTimerGetQrCode.Enabled  := False;

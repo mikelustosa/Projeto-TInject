@@ -78,7 +78,7 @@ type
     Edt_DDIPDR: TLabeledEdit;
     CheckBox4: TCheckBox;
     chk_grupos: TCheckBox;
-    Button4: TButton;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btEnviaTextoClick(Sender: TObject);
@@ -112,6 +112,7 @@ type
     procedure chk_3Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
     FIniciando: Boolean;
@@ -215,6 +216,15 @@ Begin
     ed_num.SelectAll;
     ed_num.SetFocus;
   end;
+end;
+
+procedure TfrmPrincipal.Button1Click(Sender: TObject);
+begin
+  if not TInject1.auth then
+    exit;
+
+   TInject1.Logtout;
+   TInject1.Disconnect;
 end;
 
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
@@ -439,16 +449,16 @@ begin
   begin
     lblStatus.Caption            := 'Online';
     lblStatus.Font.Color         := $0000AE11;
-    Button4.enabled              := True;
+    Button1.Enabled              := true;
   end else
   begin
-    Button4.enabled              := False;
+    Button1.Enabled              := false;
     lblStatus.Caption            := 'Offline';
     lblStatus.Font.Color         := $002894FF;
   end;
 
   StatusBar1.Panels[1].Text  := lblStatus.Caption;
-  whatsOn.Visible            := Button4.enabled;
+  whatsOn.Visible            := Button1.enabled;
   lblNumeroConectado.Visible := whatsOn.Visible;
   whatsOff.Visible           := Not whatsOn.Visible;
 

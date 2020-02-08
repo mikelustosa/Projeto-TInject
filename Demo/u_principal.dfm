@@ -3059,26 +3059,22 @@ object frmPrincipal: TfrmPrincipal
             'Ft_None      = Destino MANUAL')
           TabOrder = 0
         end
-        object Button4: TButton
+        object Button1: TButton
           Left = 213
-          Top = 82
+          Top = 84
           Width = 104
           Height = 26
           Anchors = [akRight, akBottom]
-          Caption = 'Desconectar'
+          Caption = 'Logout whatsapp'
           Enabled = False
           TabOrder = 1
-          OnClick = Button4Click
+          OnClick = Button1Click
         end
       end
     end
     object TabSheet3: TTabSheet
       Caption = 'A'#231#245'es Manuais'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object groupEnvioMsg: TGroupBox
         Left = 0
         Top = 0
@@ -3345,10 +3341,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object memo_unReadMessagen: TMemo
         Left = 0
         Top = 23

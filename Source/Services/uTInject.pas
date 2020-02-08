@@ -114,6 +114,7 @@ type
     procedure Send(PNumberPhone, PMessage: string);
     procedure SendFile(PNumberPhone: String; Const PFileName: String; PMessage: string = '');
     procedure SendBase64(Const vBase64: String; vNum: String;  Const vFileName, vMess: string);     deprecated; //Versao 1.0.2.0 disponivel ate Versao 1.0.6.0
+    procedure Logtout();
 
     procedure GetBatteryStatus;
     procedure GetAllContacts;
@@ -361,6 +362,29 @@ begin
 
   if Config.AutoStart then
      FormQrCodeStart(False);
+end;
+
+procedure TInject.Logtout;
+var
+  lThread : TThread;
+begin
+  If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  lThread := TThread.CreateAnonymousThread(procedure
+      begin
+        TThread.Synchronize(nil, procedure
+        begin
+          if Assigned(FrmConsole) then
+          begin
+            FrmConsole.Logout();
+          end;
+        end);
+
+      end);
+  lThread.Start;
 end;
 
 procedure TInject.Int_OnNotificationCenter(PTypeHeader: TTypeHeader; PValue: String; Const PReturnClass : TObject);

@@ -972,12 +972,13 @@ end;
 
 constructor TUrlIndy.Create;
 begin
-  {$IFDEF DELPHI23}
-    inherited create;
-  {$ELSE}
+  {$IFDEF DELPHI25_UP}
     inherited;
+  {$ELSE}
+    inherited create;
   {$ENDIF}
-  
+
+
   FTimeOut                := 10;
   FTImeOutIndy            := TTimer.Create(Nil);
   FTImeOutIndy.OnTimer    := OnTimeOutIndy;
