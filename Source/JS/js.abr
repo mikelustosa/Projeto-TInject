@@ -1,5 +1,5 @@
 ﻿//Version_JS;Version_TInjectMin;Version_CEF4Min
-//1.0.0.4;1.0.0.9;78.3.0
+//1.0.0.5;1.0.0.9;78.3.0
 //
 //
 
@@ -1502,3 +1502,14 @@ window.WAPI.sendMessageToID2 = function(id, msgText) {
         return false;
     }
 }
+
+//Validar numero whatsapp
+window.WAPI.isValidNumber = async function (phoneId) {
+    isValid = window.Store.WapQuery.queryExist(phoneId).then(result => {
+        return result.jid !== undefined;
+    }).catch((e) => {
+        return false;
+    });
+
+    return isValid;
+};
