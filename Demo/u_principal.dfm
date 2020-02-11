@@ -35,7 +35,7 @@ object frmPrincipal: TfrmPrincipal
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
-      Caption = 'Autentica'#231#227'o'
+      Caption = 'Autentica'#231#227'o / Authentication'
       object Pnl_Config: TPanel
         AlignWithMargins = True
         Left = 333
@@ -2844,7 +2844,7 @@ object frmPrincipal: TfrmPrincipal
           Top = 5
           Width = 104
           Height = 73
-          Caption = 'Iniciar Servi'#231'o'
+          Caption = 'Iniciar / Start'
           Glyph.Data = {
             8E180000424D8E18000000000000360000002800000032000000290000000100
             18000000000058180000C40E0000C40E00000000000000000000D1C757C7CB8E
@@ -3073,7 +3073,7 @@ object frmPrincipal: TfrmPrincipal
       end
     end
     object TabSheet3: TTabSheet
-      Caption = 'A'#231#245'es Manuais'
+      Caption = 'A'#231#245'es Manuais / Actions'
       ImageIndex = 2
       object groupEnvioMsg: TGroupBox
         Left = 0
@@ -3081,7 +3081,7 @@ object frmPrincipal: TfrmPrincipal
         Width = 218
         Height = 377
         Align = alLeft
-        Caption = 'Envio de Mensagem'
+        Caption = 'Envio de Mensagem /  Send Messages'
         TabOrder = 0
         DesignSize = (
           218
@@ -3089,16 +3089,16 @@ object frmPrincipal: TfrmPrincipal
         object Label1: TLabel
           Left = 5
           Top = 58
-          Width = 91
+          Width = 82
           Height = 13
-          Caption = 'N'#250'mero de Destino'
+          Caption = 'Destino / Destiny'
         end
         object Label2: TLabel
           Left = 5
           Top = 101
-          Width = 28
+          Width = 167
           Height = 13
-          Caption = 'Texto'
+          Caption = 'Texto ou contato / Text or contact'
         end
         object lblNumeroConectado: TLabel
           Left = 2
@@ -3132,35 +3132,38 @@ object frmPrincipal: TfrmPrincipal
           Left = 5
           Top = 116
           Width = 204
-          Height = 166
+          Height = 125
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 1
         end
         object btEnviaTextoArq: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 316
-          Width = 208
-          Height = 25
-          Align = alBottom
-          Caption = 'Enviar Texto e Arquivo'
-          ImageIndex = 0
-          Images = ImageList1
-          TabOrder = 2
-          OnClick = btEnviaTextoArqClick
-        end
-        object btEnviaTexto: TButton
-          AlignWithMargins = True
-          Left = 5
           Top = 285
           Width = 208
           Height = 25
           Align = alBottom
-          Caption = 'Enviar Apenas Texto'
+          Caption = 'Enviar Texto e Arquivo / Text and file'
+          ImageIndex = 0
+          Images = ImageList1
+          TabOrder = 2
+          OnClick = btEnviaTextoArqClick
+          ExplicitTop = 308
+        end
+        object btEnviaTexto: TButton
+          AlignWithMargins = True
+          Left = 5
+          Top = 254
+          Width = 208
+          Height = 25
+          Align = alBottom
+          Caption = 'Enviar Apenas Texto / Send text'
           ImageIndex = 0
           Images = ImageList1
           TabOrder = 3
           OnClick = btEnviaTextoClick
+          ExplicitLeft = 4
+          ExplicitTop = 247
         end
         object ed_num: TComboBox
           Left = 5
@@ -3193,11 +3196,26 @@ object frmPrincipal: TfrmPrincipal
           Width = 208
           Height = 25
           Align = alBottom
-          Caption = 'Status da Bateria'
+          Caption = 'Status da Bateria / Battery status'
           ImageIndex = 0
           Images = ImageList1
           TabOrder = 5
           OnClick = btStatusBatClick
+        end
+        object btEnviarContato: TButton
+          AlignWithMargins = True
+          Left = 5
+          Top = 316
+          Width = 208
+          Height = 25
+          Align = alBottom
+          Caption = 'Enviar contato / Send contact'
+          ImageIndex = 0
+          Images = ImageList1
+          TabOrder = 6
+          OnClick = btEnviarContatoClick
+          ExplicitLeft = 4
+          ExplicitTop = 347
         end
       end
       object Panel1: TPanel
@@ -3224,7 +3242,7 @@ object frmPrincipal: TfrmPrincipal
           Width = 331
           Height = 377
           Align = alClient
-          Caption = 'Lista Conversas Abertas'
+          Caption = 'Lista Conversas Abertas / Chat list'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -11
@@ -3275,7 +3293,7 @@ object frmPrincipal: TfrmPrincipal
           Width = 273
           Height = 377
           Align = alLeft
-          Caption = 'Lista de Contatos'
+          Caption = 'Lista de Contatos / Contact List'
           TabOrder = 1
           object Panel4: TPanel
             Left = 2
@@ -3320,6 +3338,7 @@ object frmPrincipal: TfrmPrincipal
             StateImages = ImageList1
             TabOrder = 1
             ViewStyle = vsSmallIcon
+            OnClick = listaContatosClick
             OnDblClick = listaContatosDblClick
           end
           object chk_grupos: TCheckBox
@@ -3334,6 +3353,7 @@ object frmPrincipal: TfrmPrincipal
             State = cbChecked
             TabOrder = 2
             OnClick = chk_3Click
+            ExplicitWidth = 196
           end
         end
       end

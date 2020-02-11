@@ -112,6 +112,7 @@ type
     procedure ReadMessages(vID: string);
 
     procedure Send(PNumberPhone, PMessage: string);
+    procedure SendContact(PNumberPhone, PNumber: string);
     procedure SendFile(PNumberPhone: String; Const PFileName: String; PMessage: string = '');
     procedure SendBase64(Const vBase64: String; vNum: String;  Const vFileName, vMess: string);     deprecated; //Versao 1.0.2.0 disponivel ate Versao 1.0.6.0
     procedure Logtout();
@@ -700,6 +701,45 @@ begin
   lThread.Start;
 end;
 
+
+procedure TInject.SendContact(PNumberPhone, PNumber: string);
+var
+  lThread : TThread;
+begin
+  If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
+  if pos('@', PNumberPhone) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
+    Exit;
+  end;
+
+  if Trim(PNumber) = '' then
+  begin
+    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, PNumberPhone);
+    Exit;
+  end;
+
+  lThread := TThread.CreateAnonymousThread(procedure
+      begin
+        if Config.AutoDelay > 0 then
+           sleep(random(Config.AutoDelay));
+
+        TThread.Synchronize(nil, procedure
+        begin
+          if Assigned(FrmConsole) then
+          begin
+            FrmConsole.SendContact(PNumberPhone, PNumber);
+          end;
+        end);
+
+      end);
+  lThread.Start;
+end;
 
 procedure TInject.SetAuth(const Value: boolean);
 begin

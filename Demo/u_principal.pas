@@ -79,6 +79,7 @@ type
     CheckBox4: TCheckBox;
     chk_grupos: TCheckBox;
     Button1: TButton;
+    btEnviarContato: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btEnviaTextoClick(Sender: TObject);
@@ -113,6 +114,8 @@ type
     procedure Button6Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure btEnviarContatoClick(Sender: TObject);
+    procedure listaContatosClick(Sender: TObject);
   private
     { Private declarations }
     FIniciando: Boolean;
@@ -200,6 +203,19 @@ begin
   trayIcon1.Visible := true;
   TrayIcon1.Animate := True;
   TrayIcon1.ShowBalloonHint;
+end;
+
+procedure TfrmPrincipal.btEnviarContatoClick(Sender: TObject);
+begin
+  try
+    if not TInject1.Auth then
+       Exit;
+
+    TInject1.sendContact(ed_num.Text, mem_message.Text);
+  finally
+    ed_num.SelectAll;
+    ed_num.SetFocus;
+  end;
 end;
 
 procedure TfrmPrincipal.btEnviaTextoArqClick(Sender: TObject);
@@ -555,6 +571,12 @@ begin
   ed_num.Text := TInject1.GetChat(listaChats.Selected.Index).id;
 end;
 
+procedure TfrmPrincipal.listaContatosClick(Sender: TObject);
+begin
+  mem_message.Text := Copy(listaContatos.Items[listaContatos.Selected.Index].SubItems[1], 0,
+                      Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]))+'c.us';
+end;
+
 procedure TfrmPrincipal.listaContatosDblClick(Sender: TObject);
 begin
   ed_num.Text :=  Copy(listaContatos.Items[listaContatos.Selected.Index].SubItems[1], 0,
@@ -571,6 +593,7 @@ begin
 
   if not TInject1.FormQrCodeShowing then
      TInject1.FormQrCodeShowing := True;
+
 end;
 
 procedure TfrmPrincipal.Timer2Timer(Sender: TObject);

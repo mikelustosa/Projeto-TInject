@@ -77,12 +77,7 @@ Const
   FrmConsole_JS_VAR_SendMsg        = 'window.WAPI.sendMessageToID("<#MSG_PHONE#>","<#MSG_CORPO#>")';
   FrmConsole_JS_VAR_SendTyping     = 'Store.WapQuery.sendChatstateComposing("<#MSG_PHONE#>");';
   FrmConsole_JS_VAR_Logout         = 'localStorage.clear(); location.reload();';
-  //FrmConsole_JS_VAR_
-  //FrmConsole_JS_VAR_
-  //FrmConsole_JS_
-  //FrmConsole_JS_
-  //FrmConsole_JS_
-  //FrmConsole_JS_
+  FrmConsole_JS_VAR_SendContact    = 'window.WAPI.sendContact("<#MSG_PHONE_DEST#>", "<#MSG_PHONE#>")';
 
 
 

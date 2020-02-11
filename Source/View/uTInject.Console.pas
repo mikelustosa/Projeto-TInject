@@ -164,6 +164,7 @@ type
     Procedure Connect;
     Procedure DisConnect;
     procedure Send(vNum, vText:string);
+    procedure SendContact(vNumDest, vNum:string);
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
     procedure Logout();
     procedure ReloaderWeb;
@@ -635,6 +636,20 @@ begin
   FINALLY
     freeAndNil(LBase64);
   END;
+end;
+
+procedure TFrmConsole.SendContact(vNumDest, vNum: string);
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  //vText := CaractersWeb(vText);
+  LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendContact;
+  FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE_DEST#',       Trim(vNumDest));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',            Trim(vNum));
+  ExecuteJS(LJS, true);
 end;
 
 procedure TFrmConsole.SetOwner(const Value: TComponent);
@@ -1219,10 +1234,10 @@ procedure TFrmConsole.Logout;
 var
   Ljs: string;
 begin
-  if not FConectado then
-    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+  //if not FConectado then
+  //  raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
 
-  LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_Logout;
+  LJS   := FrmConsole_JS_VAR_Logout;
   ExecuteJS(LJS, true);
 end;
 
