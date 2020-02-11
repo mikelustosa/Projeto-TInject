@@ -78,8 +78,9 @@ type
     Edt_DDIPDR: TLabeledEdit;
     CheckBox4: TCheckBox;
     chk_grupos: TCheckBox;
-    Button1: TButton;
     btEnviarContato: TButton;
+    SpeedButton2: TSpeedButton;
+    SpeedButton3: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btEnviaTextoClick(Sender: TObject);
@@ -113,9 +114,10 @@ type
     procedure chk_3Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
     procedure btEnviarContatoClick(Sender: TObject);
     procedure listaContatosClick(Sender: TObject);
+    procedure SpeedButton2Click(Sender: TObject);
+    procedure SpeedButton3Click(Sender: TObject);
   private
     { Private declarations }
     FIniciando: Boolean;
@@ -134,7 +136,7 @@ var
 implementation
 
 uses
-  Vcl.Imaging.jpeg, Datasnap.DBClient;
+  Vcl.Imaging.jpeg, Datasnap.DBClient, Winapi.ShellAPI;
 
 {$R *.dfm}
 
@@ -232,15 +234,6 @@ Begin
     ed_num.SelectAll;
     ed_num.SetFocus;
   end;
-end;
-
-procedure TfrmPrincipal.Button1Click(Sender: TObject);
-begin
-  if not TInject1.auth then
-    exit;
-
-   TInject1.Logtout;
-   TInject1.Disconnect;
 end;
 
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
@@ -445,7 +438,7 @@ end;
 
 procedure TfrmPrincipal.TInject1GetQrCode(Const Sender: TObject;  const QrCode: TResultQRCodeClass);
 begin
-  if TInject(Sender).FormQrCodeType = Ft_None then
+  if TInject1.FormQrCodeType = TFormQrCodeType(Ft_none) then
      Image1.Picture := QrCode.AQrCodeImage else
      Image1.Picture := nil; //Limpa foto
 end;
@@ -465,16 +458,16 @@ begin
   begin
     lblStatus.Caption            := 'Online';
     lblStatus.Font.Color         := $0000AE11;
-    Button1.Enabled              := true;
+    SpeedButton3.Enabled              := true;
   end else
   begin
-    Button1.Enabled              := false;
+    SpeedButton3.Enabled              := false;
     lblStatus.Caption            := 'Offline';
     lblStatus.Font.Color         := $002894FF;
   end;
 
   StatusBar1.Panels[1].Text  := lblStatus.Caption;
-  whatsOn.Visible            := Button1.enabled;
+  whatsOn.Visible            := SpeedButton3.enabled;
   lblNumeroConectado.Visible := whatsOn.Visible;
   whatsOff.Visible           := Not whatsOn.Visible;
 
@@ -594,6 +587,20 @@ begin
   if not TInject1.FormQrCodeShowing then
      TInject1.FormQrCodeShowing := True;
 
+end;
+
+procedure TfrmPrincipal.SpeedButton2Click(Sender: TObject);
+begin
+  ShellExecute(Handle, 'open', 'http://mikelustosa.kpages.online/tinject', '', '', 1);
+end;
+
+procedure TfrmPrincipal.SpeedButton3Click(Sender: TObject);
+begin
+  if not TInject1.auth then
+    exit;
+
+   TInject1.Logtout;
+   TInject1.Disconnect;
 end;
 
 procedure TfrmPrincipal.Timer2Timer(Sender: TObject);
