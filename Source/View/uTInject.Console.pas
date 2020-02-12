@@ -173,6 +173,7 @@ type
     procedure GetAllChats;
     procedure GetUnreadMessages;
     procedure GetBatteryLevel;
+    procedure CheckIsValidNumber(vNumber:string);
     procedure GetMyNumber;
 
     //Para monitorar o qrcode via REST
@@ -722,6 +723,18 @@ begin
   PostMessage(Handle, WM_CLOSE, 0, 0);
 end;
 
+procedure TFrmConsole.CheckIsValidNumber(vNumber: string);
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   :=  FrmConsole_JS_VAR_CheckIsValidNumber;
+  FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#', Trim(vNumber));
+  ExecuteJS(LJS, False);
+end;
+
 procedure TFrmConsole.Chromium1AfterCreated(Sender: TObject;
   const browser: ICefBrowser);
 begin
@@ -843,6 +856,7 @@ begin
                             FgettingChats := False;
                           end;
 
+
     Th_getQrCodeWEB,
     Th_getQrCodeForm :    Begin
                             LOutClass := TQrCodeClass.Create(PResponse.JsonString, [], []);
@@ -872,6 +886,19 @@ begin
                               FreeAndNil(LOutClass);
                             End;
                           End;
+
+
+    Th_GetCheckIsValidNumber //Em testes    tinha muita coisa aberta aqui..já fechei
+                          : begin
+                            If Assigned(FOnNotificationCenter) Then
+                            Begin
+                              LOutClass := TResponseCheckIsValidNumber.Create(LResultStr);
+                              FOnNotificationCenter(PResponse.TypeHeader, '', LOutClass);
+                              FreeAndNil(LOutClass);
+                            End;
+                          end;
+
+
 
     Th_OnChangeConnect  : begin
                             LOutClass := TOnChangeConnect.Create(LResultStr);

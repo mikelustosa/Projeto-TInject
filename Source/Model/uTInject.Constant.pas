@@ -52,34 +52,39 @@ Const
 //  ConsoleRetornText_Disconect     = 'failed: WebSocket is closed before the connection is established';
   FrmConsole_Browser_ContextPhoneOff = '<div class="_1fpj- app-wrapper-web">';
 
-  FrmConsole_Browser_Created       = WM_APP + $100;
-  FrmConsole_Browser_Direto        = WM_APP + $101;
-  TInjectJS_JSUrlPadrao            = 'https://raw.githubusercontent.com/mikelustosa/Projeto-TInject/master/Source/JS/js.abr';
-  TInjectJS_JSLinhasMInimas        = 1400;
-  FrmConsole_JS_RetornoVazio       = '{"result":[]}';
-  FrmConsole_JS_Ignorar            = '{"name":"getUnreadMessages","result":"{\"result\":[]}"}';
-  FrmConsole_JS_URL                = 'https://web.whatsapp.com/';
-  FrmConsole_JS_GetAllContacts     = 'window.WAPI.getAllContacts();';
-  FrmConsole_JS_GetBatteryLevel    = 'window.WAPI.getBatteryLevel();';
-  FrmConsole_JS_GetMyNumber        = 'getMyNumber();';
-  FrmConsole_JS_GetUnreadMessages  = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
-  FrmConsole_JS_GetAllChats        = 'window.WAPI.getAllChats();';
-  //FrmConsole_JS_WEBmonitorQRCode   = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
-  FrmConsole_JS_WEBmonitorQRCode   = 'var AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
-  //FrmConsole_JS_monitorQRCode      = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
-  FrmConsole_JS_monitorQRCode      = 'var AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
-  FrmConsole_JS_StopMonitor        = 'stopMonitor();';
-  FrmConsole_JS_IsLoggedIn         = 'WAPI.isLoggedIn();';
-  FrmConsole_JS_VAR_StartMonitor   = 'startMonitor(intervalSeconds=<#TEMPO#>)';
-  FrmConsole_JS_VAR_ReadMessages   = 'window.WAPI.sendSeen("<#MSG_PHONE#>")';
-  FrmConsole_JS_VAR_DeleteMessages = 'window.WAPI.deleteConversation("<#MSG_PHONE#>")';
-  FrmConsole_JS_VAR_SendBase64     = 'window.WAPI.sendImage("<#MSG_BASE64#>","<#MSG_PHONE#>", "<#MSG_NOMEARQUIVO#>", "<#MSG_CORPO#>")';
-  FrmConsole_JS_VAR_SendMsg        = 'window.WAPI.sendMessageToID("<#MSG_PHONE#>","<#MSG_CORPO#>")';
-  FrmConsole_JS_VAR_SendTyping     = 'Store.WapQuery.sendChatstateComposing("<#MSG_PHONE#>");';
-  FrmConsole_JS_VAR_Logout         = 'localStorage.clear(); location.reload();';
-  FrmConsole_JS_VAR_SendContact    = 'window.WAPI.sendContact("<#MSG_PHONE_DEST#>", "<#MSG_PHONE#>")';
-
-
+  FrmConsole_Browser_Created            = WM_APP + $100;
+  FrmConsole_Browser_Direto             = WM_APP + $101;
+  TInjectJS_JSUrlPadrao                 = 'https://raw.githubusercontent.com/mikelustosa/Projeto-TInject/master/Source/JS/js.abr';
+  TInjectJS_JSLinhasMInimas             = 1400;
+  FrmConsole_JS_RetornoVazio            = '{"result":[]}';
+  FrmConsole_JS_Ignorar                 = '{"name":"getUnreadMessages","result":"{\"result\":[]}"}';
+  FrmConsole_JS_URL                     = 'https://web.whatsapp.com/';
+  FrmConsole_JS_GetAllContacts          = 'window.WAPI.getAllContacts();';
+  FrmConsole_JS_GetBatteryLevel         = 'window.WAPI.getBatteryLevel();';
+  FrmConsole_JS_GetMyNumber             = 'getMyNumber();';
+  FrmConsole_JS_GetUnreadMessages       = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
+  FrmConsole_JS_GetAllChats             = 'window.WAPI.getAllChats();';
+  //FrmConsole_JS_WEBmonitorQRCode      = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
+  FrmConsole_JS_WEBmonitorQRCode        = 'var AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
+  //FrmConsole_JS_monitorQRCode         = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
+  FrmConsole_JS_monitorQRCode           = 'var AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
+  FrmConsole_JS_StopMonitor             = 'stopMonitor();';
+  FrmConsole_JS_IsLoggedIn              = 'WAPI.isLoggedIn();';
+  FrmConsole_JS_VAR_StartMonitor        = 'startMonitor(intervalSeconds=<#TEMPO#>)';
+  FrmConsole_JS_VAR_ReadMessages        = 'window.WAPI.sendSeen("<#MSG_PHONE#>")';
+  FrmConsole_JS_VAR_DeleteMessages      = 'window.WAPI.deleteConversation("<#MSG_PHONE#>")';
+  FrmConsole_JS_VAR_SendBase64          = 'window.WAPI.sendImage("<#MSG_BASE64#>","<#MSG_PHONE#>", "<#MSG_NOMEARQUIVO#>", "<#MSG_CORPO#>")';
+  FrmConsole_JS_VAR_SendMsg             = 'window.WAPI.sendMessageToID("<#MSG_PHONE#>","<#MSG_CORPO#>")';
+  FrmConsole_JS_VAR_SendTyping          = 'Store.WapQuery.sendChatstateComposing("<#MSG_PHONE#>");';
+  FrmConsole_JS_VAR_Logout              = 'localStorage.clear(); location.reload();';
+  FrmConsole_JS_VAR_SendContact         = 'window.WAPI.sendContact("<#MSG_PHONE_DEST#>", "<#MSG_PHONE#>")';
+  //FrmConsole_JS_VAR_CheckIsValidNumber  = 'window.WAPI.isValidNumber("<#MSG_PHONE#>")';
+  FrmConsole_JS_VAR_CheckIsValidNumber = 'window.WAPI.isValidNumber("<#MSG_PHONE#>")'+
+                                        '.then(result => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(result)))'+
+                                        '.catch(error => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(error)));';
+                                        //E tive que deixar a contante dessa forma, fazendo o parser por aqui.... TAVA ASSIM NE?arruma  Ve se é isso ..rodaaa
+//+ " <#MSG_PHONE#>"
+                                        //aqui....
 
 resourcestring
   MSG_ConfigCEF_ExceptNotFoundJS       = '';
@@ -197,18 +202,19 @@ type
 
     TTypeHeader = (Th_None = 0,
                    //Eventos de Retornos
-                   Th_GetAllContacts=1,     Th_GetAllChats=2,                      Th_GetUnreadMessages=3,
-                   Th_GetBatteryLevel=4,    Th_GetQrCodeForm=5,                    Th_GetQrCodeWEB=6,
-                   Th_GetMyNumber=7,        Th_OnChangeConnect=8,                  Th_GetReserv1=9,
-                   Th_GetReserv2=10,        Th_GetReserv3=11,                      Th_GetReserv4=12,
-                   Th_GetReserv5=13,        Th_GetReserv6=14,                      Th_GetReserv7=15,
+                   Th_GetAllContacts=1,         Th_GetAllChats=2,                      Th_GetUnreadMessages=3,
+                   Th_GetBatteryLevel=4,        Th_GetQrCodeForm=5,                    Th_GetQrCodeWEB=6,
+                   Th_GetMyNumber=7,            Th_OnChangeConnect=8,                  Th_GetReserv1=9,
+                   Th_GetReserv2=10,            Th_GetReserv3=11,                      Th_GetReserv4=12,
+                   Th_GetReserv5=13,            Th_GetReserv6=14,                      Th_GetReserv7=15,
+                   Th_GetCheckIsValidNumber=16,
 
                    //Eventos Conexao
-                   Th_Disconnected=16,      Th_Disconnecting=17,         Th_Connected=18,
-                   Th_ConnectedDown=19,     Th_Connecting=20,            Th_ConnectingFt_Desktop=21,
-                   Th_ConnectingFt_HTTP=22, Th_ConnectingNoPhone=23,     Th_Destroy=24,       Th_Destroying=25,
-                   Th_NewSyncContact=26,    Th_Initializing=27,          Th_Initialized=28,
-                   Th_Abort=29,             Th_ForceDisconnect=30,       Th_AlterConfig=31
+                   Th_Disconnected=17,          Th_Disconnecting=18,         Th_Connected=19,
+                   Th_ConnectedDown=20,         Th_Connecting=21,            Th_ConnectingFt_Desktop=22,
+                   Th_ConnectingFt_HTTP=23,     Th_ConnectingNoPhone=24,     Th_Destroy=25,       Th_Destroying=26,
+                   Th_NewSyncContact=27,        Th_Initializing=28,          Th_Initialized=29,
+                   Th_Abort=30,                 Th_ForceDisconnect=31,       Th_AlterConfig=32
                    );
 
     Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;

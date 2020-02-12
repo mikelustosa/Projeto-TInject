@@ -37,8 +37,8 @@ type
     Label1: TLabel;
     Label2: TLabel;
     mem_message: TMemo;
-    btEnviaTextoArq: TButton;
-    btEnviaTexto: TButton;
+    btSendTextAndFile: TButton;
+    btSendText: TButton;
     Panel1: TPanel;
     groupListaChats: TGroupBox;
     Button3: TButton;
@@ -78,13 +78,14 @@ type
     Edt_DDIPDR: TLabeledEdit;
     CheckBox4: TCheckBox;
     chk_grupos: TCheckBox;
-    btEnviarContato: TButton;
+    btSendContact: TButton;
     SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
+    btCheckNumber: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure btEnviaTextoClick(Sender: TObject);
-    procedure btEnviaTextoArqClick(Sender: TObject);
+    procedure btSendTextClick(Sender: TObject);
+    procedure btSendTextAndFileClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure Button7Click(Sender: TObject);
@@ -114,10 +115,13 @@ type
     procedure chk_3Click(Sender: TObject);
     procedure Button6Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
-    procedure btEnviarContatoClick(Sender: TObject);
+    procedure btSendContactClick(Sender: TObject);
     procedure listaContatosClick(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure SpeedButton3Click(Sender: TObject);
+    procedure btCheckNumberClick(Sender: TObject);
+    procedure TInject1GetCheckIsValidNumber(Sender: TObject; Number: string;
+      IsValid: Boolean);
   private
     { Private declarations }
     FIniciando: Boolean;
@@ -207,7 +211,15 @@ begin
   TrayIcon1.ShowBalloonHint;
 end;
 
-procedure TfrmPrincipal.btEnviarContatoClick(Sender: TObject);
+procedure TfrmPrincipal.btCheckNumberClick(Sender: TObject);
+begin
+  if not TInject1.Auth then
+     Exit;
+
+  TInject1.CheckIsValidNumber(ed_num.Text);
+end;
+
+procedure TfrmPrincipal.btSendContactClick(Sender: TObject);
 begin
   try
     if not TInject1.Auth then
@@ -220,7 +232,7 @@ begin
   end;
 end;
 
-procedure TfrmPrincipal.btEnviaTextoArqClick(Sender: TObject);
+procedure TfrmPrincipal.btSendTextAndFileClick(Sender: TObject);
 Begin
   if not OpenDialog1.Execute then
      Exit;
@@ -270,7 +282,7 @@ begin
   TInject1.GetBatteryStatus;
 end;
 
-procedure TfrmPrincipal.btEnviaTextoClick(Sender: TObject);
+procedure TfrmPrincipal.btSendTextClick(Sender: TObject);
 begin
   try
     if not TInject1.Auth then
@@ -429,6 +441,14 @@ begin
   listaChats.Clear;
   for AChat in Chats.result do
     AddChatList('('+ AChat.unreadCount.ToString + ') ' + AChat.name + ' - ' + AChat.id);
+end;
+
+procedure TfrmPrincipal.TInject1GetCheckIsValidNumber(Sender: TObject;
+  Number: string; IsValid: Boolean);
+begin
+  if IsValid then
+     ShowMessage('Whatsapp Valid') else
+     ShowMessage('Whatsapp Invalid') ;
 end;
 
 procedure TfrmPrincipal.TInject1GetMyNumber(Sender: TObject);

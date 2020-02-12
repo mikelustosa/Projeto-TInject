@@ -134,6 +134,15 @@ type
   TResponseBattery = class(TClassPadraoString)
   end;
 
+  TResponseCheckIsValidNumber = class(TClassPadrao)
+  private
+    FResult: Boolean;
+    fNumber: String;
+  Public
+    Property Result : Boolean  Read FResult  Write FResult;
+    Property Number : String   Read fNumber  Write fNumber;
+  end;
+
   TOnChangeConnect = class(TClassPadrao)
   private
     FResult: Boolean;

@@ -1,4 +1,4 @@
-# Componente TInject
+﻿# Componente TInject
 Componente mais RECIFENSE da internet!<br>
 Para criação de chatBots com delphi e o whatsapp<br></br><br></br>
 
@@ -55,6 +55,7 @@ Recursos / Resources<br>
 13 - Simular digitando - Typing simulation - OK<br>
 14 - Recebimento de novas mensagem - Receiving new messages - OK<br>
 15 - Configurações de DDI - International number configuration - OK<br>
+16 - Validação de números do whatsapp - Whatsapp number validator - OK<br>
 
 
 *Nota 1: O TInject é de código aberto, e não possui *nenhum outro componente* de terceiro além do TChromium vinculado ao código, nem muito menos utilização de *licenças* ou afins de outros componentes. Baixem os *fontes* para comprovar.

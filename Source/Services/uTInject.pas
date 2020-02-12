@@ -2,8 +2,7 @@
                               TINJECT - Componente de comunicação (Não Oficial)
                                          (Não Oficial WhatsApp)
 ####################################################################################################################
-    Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com     - +55 81 9.9630-2385
-    Developer.: Joathan Theiller           - jtheiller@hotmail.com     -
+
 ####################################################################################################################
   Obs:
      - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores e mantendo sempre o nome do IDEALIZADOR
@@ -44,6 +43,7 @@ uses
 
 type
   {Events}
+  TOnGetCheckIsValidNumber = Procedure (Sender : TObject; Number: String;  IsValid:Boolean) of object;
   TGetUnReadMessages    = procedure(Const Chats: TChatList) of object;
   TOnGetQrCode          = procedure(Const Sender: Tobject; Const QrCode: TResultQRCodeClass) of object;
   TOnAllContacts        = procedure(Const AllContacts: TRetornoAllContacts) of object;
@@ -86,6 +86,7 @@ type
     FOnGetAllContactList        : TOnAllContacts;
     FOnLowBattery               : TNotifyEvent;
     FOnGetBatteryLevel          : TNotifyEvent;
+    FOnGetCheckIsValidNumber    : TOnGetCheckIsValidNumber;
     FOnGetQrCode                : TOnGetQrCode;
     FOnUpdateJS                 : TNotifyEvent;
     FOnGetChatList              : TGetUnReadMessages;
@@ -118,6 +119,7 @@ type
     procedure Logtout();
 
     procedure GetBatteryStatus;
+    procedure CheckIsValidNumber(PNumberPhone: string);
     procedure GetAllContacts;
     Function  GetContact(Pindex: Integer): TContactClass;  deprecated;  //Versao 1.0.2.0 disponivel ate Versao 1.0.6.0
     procedure GetAllChats;
@@ -152,6 +154,7 @@ type
     property OnGetUnReadMessages         : TGetUnReadMessages         read FOnGetUnReadMessages            write FOnGetUnReadMessages;
     property OnGetStatus                 : TNotifyEvent               read FOnGetStatus                    write FOnGetStatus;
     property OnGetBatteryLevel           : TNotifyEvent               read FOnGetBatteryLevel              write FOnGetBatteryLevel;
+    property OnGetCheckIsValidNumber     : TOnGetCheckIsValidNumber   read FOnGetCheckIsValidNumber        write FOnGetCheckIsValidNumber;
     property OnGetMyNumber               : TNotifyEvent               read FOnGetMyNumber                  write FOnGetMyNumber;
     property OnUpdateJS                  : TNotifyEvent               read FOnUpdateJS                     write FOnUpdateJS;
     property OnLowBattery                : TNotifyEvent               read FOnLowBattery                   write SetOnLowBattery;
@@ -204,6 +207,39 @@ begin
 
   Result := FrmConsole.ConfigureNetWork;
 end; }
+
+procedure TInject.CheckIsValidNumber(PNumberPhone: string);
+var
+  lThread : TThread;
+begin
+  If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
+  if pos('@', PNumberPhone) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
+    Exit;
+  end;
+
+  lThread := TThread.CreateAnonymousThread(procedure
+      begin
+        TThread.Synchronize(nil, procedure
+        begin
+          if Assigned(FrmConsole) then
+          begin
+            FrmConsole.CheckIsValidNumber(PNumberPhone);
+          end;
+        end);
+
+      end);
+  lThread.Start;
+
+//    if Assigned(FrmConsole) then
+//     FrmConsole.CheckIsValidNumber(PNumberPhone);
+end;
 
 function TInject.ConsolePronto: Boolean;
 begin
@@ -401,6 +437,23 @@ begin
   end;
 
 
+  if (PTypeHeader In [Th_GetCheckIsValidNumber]) then
+  Begin
+    if not Assigned(FrmConsole) then
+       Exit;
+
+    if not Assigned(FOnGetCheckIsValidNumber) then
+       Exit;
+
+     //TResponseCheckIsValidNumber(LOutClass)
+    FOnGetCheckIsValidNumber(Self,
+                             TResponseCheckIsValidNumber(PReturnClass).Number,
+                             TResponseCheckIsValidNumber(PReturnClass).result
+                             );
+    exit;
+  end;
+
+
   if (PTypeHeader In [Th_GetAllChats, Th_getUnreadMessages]) then
   Begin
     if not Assigned(PReturnClass) then
@@ -481,8 +534,9 @@ begin
   Begin
     FMyNumber := FAdjustNumber.FormatOut(PValue);
     if Assigned(FOnGetMyNumber) then
-       fOnGetMyNumber(Self);
+       FOnGetMyNumber(Self);
   end;
+
 
   if PTypeHeader = Th_GetBatteryLevel then
   Begin

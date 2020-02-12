@@ -2,7 +2,7 @@ object frmPrincipal: TfrmPrincipal
   Left = 0
   Top = 0
   Caption = 'Demo TInject'
-  ClientHeight = 443
+  ClientHeight = 471
   ClientWidth = 839
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -18,7 +18,7 @@ object frmPrincipal: TfrmPrincipal
   TextHeight = 13
   object Lbl_Avisos: TLabel
     Left = 0
-    Top = 411
+    Top = 439
     Width = 839
     Height = 13
     Align = alBottom
@@ -30,7 +30,7 @@ object frmPrincipal: TfrmPrincipal
     Left = 3
     Top = 3
     Width = 833
-    Height = 405
+    Height = 433
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
@@ -41,7 +41,7 @@ object frmPrincipal: TfrmPrincipal
         Left = 333
         Top = 3
         Width = 489
-        Height = 371
+        Height = 399
         Align = alClient
         BorderStyle = bsSingle
         Caption = 'Pnl_Config'
@@ -51,7 +51,7 @@ object frmPrincipal: TfrmPrincipal
         TabOrder = 0
         DesignSize = (
           487
-          369)
+          397)
         object Image1: TImage
           Left = 316
           Top = 129
@@ -63,7 +63,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object SpeedButton2: TSpeedButton
           Left = 1
-          Top = 339
+          Top = 367
           Width = 485
           Height = 29
           Align = alBottom
@@ -272,7 +272,7 @@ object frmPrincipal: TfrmPrincipal
         Left = 3
         Top = 3
         Width = 324
-        Height = 371
+        Height = 399
         Align = alLeft
         BorderStyle = bsSingle
         Caption = 'Panel2'
@@ -282,7 +282,7 @@ object frmPrincipal: TfrmPrincipal
         TabOrder = 1
         DesignSize = (
           322
-          369)
+          397)
         object whatsOn: TImage
           Left = 108
           Top = 149
@@ -2893,7 +2893,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object Label3: TLabel
           Left = 1
-          Top = 259
+          Top = 287
           Width = 320
           Height = 80
           Align = alBottom
@@ -2908,6 +2908,7 @@ object frmPrincipal: TfrmPrincipal
           ParentFont = False
           Visible = False
           WordWrap = True
+          ExplicitTop = 259
         end
         object SpeedButton1: TSpeedButton
           Left = 4
@@ -3194,7 +3195,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object SpeedButton3: TSpeedButton
           Left = 1
-          Top = 339
+          Top = 367
           Width = 320
           Height = 29
           Align = alBottom
@@ -3288,16 +3289,16 @@ object frmPrincipal: TfrmPrincipal
         Left = 0
         Top = 0
         Width = 218
-        Height = 377
+        Height = 405
         Align = alLeft
         Caption = 'Envio de Mensagem /  Send Messages'
         TabOrder = 0
         DesignSize = (
           218
-          377)
+          405)
         object Label1: TLabel
           Left = 5
-          Top = 58
+          Top = 56
           Width = 82
           Height = 13
           Caption = 'Destino / Destiny'
@@ -3313,20 +3314,18 @@ object frmPrincipal: TfrmPrincipal
           Left = 2
           Top = 28
           Width = 214
-          Height = 29
+          Height = 22
           Align = alTop
           Alignment = taCenter
           AutoSize = False
           Caption = ' '
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -16
+          Font.Height = -13
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
           Visible = False
-          ExplicitLeft = -2
-          ExplicitTop = 44
         end
         object Label4: TLabel
           Left = 2
@@ -3334,21 +3333,21 @@ object frmPrincipal: TfrmPrincipal
           Width = 214
           Height = 13
           Align = alTop
-          Caption = '   Meu N'#250'mero'
-          ExplicitWidth = 69
+          Caption = '   Meu N'#250'mero / My number'
+          ExplicitWidth = 132
         end
         object mem_message: TMemo
           Left = 5
           Top = 116
           Width = 204
-          Height = 125
+          Height = 109
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 1
         end
-        object btEnviaTextoArq: TButton
+        object btSendTextAndFile: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 285
+          Top = 282
           Width = 208
           Height = 25
           Align = alBottom
@@ -3356,12 +3355,12 @@ object frmPrincipal: TfrmPrincipal
           ImageIndex = 0
           Images = ImageList1
           TabOrder = 2
-          OnClick = btEnviaTextoArqClick
+          OnClick = btSendTextAndFileClick
         end
-        object btEnviaTexto: TButton
+        object btSendText: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 254
+          Top = 251
           Width = 208
           Height = 25
           Align = alBottom
@@ -3369,11 +3368,11 @@ object frmPrincipal: TfrmPrincipal
           ImageIndex = 0
           Images = ImageList1
           TabOrder = 3
-          OnClick = btEnviaTextoClick
+          OnClick = btSendTextClick
         end
         object ed_num: TComboBox
           Left = 5
-          Top = 73
+          Top = 71
           Width = 204
           Height = 21
           AutoDropDown = True
@@ -3388,7 +3387,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object CheckBox5: TCheckBox
           Left = 115
-          Top = 54
+          Top = 52
           Width = 88
           Height = 17
           Caption = 'Auto Procurar'
@@ -3398,7 +3397,7 @@ object frmPrincipal: TfrmPrincipal
         object btStatusBat: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 347
+          Top = 375
           Width = 208
           Height = 25
           Align = alBottom
@@ -3408,10 +3407,10 @@ object frmPrincipal: TfrmPrincipal
           TabOrder = 5
           OnClick = btStatusBatClick
         end
-        object btEnviarContato: TButton
+        object btSendContact: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 316
+          Top = 313
           Width = 208
           Height = 25
           Align = alBottom
@@ -3419,14 +3418,27 @@ object frmPrincipal: TfrmPrincipal
           ImageIndex = 0
           Images = ImageList1
           TabOrder = 6
-          OnClick = btEnviarContatoClick
+          OnClick = btSendContactClick
+        end
+        object btCheckNumber: TButton
+          AlignWithMargins = True
+          Left = 5
+          Top = 344
+          Width = 208
+          Height = 25
+          Align = alBottom
+          Caption = 'Verificar n'#250'mero / Check number'
+          ImageIndex = 0
+          Images = ImageList1
+          TabOrder = 7
+          OnClick = btCheckNumberClick
         end
       end
       object Panel1: TPanel
         Left = 218
         Top = 0
         Width = 607
-        Height = 377
+        Height = 405
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel1'
@@ -3435,7 +3447,7 @@ object frmPrincipal: TfrmPrincipal
         object Splitter1: TSplitter
           Left = 273
           Top = 0
-          Height = 377
+          Height = 405
           ExplicitLeft = 240
           ExplicitTop = 72
           ExplicitHeight = 100
@@ -3444,7 +3456,7 @@ object frmPrincipal: TfrmPrincipal
           Left = 276
           Top = 0
           Width = 331
-          Height = 377
+          Height = 405
           Align = alClient
           Caption = 'Lista Conversas Abertas / Chat list'
           Font.Charset = DEFAULT_CHARSET
@@ -3461,7 +3473,7 @@ object frmPrincipal: TfrmPrincipal
             Width = 321
             Height = 25
             Align = alTop
-            Caption = 'Listar Chats Abertos'
+            Caption = 'Listar Chats / Chat list'
             Font.Charset = DEFAULT_CHARSET
             Font.Color = clWindowText
             Font.Height = -11
@@ -3478,7 +3490,7 @@ object frmPrincipal: TfrmPrincipal
             Left = 5
             Top = 49
             Width = 321
-            Height = 323
+            Height = 351
             Align = alClient
             Columns = <>
             LargeImages = ImageList1
@@ -3495,7 +3507,7 @@ object frmPrincipal: TfrmPrincipal
           Left = 0
           Top = 0
           Width = 273
-          Height = 377
+          Height = 405
           Align = alLeft
           Caption = 'Lista de Contatos / Contact List'
           TabOrder = 1
@@ -3520,7 +3532,7 @@ object frmPrincipal: TfrmPrincipal
               Margins.Right = 2
               Margins.Bottom = 2
               Align = alTop
-              Caption = 'Listar Contatos do Aparelho'
+              Caption = 'Listar Contatos / Contact list'
               ImageIndex = 0
               Images = ImageList1
               TabOrder = 0
@@ -3532,7 +3544,7 @@ object frmPrincipal: TfrmPrincipal
             Left = 5
             Top = 72
             Width = 263
-            Height = 300
+            Height = 328
             Align = alClient
             Columns = <>
             LargeImages = ImageList1
@@ -3552,7 +3564,7 @@ object frmPrincipal: TfrmPrincipal
             Width = 263
             Height = 17
             Align = alTop
-            Caption = 'Mostrar Grupos'
+            Caption = 'Mostrar Grupos / See groups'
             Checked = True
             State = cbChecked
             TabOrder = 2
@@ -3568,7 +3580,7 @@ object frmPrincipal: TfrmPrincipal
         Left = 0
         Top = 23
         Width = 825
-        Height = 354
+        Height = 382
         Align = alClient
         BorderStyle = bsNone
         Font.Charset = DEFAULT_CHARSET
@@ -3597,12 +3609,12 @@ object frmPrincipal: TfrmPrincipal
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 424
+    Top = 452
     Width = 839
     Height = 19
     Panels = <
       item
-        Text = 'Aplicativo DEMO do componente TInject - www.TInject.com.br'
+        Text = 'Aplicativo DEMO do componente TInject - www.tinject.com.br'
         Width = 640
       end
       item
@@ -3686,6 +3698,7 @@ object frmPrincipal: TfrmPrincipal
     Config.AutoDelay = 30
     Config.ReceiveAttachmentAuto = False
     Config.Zoom = 0
+    Config.SecondsMonitor = 5
     Config.ShowRandom = False
     AjustNumber.LengthPhone = 8
     AjustNumber.DDIDefault = 55
@@ -3696,6 +3709,7 @@ object frmPrincipal: TfrmPrincipal
     OnGetUnReadMessages = TInject1GetUnReadMessages
     OnGetStatus = TInject1GetStatus
     OnGetBatteryLevel = TInject1GetBatteryLevel
+    OnGetCheckIsValidNumber = TInject1GetCheckIsValidNumber
     OnGetMyNumber = TInject1GetMyNumber
     OnLowBattery = TInject1LowBattery
     OnDisconnectedBrute = TInject1DisconnectedBrute
