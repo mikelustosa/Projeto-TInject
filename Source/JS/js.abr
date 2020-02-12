@@ -1503,7 +1503,7 @@ window.WAPI.sendMessageToID2 = function(id, msgText) {
     }
 }
 
-//Validar numero whatsapp
+//Validar numero whatsapp 12/02/2020
 window.WAPI.isValidNumber = async function (phoneId) {
     isValid = window.Store.WapQuery.queryExist(phoneId).then(result => {
         return result.jid !== undefined;
