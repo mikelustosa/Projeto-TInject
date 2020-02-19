@@ -68,7 +68,7 @@ if (!window.Store) {
             let neededObjects = [
                 { id: "Store", conditions: (module) => (module.Chat && module.Msg) ? module : null },
                 { id: "MediaCollection", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.processAttachments) ? module.default : null },
-                { id: "ChatClass", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.Collection !== undefined && module.default.prototype.Collection === "Chat") ? module : null },
+		{ id: "ChatClass", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.Collection !== undefined && module.default.prototype.Collection === "Chat") ? module : null },
                 { id: "MediaProcess", conditions: (module) => (module.BLOB) ? module : null },
                 { id: "Wap", conditions: (module) => (module.createGroup) ? module : null },
                 { id: "ServiceWorker", conditions: (module) => (module.default && module.default.killServiceWorker) ? module : null },
@@ -1269,11 +1269,13 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption, done) {
     var idUser = new window.Store.UserConstructor(chatid, {
         intentionallyUsePrivateConstructor: true
     });
+	
     // create new chat
     return Store.Chat.find(idUser).then((chat) => {
         var mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
         var mc = new Store.MediaCollection(chat);
-        //Deprecated  - Mike Lustosa 19/02/2020
+        
+		//Deprecated  - Mike Lustosa 19/02/2020
 		/*mc.processFiles([mediaBlob], chat, 1).then(() => {
             var media = mc.models[0];
             media.sendToChat(chat, {
@@ -1288,8 +1290,6 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption, done) {
 			media.sendToChat(chat, {caption:caption});
 			if (done !== undefined) done(true);
 		});
-            if (done !== undefined) done(true);
-        });
     });
 }
 
