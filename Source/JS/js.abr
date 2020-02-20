@@ -1,7 +1,8 @@
-﻿//Version_JS;Version_TInjectMin;Version_CEF4Min
+//Version_JS;Version_TInjectMin;Version_CEF4Min
 //1.0.0.4;1.0.0.9;78.3.0
 //
 //
+var contactID;
 
 function getMyNumber() {
     SetConsoleMessage('getMyNumber', localStorage.getItem('last-wid'));
@@ -847,24 +848,27 @@ window.WAPI.sendMessage2 = function(id, message, done) {
     return false;
 };
 
-//Funcao desativada em 27/11/2019 by Mike
-/*window.WAPI.sendSeen = function (id, done) {
-var chat = window.WAPI.getChat(id);
-if (chat !== undefined) {
-if (done !== undefined) {
-Store.SendSeen(Store.Chat.models[0], false).then(function () {
-done(true);
-});
-return true;
-} else {
-Store.SendSeen(Store.Chat.models[0], false);
-return true;
-}
-}
-if (done !== undefined) done();
-return false;
+/*
+//Apos receber uma mensagem, e nao responder, essa funcao nao funciona de forma isolada
+window.WAPI.sendSeen = function(id, done) {
+    var chat = window.WAPI.getChat(id);
+    if (chat !== undefined) {
+        if (done !== undefined) {
+            Store.SendSeen(Store.Chat.models[0], false).then(function() {
+                done(true);
+            });
+            return true;
+        } else {
+            Store.SendSeen(Store.Chat.models[0], false);
+            return true;
+        }
+    }
+    if (done !== undefined) done();
+    return false;
 }; */
 
+//Alterado em 20/02/2020 Creditos: by Lucas
+//Apos receber uma mensagem, e nao responder, essa funcao funciona de forma isolada
 window.WAPI.sendSeen = function(id, done) {
     var chat = window.WAPI.getChat(id);
     if (chat !== undefined) {
@@ -958,7 +962,7 @@ window.WAPI.getUnreadMessages = function(includeMe, includeNotifications, use_un
         done(output);
 
     }
-
+	contactID = chats.id;
     SetConsoleMessage("getUnreadMessages", JSON.stringify(output));
     return output;
 };
