@@ -848,7 +848,7 @@ window.WAPI.sendMessage2 = function(id, message, done) {
     return false;
 };
 
-/*
+
 //Apos receber uma mensagem, e nao responder, essa funcao nao funciona de forma isolada
 window.WAPI.sendSeen = function(id, done) {
     var chat = window.WAPI.getChat(id);
@@ -865,8 +865,9 @@ window.WAPI.sendSeen = function(id, done) {
     }
     if (done !== undefined) done();
     return false;
-}; */
+}; 
 
+/*
 //Alterado em 20/02/2020 Creditos: by Lucas
 //Apos receber uma mensagem, e nao responder, essa funcao funciona de forma isolada
 window.WAPI.sendSeen = function(id, done) {
@@ -884,7 +885,7 @@ window.WAPI.sendSeen = function(id, done) {
     }
     if (done !== undefined) done();
     return false;
-};
+}; */
 
 function isChatMessage(message) {
     if (message.isSentByMe) {
@@ -1297,7 +1298,7 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption, done) {
     });
 }
 
-//Função criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
+//FunÃ§Ã£o criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
 window.WAPI.sendMessageToID = function(chatid, msgText) {
     var idUser = new window.Store.UserConstructor(chatid, {
         intentionallyUsePrivateConstructor: true
