@@ -624,6 +624,15 @@ window.WAPI.isLoggedIn = function(done) {
     return isLogged;
 };
 
+//Funcao para saber o status do servico - Mike 26/02/2020
+window.WAPI.isConnected = function (done) {
+    const isConnected = document.querySelector('*[data-icon="alert-phone"]') !== null ? false : true;
+
+    if (done !== undefined) done(isConnected);
+	SetConsoleMessage("GetCheckIsConnected", JSON.stringify(isConnected));
+    return isConnected;
+};
+
 window.WAPI.processMessageObj = function(messageObj, includeMe, includeNotifications) {
     if (messageObj.isNotification) {
         if (includeNotifications)
@@ -1300,7 +1309,7 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption, done) {
     });
 }
 
-//FunÃ§Ã£o criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
+//FunÃƒÂ§ÃƒÂ£o criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
 window.WAPI.sendMessageToID = function(chatid, msgText) {
     var idUser = new window.Store.UserConstructor(chatid, {
         intentionallyUsePrivateConstructor: true
