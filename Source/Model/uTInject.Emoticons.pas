@@ -123,12 +123,10 @@ type
     const ApontaCima       = '👆🏻';
     const ApontaBaixo      = '👇🏻';
     const PanelaComComida  = '🥘';
-
     const Estrela          = '⭐';
-
     const Erro             = '❌';
-
     const Duvida           = '⁉';
+    const robot            = '🤖';
 
   end;
 

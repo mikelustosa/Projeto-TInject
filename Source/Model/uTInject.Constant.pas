@@ -82,9 +82,7 @@ Const
   FrmConsole_JS_VAR_CheckIsValidNumber = 'window.WAPI.isValidNumber("<#MSG_PHONE#>")'+
                                         '.then(result => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(result)))'+
                                         '.catch(error => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(error)));';
-                                        //E tive que deixar a contante dessa forma, fazendo o parser por aqui.... TAVA ASSIM NE?arruma  Ve se é isso ..rodaaa
-//+ " <#MSG_PHONE#>"
-                                        //aqui....
+  FrmConsole_JS_VAR_IsConnected        = 'window.WAPI.isConnected();';
 
 resourcestring
   MSG_ConfigCEF_ExceptNotFoundJS       = '';
@@ -207,14 +205,15 @@ type
                    Th_GetMyNumber=7,            Th_OnChangeConnect=8,                  Th_GetReserv1=9,
                    Th_GetReserv2=10,            Th_GetReserv3=11,                      Th_GetReserv4=12,
                    Th_GetReserv5=13,            Th_GetReserv6=14,                      Th_GetReserv7=15,
-                   Th_GetCheckIsValidNumber=16,
+                   Th_GetCheckIsValidNumber=16, Th_GetCheckIsConnected=17,
 
                    //Eventos Conexao
-                   Th_Disconnected=17,          Th_Disconnecting=18,         Th_Connected=19,
-                   Th_ConnectedDown=20,         Th_Connecting=21,            Th_ConnectingFt_Desktop=22,
-                   Th_ConnectingFt_HTTP=23,     Th_ConnectingNoPhone=24,     Th_Destroy=25,       Th_Destroying=26,
-                   Th_NewSyncContact=27,        Th_Initializing=28,          Th_Initialized=29,
-                   Th_Abort=30,                 Th_ForceDisconnect=31,       Th_AlterConfig=32
+                   Th_Disconnected=18,          Th_Disconnecting=19,         Th_Connected=20,
+                   Th_ConnectedDown=21,         Th_Connecting=22,            Th_ConnectingFt_Desktop=23,
+                   Th_ConnectingFt_HTTP=24,     Th_ConnectingNoPhone=25,     Th_Destroy=26,
+                   Th_Destroying=27,            Th_NewSyncContact=28,        Th_Initializing=29,
+                   Th_Initialized=30,           Th_Abort=31,                 Th_ForceDisconnect=32,
+                   Th_AlterConfig=33
                    );
 
     Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;

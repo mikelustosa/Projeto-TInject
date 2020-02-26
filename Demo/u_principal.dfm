@@ -3340,7 +3340,7 @@ object frmPrincipal: TfrmPrincipal
           Left = 5
           Top = 116
           Width = 204
-          Height = 109
+          Height = 98
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 1
         end
@@ -3432,6 +3432,19 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 7
           OnClick = btCheckNumberClick
+        end
+        object btIsConnected: TButton
+          AlignWithMargins = True
+          Left = 5
+          Top = 220
+          Width = 208
+          Height = 25
+          Align = alBottom
+          Caption = 'Checar conex'#227'o / Check connection'
+          ImageIndex = 0
+          Images = ImageList1
+          TabOrder = 8
+          OnClick = btIsConnectedClick
         end
       end
       object Panel1: TPanel
@@ -3585,7 +3598,7 @@ object frmPrincipal: TfrmPrincipal
         BorderStyle = bsNone
         Font.Charset = DEFAULT_CHARSET
         Font.Color = 4227327
-        Font.Height = -40
+        Font.Height = -27
         Font.Name = 'Tahoma'
         Font.Style = []
         Lines.Strings = (
@@ -3709,6 +3722,7 @@ object frmPrincipal: TfrmPrincipal
     OnGetUnReadMessages = TInject1GetUnReadMessages
     OnGetStatus = TInject1GetStatus
     OnGetBatteryLevel = TInject1GetBatteryLevel
+    OnIsConnected = TInject1IsConnected
     OnGetCheckIsValidNumber = TInject1GetCheckIsValidNumber
     OnGetMyNumber = TInject1GetMyNumber
     OnLowBattery = TInject1LowBattery

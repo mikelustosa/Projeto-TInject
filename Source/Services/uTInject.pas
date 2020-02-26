@@ -43,10 +43,11 @@ uses
 
 type
   {Events}
-  TOnGetCheckIsValidNumber = Procedure (Sender : TObject; Number: String;  IsValid:Boolean) of object;
-  TGetUnReadMessages    = procedure(Const Chats: TChatList) of object;
-  TOnGetQrCode          = procedure(Const Sender: Tobject; Const QrCode: TResultQRCodeClass) of object;
-  TOnAllContacts        = procedure(Const AllContacts: TRetornoAllContacts) of object;
+  TOnGetCheckIsConnected    = Procedure (Sender : TObject; Connected: Boolean) of object;
+  TOnGetCheckIsValidNumber  = Procedure (Sender : TObject; Number: String;  IsValid: Boolean) of object;
+  TGetUnReadMessages        = procedure(Const Chats: TChatList) of object;
+  TOnGetQrCode              = procedure(Const Sender: Tobject; Const QrCode: TResultQRCodeClass) of object;
+  TOnAllContacts            = procedure(Const AllContacts: TRetornoAllContacts) of object;
   TInject = class(TComponent)
   private
     FInjectConfig           : TInjectConfig;
@@ -58,12 +59,13 @@ type
     FFormQrCodeType         : TFormQrCodeType;
     FMyNumber               : string;
     FGetBatteryLevel        : Integer;
+    FGetIsConnected         : Boolean;
     Fversion                : String;
     Fstatus                 : TStatusType;
     FDestruido              : Boolean;
     //Typing                  : Boolean;
     FLanguageInject         : TLanguageInject;
-    FOnDisconnectedBrute: TNotifyEvent;
+    FOnDisconnectedBrute    : TNotifyEvent;
     { Private  declarations }
     Function  ConsolePronto:Boolean;
     procedure SetAuth(const Value: boolean);
@@ -86,6 +88,7 @@ type
     FOnGetAllContactList        : TOnAllContacts;
     FOnLowBattery               : TNotifyEvent;
     FOnGetBatteryLevel          : TNotifyEvent;
+    FOnGetCheckIsConnected      : TOnGetCheckIsConnected;//mike
     FOnGetCheckIsValidNumber    : TOnGetCheckIsValidNumber;
     FOnGetQrCode                : TOnGetQrCode;
     FOnUpdateJS                 : TNotifyEvent;
@@ -120,6 +123,7 @@ type
 
     procedure GetBatteryStatus;
     procedure CheckIsValidNumber(PNumberPhone: string);
+    procedure CheckIsConnected;
     procedure GetAllContacts;
     Function  GetContact(Pindex: Integer): TContactClass;  deprecated;  //Versao 1.0.2.0 disponivel ate Versao 1.0.6.0
     procedure GetAllChats;
@@ -127,6 +131,7 @@ type
     function  GetUnReadMessages: String;
 
     Property  BatteryLevel      : Integer              Read FGetBatteryLevel;
+    Property  IsConnected       : Boolean              Read FGetIsConnected;
     Property  MyNumber          : String               Read FMyNumber;
     property  Authenticated     : boolean              read TestConnect;
     property  Status            : TStatusType          read FStatus;
@@ -154,7 +159,9 @@ type
     property OnGetUnReadMessages         : TGetUnReadMessages         read FOnGetUnReadMessages            write FOnGetUnReadMessages;
     property OnGetStatus                 : TNotifyEvent               read FOnGetStatus                    write FOnGetStatus;
     property OnGetBatteryLevel           : TNotifyEvent               read FOnGetBatteryLevel              write FOnGetBatteryLevel;
+    property OnIsConnected               : TOnGetCheckIsConnected     read FOnGetCheckIsConnected          write FOnGetCheckIsConnected;
     property OnGetCheckIsValidNumber     : TOnGetCheckIsValidNumber   read FOnGetCheckIsValidNumber        write FOnGetCheckIsValidNumber;
+
     property OnGetMyNumber               : TNotifyEvent               read FOnGetMyNumber                  write FOnGetMyNumber;
     property OnUpdateJS                  : TNotifyEvent               read FOnUpdateJS                     write FOnUpdateJS;
     property OnLowBattery                : TNotifyEvent               read FOnLowBattery                   write SetOnLowBattery;
@@ -162,6 +169,7 @@ type
     property OnDisconnected              : TNotifyEvent               read FOnDisconnected                 write FOnDisconnected;
     property OnDisconnectedBrute         : TNotifyEvent               read FOnDisconnectedBrute            write FOnDisconnectedBrute;
     property OnErroAndWarning            : TOnErroInternal            read FOnErroInternal                 write FOnErroInternal;
+
   end;
 
 
@@ -207,6 +215,12 @@ begin
 
   Result := FrmConsole.ConfigureNetWork;
 end; }
+
+procedure TInject.CheckIsConnected;
+begin
+  if Assigned(FrmConsole) then
+      FrmConsole.CheckIsConnected;
+end;
 
 procedure TInject.CheckIsValidNumber(PNumberPhone: string);
 var
@@ -282,6 +296,7 @@ begin
   FTranslatorInject                   := TTranslatorInject.create;
   FDestruido                          := False;
   FGetBatteryLevel                    := -1;
+
   FFormQrCodeType                     := Ft_Http;
   LanguageInject                      := Tl_Portugues_BR;
   Fversion                            := TInjectVersion;
@@ -538,22 +553,20 @@ begin
   end;
 
 
-  if PTypeHeader = Th_GetBatteryLevel then
+  if (PTypeHeader In [Th_GetCheckIsConnected]) then
   Begin
-    FGetBatteryLevel :=  StrToIntDef(PValue, -1);
-    if Assigned(FOnLowBattery) then
-    Begin
-      if FGetBatteryLevel <= Config.LowBatteryIs Then
-      Begin
-        FOnLowBattery(Self);
-      end else
-      Begin
-        if Assigned(fOnGetBatteryLevel) then
-           fOnGetBatteryLevel(Self);
-      end;
-    end;
-    Exit;
+    if not Assigned(FrmConsole) then
+       Exit;
+
+    if not Assigned(FOnGetCheckIsConnected) then
+       Exit;
+
+    FOnGetCheckIsConnected(Self,
+                             TResponseCheckIsConnected(PReturnClass).result
+                             );
+    exit;
   end;
+
 
   if PTypeHeader in [Th_Connected, Th_Disconnected]  then
   Begin

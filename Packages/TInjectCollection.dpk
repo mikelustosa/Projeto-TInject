@@ -90,8 +90,8 @@ contains
   uTInject.Emoticons in '..\Source\Model\uTInject.Emoticons.pas',
   uTInject.ExePath in '..\Source\Model\uTInject.ExePath.pas',
   uTInject.JS in '..\Source\Model\uTInject.JS.pas',
-  uCSV.Import in '..\Source\Model\uCSV.Import.pas',
-  u_principal in '..\Demo\u_principal.pas' {frmPrincipal};
+  uCSV.Import in '..\Source\Model\uCSV.Import.pas';
+  //u_principal in '..\Demo\u_principal.pas' {frmPrincipal};
 
 end.
 

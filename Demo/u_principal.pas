@@ -82,6 +82,7 @@ type
     SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
     btCheckNumber: TButton;
+    btIsConnected: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btSendTextClick(Sender: TObject);
@@ -122,6 +123,8 @@ type
     procedure btCheckNumberClick(Sender: TObject);
     procedure TInject1GetCheckIsValidNumber(Sender: TObject; Number: string;
       IsValid: Boolean);
+    procedure btIsConnectedClick(Sender: TObject);
+    procedure TInject1IsConnected(Sender: TObject; Connected: Boolean);
   private
     { Private declarations }
     FIniciando: Boolean;
@@ -246,6 +249,14 @@ Begin
     ed_num.SelectAll;
     ed_num.SetFocus;
   end;
+end;
+
+procedure TfrmPrincipal.btIsConnectedClick(Sender: TObject);
+begin
+  if not TInject1.Auth then
+     Exit;
+
+  TInject1.CheckIsConnected();
 end;
 
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
@@ -536,7 +547,6 @@ var
   AChat: TChatClass;
   AMessage: TMessagesClass;
   contato, telefone: string;
-  blobURL: TMediaData_BlobClass;
 begin
     for AChat in Chats.result do
     begin
@@ -552,13 +562,8 @@ begin
             //memo_unReadMessagen.Lines.Add(PChar(AMessage.mediaData.&type) + 'Lat: '+AMessage.lat.ToString + ' Long: '+ AMessage.lng.ToString);
             memo_unReadMessagen.Lines.Add(PChar(AMessage.body));
 
-
-            //isMedia: 0(false) or -1(true) Image
-            //isMMS:   0(false) or -1(true) Audio
-            //memo_unReadMessagen.Lines.Add(PChar( 'ID Message  : ' + AMessage.t.ToString));
-            //memo_unReadMessagen.Lines.Add('__________________________________');
             telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
-            contato   := AMessage.Sender.pushName;
+            contato   :=  AMessage.Sender.pushName;
             TInject1.ReadMessages(AChat.id);
 
             if chk_AutoResposta.Checked then
@@ -570,13 +575,20 @@ begin
 end;
 
 
+procedure TfrmPrincipal.TInject1IsConnected(Sender: TObject;
+  Connected: Boolean);
+begin
+  if Connected = true then
+  showMessage('Conectado / Connected') else
+  showMessage('Desconectado / Not connected')
+end;
+
 procedure TfrmPrincipal.TInject1LowBattery(Sender: TObject);
 begin
   Timer2.Enabled        := False;
   Lbl_Avisos.Caption    := 'Alarme de BATERIA.  Você está com ' + TInject(Sender).BatteryLevel.ToString + '%';
   Lbl_Avisos.Font.Color := clRed;
   Timer2.Enabled        := True;
-
 end;
 
 procedure TfrmPrincipal.listaChatsDblClick(Sender: TObject);

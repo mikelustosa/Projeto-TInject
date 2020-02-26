@@ -1,6 +1,6 @@
 ﻿{####################################################################################################################
                               TINJECT - Componente de comunicação (Não Oficial)
-                                           www.tinject.com.br
+                                            www.tinject.com.br
                                             Novembro de 2019
 ####################################################################################################################
     Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
@@ -143,6 +143,14 @@ type
     Property Number : String   Read fNumber  Write fNumber;
   end;
 
+  TResponseCheckIsConnected= class(TClassPadrao)
+  private
+    FResult: Boolean;
+  Public
+    Property Result : Boolean  Read FResult  Write FResult;
+  end;
+
+
   TOnChangeConnect = class(TClassPadrao)
   private
     FResult: Boolean;
@@ -230,6 +238,11 @@ type
   end;
 
   TResponseMyNumber = class(TClassPadraoString)
+  public
+    constructor Create(pAJsonString: string);
+  end;
+
+  TResponseIsConnected = class(TClassPadraoString) //mike
   public
     constructor Create(pAJsonString: string);
   end;
@@ -386,6 +399,9 @@ type
 
     FLat             : Extended;
     FLng             : Extended;
+
+    FSubType         : String;
+
     FCaption         : String;
     FclientUrl       : String;
     FdirectPath      : String;
@@ -436,6 +452,8 @@ type
 
     property lat        : Extended            read FLat                write FLat;
     property lng        : Extended            read FLng                write FLng;
+
+    property subType    : String              read FSubType            write FSubType;
 
     property isNotification: Boolean          read FIsNotification     write FIsNotification;
     property isPSA      : Boolean             read FIsPSA              write FIsPSA;
@@ -987,7 +1005,6 @@ begin
     inherited create;
   {$ENDIF}
 
-
   FTimeOut                := 10;
   FTImeOutIndy            := TTimer.Create(Nil);
   FTImeOutIndy.OnTimer    := OnTimeOutIndy;
@@ -1085,5 +1102,13 @@ begin
   inherited;
 end;
 
+
+{ TResponseIsConnected }
+
+constructor TResponseIsConnected.Create(pAJsonString: string);
+begin
+  inherited Create(pAJsonString);
+  //FResult := FResult;//Copy(FResult, 0 , Pos('@', FResult)-1);
+end;
 
 end.

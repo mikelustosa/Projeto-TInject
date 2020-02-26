@@ -94,6 +94,8 @@ type
     procedure Chromium1BeforeContextMenu(Sender: TObject;
       const browser: ICefBrowser; const frame: ICefFrame;
       const params: ICefContextMenuParams; const model: ICefMenuModel);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
   protected
     // You have to handle this two messages to call NotifyMoveOrResizeStarted or some page elements will be misaligned.
     procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
@@ -174,6 +176,7 @@ type
     procedure GetUnreadMessages;
     procedure GetBatteryLevel;
     procedure CheckIsValidNumber(vNumber:string);
+    procedure CheckIsConnected;
     procedure GetMyNumber;
 
     //Para monitorar o qrcode via REST
@@ -210,6 +213,43 @@ begin
 
   SendNotificationCenterDirect(Th_Destroying);
   SleepNoFreeze(10);
+end;
+
+procedure TFrmConsole.Button1Click(Sender: TObject);
+begin
+  ExecuteJS('var atual = 0;                                             '+
+'var antigo = 0;                                                        '+
+'var controle = 0;                                                      '+
+'function init() {                                                      '+
+'	var groupCount = window.setInterval(function() {                      '+
+'		WAPI.getGroupParticipantIDs("558196302385-1580928258@g.us")         '+
+'		.then( result =>                                                    '+
+'		{if (result.length != antigo)                                       '+
+'			{                                                                 '+
+'				if (result.length < antigo) {                                   '+
+'					window.WAPI.sendMessageToID("558196302385-1580928258@g.us", "🤖  👋🏻 *JA FOI TARDE!* \n\nTEMOS VAGAS NO GRUPO! '+
+'https://chat.whatsapp.com/CEAX0vjsqpN1z9jzdeVUNm");  '+
+'				} else {                                                                                                                                                               '+
+'				window.WAPI.sendMessageToID("558196302385-1580928258@g.us", "🤖 *BEM VINDO NOVO PARTICIPANTE EU SOU O _THÍTTO_*! \n\nLEIAS AS REGRAS NA DESCRIÇÃO DO GRUPO\n\n*GITHUB* OFICIAL:  '+
+'https://github.com/mikelustosa/Projeto-TInject\n\n*CURSOS* DO TINJECT: http://mikelustosa.kpages.online/tinject"); '+
+'				}                                 '+
+'				antigo = result.length;           '+
+'                                         '+
+'			} else {                            '+
+'				antigo = result.length;           '+
+'			}                                   '+
+'	})                                      '+
+'  .catch(error => JSON.stringify(error));'+
+'    }, 5000);                            '+
+'}                                        '+
+'setTimeout(function() {                  '+
+'    init();                              '+
+'}, 5000);', false);
+end;
+
+procedure TFrmConsole.Button2Click(Sender: TObject);
+begin
+  Chromium1.LoadURL(FrmConsole_JS_URL);
 end;
 
 procedure TFrmConsole.WMMove(var aMessage : TWMMove);
@@ -620,7 +660,7 @@ begin
     raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
 
   vText           := CaractersWeb(vText);
-  AjustNameFile(vFileName);
+  vFileName       := ExtractFileName(vFileName); //AjustNameFile(vFileName) Alterado em 20/02/2020 by Lucas
   LBase64         := TStringList.Create;
   TRY
     LBase64.Text := vBase64;
@@ -888,16 +928,25 @@ begin
                           End;
 
 
-    Th_GetCheckIsValidNumber //Em testes    tinha muita coisa aberta aqui..já fechei
-                          : begin
+    Th_GetCheckIsValidNumber  : begin
+                                  If Assigned(FOnNotificationCenter) Then
+                                  Begin
+                                    LOutClass := TResponseCheckIsValidNumber.Create(LResultStr);
+                                    FOnNotificationCenter(PResponse.TypeHeader, '', LOutClass);
+                                    FreeAndNil(LOutClass);
+                                  End;
+                                end;
+
+
+
+    Th_GetCheckIsConnected : begin
                             If Assigned(FOnNotificationCenter) Then
                             Begin
-                              LOutClass := TResponseCheckIsValidNumber.Create(LResultStr);
+                              LOutClass := TResponseCheckIsConnected.Create(LResultStr);
                               FOnNotificationCenter(PResponse.TypeHeader, '', LOutClass);
                               FreeAndNil(LOutClass);
                             End;
                           end;
-
 
 
     Th_OnChangeConnect  : begin
@@ -1237,6 +1286,13 @@ begin
     StopWebBrowser;
 end;
 
+
+procedure TFrmConsole.CheckIsConnected;
+var
+  Ljs: string;
+begin
+  ExecuteJS(FrmConsole_JS_VAR_IsConnected, False);
+end;
 
 Procedure TFrmConsole.ISLoggedin;
 begin
