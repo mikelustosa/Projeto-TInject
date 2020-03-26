@@ -128,7 +128,22 @@ if (!window.Store) {
             }
         }
 
-        webpackJsonp([], { 'parasite': (x, y, z) => getStore(z) }, ['parasite']);
+        //Alterado 26/03/2020
+        //webpackJsonp([], { 'parasite': (x, y, z) => getStore(z) }, ['parasite']);
+		
+		
+		//Mike 26/03/2020 --->
+		if (typeof webpackJsonp === 'function') {
+			webpackJsonp([], {'parasite': (x, y, z) => getStore(z)}, ['parasite']);
+		} else {
+			webpackJsonp.push([['parasite'], {
+				parasite: function (o, e, t) {
+					getStore(t);
+				}
+			},
+			[['parasite']]]);
+		}
+		//-----
     })();
 }
 
