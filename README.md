@@ -7,7 +7,7 @@ INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
 Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br></br>
 
 Tutorial de instalação no youtube:<br>
-https://www.youtube.com/watch?v=4fbSepeZPDU&t=2s
+https://www.youtube.com/watch?v=EIxFdtenNxI&t=31s
 
 <br>
 Vídeos demo:
