@@ -33,7 +33,7 @@
 *.dcp
 *.so
 *.apk
-*.drc
+#*.drc
 *.map
 *.dres
 *.rsm

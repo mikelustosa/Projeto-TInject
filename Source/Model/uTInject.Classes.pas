@@ -381,6 +381,21 @@ type
     property remote:      String   read FRemote      write FRemote;
   end;
 
+  //Experimental - Mike
+  TButtonsClass = class(TClassPadrao)
+  private
+    FID            :string;
+    FDisplayText   :string;
+    FSubtype       :string;
+    FSelectionId   :string;
+
+  public
+    property    ID          :string read FID          write FID;
+    property    DisplayText :string read FDisplayText write FDisplayText;
+    property    Subtype     :string read FSubtype     write FSubtype;
+    property    SelectionId :string read FSelectionId write FSelectionId;
+  end;
+
   TMessagesClass = class(TClassPadrao)
   private
     FId              : String;
@@ -416,6 +431,11 @@ type
 
     FBroadcast       : Boolean;
     FMentionedJidList: TArray<String>;
+
+    //Experimental - Mike
+    FButtons          : TArray<TButtonsClass>;
+    //Experimental - Mike
+
     FIsForwarded     : Boolean;
     FLabels          : TArray<String>;
     FSender          : TSenderClass;
@@ -460,6 +480,11 @@ type
     property labels     : TArray<String>      read FLabels             write FLabels;
     property mediaData  : TMediaDataClass     read FMediaData          write FMediaData;
     property mentionedJidList: TArray<String> read FMentionedJidList   write FMentionedJidList;
+
+    //Experimental - Mike
+    property buttons: TArray<TButtonsClass>    read FButtons             write FButtons;
+    //Experimental - Mike
+
     property notifyName : String              read FNotifyName         write FNotifyName;
     property recvFresh  : Boolean             read FRecvFresh          write FRecvFresh;
     property self       : String              read FSelf               write FSelf;
