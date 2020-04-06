@@ -1,7 +1,7 @@
-{####################################################################################################################
-                              TINJECT - Componente de comunicação (Nao Oficial)
+﻿{####################################################################################################################
+                              TINJECT - Componente de comunicação (Não Oficial)
                                            www.tinject.com.br
-                                            Outubro/Novembro de 2019
+                                            Novembro de 2019
 ####################################################################################################################
     Owner.....: Joathan Theiller           - jtheiller@hotmail.com   -
     Developer.: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
@@ -10,19 +10,19 @@
 
 ####################################################################################################################
   Obs:
-     - Codigo aberto a comunidade Delphi, desde que mantenha os dados dos autores e mantendo sempre o nome do IDEALIZADOR
+     - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores e mantendo sempre o nome do IDEALIZADOR
        Mike W. Lustosa;
-     - Colocar na evolucao as Modificacoes juntamente com as informacoes do colaborador: Data, Nova Versao, Autor;
+     - Colocar na evolução as Modificação juntamente com as informaçoes do colaborador: Data, Nova Versao, Autor;
      - Mantenha sempre a versao mais atual acima das demais;
-     - Todo Commit ao repositorio devera ser declarado as mudancas na UNIT e ainda o Incremento da Versao de
-       compilacao (ultimo digito);
+     - Todo Commit ao repositório deverá ser declarado as mudança na UNIT e ainda o Incremento da Versão de
+       compilação (último digito);
 
 ####################################################################################################################
-                                  Evolucao do Codigo
+                                  Evolução do Código
 ####################################################################################################################
-  Autor........: Abel de Souza
-  Email........: mobile.abel.magalhaes@gmail.com
-  Data.........: 02/04/2020
+  Autor........:
+  Email........:
+  Data.........:
   Identificador:
   Modificação..:
 ####################################################################################################################
