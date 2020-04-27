@@ -179,6 +179,8 @@ type
     procedure CheckIsConnected;
     procedure GetMyNumber;
 
+    procedure CheckDelivered;
+
     //Para monitorar o qrcode via REST
     procedure ReadMessages(vID: string);
     procedure DeleteMessages(vID: string);
@@ -896,6 +898,17 @@ begin
                             FgettingChats := False;
                           end;
 
+//    Th_checkDelivered:    begin
+//                            LOutClass := TResponseCheckDelivered.Create(LResultStr);
+//                            //LOutClass := TChatList.Create(LResultStr);
+//                            try
+//                              SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
+//                            finally
+//                              FreeAndNil(LOutClass);
+//                            end;
+//                            FgettingChats := False;
+//                          end;
+
 
     Th_getQrCodeWEB,
     Th_getQrCodeForm :    Begin
@@ -1286,6 +1299,11 @@ begin
     StopWebBrowser;
 end;
 
+
+procedure TFrmConsole.CheckDelivered;
+begin
+  ExecuteJS(FrmConsole_JS_CheckDelivered, False);
+end;
 
 procedure TFrmConsole.CheckIsConnected;
 var

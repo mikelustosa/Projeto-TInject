@@ -97,7 +97,6 @@ type
     procedure ApplicationEvents1Minimize(Sender: TObject);
     procedure TInject1GetStatus(Sender: TObject);
     procedure btStatusBatClick(Sender: TObject);
-    procedure TInject1GetBatteryLevel(Sender: TObject);
     procedure Edt_DDIPDRExit(Sender: TObject);
     procedure ed_numChange(Sender: TObject);
     procedure ed_numSelect(Sender: TObject);
@@ -125,6 +124,8 @@ type
       IsValid: Boolean);
     procedure btIsConnectedClick(Sender: TObject);
     procedure TInject1IsConnected(Sender: TObject; Connected: Boolean);
+    procedure TInject1GetBatteryLevel(Sender: TObject);
+
   private
     { Private declarations }
     FIniciando: Boolean;

@@ -31,7 +31,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 833
     Height = 433
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -3637,7 +3637,8 @@ object frmPrincipal: TfrmPrincipal
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Imagens|*jpg;*.jpg;*.bmp;*.png;*.pdf;*.mp4;*.mp3;*.rar'
-    Left = 808
+    Left = 736
+    Top = 88
   end
   object TrayIcon1: TTrayIcon
     OnClick = TrayIcon1Click

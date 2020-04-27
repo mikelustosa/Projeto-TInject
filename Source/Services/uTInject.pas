@@ -43,11 +43,12 @@ uses
 
 type
   {Events}
-  TOnGetCheckIsConnected    = Procedure (Sender : TObject; Connected: Boolean) of object;
-  TOnGetCheckIsValidNumber  = Procedure (Sender : TObject; Number: String;  IsValid: Boolean) of object;
+  TOnGetCheckIsConnected    = Procedure(Sender : TObject; Connected: Boolean) of object;
+  TOnGetCheckIsValidNumber  = Procedure(Sender : TObject; Number: String;  IsValid: Boolean) of object;
   TGetUnReadMessages        = procedure(Const Chats: TChatList) of object;
   TOnGetQrCode              = procedure(Const Sender: Tobject; Const QrCode: TResultQRCodeClass) of object;
   TOnAllContacts            = procedure(Const AllContacts: TRetornoAllContacts) of object;
+  TOnCheckDelivered         = procedure(Const Result: TResponseCheckDelivered) of object;
   TInject = class(TComponent)
   private
     FInjectConfig           : TInjectConfig;
@@ -101,6 +102,8 @@ type
     FOnAfterInjectJs            : TNotifyEvent;
     FOnAfterInitialize          : TNotifyEvent;
 
+    FOnCheckDelivered           : TOnCheckDelivered;
+
     procedure Int_OnNotificationCenter(PTypeHeader: TTypeHeader; PValue: String; Const PReturnClass : TObject= nil);
 
     procedure Loaded; override;
@@ -129,6 +132,7 @@ type
     procedure GetAllChats;
     Function  GetChat(Pindex: Integer):TChatClass;
     function  GetUnReadMessages: String;
+    function  CheckDelivered: String;
 
     Property  BatteryLevel      : Integer              Read FGetBatteryLevel;
     Property  IsConnected       : Boolean              Read FGetIsConnected;
@@ -170,6 +174,7 @@ type
     property OnDisconnectedBrute         : TNotifyEvent               read FOnDisconnectedBrute            write FOnDisconnectedBrute;
     property OnErroAndWarning            : TOnErroInternal            read FOnErroInternal                 write FOnErroInternal;
 
+    property OnCheckDelivered            : TOnCheckDelivered          read FOnCheckDelivered               write FOnCheckDelivered;
   end;
 
 
@@ -215,6 +220,30 @@ begin
 
   Result := FrmConsole.ConfigureNetWork;
 end; }
+
+function TInject.CheckDelivered: String;
+var
+  lThread : TThread;
+begin
+  If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  lThread := TThread.CreateAnonymousThread(procedure
+      begin
+          if Config.AutoDelay > 0 then
+             sleep(random(Config.AutoDelay));
+
+          TThread.Synchronize(nil, procedure
+          begin
+            if Assigned(FrmConsole) then
+               FrmConsole.CheckDelivered;
+          end);
+
+      end);
+  lThread.Start;
+end;
 
 procedure TInject.CheckIsConnected;
 begin
@@ -460,7 +489,7 @@ begin
     if not Assigned(FOnGetCheckIsValidNumber) then
        Exit;
 
-     //TResponseCheckIsValidNumber(LOutClass)
+
     FOnGetCheckIsValidNumber(Self,
                              TResponseCheckIsValidNumber(PReturnClass).Number,
                              TResponseCheckIsValidNumber(PReturnClass).result
@@ -485,6 +514,12 @@ begin
       if Assigned(OnGetUnReadMessages) then
          OnGetUnReadMessages(TChatList(PReturnClass));
     end;
+
+//    If PTypeHeader = Th_checkDelivered Then
+//    Begin
+//      if Assigned(OnCheckDelivered) then
+//         OnCheckDelivered(TResponseCheckDelivered(PReturnClass));
+//    end;
     Exit;
   end;
 
@@ -550,6 +585,24 @@ begin
     FMyNumber := FAdjustNumber.FormatOut(PValue);
     if Assigned(FOnGetMyNumber) then
        FOnGetMyNumber(Self);
+  end;
+
+
+  if PTypeHeader = Th_GetBatteryLevel then
+  Begin
+    FGetBatteryLevel :=  StrToIntDef(PValue, -1);
+    if Assigned(FOnLowBattery) then
+    Begin
+      if FGetBatteryLevel <= Config.LowBatteryIs Then
+      Begin
+        FOnLowBattery(Self);
+      end else
+      Begin
+        if Assigned(fOnGetBatteryLevel) then
+           fOnGetBatteryLevel(Self);
+      end;
+    end;
+    Exit;
   end;
 
 
@@ -992,8 +1045,6 @@ begin
   except
   end;
 end;
-
-
 
 procedure TInject.ShutDown(PWarning:Boolean);
 Var

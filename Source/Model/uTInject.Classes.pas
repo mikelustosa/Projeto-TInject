@@ -73,9 +73,9 @@ type
   Public
     constructor Create;
     destructor  Destroy; override;
-    Function   GetUrl(Const Purl:String):Boolean;
+    Function    GetUrl(Const Purl:String):Boolean;
 
-    Property   ReturnUrl  : TMemoryStream         Read FReturnUrl;
+    Property    ReturnUrl  : TMemoryStream         Read FReturnUrl;
 
 
     Property    TimeOut : Integer         Read FTimeOut        Write FTimeOut;
@@ -131,7 +131,11 @@ type
     constructor Create(pAJsonString: string);
   end;
 
-  TResponseBattery = class(TClassPadraoString)
+  TResponseBattery = class(TClassPadrao)//class(TClassPadraoString)
+  private
+    FResult: string;
+  Public
+    Property Result : string  Read FResult  Write FResult;
   end;
 
   TResponseCheckIsValidNumber = class(TClassPadrao)
@@ -140,6 +144,15 @@ type
     fNumber: String;
   Public
     Property Result : Boolean  Read FResult  Write FResult;
+    Property Number : String   Read fNumber  Write fNumber;
+  end;
+
+  TResponseCheckDelivered = class(TClassPadrao)
+  private
+    FResult: integer;
+    fNumber: String;
+  Public
+    Property Result : integer  Read FResult  Write FResult;
     Property Number : String   Read fNumber  Write fNumber;
   end;
 
@@ -524,10 +537,10 @@ type
     FKind           : String;
     FKindTypeNumber : TTypeNumber;
     FIsGroup        : Boolean;
-       FContact        : TContactClass;
+    FContact        : TContactClass;
     FGroupMetadata  : TGroupMetadataClass;
-       FPresence       : TPresenceClass;
-       FMessages       : tArray<TMessagesClass>;
+    FPresence       : TPresenceClass;
+    FMessages       : tArray<TMessagesClass>;
     FIsAnnounceGrpRestrict: Boolean;
   public
     constructor Create(pAJsonString: string);
