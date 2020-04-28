@@ -1554,3 +1554,48 @@ window.WAPI.isValidNumber = async function (phoneId) {
 
     return isValid;
 };
+
+/** 28/04/2020 - Mike
+ * Send location
+ *
+ * @param {string} chatId '000000000000@c.us'
+ * @param {string} lat latitude
+ * @param {string} lng longitude
+ * @param {string} loc Text to go with the location message
+ */
+window.WAPI.sendLocation = async function (chatId, lat, lng, loc) {
+    var chat = Store.Chat.get(chatId);
+    if(!chat) return false;
+    var tempMsg = Object.create(Store.Msg.models.filter(msg => msg.__x_isSentByMe && !msg.quotedMsg)[0]);
+    var newId = window.WAPI.getNewMessageId(chatId);
+    var extend = {
+        ack: 0,
+        id: newId,
+        local: !0,
+        self: "out",
+        t: parseInt(new Date().getTime() / 1000),
+        to: chatId,
+        isNewMsg: !0,
+        type: "location",
+        lat,
+        lng,
+        loc,
+        clientUrl:undefined,
+        directPath:undefined,
+        filehash:undefined,
+        uploadhash:undefined,
+        mediaKey:undefined,
+        isQuotedMsgAvailable:false,
+        invis:false,
+        mediaKeyTimestamp:undefined,
+        mimetype:undefined,
+        height:undefined,
+        width:undefined,
+        ephemeralStartTimestamp:undefined,
+        body:undefined,
+        mediaData:undefined,
+        isQuotedMsgAvailable: false
+    };
+    Object.assign(tempMsg, extend);
+    return await Promise.all(Store.addAndSendMsgToChat(chat, tempMsg))
+};
