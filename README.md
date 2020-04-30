@@ -67,8 +67,8 @@ Instalaçao opcional:<br>
 [Clique aqui / Click where](http://mikelustosa.kpages.online/tinject)
 
 
-*Nota 1: O TInject é de código aberto, e não possui *nenhum outro componente* de terceiro além do TChromium vinculado ao código, nem muito menos utilização de *licenças* ou afins de outros componentes. Baixem os *fontes* para comprovar.
+*Nota 1: O TInject é de código aberto desenvolvido em comunidade, e não possui *nenhum outro componente* de terceiro além do TChromium vinculado ao código.
 <br><br>
-*Nota 2: Projeto não oficial. Desenvolvido no rad studio 10.3.0 (RIO)* use com consciência.<br><br> 
+*Nota 2: Desenvolvido no rad studio 10.3.0 (RIO)*.<br><br> 
 
 #### Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica
