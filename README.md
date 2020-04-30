@@ -10,7 +10,7 @@ Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br
 https://www.youtube.com/watch?v=EIxFdtenNxI&t=31s
 
 <br>
-## Videos demo:
+Videos demo:
 <br>
 https://youtu.be/YEmwghSGoFA
 <br>
@@ -71,4 +71,4 @@ Instalaçao opcional:<br>
 <br><br>
 *Nota 2: Projeto não oficial. Desenvolvido no rad studio 10.3.0 (RIO)* use com consciência.<br><br> 
 
-### Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica
+#### Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica
