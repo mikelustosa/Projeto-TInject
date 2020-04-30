@@ -122,6 +122,8 @@ type
     procedure SendContact(PNumberPhone, PNumber: string);
     procedure SendFile(PNumberPhone: String; Const PFileName: String; PMessage: string = '');
     procedure SendBase64(Const vBase64: String; vNum: String;  Const vFileName, vMess: string);     deprecated; //Versao 1.0.2.0 disponivel ate Versao 1.0.6.0
+    procedure SendLinkPreview(PNumberPhone, PVideoLink, PMessage: string);
+    procedure SendLocation(PNumberPhone, PLat, PLng, PMessage: string);
     procedure Logtout();
 
     procedure GetBatteryStatus;
@@ -779,6 +781,100 @@ begin
         end);
       end);
   lThread.Start;
+end;
+
+procedure TInject.SendLinkPreview(PNumberPhone, PVideoLink, PMessage: string);
+var
+  lThread : TThread;
+begin
+  If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
+  if pos('@', PNumberPhone) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
+    Exit;
+  end;
+
+  if Trim(PMessage) = '' then
+  begin
+    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, PNumberPhone);
+    Exit;
+  end;
+
+  if Trim(PVideoLink) = '' then
+  begin
+    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, PVideoLink);
+    Exit;
+  end;
+
+  lThread := TThread.CreateAnonymousThread(procedure
+      begin
+        if Config.AutoDelay > 0 then
+           sleep(random(Config.AutoDelay));
+
+        TThread.Synchronize(nil, procedure
+        begin
+          if Assigned(FrmConsole) then
+          begin
+            FrmConsole.ReadMessages(PNumberPhone); //Marca como lida a mensagem
+            FrmConsole.sendLinkPreview(PNumberPhone, PVideoLink, PMessage);
+          end;
+        end);
+
+      end);
+  lThread.Start;
+
+end;
+
+procedure TInject.SendLocation(PNumberPhone, PLat, PLng, PMessage: string);
+var
+  lThread : TThread;
+begin
+  If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
+  if pos('@', PNumberPhone) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
+    Exit;
+  end;
+
+  if Trim(PMessage) = '' then
+  begin
+    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, PNumberPhone);
+    Exit;
+  end;
+
+  if (Trim(PLat) = '') or (Trim(PLng) = '') then
+  begin
+    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, PLat+PLng);
+    Exit;
+  end;
+
+  lThread := TThread.CreateAnonymousThread(procedure
+      begin
+        if Config.AutoDelay > 0 then
+           sleep(random(Config.AutoDelay));
+
+        TThread.Synchronize(nil, procedure
+        begin
+          if Assigned(FrmConsole) then
+          begin
+            FrmConsole.ReadMessages(PNumberPhone); //Marca como lida a mensagem
+            FrmConsole.sendLocation(PNumberPhone, PLat, PLng, PMessage);
+          end;
+        end);
+
+      end);
+  lThread.Start;
+
 end;
 
 procedure TInject.sendBase64(Const vBase64: String; vNum: String;  Const vFileName, vMess: string);

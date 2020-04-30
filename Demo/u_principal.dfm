@@ -31,7 +31,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 833
     Height = 433
-    ActivePage = TabSheet3
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -3298,56 +3298,55 @@ object frmPrincipal: TfrmPrincipal
           405)
         object Label1: TLabel
           Left = 5
-          Top = 56
+          Top = 33
           Width = 82
           Height = 13
           Caption = 'Destino / Destiny'
         end
         object Label2: TLabel
           Left = 5
-          Top = 101
+          Top = 69
           Width = 167
           Height = 13
           Caption = 'Texto ou contato / Text or contact'
         end
         object lblNumeroConectado: TLabel
           Left = 2
-          Top = 28
+          Top = 15
           Width = 214
-          Height = 22
+          Height = 14
           Align = alTop
           Alignment = taCenter
           AutoSize = False
-          Caption = ' '
+          Caption = '(81) 999999999'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
-          Font.Height = -13
+          Font.Height = -11
           Font.Name = 'Tahoma'
           Font.Style = [fsBold]
           ParentFont = False
           Visible = False
+          ExplicitTop = 28
         end
-        object Label4: TLabel
-          Left = 2
-          Top = 15
-          Width = 214
+        object Label6: TLabel
+          Left = 5
+          Top = 120
+          Width = 47
           Height = 13
-          Align = alTop
-          Caption = '   Meu N'#250'mero / My number'
-          ExplicitWidth = 132
+          Caption = 'Video Link'
         end
         object mem_message: TMemo
           Left = 5
-          Top = 116
-          Width = 204
-          Height = 98
+          Top = 84
+          Width = 208
+          Height = 35
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 1
         end
         object btSendTextAndFile: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 282
+          Top = 220
           Width = 208
           Height = 25
           Align = alBottom
@@ -3356,11 +3355,12 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 2
           OnClick = btSendTextAndFileClick
+          ExplicitTop = 282
         end
         object btSendText: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 251
+          Top = 189
           Width = 208
           Height = 25
           Align = alBottom
@@ -3369,11 +3369,12 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 3
           OnClick = btSendTextClick
+          ExplicitTop = 251
         end
         object ed_num: TComboBox
           Left = 5
-          Top = 71
-          Width = 204
+          Top = 48
+          Width = 208
           Height = 21
           AutoDropDown = True
           AutoCloseUp = True
@@ -3387,7 +3388,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object CheckBox5: TCheckBox
           Left = 115
-          Top = 52
+          Top = 30
           Width = 88
           Height = 17
           Caption = 'Auto Procurar'
@@ -3410,7 +3411,7 @@ object frmPrincipal: TfrmPrincipal
         object btSendContact: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 313
+          Top = 251
           Width = 208
           Height = 25
           Align = alBottom
@@ -3419,6 +3420,7 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 6
           OnClick = btSendContactClick
+          ExplicitTop = 313
         end
         object btCheckNumber: TButton
           AlignWithMargins = True
@@ -3436,7 +3438,7 @@ object frmPrincipal: TfrmPrincipal
         object btIsConnected: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 220
+          Top = 158
           Width = 208
           Height = 25
           Align = alBottom
@@ -3445,6 +3447,43 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 8
           OnClick = btIsConnectedClick
+          ExplicitTop = 220
+        end
+        object btSendLocation: TButton
+          AlignWithMargins = True
+          Left = 5
+          Top = 313
+          Width = 208
+          Height = 25
+          Align = alBottom
+          Caption = 'Enviar localiza'#231#227'o / Send location'
+          ImageIndex = 0
+          Images = ImageList1
+          TabOrder = 9
+          OnClick = btSendLocationClick
+          ExplicitLeft = 4
+          ExplicitTop = 333
+        end
+        object btSendLinkWithPreview: TButton
+          AlignWithMargins = True
+          Left = 5
+          Top = 282
+          Width = 208
+          Height = 25
+          Align = alBottom
+          Caption = 'Enviar link pr'#233'via / Send link preview'
+          ImageIndex = 0
+          Images = ImageList1
+          TabOrder = 10
+          OnClick = btSendLinkWithPreviewClick
+          ExplicitLeft = 9
+        end
+        object ed_videoLink: TEdit
+          Left = 5
+          Top = 134
+          Width = 208
+          Height = 21
+          TabOrder = 11
         end
       end
       object Panel1: TPanel
@@ -3704,8 +3743,8 @@ object frmPrincipal: TfrmPrincipal
     Enabled = False
     Interval = 4000
     OnTimer = Timer2Timer
-    Left = 28
-    Top = 158
+    Left = 348
+    Top = 70
   end
   object TInject1: TInject
     InjectJS.AutoUpdateTimeOut = 10

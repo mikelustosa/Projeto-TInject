@@ -61,7 +61,6 @@ type
     chk_apagarMsg: TCheckBox;
     btStatusBat: TButton;
     lblNumeroConectado: TLabel;
-    Label4: TLabel;
     Rdb_FormaConexao: TRadioGroup;
     SpeedButton1: TSpeedButton;
     Image1: TImage;
@@ -83,6 +82,10 @@ type
     SpeedButton3: TSpeedButton;
     btCheckNumber: TButton;
     btIsConnected: TButton;
+    btSendLocation: TButton;
+    btSendLinkWithPreview: TButton;
+    Label6: TLabel;
+    ed_videoLink: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btSendTextClick(Sender: TObject);
@@ -125,6 +128,8 @@ type
     procedure btIsConnectedClick(Sender: TObject);
     procedure TInject1IsConnected(Sender: TObject; Connected: Boolean);
     procedure TInject1GetBatteryLevel(Sender: TObject);
+    procedure btSendLinkWithPreviewClick(Sender: TObject);
+    procedure btSendLocationClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -230,6 +235,32 @@ begin
        Exit;
 
     TInject1.sendContact(ed_num.Text, mem_message.Text);
+  finally
+    ed_num.SelectAll;
+    ed_num.SetFocus;
+  end;
+end;
+
+procedure TfrmPrincipal.btSendLinkWithPreviewClick(Sender: TObject);
+begin
+  try
+    if not TInject1.Auth then
+       Exit;
+
+    TInject1.sendLinkPreview(ed_num.Text, ed_videoLink.Text, mem_message.Text);
+  finally
+    ed_num.SelectAll;
+    ed_num.SetFocus;
+  end;
+end;
+
+procedure TfrmPrincipal.btSendLocationClick(Sender: TObject);
+begin
+  try
+    if not TInject1.Auth then
+       Exit;
+    //                    number        lat         lgn        Message link
+    TInject1.sendLocation(ed_num.Text, '-70.4078', '25.3789', 'Segue a localização');
   finally
     ed_num.SelectAll;
     ed_num.SetFocus;
