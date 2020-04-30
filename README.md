@@ -1,16 +1,16 @@
 ﻿# Componente TInject
-##### Componente mais RECIFENSE da internet!<br>
+## Componente mais RECIFENSE da internet!<br>
 Para criação de chatBots com delphi<br></br><br>
 
 ## INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
 
 Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br></br>
 
-##### Tutorial de instalação no youtube:<br>
+### Tutorial de instalação no youtube:<br>
 https://www.youtube.com/watch?v=EIxFdtenNxI&t=31s
 
 <br>
-##### Vídeos demo:
+### Vídeos demo:
 <br>
 https://youtu.be/YEmwghSGoFA
 <br>
@@ -39,7 +39,7 @@ Instalaçao opcional:<br>
 8-Abra o arquivo demo Tinject.dproj
 <br></br>
 
-##### Recursos / Resources<br><br>
+### Recursos / Resources<br><br>
 ✔️  Login<br>
 ✔️  Logout<br>
 ✔️  Enviar mensagens de texto para números fora da agenda- Send text message<br>
@@ -62,7 +62,7 @@ Instalaçao opcional:<br>
 ❌  Download de arquivos - Download files<br>
 ✔️  Download da foto de perfil - Download profile picture<br>
 
-##### Cursos do componente / Component lessions:<br>
+### Cursos do componente / Component lessions:<br>
 
 [Clique aqui / Click where](http://mikelustosa.kpages.online/tinject)
 
@@ -71,4 +71,4 @@ Instalaçao opcional:<br>
 <br><br>
 *Nota 2: Projeto não oficial. Desenvolvido no rad studio 10.3.0 (RIO)* use com consciência.<br><br> 
 
-##### Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica
+### Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica
