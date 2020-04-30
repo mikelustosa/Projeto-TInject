@@ -1,6 +1,7 @@
 ﻿# Componente TInject
 ## Componente mais RECIFENSE da internet!<br>
-Para criação de chatBots com delphi<br></br><br>
+Componente para criação de chatBots com delphi<br>
+<i>Component for creating chatBots with delphi</i><br></br>
 
 ## INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
 
