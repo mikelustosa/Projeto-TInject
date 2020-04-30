@@ -3,7 +3,7 @@
 Componente para criação de chatBots com delphi<br>
 <i>Component for creating chatBots with delphi</i><br></br>
 
-## INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
+## INSTRUÇÕES PARA USO DO COMPONENTE<br></br>
 
 Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br></br>
 
@@ -22,7 +22,7 @@ https://youtu.be/cbWW7VNYwEo
 
 NOVO: Agora o componente possui um instalador, não sendo necessário seguir mais os passos abaixo.<br><br>
 
-Instalaçao opcional:<br>
+Instalação opcional:<br>
 1-Clonar o repositório Projeto-TInject
 <br></br>
 2-Baixar e instalar o CEF4Delphi em: http://www.softmaisbrasil.com.br/#blog
