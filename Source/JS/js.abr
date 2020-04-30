@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min
-//1.0.0.4;1.0.0.9;78.3.0
+//1.0.0.5;1.0.0.9;78.3.0
 //
 //
 //Fonte: https://gist.github.com/phpRajat/a6422922efae32914f4dbd1082f3f412
@@ -1587,10 +1587,10 @@ window.WAPI.isValidNumber = async function (phoneId) {
 /** 28/04/2020 - Mike
  * Send location
  *
- * @param {string} chatId '000000000000@c.us'
+ * @param {string} chatId '558199999999@c.us'
  * @param {string} lat latitude
  * @param {string} lng longitude
- * @param {string} loc Text to go with the location message
+ * @param {string} loc Texto link para a localizacao
  */
 window.WAPI.sendLocation = async function (chatId, lat, lng, loc) {
     var chat = Store.Chat.get(chatId);
@@ -1628,3 +1628,19 @@ window.WAPI.sendLocation = async function (chatId, lat, lng, loc) {
     Object.assign(tempMsg, extend);
     return await Promise.all(Store.addAndSendMsgToChat(chat, tempMsg))
 };
+
+
+/**
+ * Envia um link com previa.
+ * @param chatId. '558199999999@c.us' 
+ * @param url string. Exemplo: https://www.youtube.com/watch?v=61O-Galzc5M
+ * @param text string. Texto auxiliar no corpo da mensagem.
+ */
+window.WAPI.sendLinkWithAutoPreview = async function (chatId, url, text) {
+    var chatSend = WAPI.getChat(chatId);
+    if (chatSend === undefined) {
+        return false;
+    }
+    const linkPreview = await Store.WapQuery.queryLinkPreview(url);
+    return (await chatSend.sendMessage(text.includes(url) ? text : `${url}\n${text}`, {linkPreview}))=='success'
+}
