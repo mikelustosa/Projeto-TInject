@@ -114,7 +114,7 @@ type
     const Oito             = '8⃣';
     const Nove             = '9⃣';
     const Dez              = '🔟';
-    const Aterisco         = '*⃣';
+    const Asterisco        = '*⃣';
     const SetaDireita      = '➡';
     const SetaEsquerda     = '⬅';
     const Relogio          = '🕒';
