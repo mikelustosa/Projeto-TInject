@@ -39,24 +39,32 @@ Instalaçao opcional:<br>
 8-Abra o arquivo demo Tinject.dproj
 <br></br>
 
-Recursos / Resources<br>
-1 - Login  - OK<br>
-2 - Logout - OK<br>
-3 - Enviar mensagens de texto para números fora da agenda- Send text message - OK<br>
-4 - Enviar mensagens para grupos - Send group messages - OK<br>
-5 - Enviar contatos - Send phone contacts - OK<br>
-6 - Enviar MP3 - Send MP3 - OK<br>
-7 - Enviar MP4 - Send MP4 - OK<br>
-8 - Enviar IMG - Send IMG - OK<br>
-9 - Enviar RAR - Send RAR - OK<br>
-10 - Listar contatos - Contact list - OK<br>
-11 - Listar bate papos - Conversation list - OK<br>
-12 - Status da bateria - Battery status - OK<br>
-13 - Simular digitando - Typing simulation - OK<br>
-14 - Recebimento de novas mensagem - Receiving new messages - OK<br>
-15 - Configurações de DDI - International number configuration - OK<br>
-16 - Validação de números - number validator - OK<br>
-17 - Checagem de conexão - check connection - OK<br>
+Recursos / Resources<br><br>
+✔️  Login<br>
+✔️  Logout<br>
+✔️  Enviar mensagens de texto para números fora da agenda- Send text message<br>
+✔️  Enviar mensagens para grupos - Send group messages<br>
+✔️  Enviar contatos - Send phone contacts<br>
+✔️  Enviar MP3 - Send MP3<br>
+✔️  Enviar MP4 - Send MP4<br>
+✔️  Enviar IMG - Send IMG<br>
+✔️  Enviar RAR - Send RAR<br>
+✔️  Enviar Link com prévia - Sending and preview<br>
+✔️  Enviar localização - Location sending<br>
+✔️  Listar contatos - Contact list<br>
+✔️  Listar bate papos - Conversation list<br>
+✔️  Status da bateria - Battery status<br>
+✔️  Simular digitando - Typing simulation<br>
+✔️  Recebimento de novas mensagem - Receiving new messages<br>
+✔️  Configurações de DDI - International number configuration<br>
+✔️  Validação de números - number validator<br>
+✔️  Checagem de conexão - check connection<br>
+❌  Download de arquivos - Download files<br>
+✔️  Download da foto de perfil - Download profile picture<br>
+
+Cursos do componente / Component lessions:<br>
+
+[Clique aqui / Click where](http://mikelustosa.kpages.online/tinject)
 
 
 *Nota 1: O TInject é de código aberto, e não possui *nenhum outro componente* de terceiro além do TChromium vinculado ao código, nem muito menos utilização de *licenças* ou afins de outros componentes. Baixem os *fontes* para comprovar.
