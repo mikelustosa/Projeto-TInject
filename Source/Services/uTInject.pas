@@ -118,7 +118,7 @@ type
     //Function    ConfigureNetwork: Boolean;
     procedure ReadMessages(vID: string);
 
-    procedure Send(PNumberPhone, PMessage: string);
+    procedure Send(PNumberPhone, PMessage: string; PEtapa: string = '');
     procedure SendContact(PNumberPhone, PNumber: string);
     procedure SendFile(PNumberPhone: String; Const PFileName: String; PMessage: string = '');
     procedure SendBase64(Const vBase64: String; vNum: String;  Const vFileName, vMess: string);     deprecated; //Versao 1.0.2.0 disponivel ate Versao 1.0.6.0
@@ -675,7 +675,7 @@ begin
   end;
 end;
 
-procedure TInject.send(PNumberPhone, PMessage: string);
+procedure TInject.send(PNumberPhone, PMessage: string; PEtapa: string = '');
 var
   lThread : TThread;
 begin
@@ -708,6 +708,10 @@ begin
           begin
             FrmConsole.ReadMessages(PNumberPhone); //Marca como lida a mensagem
             FrmConsole.Send(PNumberPhone, PMessage);
+            if PEtapa <> '' then
+            begin
+              FrmConsole.ReadMessagesAndDelete(PNumberPhone);//Deleta a conversa
+            end;
           end;
         end);
 
