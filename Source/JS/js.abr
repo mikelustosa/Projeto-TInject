@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min
-//1.0.0.5;1.0.0.9;78.3.0
+//1.0.0.6;1.0.0.9;78.3.0
 //
 //
 //Fonte: https://gist.github.com/phpRajat/a6422922efae32914f4dbd1082f3f412
@@ -10,6 +10,22 @@ function getMyNumber() {
     SetConsoleMessage('getMyNumber', localStorage.getItem('last-wid'));
     return true;
 }
+
+function convertImgToBase64URL(url, callback, outputFormat){
+	var img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = function(){
+        var canvas = document.createElement('CANVAS'),
+        ctx = canvas.getContext('2d'), dataURL;
+        canvas.height = img.height;
+        canvas.width = img.width;
+        ctx.drawImage(img, 0, 0);
+        dataURL = canvas.toDataURL(outputFormat);
+        callback(dataURL);
+        canvas = null; 
+    };
+    img.src = url;
+};
 
 function SetConsoleMessage(jsName, resultValue) {
     Obj = {
@@ -745,6 +761,12 @@ window.WAPI.isConnected = function (done) {
     return isConnected;
 };
 
+window.WAPI.teste = function (url) {
+	convertImgToBase64URL(url, function(base64Img){
+		SetConsoleMessage("GetProfilePicThumb", JSON.stringify(base64Img));
+	});
+};
+
 window.WAPI.processMessageObj = function(messageObj, includeMe, includeNotifications) {
     if (messageObj.isNotification) {
         if (includeNotifications)
@@ -1421,7 +1443,7 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption, done) {
     });
 }
 
-//FunÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
+//FunÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
 window.WAPI.sendMessageToID = function(chatid, msgText) {
     var idUser = new window.Store.UserConstructor(chatid, {
         intentionallyUsePrivateConstructor: true
