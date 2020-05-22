@@ -540,7 +540,11 @@ begin
       LInput.Position := 0;
       TNetEncoding.Base64.Decode( LInput, LOutput );
       LOutput.Position := 0;
-      Image2.Picture.LoadFromStream(LOutput);
+      {$IFDEF VER330}
+        Image2.Picture.LoadFromStream(LOutput);
+      {$ELSE}
+        Image2.Picture.Bitmap.LoadFromStream(LOutput);
+      {$ENDIF}
     finally
       LInput.Free;
       LOutput.Free;
@@ -645,6 +649,8 @@ begin
             //memo_unReadMessagen.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
             memo_unReadMessagen.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
             //memo_unReadMessagen.Lines.Add(PChar(AMessage.mediaData.&type) + 'Lat: '+AMessage.lat.ToString + ' Long: '+ AMessage.lng.ToString);
+            //memo_unReadMessagen.Lines.Add(PChar(AMessage.body));
+            //memo_unReadMessagen.Lines.Add(PChar('Tipo: '+AMessage.&type));
             memo_unReadMessagen.Lines.Add(PChar(AMessage.body));
             telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
             contato   :=  AMessage.Sender.pushName;
