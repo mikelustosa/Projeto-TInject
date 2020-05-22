@@ -38,17 +38,21 @@ uses
 
   System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, System.MaskUtils,
   System.UiTypes,  Generics.Collections,   System.TypInfo, Data.DB, Vcl.ExtCtrls,
-   uTInject.Diversos;
+   uTInject.Diversos, Vcl.Imaging.jpeg;
 
 
 type
   {Events}
   TOnGetCheckIsConnected    = Procedure(Sender : TObject; Connected: Boolean) of object;
   TOnGetCheckIsValidNumber  = Procedure(Sender : TObject; Number: String;  IsValid: Boolean) of object;
+  TOnGetProfilePicThumb     = Procedure(Sender : TObject; Base64: String) of object;
+
+
   TGetUnReadMessages        = procedure(Const Chats: TChatList) of object;
   TOnGetQrCode              = procedure(Const Sender: Tobject; Const QrCode: TResultQRCodeClass) of object;
   TOnAllContacts            = procedure(Const AllContacts: TRetornoAllContacts) of object;
   TOnCheckDelivered         = procedure(Const Result: TResponseCheckDelivered) of object;
+
   TInject = class(TComponent)
   private
     FInjectConfig           : TInjectConfig;
@@ -60,7 +64,11 @@ type
     FFormQrCodeType         : TFormQrCodeType;
     FMyNumber               : string;
     FGetBatteryLevel        : Integer;
+
+
     FGetIsConnected         : Boolean;
+
+
     Fversion                : String;
     Fstatus                 : TStatusType;
     FDestruido              : Boolean;
@@ -83,6 +91,9 @@ type
     procedure SetdjustNumber(const Value: TInjectAdjusteNumber);
     procedure SetInjectJS(const Value: TInjectJS);
     procedure OnDestroyConsole(Sender : TObject);
+
+
+
   protected
     { Protected declarations }
     FOnGetUnReadMessages        : TGetUnReadMessages;
@@ -91,6 +102,7 @@ type
     FOnGetBatteryLevel          : TNotifyEvent;
     FOnGetCheckIsConnected      : TOnGetCheckIsConnected;//mike
     FOnGetCheckIsValidNumber    : TOnGetCheckIsValidNumber;
+    FOnGetProfilePicThumb       : TOnGetProfilePicThumb;
     FOnGetQrCode                : TOnGetQrCode;
     FOnUpdateJS                 : TNotifyEvent;
     FOnGetChatList              : TGetUnReadMessages;
@@ -127,6 +139,8 @@ type
     procedure Logtout();
 
     procedure GetBatteryStatus;
+
+
     procedure CheckIsValidNumber(PNumberPhone: string);
     procedure CheckIsConnected;
     procedure GetAllContacts;
@@ -135,7 +149,7 @@ type
     Function  GetChat(Pindex: Integer):TChatClass;
     function  GetUnReadMessages: String;
     function  CheckDelivered: String;
-
+    procedure getProfilePicThumb(AProfilePicThumbURL: string);
     Property  BatteryLevel      : Integer              Read FGetBatteryLevel;
     Property  IsConnected       : Boolean              Read FGetIsConnected;
     Property  MyNumber          : String               Read FMyNumber;
@@ -166,16 +180,15 @@ type
     property OnGetStatus                 : TNotifyEvent               read FOnGetStatus                    write FOnGetStatus;
     property OnGetBatteryLevel           : TNotifyEvent               read FOnGetBatteryLevel              write FOnGetBatteryLevel;
     property OnIsConnected               : TOnGetCheckIsConnected     read FOnGetCheckIsConnected          write FOnGetCheckIsConnected;
+    property OnLowBattery                : TNotifyEvent               read FOnLowBattery                   write SetOnLowBattery;
     property OnGetCheckIsValidNumber     : TOnGetCheckIsValidNumber   read FOnGetCheckIsValidNumber        write FOnGetCheckIsValidNumber;
-
+    property OnGetProfilePicThumb        : TOnGetProfilePicThumb      read FOnGetProfilePicThumb           write FOnGetProfilePicThumb;
     property OnGetMyNumber               : TNotifyEvent               read FOnGetMyNumber                  write FOnGetMyNumber;
     property OnUpdateJS                  : TNotifyEvent               read FOnUpdateJS                     write FOnUpdateJS;
-    property OnLowBattery                : TNotifyEvent               read FOnLowBattery                   write SetOnLowBattery;
     property OnConnected                 : TNotifyEvent               read FOnConnected                    write FOnConnected;
     property OnDisconnected              : TNotifyEvent               read FOnDisconnected                 write FOnDisconnected;
     property OnDisconnectedBrute         : TNotifyEvent               read FOnDisconnectedBrute            write FOnDisconnectedBrute;
     property OnErroAndWarning            : TOnErroInternal            read FOnErroInternal                 write FOnErroInternal;
-
     property OnCheckDelivered            : TOnCheckDelivered          read FOnCheckDelivered               write FOnCheckDelivered;
   end;
 
@@ -381,6 +394,12 @@ begin
   Result := Nil;
 end;
 
+procedure TInject.getProfilePicThumb(AProfilePicThumbURL: string);
+begin
+  if Assigned(FrmConsole) then
+    FrmConsole.GetProfilePicThumbURL(AProfilePicThumbURL);
+end;
+
 procedure TInject.GetAllChats;
 begin
   if Assigned(FrmConsole) then
@@ -496,6 +515,22 @@ begin
                              TResponseCheckIsValidNumber(PReturnClass).Number,
                              TResponseCheckIsValidNumber(PReturnClass).result
                              );
+    exit;
+  end;
+
+
+
+  if (PTypeHeader In [Th_GetProfilePicThumb]) then
+  Begin
+    if not Assigned(FrmConsole) then
+       Exit;
+
+    if not Assigned(FOnGetProfilePicThumb) then
+       Exit;
+
+
+    FOnGetProfilePicThumb(Self,
+                          TResponseGetProfilePicThumb(PReturnClass).Base64);
     exit;
   end;
 
@@ -1022,6 +1057,7 @@ begin
   if Assigned(FrmConsole) then
      FrmConsole.MonitorLowBattry := Assigned(FOnLowBattery);
 end;
+
 
 procedure TInject.SetQrCodeStyle(const Value: TFormQrCodeType);
 begin

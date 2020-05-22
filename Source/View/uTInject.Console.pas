@@ -121,7 +121,7 @@ type
     FTimerConnect           : TTimer;
     FTimerMonitoring        : TTimer;
     FOnNotificationCenter   : TNotificationCenter;
-//    FControlSend            : TControlSend;
+    FGetProfilePicThumbURL  : string;
     FCountBattery           : Integer;
     FCountBatteryMax        : Integer;
     FrmQRCode               : TFrmQRCode;
@@ -163,9 +163,14 @@ type
     property  OnErrorInternal : TOnErroInternal           Read FOnErrorInternal           Write FOnErrorInternal;
     Property  MonitorLowBattry     : Boolean              Read FMonitorLowBattry          Write FMonitorLowBattry;
     Property  OnNotificationCenter : TNotificationCenter  Read FOnNotificationCenter      Write FOnNotificationCenter;
+
+    procedure GetProfilePicThumbURL(AProfilePicThumbURL: string);
+
     Procedure Connect;
     Procedure DisConnect;
     procedure Send(vNum, vText:string);
+    procedure CheckDelivered;
+
     procedure SendContact(vNumDest, vNum:string);
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
     procedure SendLinkPreview(vNum, vLinkPreview, vText: string);
@@ -180,8 +185,8 @@ type
     procedure CheckIsValidNumber(vNumber:string);
     procedure CheckIsConnected;
     procedure GetMyNumber;
+    //procedure GetProfilePicThumbURL(AProfilePicThumbURL: string);
 
-    procedure CheckDelivered;
 
     //Para monitorar o qrcode via REST
     procedure ReadMessages(vID: string);
@@ -473,6 +478,15 @@ end;
 procedure TFrmConsole.GetMyNumber;
 begin
   ExecuteJS(FrmConsole_JS_GetMyNumber, False);
+end;
+
+procedure TFrmConsole.GetProfilePicThumbURL(AProfilePicThumbURL: string);
+var
+  LJS: String;
+begin
+  LJS := FrmConsole_JS_VAR_getProfilePicThumb;
+  LJS := FrmConsole_JS_AlterVar(LJS, '<#PROFILE_PICTHUMB_URL#>', Trim(AProfilePicThumbURL));
+  ExecuteJS(LJS, False);
 end;
 
 procedure TFrmConsole.GetUnreadMessages;
@@ -907,6 +921,7 @@ begin
       FrmQRCode.Hide;
 
    Case PResponse.TypeHeader of
+
     Th_getAllContacts   : Begin
                             ProcessPhoneBook(LResultStr);
                             Exit;
@@ -931,16 +946,6 @@ begin
                             FgettingChats := False;
                           end;
 
-//    Th_checkDelivered:    begin
-//                            LOutClass := TResponseCheckDelivered.Create(LResultStr);
-//                            //LOutClass := TChatList.Create(LResultStr);
-//                            try
-//                              SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
-//                            finally
-//                              FreeAndNil(LOutClass);
-//                            end;
-//                            FgettingChats := False;
-//                          end;
 
 
     Th_getQrCodeWEB,
@@ -964,6 +969,18 @@ begin
                             End;
                           end;
 
+//    Th_checkDelivered:    begin
+//                            LOutClass := TResponseCheckDelivered.Create(LResultStr);
+//                            //LOutClass := TChatList.Create(LResultStr);
+//                            try
+//                              SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
+//                            finally
+//                              FreeAndNil(LOutClass);
+//                            end;
+//                            FgettingChats := False;
+//                          end;
+
+
     Th_getMyNumber      : Begin
                             If Assigned(FOnNotificationCenter) Then
                             Begin
@@ -978,6 +995,15 @@ begin
                                   If Assigned(FOnNotificationCenter) Then
                                   Begin
                                     LOutClass := TResponseCheckIsValidNumber.Create(LResultStr);
+                                    FOnNotificationCenter(PResponse.TypeHeader, '', LOutClass);
+                                    FreeAndNil(LOutClass);
+                                  End;
+                                end;
+
+    Th_GetProfilePicThumb     : begin
+                                  If Assigned(FOnNotificationCenter) Then
+                                  Begin
+                                    LOutClass := TResponseGetProfilePicThumb.Create(LResultStr);
                                     FOnNotificationCenter(PResponse.TypeHeader, '', LOutClass);
                                     FreeAndNil(LOutClass);
                                   End;

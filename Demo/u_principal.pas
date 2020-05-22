@@ -5,7 +5,7 @@ interface
 uses
 
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs,  Vcl.ExtCtrls,
+  Vcl.Controls, Vcl.Forms,  Vcl.ExtCtrls,
 
   //############ ATENCAO AQUI ####################
   //units adicionais obrigatórias
@@ -19,7 +19,9 @@ uses
 
   Vcl.StdCtrls, System.ImageList, Vcl.ImgList, Vcl.AppEvnts, Vcl.ComCtrls,
   Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.Mask, Data.DB, Vcl.DBCtrls, Vcl.Grids,
-  Vcl.DBGrids;
+  Vcl.DBGrids, Vcl.Dialogs, IdBaseComponent, IdComponent, IdTCPConnection,
+  IdTCPClient, ImageViewer.Helper, Vcl.OleCtrls, SHDocVw, IdHTTP, IdIOHandler,
+  IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, Vcl.Imaging.jpeg;
 
 type
   TfrmPrincipal = class(TForm)
@@ -86,6 +88,9 @@ type
     btSendLinkWithPreview: TButton;
     Label6: TLabel;
     ed_videoLink: TEdit;
+    Button1: TButton;
+    Image2: TImage;
+    ed_profilePicThumbURL: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btSendTextClick(Sender: TObject);
@@ -130,6 +135,10 @@ type
     procedure TInject1GetBatteryLevel(Sender: TObject);
     procedure btSendLinkWithPreviewClick(Sender: TObject);
     procedure btSendLocationClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure WebBrowser1DocumentComplete(ASender: TObject;
+      const pDisp: IDispatch; const URL: OleVariant);
+    procedure TInject1GetProfilePicThumb(Sender: TObject; Base64: string);
 
   private
     { Private declarations }
@@ -149,7 +158,7 @@ var
 implementation
 
 uses
-  Vcl.Imaging.jpeg, Datasnap.DBClient, Winapi.ShellAPI;
+  Datasnap.DBClient, Winapi.ShellAPI;
 
 {$R *.dfm}
 
@@ -289,6 +298,18 @@ begin
      Exit;
 
   TInject1.CheckIsConnected();
+end;
+
+
+
+procedure TfrmPrincipal.Button1Click(Sender: TObject);
+var
+  JS: string;
+begin
+  if (not TInject1.Auth) or (ed_profilePicThumbURL.Text = '') then
+       Exit;
+
+  TInject1.getProfilePicThumb(ed_profilePicThumbURL.Text);
 end;
 
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
@@ -499,6 +520,38 @@ begin
   lblNumeroConectado.Caption :=   TInject(Sender).MyNumber;
 end;
 
+procedure TfrmPrincipal.TInject1GetProfilePicThumb(Sender: TObject;
+  Base64: string);
+var
+  LInput: TMemoryStream;
+  LOutput: TMemoryStream;
+  AStr: TStringList;
+  lThread: TThread;
+begin
+  lThread := TThread.CreateAnonymousThread(
+  procedure
+  begin
+    try
+      LInput := TMemoryStream.Create;
+      LOutput := TMemoryStream.Create;
+      AStr  := TStringList.Create;
+      AStr.Add(Base64);
+      AStr.SaveToStream(LInput);
+      LInput.Position := 0;
+      TNetEncoding.Base64.Decode( LInput, LOutput );
+      LOutput.Position := 0;
+      Image2.Picture.LoadFromStream(LOutput);
+    finally
+      LInput.Free;
+      LOutput.Free;
+      AStr.Free;
+    end;
+  end
+  );
+  lThread.FreeOnTerminate := true;
+  lThread.Start;
+end;
+
 procedure TfrmPrincipal.TInject1GetQrCode(Const Sender: TObject;  const QrCode: TResultQRCodeClass);
 begin
   if TInject1.FormQrCodeType = TFormQrCodeType(Ft_none) then
@@ -590,12 +643,12 @@ begin
           begin
             memo_unReadMessagen.Clear;
             //memo_unReadMessagen.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
-            //memo_unReadMessagen.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
+            memo_unReadMessagen.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
             //memo_unReadMessagen.Lines.Add(PChar(AMessage.mediaData.&type) + 'Lat: '+AMessage.lat.ToString + ' Long: '+ AMessage.lng.ToString);
             memo_unReadMessagen.Lines.Add(PChar(AMessage.body));
-
             telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
             contato   :=  AMessage.Sender.pushName;
+            ed_profilePicThumbURL.text := AChat.contact.profilePicThumbObj.img;
             TInject1.ReadMessages(AChat.id);
 
             if chk_AutoResposta.Checked then
@@ -704,6 +757,41 @@ begin
         exit;
       end;
    exit;
+end;
+
+procedure TfrmPrincipal.WebBrowser1DocumentComplete(ASender: TObject;
+  const pDisp: IDispatch; const URL: OleVariant);
+begin
+{if WebBrowser1.Document <> nil then
+   begin
+     WebBrowser1.Document.QueryInterface(IViewObject, viewObject) ;
+     if Assigned(viewObject) then
+     try
+       bitmap := TBitmap.Create;
+       try
+         r := Rect(0, 0, WebBrowser1.Width, WebBrowser1.Height) ;
+
+         bitmap.Height := WebBrowser1.Height;
+         bitmap.Width := WebBrowser1.Width;
+
+         viewObject.Draw(DVASPECT_CONTENT, 1, nil, nil, Application.Handle, bitmap.Canvas.Handle, @r, nil, nil, 0) ;
+
+         with TJPEGImage.Create do
+         try
+           Assign(bitmap) ;
+           //SaveToFile(fileName) ;
+           image2.Picture.Assign(bitmap);
+         finally
+           Free;
+         end;
+       finally
+         bitmap.Free;
+       end;
+     finally
+       viewObject._Release;
+     end;
+   end; }
+
 end;
 
 procedure TfrmPrincipal.whatsOnClick(Sender: TObject);

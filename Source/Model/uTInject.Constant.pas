@@ -33,7 +33,7 @@ Uses Winapi.Messages, System.SysUtils, typinfo, REST.Json;
 
 Const
   //Uso GLOBAL
-  TInjectVersion                  = '1.0.2.18'; //  04/01/2019  //Alterado por Daniel Rodrigues
+  TInjectVersion                  = '1.0.3.0'; //  22/05/2020  //Alterado por Mike Lustosa
   CardContact                     = '@c.us';
   CardGroup                       = '@g.us';
   CardList                        = '@broadcast';
@@ -64,6 +64,7 @@ Const
   FrmConsole_JS_GetMyNumber             = 'getMyNumber();';
   FrmConsole_JS_GetUnreadMessages       = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
   FrmConsole_JS_GetAllChats             = 'window.WAPI.getAllChats();';
+  FrmConsole_JS_checkDelivered          = 'window.WAPI.getDelivered();';
   //FrmConsole_JS_WEBmonitorQRCode      = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
   FrmConsole_JS_WEBmonitorQRCode        = 'var AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
   //FrmConsole_JS_monitorQRCode         = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
@@ -85,7 +86,23 @@ Const
                                         '.then(result => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(result)))'+
                                         '.catch(error => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(error)));';
   FrmConsole_JS_VAR_IsConnected         = 'window.WAPI.isConnected();';
-  FrmConsole_JS_CheckDelivered          = 'window.WAPI.checkDelivered();';
+  FrmConsole_JS_VAR_ProfilePicThumb     = 'function convertImgToBase64URL(url, callback, outputFormat){ '+
+                                          'var img = new Image();          '+
+                                          'img.crossOrigin = "Anonymous";  '+
+                                          'img.onload = function(){        '+
+                                          '    var canvas = document.createElement("CANVAS"), '+
+                                          '    ctx = canvas.getContext("2d"), dataURL;        '+
+                                          '    canvas.height = img.height;                    '+
+                                          '    canvas.width = img.width;                      '+
+                                          '    ctx.drawImage(img, 0, 0);                      '+
+                                          '    dataURL = canvas.toDataURL(outputFormat);      '+
+                                          '    callback(dataURL);                             '+
+                                          '    canvas = null;                                 '+
+                                          '};                                                 '+
+                                          'img.src = url;                                     '+
+                                          '};';
+  //FrmConsole_JS_VAR_getProfilePicThumb    = 'convertImgToBase64URL("<#PROFILE_PICTHUMB_URL#>", function(base64Img){ window.WAPI.teste(base64Img) });';
+  FrmConsole_JS_VAR_getProfilePicThumb    = 'window.WAPI.teste("<#PROFILE_PICTHUMB_URL#>");';
 
 resourcestring
   MSG_ConfigCEF_ExceptNotFoundJS       = '';
@@ -208,15 +225,15 @@ type
                    Th_GetMyNumber=7,            Th_OnChangeConnect=8,                  Th_GetReserv1=9,
                    Th_GetReserv2=10,            Th_GetReserv3=11,                      Th_GetReserv4=12,
                    Th_GetReserv5=13,            Th_GetReserv6=14,                      Th_GetReserv7=15,
-                   Th_GetCheckIsValidNumber=16, Th_GetCheckIsConnected=17,             //Th_checkDelivered=18,
+                   Th_GetCheckIsValidNumber=16, Th_GetCheckIsConnected=17,             Th_GetProfilePicThumb=18,
 
                    //Eventos Conexao
-                   Th_Disconnected=18,          Th_Disconnecting=19,                   Th_Connected=20,
-                   Th_ConnectedDown=21,         Th_Connecting=22,                      Th_ConnectingFt_Desktop=23,
-                   Th_ConnectingFt_HTTP=24,     Th_ConnectingNoPhone=25,               Th_Destroy=26,
-                   Th_Destroying=27,            Th_NewSyncContact=28,                  Th_Initializing=29,
-                   Th_Initialized=30,           Th_Abort=31,                           Th_ForceDisconnect=32,
-                   Th_AlterConfig=33
+                   Th_Disconnected=19,          Th_Disconnecting=20,                   Th_Connected=21,
+                   Th_ConnectedDown=22,         Th_Connecting=23,                      Th_ConnectingFt_Desktop=24,
+                   Th_ConnectingFt_HTTP=25,     Th_ConnectingNoPhone=26,               Th_Destroy=27,
+                   Th_Destroying=28,            Th_NewSyncContact=29,                  Th_Initializing=30,
+                   Th_Initialized=31,           Th_Abort=32,                           Th_ForceDisconnect=33,
+                   Th_AlterConfig=34
                    );
 
     Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;

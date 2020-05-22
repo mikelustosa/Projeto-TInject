@@ -3355,7 +3355,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 2
           OnClick = btSendTextAndFileClick
-          ExplicitTop = 282
         end
         object btSendText: TButton
           AlignWithMargins = True
@@ -3369,7 +3368,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 3
           OnClick = btSendTextClick
-          ExplicitTop = 251
         end
         object ed_num: TComboBox
           Left = 5
@@ -3420,7 +3418,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 6
           OnClick = btSendContactClick
-          ExplicitTop = 313
         end
         object btCheckNumber: TButton
           AlignWithMargins = True
@@ -3447,7 +3444,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 8
           OnClick = btIsConnectedClick
-          ExplicitTop = 220
         end
         object btSendLocation: TButton
           AlignWithMargins = True
@@ -3461,8 +3457,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 9
           OnClick = btSendLocationClick
-          ExplicitLeft = 4
-          ExplicitTop = 333
         end
         object btSendLinkWithPreview: TButton
           AlignWithMargins = True
@@ -3476,7 +3470,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 10
           OnClick = btSendLinkWithPreviewClick
-          ExplicitLeft = 9
         end
         object ed_videoLink: TEdit
           Left = 5
@@ -3628,22 +3621,27 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
+      object Image2: TImage
+        Left = 576
+        Top = 32
+        Width = 232
+        Height = 225
+        Stretch = True
+      end
       object memo_unReadMessagen: TMemo
         Left = 0
         Top = 23
-        Width = 825
+        Width = 385
         Height = 382
-        Align = alClient
         BorderStyle = bsNone
         Font.Charset = DEFAULT_CHARSET
         Font.Color = 4227327
-        Font.Height = -27
+        Font.Height = -21
         Font.Name = 'Tahoma'
         Font.Style = []
         Lines.Strings = (
           '...')
         ParentFont = False
-        ReadOnly = True
         TabOrder = 0
       end
       object chk_apagarMsg: TCheckBox
@@ -3656,6 +3654,25 @@ object frmPrincipal: TfrmPrincipal
         Caption = 'Apagar mensagens ap'#243's receber'
         TabOrder = 1
         OnExit = Edt_DDIPDRExit
+      end
+      object Button1: TButton
+        Left = 679
+        Top = 1
+        Width = 129
+        Height = 25
+        Caption = 'Download imagem'
+        TabOrder = 2
+        OnClick = Button1Click
+      end
+      object ed_profilePicThumbURL: TEdit
+        Left = 192
+        Top = 3
+        Width = 481
+        Height = 21
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 3
+        TextHint = 'ProfilePicThumbURL'
       end
     end
   end
@@ -3747,6 +3764,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 70
   end
   object TInject1: TInject
+    InjectJS.AutoUpdate = False
     InjectJS.AutoUpdateTimeOut = 10
     Config.AutoDelay = 30
     Config.ReceiveAttachmentAuto = False
@@ -3763,12 +3781,13 @@ object frmPrincipal: TfrmPrincipal
     OnGetStatus = TInject1GetStatus
     OnGetBatteryLevel = TInject1GetBatteryLevel
     OnIsConnected = TInject1IsConnected
-    OnGetCheckIsValidNumber = TInject1GetCheckIsValidNumber
-    OnGetMyNumber = TInject1GetMyNumber
     OnLowBattery = TInject1LowBattery
+    OnGetCheckIsValidNumber = TInject1GetCheckIsValidNumber
+    OnGetProfilePicThumb = TInject1GetProfilePicThumb
+    OnGetMyNumber = TInject1GetMyNumber
     OnDisconnectedBrute = TInject1DisconnectedBrute
     OnErroAndWarning = TInject1ErroAndWarning
-    Left = 496
-    Top = 256
+    Left = 464
+    Top = 200
   end
 end

@@ -128,7 +128,7 @@
         <DCCReference Include="..\Source\Model\uTInject.ExePath.pas"/>
         <DCCReference Include="..\Source\Model\uTInject.JS.pas"/>
         <DCCReference Include="..\Source\Model\uCSV.Import.pas">
-            <Form>/u_principal in &apos;..\Demo\u_principal.pas&apos; {frmPrincipal};</Form>
+            <Form>u_principal in &apos;..\Demo\u_principal.pas&apos; {frmPrincipal</Form>
         </DCCReference>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>

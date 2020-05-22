@@ -44,7 +44,7 @@ uses Generics.Collections, Rest.Json, uTInject.FrmQRCode, Vcl.Graphics, System.I
  {$IFDEF DELPHI25_UP}
     Vcl.IdAntiFreeze,
   {$ENDIF}
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient;
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, Vcl.Imaging.jpeg;
 
 type
 
@@ -156,11 +156,20 @@ type
     Property Number : String   Read fNumber  Write fNumber;
   end;
 
-  TResponseCheckIsConnected= class(TClassPadrao)
+  TResponseCheckIsConnected = class(TClassPadrao)
   private
     FResult: Boolean;
   Public
     Property Result : Boolean  Read FResult  Write FResult;
+  end;
+
+  TResponseGetProfilePicThumb = class(TClassPadrao)
+  private
+    fBase64: String;
+  Public
+    Property Base64 : String   Read fBase64  Write fBase64;
+    constructor Create(pAJsonString: string);
+    destructor  Destroy;       override;
   end;
 
 
@@ -1147,6 +1156,19 @@ constructor TResponseIsConnected.Create(pAJsonString: string);
 begin
   inherited Create(pAJsonString);
   //FResult := FResult;//Copy(FResult, 0 , Pos('@', FResult)-1);
+end;
+
+{ TResponseGetProfilePicThumb }
+
+constructor TResponseGetProfilePicThumb.Create(pAJsonString: string);
+begin
+ Base64 :=  copy(pAJsonString, 34, length(pAJsonString) - 35);
+end;
+
+destructor TResponseGetProfilePicThumb.Destroy;
+begin
+
+  inherited;
 end;
 
 end.

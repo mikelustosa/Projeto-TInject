@@ -4,7 +4,8 @@ uses
   Vcl.Forms,
   Windows,
   uTInject.ConfigCEF,
-  u_principal in 'u_principal.pas' {frmPrincipal};
+  u_principal in 'u_principal.pas' {frmPrincipal},
+  ImageViewer.Helper in 'ImageViewer.Helper.pas';
 
 {$R *.res}
 
