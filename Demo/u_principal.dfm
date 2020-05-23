@@ -3764,7 +3764,6 @@ object frmPrincipal: TfrmPrincipal
     Top = 70
   end
   object TInject1: TInject
-    InjectJS.AutoUpdate = False
     InjectJS.AutoUpdateTimeOut = 10
     Config.AutoDelay = 30
     Config.ReceiveAttachmentAuto = False
