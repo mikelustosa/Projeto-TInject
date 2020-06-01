@@ -397,6 +397,16 @@ window.WAPI.getAllGroups = function(done) {
     return groups;
 };
 
+window.WAPI.getAllGroupsList = function(done) {
+    const contacts = window.Store.Contact.map((contact) => WAPI._serializeContactObj(contact));
+
+    if (done !== undefined) done(contacts);
+
+    SetConsoleMessage("getAllGroups", JSON.stringify(contacts));
+
+    return contacts;
+};
+
 /**
  * Sets the chat state
  * 
