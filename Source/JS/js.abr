@@ -397,6 +397,7 @@ window.WAPI.getAllGroups = function(done) {
     return groups;
 };
 
+//01/06/2020
 window.WAPI.getAllGroupsList = function(done) {
     const contacts = window.Store.Contact.map((contact) => WAPI._serializeContactObj(contact));
 
