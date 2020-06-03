@@ -6,6 +6,10 @@
 
 var contactID;
 
+function getAllGroupContacts(Contacts) {
+	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
+}
+
 function getMyNumber() {
     SetConsoleMessage('getMyNumber', localStorage.getItem('last-wid'));
     return true;
@@ -180,6 +184,9 @@ if (!window.Store||!window.Store.Msg) {
     })();
 }
 
+//window.WAPI = {};
+//window._WAPI = {};
+
 window.WAPI = {
     lastRead: {}
 };
@@ -241,7 +248,15 @@ window.WAPI._serializeMessageObj = (obj) => {
     if(obj.quotedMsg) obj.quotedMsgObj();
     return Object.assign(window.WAPI._serializeRawObj(obj), {
         id: obj.id._serialized,
-        sender: obj["senderObj"] ? WAPI._serializeContactObj(obj["senderObj"]) : null,
+        //add 02/06/2020 mike -->
+		quotedParticipant: obj.quotedParticipant? obj.quotedParticipant._serialized ? obj.quotedParticipant._serialized : undefined : undefined,
+        author: obj.author? obj.author._serialized ? obj.author._serialized : undefined : undefined,
+        chatId: obj.chatId? obj.chatId._serialized ? obj.chatId._serialized : undefined : undefined,
+        to: obj.to? obj.to._serialized ? obj.to._serialized : undefined : undefined,
+        fromMe: obj.id.fromMe,
+		//add 02/06/2020 mike <--
+		
+		sender: obj["senderObj"] ? WAPI._serializeContactObj(obj["senderObj"]) : null,
         timestamp: obj["t"],
         content: obj["body"],
         isGroupMsg: obj.isGroupMsg,
@@ -693,6 +708,8 @@ window.WAPI.getAllGroupMetadata = function(done) {
  * @param done Optional callback function for async execution
  * @returns {T|*} Group metadata object
  */
+ 
+/* Deprecated 02/06/2020
 window.WAPI.getGroupMetadata = async function(id, done) {
     let output = window.Store.GroupMetadata.get(id);
 
@@ -705,6 +722,10 @@ window.WAPI.getGroupMetadata = async function(id, done) {
     if (done !== undefined) done(output);
     return output;
 
+}; */
+
+window.WAPI.getGroupMetadata = async function (id) {
+    return window.Store.GroupMetadata.find(id);
 };
 
 /**
@@ -726,12 +747,22 @@ window.WAPI._getGroupParticipants = async function(id) {
  * @param done Optional callback function for async execution
  * @returns {Promise.<Array|*>} Yields list of IDs
  */
+
+/*
+window.WAPI.getGroupParticipantIDs = async function (id) {
+    return (await WAPI._getGroupParticipants(id))
+        .map((participant) => participant.id);
+}; */
+
+
 window.WAPI.getGroupParticipantIDs = async function(id, done) {
     const output = (await WAPI._getGroupParticipants(id))
         .map((participant) => participant.id);
 
     if (done !== undefined) done(output);
-    return output;
+	getAllGroupContacts(JSON.stringify(output));
+		   
+	return output;
 };
 
 window.WAPI.getGroupAdmins = async function(id, done) {
@@ -1454,7 +1485,7 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption, done) {
     });
 }
 
-//FunÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
+//FunÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
 window.WAPI.sendMessageToID = function(chatid, msgText) {
     var idUser = new window.Store.UserConstructor(chatid, {
         intentionallyUsePrivateConstructor: true
