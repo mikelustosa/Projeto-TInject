@@ -4,8 +4,7 @@ uses
   Vcl.Forms,
   Windows,
   uTInject.ConfigCEF,
-  u_principal in 'u_principal.pas' {frmPrincipal},
-  uInjectDecryptFile in '..\..\uInjectDecryptFile.pas';
+  u_principal in 'u_principal.pas' {frmPrincipal};
 
 {$R *.res}
 

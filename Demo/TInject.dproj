@@ -106,7 +106,6 @@
         <DCCReference Include="u_principal.pas">
             <Form>frmPrincipal</Form>
         </DCCReference>
-        <DCCReference Include="..\..\uInjectDecryptFile.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
