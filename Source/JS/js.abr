@@ -1,5 +1,6 @@
+//Mike
 //Version_JS;Version_TInjectMin;Version_CEF4Min
-//1.0.0.6;1.0.0.9;78.3.0
+//1.0.0.7;1.0.0.9;78.3.0
 //
 //
 //Fonte: https://gist.github.com/phpRajat/a6422922efae32914f4dbd1082f3f412
@@ -141,7 +142,6 @@ if (!window.Store||!window.Store.Msg) {
                     if ((typeof first === "object") && (first.exports)) {
                         for (let idx2 in modules[idx]) {
                             let module = modules(idx2);
-                            // console.log("TCL: getStore -> module", module ? Object.getOwnPropertyNames(module.default || module).filter(item => typeof (module.default || module)[item] === 'function').length ? module.default || module : "":'')
                             if (!module) {
                                 continue;
                             }
@@ -169,18 +169,37 @@ if (!window.Store||!window.Store.Msg) {
                         });
                         window.Store.sendMessage = function (e) {
                             return window.Store.SendTextMsgToChat(this, ...arguments);
-                        }
-                        if(window.Store.MediaCollection) window.Store.MediaCollection.prototype.processFiles = window.Store.MediaCollection.prototype.processFiles || window.Store.MediaCollection.prototype.processAttachments;
-                        return window.Store;
+                        };
                     }
                 }
             }
+
+            if (window.Store.Presence) {
+                for (const prop in window.Store.Presence) {
+                    if (prop === "Presence") {
+                        continue;
+                    }
+                    window.Store[prop] = window.Store.Presence[prop] || window.Store[prop];
+                }
+            }
+
+            return window.Store;
         }
-        const parasite = `parasite${Date.now()}`
-        // webpackJsonp([], { [parasite]: (x, y, z) => getStore(z) }, [parasite]);
-        if (typeof webpackJsonp === 'function') webpackJsonp([], {[parasite]: (x, y, z) => getStore(z)}, [parasite]); 
-        else webpackJsonp.push([[parasite],{[parasite]: (x, y, z) => getStore(z)},[[parasite]]]);
-        
+
+        if (typeof webpackJsonp === 'function') {
+            webpackJsonp([], {'parasite': (x, y, z) => getStore(z)}, ['parasite']);
+        } else {
+            webpackJsonp.push([
+                ['parasite'],
+                {
+                    parasite: function (o, e, t) {
+                        getStore(t);
+                    }
+                },
+                [['parasite']]
+            ]);
+        }
+
     })();
 }
 
@@ -1485,7 +1504,7 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption, done) {
     });
 }
 
-//FunÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬ ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬ ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
+//FunÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬ ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬ ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
 window.WAPI.sendMessageToID = function(chatid, msgText) {
     var idUser = new window.Store.UserConstructor(chatid, {
         intentionallyUsePrivateConstructor: true
