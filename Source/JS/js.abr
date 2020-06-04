@@ -527,8 +527,9 @@ window.WAPI.getAllGroups = function(done) {
 	let arrGroups = [];
 	let arr = groups;
 	arr.forEach((v , i) => {
-		arrGroups.push(arr[i]['id']['_serialized']);
+		arrGroups.push(arr[i]['id']['_serialized']+' '+arr[i]['formattedTitle']);
 	})
+	
 	SetConsoleMessage("getAllGroups", JSON.stringify(arrGroups));
 	
 	//return groups;
@@ -1411,30 +1412,17 @@ window.WAPI.getBatteryLevel = function(done) {
     return output;
 };
 
-window.WAPI.deleteConversation = function(chatId, done) {
-    let userId = new window.Store.UserConstructor(chatId, {
-        intentionallyUsePrivateConstructor: true
-    });
+window.WAPI.deleteConversation = async function (chatId) {
+    let userId = new window.Store.UserConstructor(chatId, { intentionallyUsePrivateConstructor: true });
     let conversation = WAPI.getChat(userId);
-
     if (!conversation) {
-        if (done !== undefined) {
-            done(false);
-        }
         return false;
     }
-
-    window.Store.sendDelete(conversation, false).then(() => {
-        if (done !== undefined) {
-            done(true);
-        }
+    return await window.Store.sendDelete(conversation, false).then(() => {
+        return true;
     }).catch(() => {
-        if (done !== undefined) {
-            done(false);
-        }
+        return false;
     });
-
-    return true;
 };
 
 window.WAPI.deleteMessage = function(chatId, messageArray, revoke = false, done) {
@@ -1614,7 +1602,7 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption, done) {
     });
 }
 
-//FunÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬ ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬ ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬ ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬ ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
+//FunÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬ ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬ ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¾Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â¡ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o criada em 03/12/2019 para enviar msg para contatos e grupos - Mike
 window.WAPI.sendMessageToID = function(chatid, msgText) {
     var idUser = new window.Store.UserConstructor(chatid, {
         intentionallyUsePrivateConstructor: true
@@ -1751,63 +1739,75 @@ window.WAPI.contactUnblock = function(id, done) {
     return false;
 }
 
+
+/** Joins a group via the invite link, code, or message
+ * @param link This param is the string which includes the invite link or code. The following work:
+ * - Follow this link to join my WA group: https://chat.whatsapp.com/DHTGJUfFJAV9MxOpZO1fBZ
+ * - https://chat.whatsapp.com/DHTGJUfFJAV9MxOpZO1fBZ
+ * - DHTGJUfFJAV9MxOpZO1fBZ
+ * @returns Promise<string | boolean> Either false if it didn't work, or the group id.
+ */
+window.WAPI.joinGroupViaLink = async function(link){
+    let code = link;
+    //is it a link? if not, assume it's a code, otherwise, process the link to get the code.
+    if(link.includes('chat.whatsapp.com')) {
+        if(!link.match(/chat.whatsapp.com\/([\w\d]*)/g).length) return false;
+        code = link.match(/chat.whatsapp.com\/([\w\d]*)/g)[0].replace('chat.whatsapp.com\/','');
+    }
+    const group = await Store.GroupInvite.joinGroupViaInvite(code);
+    if(!group.id) return false;
+    return group.id._serialized
+}
+
+/**
+ * Add participant to Group
+ * @param {*} idGroup '0000000000-00000000@g.us'
+ * @param {*} idParticipant '000000000000@c.us'
+ */
+window.WAPI.addParticipant = async function (idGroup, idParticipant) {
+    const chat = Store.Chat.get(idGroup);
+    const add = Store.Contact.get(idParticipant);
+    await window.Store.Participants.addParticipants(chat, [add]);
+    return true;
+}
+
+
 /**
  * Remove participant of Group
  * @param {*} idGroup '0000000000-00000000@g.us'
  * @param {*} idParticipant '000000000000@c.us'
- * @param {*} done - function - Callback function to be called when a new message arrives.
  */
-window.WAPI.removeParticipantGroup = function(idGroup, idParticipant, done) {
-    window.Store.WapQuery.removeParticipants(idGroup, [idParticipant]).then(() => {
-        const metaDataGroup = window.Store.GroupMetadata.get(id)
-        checkParticipant = metaDataGroup.participants._index[idParticipant];
-        if (checkParticipant === undefined) {
-            done(true);
-            return true;
-        }
-    })
+window.WAPI.removeParticipant = async function (idGroup, idParticipant) {
+    const chat = Store.Chat.get(idGroup);
+    const rm = chat.groupMetadata.participants.get(idParticipant);
+    await window.Store.Participants.removeParticipants(chat, [rm]);
+    return true;
 }
 
 /**
  * Promote Participant to Admin in Group
  * @param {*} idGroup '0000000000-00000000@g.us'
  * @param {*} idParticipant '000000000000@c.us'
- * @param {*} done - function - Callback function to be called when a new message arrives.
  */
-window.WAPI.promoteParticipantAdminGroup = function(idGroup, idParticipant, done) {
-    window.Store.WapQuery.promoteParticipants(idGroup, [idParticipant]).then(() => {
-        const metaDataGroup = window.Store.GroupMetadata.get(id)
-        checkParticipant = metaDataGroup.participants._index[idParticipant];
-        if (checkParticipant !== undefined && checkParticipant.isAdmin) {
-            done(true);
-            return true;
-        }
-        done(false);
-        return false;
-    })
+window.WAPI.promoteParticipant = async function (idGroup, idParticipant) {
+    const chat = Store.Chat.get(idGroup);
+    const promote = chat.groupMetadata.participants.get(idParticipant);
+    await window.Store.Participants.promoteParticipants(chat, [promote]);
+    return true;
 }
 
 /**
  * Demote Admin of Group
  * @param {*} idGroup '0000000000-00000000@g.us'
  * @param {*} idParticipant '000000000000@c.us'
- * @param {*} done - function - Callback function to be called when a new message arrives.
  */
-window.WAPI.demoteParticipantAdminGroup = function(idGroup, idParticipant, done) {
-    window.Store.WapQuery.demoteParticipants(idGroup, [idParticipant]).then(() => {
-        const metaDataGroup = window.Store.GroupMetadata.get(id)
-        if (metaDataGroup === undefined) {
-            done(false);
-            return false;
-        }
-        checkParticipant = metaDataGroup.participants._index[idParticipant];
-        if (checkParticipant !== undefined && checkParticipant.isAdmin) {
-            done(false);
-            return false;
-        }
-        done(true);
-        return true;
-    })
+window.WAPI.demoteParticipant = async function (idGroup, idParticipant) {
+    await window.Store.WapQuery.demoteParticipants(idGroup, [idParticipant])
+    const chat = Store.Chat.get(idGroup);
+    const demote = chat.groupMetadata.participants.get(idParticipant);
+    await window.Store.Participants.demoteParticipants(chat, [demote])
+    return true
+   
 }
 
 //Nova funcao alternativa para enviar mensagens(Nao envia para grupos)
