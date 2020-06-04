@@ -110,6 +110,16 @@ type
   end;
 
 
+  TClassAllGroupContacts = class
+  private
+    FResult: String;
+  public
+    constructor Create(pAJsonString: string; PJsonOption: TJsonOptions = JsonOptionClassPadrao);
+    property result: String read FResult write FResult;
+    function ToJsonString: string;
+    class function FromJsonString(AJsonString: string): TClassAllGroupContacts;
+  end;
+
 
   TClassPadraoList<T> = class(TClassPadrao)
   private
@@ -119,7 +129,6 @@ type
     property   result: TArray<T> read FResult write FResult;
     destructor Destroy; override;
   end;
-
 
 
   {########################################################################################################################################}
@@ -298,6 +307,7 @@ type
     property isAdmin:      Boolean  read   FIsAdmin      write FIsAdmin;
     property isSuperAdmin: Boolean  read   FIsSuperAdmin write FIsSuperAdmin;
   end;
+
 
   TGroupMetadataClass = class(TClassPadraoList<TParticipantsClass>)
   private
@@ -586,7 +596,40 @@ Public
   constructor Create(pAJsonString: string);
 end;
 
+//Mike
+//TRetornoAllGroups = class(TClassPadraoList<TContactClass>)
+//Public
+//  constructor Create(pAJsonString: string);
+//end;
+
+TRetornoAllGroups = class(TClassPadrao)
+  private
+    FNumbers: TStringList;
+  public
+    property    Numbers: TStringList   read FNumbers;
+    constructor Create(pAJsonString: string);
+    destructor Destroy; override;
+end;
+
+
+TRetornoAllGroupAdmins = class(TClassPadrao)
+private
+  FNumbers: TStringList;
+public
+  property    Numbers: TStringList   read FNumbers;
+  constructor Create(pAJsonString: string);
+  destructor Destroy; override;
+end;
+
+//TRetornoAllGroups = class(TClassPadraoList<TClassGetAllGroupContacts>)
+//Public
+//  constructor Create(pAJsonString: string);
+//end;
+
 TChatList = class(TClassPadraoList<TChatClass>)
+end;
+
+TRetornoAllGroupContacts = class(TClassPadraoList<TChatClass>)
 end;
 
 
@@ -1120,9 +1163,6 @@ begin
 end;
 
 
-
-
-
 { TMediaDataClass }
 
 constructor TMediaDataClass.Create(pAJsonString: string);
@@ -1169,6 +1209,92 @@ destructor TResponseGetProfilePicThumb.Destroy;
 begin
 
   inherited;
+end;
+
+{ TRetornoAllGroups }
+
+constructor TRetornoAllGroups.Create(pAJsonString: string);
+begin
+  inherited Create(pAJsonString);
+  FNumbers      := TStringList.create;
+  FNumbers.Text := FJsonString;
+  //Quebrar linhas de acordo com cada valor separado por virgula
+  FNumbers.Text := StringReplace(FNumbers.Text, '",', Enter, [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '"' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '{result:[' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, ']}' , '',    [rfReplaceAll]);
+end;
+
+destructor TRetornoAllGroups.Destroy;
+begin
+  inherited;
+  Freeandnil(FNumbers);
+end;
+
+{ TClassGetAllGroupContacts }
+
+constructor TClassAllGroupContacts.Create(pAJsonString: string;
+  PJsonOption: TJsonOptions);
+var
+  lAJsonObj: TJSONValue;
+begin
+  lAJsonObj      := TJSONObject.ParseJSONValue(pAJsonString);
+
+  try
+   try
+    if NOT Assigned(lAJsonObj) then
+       Exit;
+
+    TJson.JsonToObject(Self, TJSONObject(lAJsonObj) ,PJsonOption);
+
+          SleepNoFreeze(10);
+
+    If LowerCase(SELF.ClassName) <> LowerCase('TResponseConsoleMessage') Then
+       LogAdd(PrettyJSON(pAJsonString), SELF.ClassName);
+
+
+   Except
+     on E : Exception do
+       LogAdd(e.Message, 'ERROR ' + SELF.ClassName);
+   end;
+  finally
+    FreeAndNil(lAJsonObj);
+  end;
+
+end;
+
+class function TClassAllGroupContacts.FromJsonString(
+  AJsonString: string): TClassAllGroupContacts;
+begin
+  result := TJson.JsonToObject<TClassAllGroupContacts>(AJsonString)
+end;
+
+function TClassAllGroupContacts.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+{ TRetornoAllGroupAdmins }
+
+constructor TRetornoAllGroupAdmins.Create(pAJsonString: string);
+begin
+  inherited Create(pAJsonString);
+  FNumbers      := TStringList.create;
+  FNumbers.Text := FJsonString;
+  //Quebrar linhas de acordo com cada valor separado por virgula
+  FNumbers.Text := StringReplace(FNumbers.Text, '",', Enter, [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '"' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '{result:[' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '[' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, ']' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '}' , '',    [rfReplaceAll]);
+
+end;
+
+destructor TRetornoAllGroupAdmins.Destroy;
+begin
+  inherited;
+  Freeandnil(FNumbers);
 end;
 
 end.

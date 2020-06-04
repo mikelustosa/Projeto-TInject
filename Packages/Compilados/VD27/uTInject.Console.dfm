@@ -2,8 +2,8 @@ object FrmConsole: TFrmConsole
   Left = 0
   Top = 0
   Caption = 'TInject - Autentica'#231#227'o'
-  ClientHeight = 519
-  ClientWidth = 885
+  ClientHeight = 461
+  ClientWidth = 684
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -25,11 +25,10 @@ object FrmConsole: TFrmConsole
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 879
-    Height = 25
+    Width = 678
+    Height = 36
     Align = alTop
     BorderStyle = bsSingle
-    Color = clWhite
     Ctl3D = False
     ParentBackground = False
     ParentCtl3D = False
@@ -37,8 +36,9 @@ object FrmConsole: TFrmConsole
     object Img_Brasil: TImage
       Left = 1
       Top = 1
-      Width = 31
-      Height = 21
+      Width = 40
+      Height = 32
+      Align = alLeft
       Center = True
       Picture.Data = {
         0954506E67496D61676589504E470D0A1A0A0000000D49484452000000200000
@@ -98,32 +98,35 @@ object FrmConsole: TFrmConsole
         DDC4E7F3D15AB6D2518B27749B15F16F972AA60D2F92323E3E8E502884783CCE
         E2110E87A58CE1373F3FDF54334BF13F00983D40990C8348878B68346A7EE4CF
         7E7DB6FFA0CEF8FFE57798F46A8E6D6850A60000000049454E44AE426082}
-      Proportional = True
       Transparent = True
-      OnMouseEnter = lbl_VersaoMouseEnter
+      OnMouseEnter = Lbl_VersaoMouseEnter
+      ExplicitLeft = -1
+      ExplicitTop = 3
     end
     object Lbl_Caption: TLabel
-      Left = 1
+      Left = 89
       Top = 1
-      Width = 126
-      Height = 18
+      Width = 496
+      Height = 32
       Align = alClient
       Alignment = taCenter
       Caption = 'TInject component'
       Font.Charset = DEFAULT_CHARSET
-      Font.Color = clSilver
+      Font.Color = 4227072
       Font.Height = -15
       Font.Name = 'Tahoma'
       Font.Style = []
       ParentFont = False
       Layout = tlCenter
+      ExplicitWidth = 126
+      ExplicitHeight = 18
     end
-    object lbl_Versao: TLabel
+    object Lbl_Versao: TLabel
       AlignWithMargins = True
-      Left = 789
+      Left = 588
       Top = 4
       Width = 82
-      Height = 15
+      Height = 26
       Margins.Right = 5
       Align = alRight
       Alignment = taRightJustify
@@ -139,16 +142,15 @@ object FrmConsole: TFrmConsole
       ShowHint = True
       Layout = tlCenter
       WordWrap = True
-      OnMouseEnter = lbl_VersaoMouseEnter
+      OnMouseEnter = Lbl_VersaoMouseEnter
       ExplicitLeft = 569
-      ExplicitHeight = 26
     end
     object Img_LogoInject: TImage
-      AlignWithMargins = True
-      Left = 36
+      Left = 41
       Top = 1
-      Width = 30
-      Height = 20
+      Width = 48
+      Height = 32
+      Align = alLeft
       Picture.Data = {
         0954506E67496D61676589504E470D0A1A0A0000000D494844520000004F0000
         00380806000000BC13A5FF000000017352474200AECE1CE90000000467414D41
@@ -433,15 +435,15 @@ object FrmConsole: TFrmConsole
         426082}
       Proportional = True
       Transparent = True
-      OnMouseEnter = lbl_VersaoMouseEnter
+      OnMouseEnter = Lbl_VersaoMouseEnter
     end
   end
   object Pnl_Geral: TPanel
     AlignWithMargins = True
     Left = 3
-    Top = 32
-    Width = 879
-    Height = 484
+    Top = 43
+    Width = 678
+    Height = 415
     Margins.Top = 1
     Align = alClient
     BevelOuter = bvNone
@@ -453,10 +455,71 @@ object FrmConsole: TFrmConsole
     object CEFWindowParent1: TCEFWindowParent
       Left = 0
       Top = 0
-      Width = 879
+      Width = 678
       Height = 121
       Align = alTop
       TabOrder = 0
+    end
+    object Pnl_Aguarde: TPanel
+      Left = 34
+      Top = 400
+      Width = 681
+      Height = 432
+      BevelOuter = bvNone
+      Caption = 'Pnl_Aguarde'
+      ShowCaption = False
+      TabOrder = 1
+      Visible = False
+      object Lbl_Msg: TLabel
+        Left = 0
+        Top = 0
+        Width = 681
+        Height = 173
+        Align = alClient
+        Alignment = taCenter
+        AutoSize = False
+        Caption = 'Aguarde.. Preparando'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -27
+        Font.Name = 'Tahoma'
+        Font.Style = [fsBold]
+        ParentFont = False
+        ParentShowHint = False
+        ShowHint = False
+        Layout = tlCenter
+        WordWrap = True
+        ExplicitWidth = 678
+        ExplicitHeight = 157
+      end
+      object ProgressBar: TProgressBar
+        AlignWithMargins = True
+        Left = 100
+        Top = 176
+        Width = 481
+        Height = 22
+        Margins.Left = 100
+        Margins.Right = 100
+        Align = alBottom
+        TabOrder = 0
+      end
+      object Panel2: TPanel
+        Left = 0
+        Top = 201
+        Width = 681
+        Height = 231
+        Align = alBottom
+        BevelOuter = bvNone
+        Caption = 'Panel2'
+        ShowCaption = False
+        TabOrder = 1
+        object ActivityIndicator1: TActivityIndicator
+          Left = 291
+          Top = 64
+          Animate = True
+          IndicatorSize = aisXLarge
+        end
+      end
     end
   end
   object Chromium1: TChromium

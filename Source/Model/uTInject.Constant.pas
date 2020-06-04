@@ -33,7 +33,7 @@ Uses Winapi.Messages, System.SysUtils, typinfo, REST.Json;
 
 Const
   //Uso GLOBAL
-  TInjectVersion                  = '1.0.3.0'; //  22/05/2020  //Alterado por Mike Lustosa
+  TInjectVersion                  = '3.0.0.0'; //  04/06/2020  //Alterado por Mike Lustosa
   CardContact                     = '@c.us';
   CardGroup                       = '@g.us';
   CardList                        = '@broadcast';
@@ -45,6 +45,7 @@ Const
   VersaoMinima_CF4_Release        = 0;
   Versao0porCasas                 = 3;
   MinutosCOnsideradoObsoletooJS   = 50;
+  Enter                           = sLineBreak;
   ConfigCEF_Path_Locales          = 'locales';
   ConfigCEF_Path_Cache            = 'cache';
   ConfigCEF_Path_UserData         = 'User Data';
@@ -60,6 +61,7 @@ Const
   FrmConsole_JS_Ignorar                 = '{"name":"getUnreadMessages","result":"{\"result\":[]}"}';
   FrmConsole_JS_URL                     = 'https://web.whatsapp.com/';
   FrmConsole_JS_GetAllContacts          = 'window.WAPI.getAllContacts();';
+
   FrmConsole_JS_GetBatteryLevel         = 'window.WAPI.getBatteryLevel();';
   FrmConsole_JS_GetMyNumber             = 'getMyNumber();';
   FrmConsole_JS_GetUnreadMessages       = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
@@ -82,7 +84,7 @@ Const
   FrmConsole_JS_VAR_Logout              = 'localStorage.clear(); location.reload();';
   FrmConsole_JS_VAR_SendContact         = 'window.WAPI.sendContact("<#MSG_PHONE_DEST#>", "<#MSG_PHONE#>")';
   //FrmConsole_JS_VAR_CheckIsValidNumber  = 'window.WAPI.isValidNumber("<#MSG_PHONE#>")';
-  FrmConsole_JS_VAR_CheckIsValidNumber = 'window.WAPI.isValidNumber("<#MSG_PHONE#>")'+
+  FrmConsole_JS_VAR_CheckIsValidNumber  = 'window.WAPI.isValidNumber("<#MSG_PHONE#>")'+
                                         '.then(result => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(result)))'+
                                         '.catch(error => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(error)));';
   FrmConsole_JS_VAR_IsConnected         = 'window.WAPI.isConnected();';
@@ -101,8 +103,19 @@ Const
                                           '};                                                 '+
                                           'img.src = url;                                     '+
                                           '};';
-  //FrmConsole_JS_VAR_getProfilePicThumb    = 'convertImgToBase64URL("<#PROFILE_PICTHUMB_URL#>", function(base64Img){ window.WAPI.teste(base64Img) });';
-  FrmConsole_JS_VAR_getProfilePicThumb    = 'window.WAPI.teste("<#PROFILE_PICTHUMB_URL#>");';
+
+  FrmConsole_JS_VAR_getProfilePicThumb      = 'window.WAPI.teste("<#PROFILE_PICTHUMB_URL#>");';
+  FrmConsole_JS_VAR_CreateGroup             = 'window.WAPI.createGroup("<#GROUP_NAME#>", "<#PARTICIPANT_NUMBER#>");setTimeout(function(){ window.WAPI.getAllGroups(); }, 3000);';
+  FrmConsole_JS_GetAllGroups                = 'window.WAPI.getAllGroups();';//'window.WAPI.listMyGroups();';
+  FrmConsole_JS_GetGroupAdmins              = 'window.WAPI.getGroupAdmins("<#GROUP_ID#>");';
+  FrmConsole_JS_VAR_listGroupContacts       = 'window.WAPI.getGroupParticipantIDs("<#GROUP_ID#>");';
+  FrmConsole_JS_VAR_groupAddParticipant     = 'window.WAPI.addParticipant("<#GROUP_ID#>", "<#PARTICIPANT_NUMBER#>");setTimeout(function(){ window.WAPI.getGroupParticipantIDs("<#GROUP_ID#>"); }, 3000);';
+  FrmConsole_JS_VAR_groupRemoveParticipant  = 'window.WAPI.removeParticipant("<#GROUP_ID#>", "<#PARTICIPANT_NUMBER#>");setTimeout(function(){ window.WAPI.getGroupParticipantIDs("<#GROUP_ID#>"); }, 3000);';
+  FrmConsole_JS_VAR_groupPromoteParticipant = 'window.WAPI.promoteParticipant("<#GROUP_ID#>", "<#PARTICIPANT_NUMBER#>");setTimeout(function(){ window.WAPI.getGroupAdmins("<#GROUP_ID#>"); }, 3000);';
+  FrmConsole_JS_VAR_groupDemoteParticipant  = 'window.WAPI.demoteParticipant("<#GROUP_ID#>", "<#PARTICIPANT_NUMBER#>");setTimeout(function(){ window.WAPI.getGroupAdmins("<#GROUP_ID#>"); }, 3000);';
+  FrmConsole_JS_VAR_groupLeave              = 'window.WAPI.leaveGroup("<#GROUP_ID#>");';
+  FrmConsole_JS_VAR_groupDelete             = 'window.WAPI.deleteConversation("<#GROUP_ID#>");setTimeout(function(){ window.WAPI.getAllGroups(); }, 3000);';
+  FrmConsole_JS_VAR_groupJoinViaLink        = 'window.WAPI.joinGroupViaLink("<#GROUP_LINK#>");setTimeout(function(){ window.WAPI.getAllGroups(); }, 3000);';
 
 resourcestring
   MSG_ConfigCEF_ExceptNotFoundJS       = '';
@@ -220,20 +233,20 @@ type
 
     TTypeHeader = (Th_None = 0,
                    //Eventos de Retornos
-                   Th_GetAllContacts=1,         Th_GetAllChats=2,                      Th_GetUnreadMessages=3,
-                   Th_GetBatteryLevel=4,        Th_GetQrCodeForm=5,                    Th_GetQrCodeWEB=6,
-                   Th_GetMyNumber=7,            Th_OnChangeConnect=8,                  Th_GetReserv1=9,
-                   Th_GetReserv2=10,            Th_GetReserv3=11,                      Th_GetReserv4=12,
-                   Th_GetReserv5=13,            Th_GetReserv6=14,                      Th_GetReserv7=15,
-                   Th_GetCheckIsValidNumber=16, Th_GetCheckIsConnected=17,             Th_GetProfilePicThumb=18,
+                   Th_GetAllContacts=1,         Th_GetAllChats=2,                      Th_GetUnreadMessages=3,    Th_GetAllGroupContacts=4,
+                   Th_GetBatteryLevel=5,        Th_GetQrCodeForm=6,                    Th_GetQrCodeWEB=7,
+                   Th_GetMyNumber=8,            Th_OnChangeConnect=9,                  Th_GetReserv1=10,
+                   Th_GetReserv2=11,            Th_GetReserv3=12,                      Th_GetReserv4=13,
+                   Th_GetReserv5=14,            Th_GetReserv6=15,                      Th_GetReserv7=16,
+                   Th_GetCheckIsValidNumber=17, Th_GetCheckIsConnected=18,             Th_GetProfilePicThumb=19,  Th_getAllGroups=20, Th_getAllGroupAdmins=21,
 
                    //Eventos Conexao
-                   Th_Disconnected=19,          Th_Disconnecting=20,                   Th_Connected=21,
-                   Th_ConnectedDown=22,         Th_Connecting=23,                      Th_ConnectingFt_Desktop=24,
-                   Th_ConnectingFt_HTTP=25,     Th_ConnectingNoPhone=26,               Th_Destroy=27,
-                   Th_Destroying=28,            Th_NewSyncContact=29,                  Th_Initializing=30,
-                   Th_Initialized=31,           Th_Abort=32,                           Th_ForceDisconnect=33,
-                   Th_AlterConfig=34
+                   Th_Disconnected=22,          Th_Disconnecting=23,                   Th_Connected=24,
+                   Th_ConnectedDown=25,         Th_Connecting=26,                      Th_ConnectingFt_Desktop=27,
+                   Th_ConnectingFt_HTTP=28,     Th_ConnectingNoPhone=29,               Th_Destroy=30,
+                   Th_Destroying=31,            Th_NewSyncContact=32,                  Th_Initializing=33,
+                   Th_Initialized=34,           Th_Abort=35,                           Th_ForceDisconnect=36,
+                   Th_AlterConfig=37
                    );
 
     Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;

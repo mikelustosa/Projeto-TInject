@@ -54,7 +54,7 @@ type
     CEFSentinel1: TCEFSentinel;
     Pnl_Geral: TPanel;
     CEFWindowParent1: TCEFWindowParent;
-    Lbl_Versao: TLabel;
+    lbl_Versao: TLabel;
     Img_LogoInject: TImage;
     procedure Chromium1AfterCreated(Sender: TObject;      const browser: ICefBrowser);
     procedure Chromium1BeforeClose(Sender: TObject; const browser: ICefBrowser);
@@ -81,7 +81,8 @@ type
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     Procedure ProcessQrCode(Var pClass: TObject);
     procedure CEFSentinel1Close(Sender: TObject);
-    Procedure ProcessPhoneBook(PCOmmand: String);
+    Procedure ProcessPhoneBook(PCommand: string);
+    procedure ProcessGroupBook(PCommand: string);
     procedure FormShow(Sender: TObject);
     procedure App_EventMinimize(Sender: TObject);
     procedure Chromium1BeforeDownload(Sender: TObject;
@@ -90,7 +91,7 @@ type
     procedure Chromium1DownloadUpdated(Sender: TObject;
       const browser: ICefBrowser; const downloadItem: ICefDownloadItem;
       const callback: ICefDownloadItemCallback);
-    procedure Lbl_VersaoMouseEnter(Sender: TObject);
+    procedure lbl_VersaoMouseEnter(Sender: TObject);
     procedure Chromium1BeforeContextMenu(Sender: TObject;
       const browser: ICefBrowser; const frame: ICefFrame;
       const params: ICefContextMenuParams; const model: ICefMenuModel);
@@ -114,7 +115,7 @@ type
     Procedure ExecuteCommandConsole(Const PResponse: TResponseConsoleMessage);
   private
     { Private declarations }
-    LPaginaId, Fzoom               : integer;
+    LPaginaId, Fzoom        : integer;
     FCanClose               : Boolean;
     FDirTemp                : String;
     FConectado              : Boolean;
@@ -130,6 +131,7 @@ type
     FChatList               : TChatList;
     FMonitorLowBattry       : Boolean;
     FgettingContact         : Boolean;
+    FgettingGroups          : Boolean;
     FgettingChats           : Boolean;
     FOnErrorInternal        : TOnErroInternal;
     FOwner                  : TComponent;
@@ -145,6 +147,7 @@ type
     procedure QRCodeWeb_Start;
     Procedure ResetEvents;
     procedure SetOwner(const Value: TComponent);
+
     Procedure SendNotificationCenterDirect(PValor: TTypeHeader; Const PSender : TObject= nil);
 
     Procedure Form_Start;
@@ -170,7 +173,6 @@ type
     Procedure DisConnect;
     procedure Send(vNum, vText:string);
     procedure CheckDelivered;
-
     procedure SendContact(vNumDest, vNum:string);
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
     procedure SendLinkPreview(vNum, vLinkPreview, vText: string);
@@ -179,14 +181,24 @@ type
     procedure ReloaderWeb;
     procedure StopWebBrowser;
     procedure GetAllContacts(PIgnorarLeitura1: Boolean = False);
+    procedure GetAllGroups(PIgnorarLeitura1: Boolean = False);
+    procedure GroupAddParticipant(vIDGroup, vNumber: string);
+    procedure GroupRemoveParticipant(vIDGroup, vNumber: string);
+    procedure GroupPromoteParticipant(vIDGroup, vNumber: string);
+    procedure GroupDemoteParticipant(vIDGroup, vNumber: string);
+    procedure GroupLeave(vIDGroup: string);
+    procedure GroupDelete(vIDGroup: string);
+    procedure GroupJoinViaLink(vLinkGroup: string);
+
     procedure GetAllChats;
     procedure GetUnreadMessages;
     procedure GetBatteryLevel;
     procedure CheckIsValidNumber(vNumber:string);
     procedure CheckIsConnected;
     procedure GetMyNumber;
-    //procedure GetProfilePicThumbURL(AProfilePicThumbURL: string);
-
+    procedure CreateGroup(vGroupName, PParticipantNumber: string);
+    procedure listGroupContacts(vIDGroup: string);
+    procedure listGroupAdmins(vIDGroup: string);
 
     //Para monitorar o qrcode via REST
     procedure ReadMessages(vID: string);
@@ -396,9 +408,22 @@ begin
   end;
 end;
 
+procedure TFrmConsole.ProcessGroupBook(PCommand: string);
+var
+  LAllGroups : TRetornoAllGroups;
+begin
+  LAllGroups  := TRetornoAllGroups.Create(PCommand);
+  try
+    if Assigned(TInject(FOwner).OnGetAllGroupList ) then
+       TInject(FOwner).OnGetAllGroupList(LAllGroups);
+  finally
+    FreeAndNil(LAllGroups);
+  end;
+end;
+
 procedure TFrmConsole.ProcessPhoneBook(PCOmmand: String);
 var
-  LAllContacts : TRetornoAllContacts  ;
+  LAllContacts : TRetornoAllContacts;
 begin
   LAllContacts        := TRetornoAllContacts.Create(PCommand);
   try
@@ -456,6 +481,18 @@ begin
   FrmConsole.ExecuteJS(FrmConsole_JS_GetAllContacts, False);
 end;
 
+procedure TFrmConsole.GetAllGroups(PIgnorarLeitura1: Boolean);
+begin
+  if PIgnorarLeitura1 then
+  Begin
+    ReleaseConnection;
+    Exit;
+  End;
+
+  FgettingGroups := True;
+  FrmConsole.ExecuteJS(FrmConsole_JS_GetAllGroups, False);
+end;
+
 function TFrmConsole.GetAutoBatteryLeveL: Boolean;
 begin
   Result        := False;
@@ -494,6 +531,94 @@ begin
   ExecuteJS(FrmConsole_JS_GetUnreadMessages, False);
 end;
 
+
+procedure TFrmConsole.GroupAddParticipant(vIDGroup, vNumber: string);
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   := FrmConsole_JS_VAR_groupAddParticipant;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_ID#',           Trim(vIDGroup));
+  FrmConsole_JS_AlterVar(LJS, '#PARTICIPANT_NUMBER#', Trim(vNumber));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.GroupDelete(vIDGroup: string);
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   := FrmConsole_JS_VAR_groupDelete;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_ID#', Trim(vIDGroup));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.GroupDemoteParticipant(vIDGroup, vNumber: string);
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   := FrmConsole_JS_VAR_groupDemoteParticipant;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_ID#',           Trim(vIDGroup));
+  FrmConsole_JS_AlterVar(LJS, '#PARTICIPANT_NUMBER#', Trim(vNumber));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.GroupJoinViaLink(vLinkGroup: string);
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   := FrmConsole_JS_VAR_groupJoinViaLink;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_LINK#', Trim(vLinkGroup));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.GroupLeave(vIDGroup: string);
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   := FrmConsole_JS_VAR_groupLeave;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_ID#', Trim(vIDGroup));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.GroupPromoteParticipant(vIDGroup, vNumber: string);
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   := FrmConsole_JS_VAR_groupPromoteParticipant;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_ID#',           Trim(vIDGroup));
+  FrmConsole_JS_AlterVar(LJS, '#PARTICIPANT_NUMBER#', Trim(vNumber));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.GroupRemoveParticipant(vIDGroup, vNumber: string);
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   := FrmConsole_JS_VAR_groupRemoveParticipant;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_ID#',           Trim(vIDGroup));
+  FrmConsole_JS_AlterVar(LJS, '#PARTICIPANT_NUMBER#', Trim(vNumber));
+  ExecuteJS(LJS, true);
+end;
 
 procedure TFrmConsole.GetAllChats;
 begin
@@ -927,6 +1052,25 @@ begin
                             Exit;
                           End;
 
+
+    Th_getAllGroups     : begin
+                            LOutClass := TRetornoAllGroups.Create(LResultStr);
+                          try
+                            SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
+                          finally
+                            FreeAndNil(LOutClass);
+                          end;
+                        end;
+
+    Th_getAllGroupAdmins  : begin
+                              LOutClass := TRetornoAllGroupAdmins.Create(LResultStr);
+                            try
+                              SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
+                            finally
+                              FreeAndNil(LOutClass);
+                            end;
+                          end;
+
     Th_GetAllChats      : Begin
                             if Assigned(FChatList) then
                                FChatList.Free;
@@ -946,7 +1090,14 @@ begin
                             FgettingChats := False;
                           end;
 
-
+    Th_GetAllGroupContacts: begin
+                              LOutClass := TClassAllGroupContacts.Create(LResultStr);
+                              try
+                                SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
+                              finally
+                                FreeAndNil(LOutClass);
+                              end;
+                            end;
 
     Th_getQrCodeWEB,
     Th_getQrCodeForm :    Begin
@@ -1046,6 +1197,7 @@ procedure TFrmConsole.Chromium1ConsoleMessage(Sender: TObject;
 var
   AResponse  : TResponseConsoleMessage;
 begin
+
  //testa se e um JSON de forma RAPIDA!
   if (Copy(message, 0, 2) <> '{"') then
   Begin
@@ -1058,7 +1210,10 @@ begin
   End;
 
 //  LogAdd(message, 'CONSOLE');
-  AResponse := TResponseConsoleMessage.Create( message );
+
+ if message <> 'Uncaught (in promise) TypeError: output.update is not a function' then
+
+ AResponse := TResponseConsoleMessage.Create( message );
   try
     if AResponse = nil then
        Exit;
@@ -1230,6 +1385,19 @@ begin
   end;
 end;
 
+procedure TFrmConsole.CreateGroup(vGroupName, PParticipantNumber: string);
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS := FrmConsole_JS_VAR_CreateGroup;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_NAME#',         Trim(vGroupName));
+  FrmConsole_JS_AlterVar(LJS, '#PARTICIPANT_NUMBER#', Trim(PParticipantNumber));
+  ExecuteJS(LJS, true);
+end;
+
 procedure TFrmConsole.FormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
@@ -1377,7 +1545,7 @@ begin
 end;
 
 
-procedure TFrmConsole.Lbl_VersaoMouseEnter(Sender: TObject);
+procedure TFrmConsole.lbl_VersaoMouseEnter(Sender: TObject);
 const
   BYTES_PER_MEGABYTE = 1024 * 1024;
 var
@@ -1388,6 +1556,24 @@ begin
                   Text_System_memFree + inttostr(GlobalCEFApp.AvailableSystemMemory div BYTES_PER_MEGABYTE) + ' Mb' + #13 +
                   Text_System_memFree + inttostr(GlobalCEFApp.SystemMemoryLoad) + ' %';
   Lbl_Versao.Hint := LTempMessage;
+end;
+
+procedure TFrmConsole.listGroupAdmins(vIDGroup: string);
+var
+  Ljs: string;
+begin
+  LJS   := FrmConsole_JS_GetGroupAdmins;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_ID#', Trim(vIDGroup));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.listGroupContacts(vIDGroup: string);
+var
+  Ljs: string;
+begin
+  LJS   := FrmConsole_JS_VAR_listGroupContacts;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_ID#', Trim(vIDGroup));
+  ExecuteJS(LJS, true);
 end;
 
 procedure TFrmConsole.Logout;

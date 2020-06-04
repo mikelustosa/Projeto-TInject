@@ -5,7 +5,7 @@ uses
   Windows,
   uTInject.ConfigCEF,
   u_principal in 'u_principal.pas' {frmPrincipal},
-  ImageViewer.Helper in 'ImageViewer.Helper.pas';
+  uInjectDecryptFile in '..\..\uInjectDecryptFile.pas';
 
 {$R *.res}
 

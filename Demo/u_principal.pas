@@ -8,19 +8,19 @@ uses
   Vcl.Controls, Vcl.Forms,  Vcl.ExtCtrls,
 
   //############ ATENCAO AQUI ####################
-  //units adicionais obrigatórias
-   uTInject.ConfigCEF, uTInject,            uTInject.Constant,    uTInject.JS,
-   uTInject.Console,   uTInject.Diversos,   uTInject.AdjustNumber,  uTInject.Config,       uTInject.Classes,
+  //units adicionais obrigatorias
+   uTInject.ConfigCEF, uTInject,            uTInject.Constant,      uTInject.JS,     uInjectDecryptFile,
+   uTInject.Console,   uTInject.Diversos,   uTInject.AdjustNumber,  uTInject.Config, uTInject.Classes,
 
   //units Opcionais (dependendo do que ira fazer)
-   System.NetEncoding, System.TypInfo,
-  //###############################################
+   System.NetEncoding, System.TypInfo,  WinInet,
+
 
 
   Vcl.StdCtrls, System.ImageList, Vcl.ImgList, Vcl.AppEvnts, Vcl.ComCtrls,
   Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.Mask, Data.DB, Vcl.DBCtrls, Vcl.Grids,
   Vcl.DBGrids, Vcl.Dialogs, IdBaseComponent, IdComponent, IdTCPConnection,
-  IdTCPClient, ImageViewer.Helper, Vcl.OleCtrls, SHDocVw, IdHTTP, IdIOHandler,
+  IdTCPClient, Vcl.OleCtrls, SHDocVw, IdHTTP, IdIOHandler,
   IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, Vcl.Imaging.jpeg;
 
 type
@@ -33,7 +33,7 @@ type
     TabSheet1: TTabSheet;
     TabSheet3: TTabSheet;
     TabSheet4: TTabSheet;
-    memo_unReadMessagen: TMemo;
+    memo_unReadMessage: TMemo;
     StatusBar1: TStatusBar;
     groupEnvioMsg: TGroupBox;
     Label1: TLabel;
@@ -91,6 +91,34 @@ type
     Button1: TButton;
     Image2: TImage;
     ed_profilePicThumbURL: TEdit;
+    TabSheet2: TTabSheet;
+    Panel5: TPanel;
+    Panel6: TPanel;
+    listaGrupos: TListView;
+    GroupBox1: TGroupBox;
+    Button4: TButton;
+    listaParticipantes: TListView;
+    Button5: TButton;
+    Button6: TButton;
+    Button7: TButton;
+    Button8: TButton;
+    Button9: TButton;
+    Button10: TButton;
+    lbl_idGroup: TLabel;
+    lbl_idParticipant: TLabel;
+    edt_nomeGrupo: TEdit;
+    edt_foneParticipante: TEdit;
+    Label8: TLabel;
+    Label9: TLabel;
+    Button11: TButton;
+    Image3: TImage;
+    Button12: TButton;
+    ed_idParticipant: TEdit;
+    Label4: TLabel;
+    edt_groupInviteLink: TEdit;
+    Label7: TLabel;
+    listaAdministradores: TListView;
+    Label10: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btSendTextClick(Sender: TObject);
@@ -139,6 +167,19 @@ type
     procedure WebBrowser1DocumentComplete(ASender: TObject;
       const pDisp: IDispatch; const URL: OleVariant);
     procedure TInject1GetProfilePicThumb(Sender: TObject; Base64: string);
+    procedure Button5Click(Sender: TObject);
+    procedure listaGruposClick(Sender: TObject);
+    procedure TInject1GetAllGroupList(const AllGroups: TRetornoAllGroups);
+    procedure TInject1GetAllGroupContacts(
+      const Contacts: TClassAllGroupContacts);
+    procedure listaParticipantesClick(Sender: TObject);
+    procedure Button8Click(Sender: TObject);
+    procedure Button9Click(Sender: TObject);
+    procedure Button11Click(Sender: TObject);
+    procedure Button12Click(Sender: TObject);
+    procedure Button10Click(Sender: TObject);
+    procedure TInject1GetAllGroupAdmins(
+      const AllGroups: TRetornoAllGroupAdmins);
 
   private
     { Private declarations }
@@ -146,10 +187,14 @@ type
     Procedure ExecuteFilter;
   public
     { Public declarations }
-    mensagem                              : string;
+    mensagem  : string;
+    AFile     : string;
     function  VerificaPalavraChave( pMensagem, pSessao, pTelefone, pContato : String ) : Boolean;
     procedure AddChatList(ANumber: String);
     procedure AddContactList(ANumber: String);
+    procedure AddGroupList(ANumber: string);
+    procedure AddGroupAdmins(ANumber: string);
+    procedure AddGroupContacts(ANumber: string);
   end;
 
 var
@@ -158,7 +203,7 @@ var
 implementation
 
 uses
-  Datasnap.DBClient, Winapi.ShellAPI;
+  Datasnap.DBClient, Winapi.ShellAPI, System.AnsiStrings, System.JSON;
 
 {$R *.dfm}
 
@@ -178,11 +223,12 @@ begin
 
     GlobalCEFApp.LogConsoleActive := true;
     ComboBox1.ItemIndex   := Integer(TInject1.LanguageInject);
+    TabSheet2.TabVisible  := False;
     TabSheet3.TabVisible  := False;
     TabSheet4.TabVisible  := False;
-    chk_apagarMsg.Checked := TInject1.Config.AutoDelete         ;
-    LabeledEdit1.text     := TInject1.Config.ControlSendTimeSec.ToString ;
-    LabeledEdit2.Text     := TInject1.Config.SecondsMonitor.ToString     ;
+    chk_apagarMsg.Checked := TInject1.Config.AutoDelete;
+    LabeledEdit1.text     := TInject1.Config.ControlSendTimeSec.ToString;
+    LabeledEdit2.Text     := TInject1.Config.SecondsMonitor.ToString;
   finally
     FIniciando := False;
   end;
@@ -195,6 +241,39 @@ begin
   Item := listaContatos.Items.Add;
   if Length(ANumber) < 12 then
      ANumber := '55' + ANumber;
+  item.Caption := ANumber;
+  item.SubItems.Add(item.Caption+'SubItem 1');
+  item.SubItems.Add(item.Caption+'SubItem 2');
+  item.ImageIndex := 0;
+end;
+
+procedure TfrmPrincipal.AddGroupAdmins(ANumber: string);
+var
+  Item: TListItem;
+begin
+  Item := listaAdministradores.Items.Add;
+  item.Caption := ANumber;
+  item.SubItems.Add(item.Caption+'SubItem 1');
+  item.SubItems.Add(item.Caption+'SubItem 2');
+  item.ImageIndex := 0;
+end;
+
+procedure TfrmPrincipal.AddGroupContacts(ANumber: string);
+var
+  Item: TListItem;
+begin
+  Item := listaParticipantes.Items.Add;
+  item.Caption := ANumber;
+  item.SubItems.Add(item.Caption+'SubItem 1');
+  item.SubItems.Add(item.Caption+'SubItem 2');
+  item.ImageIndex := 0;
+end;
+
+procedure TfrmPrincipal.AddGroupList(ANumber: string);
+var
+  Item: TListItem;
+begin
+  Item := listaGrupos.Items.Add;
   item.Caption := ANumber;
   item.SubItems.Add(item.Caption+'SubItem 1');
   item.SubItems.Add(item.Caption+'SubItem 2');
@@ -301,6 +380,67 @@ begin
 end;
 
 
+{ Funcao nao utilizada
+function DownloadArquivo(const Origem, Destino: String): Boolean;
+const BufferSize = 1024;
+var
+  hSession, hURL: HInternet;
+  Buffer: array[1..BufferSize] of Byte;
+  BufferLen: DWORD;
+  f: File;
+  sAppName: string;
+begin
+ Result   := False;
+ sAppName := ExtractFileName(Application.ExeName);
+ hSession := InternetOpen(PChar(sAppName),
+                INTERNET_OPEN_TYPE_PRECONFIG,
+               nil, nil, 0);
+ try
+  hURL := InternetOpenURL(hSession,
+            PChar(Origem),
+            nil,0,0,0);
+  try
+   AssignFile(f, Destino);
+   Rewrite(f,1);
+   repeat
+    InternetReadFile(hURL, @Buffer,
+                     SizeOf(Buffer), BufferLen);
+    BlockWrite(f, Buffer, BufferLen)
+   until BufferLen = 0;
+   CloseFile(f);
+   Result:=True;
+  finally
+   InternetCloseHandle(hURL)
+  end
+ finally
+  InternetCloseHandle(hSession)
+ end
+end;}
+
+
+procedure TfrmPrincipal.Button10Click(Sender: TObject);
+begin
+  if not TInject1.Auth then
+     Exit;
+
+  TInject1.groupJoinViaLink(edt_groupInviteLink.Text);
+end;
+
+procedure TfrmPrincipal.Button11Click(Sender: TObject);
+begin
+  if not TInject1.Auth then
+     Exit;
+
+  TInject1.groupLeave(lbl_idGroup.Caption);
+end;
+
+procedure TfrmPrincipal.Button12Click(Sender: TObject);
+begin
+  if not TInject1.Auth then
+     Exit;
+
+  TInject1.groupDelete(lbl_idGroup.Caption);
+end;
 
 procedure TfrmPrincipal.Button1Click(Sender: TObject);
 var
@@ -324,18 +464,28 @@ end;
 
 procedure TfrmPrincipal.Button4Click(Sender: TObject);
 begin
-  if not TInject1.auth then
-    exit;
+  if not TInject1.Auth then
+    Exit;
 
-   TInject1.Disconnect;
+  TInject1.createGroup(edt_nomeGrupo.Text, edt_foneParticipante.Text);
+  edt_nomeGrupo.Clear;
+  edt_foneParticipante.Clear;
+end;
+
+procedure TfrmPrincipal.Button5Click(Sender: TObject);
+begin
+  if not TInject1.Auth then
+     Exit;
+
+  TInject1.getAllGroups;
 end;
 
 procedure TfrmPrincipal.Button6Click(Sender: TObject);
 begin
-//Funcao experimentar para configuraca de proxy de rede(Ainda nao testada)
-//  if not TInject1.ConfigureNetwork Then
-//     ShowMessage('Erro ao tentar iniciar configuração');
-  ShowMessage('Acesse o codigo. Access the code.');
+  if not TInject1.Auth then
+     Exit;
+
+  TInject1.groupAddParticipant(lbl_idGroup.Caption, ed_idParticipant.text);
 end;
 
 procedure TfrmPrincipal.btStatusBatClick(Sender: TObject);
@@ -361,7 +511,26 @@ end;
 
 procedure TfrmPrincipal.Button7Click(Sender: TObject);
 begin
-  TInject1.GetUnReadMessages;
+  if not TInject1.Auth then
+     Exit;
+
+  TInject1.groupRemoveParticipant(lbl_idGroup.Caption, ed_idParticipant.text);
+end;
+
+procedure TfrmPrincipal.Button8Click(Sender: TObject);
+begin
+  if not TInject1.Auth then
+     Exit;
+
+  TInject1.groupPromoteParticipant(lbl_idGroup.Caption, ed_idParticipant.text);
+end;
+
+procedure TfrmPrincipal.Button9Click(Sender: TObject);
+begin
+  if not TInject1.Auth then
+     Exit;
+
+  TInject1.groupDemoteParticipant(lbl_idGroup.Caption, ed_idParticipant.text);
 end;
 
 procedure TfrmPrincipal.chk_3Click(Sender: TObject);
@@ -492,6 +661,51 @@ begin
   AContact := nil;
 end;
 
+procedure TfrmPrincipal.TInject1GetAllGroupAdmins(
+  const AllGroups: TRetornoAllGroupAdmins);
+var
+  i: integer;
+begin
+  listaAdministradores.Clear;
+
+  for i := 0 to (AllGroups.Numbers.count) - 1 do
+  begin
+    AddGroupAdmins(allgroups.Numbers[i])
+  end;
+end;
+
+procedure TfrmPrincipal.TInject1GetAllGroupContacts(
+  const Contacts: TClassAllGroupContacts);
+var
+  JSonValue       : TJSonValue;
+  ArrayRows       : TJSONArray;
+  i: integer;
+begin
+  JsonValue := TJSonObject.ParseJSONValue(contacts.result);
+  ArrayRows := JsonValue as TJSONArray;
+
+  listaParticipantes.Clear;
+
+  for i := 0 to ArrayRows.Size - 1 do
+  begin
+    AddGroupContacts(ArrayRows.Items[i].value)
+  end;
+end;
+
+procedure TfrmPrincipal.TInject1GetAllGroupList(
+  const AllGroups: TRetornoAllGroups);
+var
+  i: integer;
+begin
+  listaGrupos.Clear;
+
+  for i := 0 to (AllGroups.Numbers.count) - 1 do
+  begin
+    AddGroupList(allgroups.Numbers[i])
+  end;
+
+end;
+
 procedure TfrmPrincipal.TInject1GetBatteryLevel(Sender: TObject);
 begin
   Lbl_Avisos.Caption  := 'O telefone '  + TInject(Sender).MyNumber + ' está com '+ TInject(Sender).BatteryLevel.ToString + '% de bateria';
@@ -569,6 +783,7 @@ begin
      Exit;
 
   try
+    TabSheet2.TabVisible   := (TInject(Sender).Status = Inject_Initialized);
     TabSheet3.TabVisible   := (TInject(Sender).Status = Inject_Initialized);
     TabSheet4.TabVisible   := (TInject(Sender).Status = Inject_Initialized);
   Except
@@ -636,6 +851,7 @@ var
   AChat: TChatClass;
   AMessage: TMessagesClass;
   contato, telefone: string;
+  injectDecrypt: TInjectDecryptFile;
 begin
     for AChat in Chats.result do
     begin
@@ -645,17 +861,33 @@ begin
         begin
           if not AMessage.sender.isMe then  //Não exibe mensages enviadas por mim
           begin
-            memo_unReadMessagen.Clear;
-            //memo_unReadMessagen.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
-            memo_unReadMessagen.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
-            //memo_unReadMessagen.Lines.Add(PChar(AMessage.mediaData.&type) + 'Lat: '+AMessage.lat.ToString + ' Long: '+ AMessage.lng.ToString);
-            //memo_unReadMessagen.Lines.Add(PChar(AMessage.body));
-            //memo_unReadMessagen.Lines.Add(PChar('Tipo: '+AMessage.&type));
-            memo_unReadMessagen.Lines.Add(PChar(AMessage.body));
+            memo_unReadMessage.Clear;
+
+            //Tratando o tipo do arquivo recebido e faz o download para pasta \BIN\temp
+            case AnsiIndexStr(UpperCase(AMessage.&type), ['PTT', 'IMAGE', 'VIDEO', 'AUDIO', 'DOCUMENT']) of
+              0: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'mp3'); end;
+              1: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'jpg'); end;
+              2: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'mp4'); end;
+              3: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'mp3'); end;
+              4: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'pdf'); end;
+            end;
+
+            memo_unReadMessage.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
+            memo_unReadMessage.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
+            //memo_unReadMessage.Lines.Add(PChar(AMessage.mediaData.&type) + 'Lat: '+AMessage.lat.ToString + ' Long: '+ AMessage.lng.ToString);
+            //memo_unReadMessage.Lines.Add(PChar(AMessage.mediaKey));
+            memo_unReadMessage.Lines.Add(PChar('Tipo mensagem: '      + AMessage.&type));
+            memo_unReadMessage.Lines.Add( StringReplace(AMessage.body, #$A, #13#10, [rfReplaceAll, rfIgnoreCase]));
+
             telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
             contato   :=  AMessage.Sender.pushName;
             ed_profilePicThumbURL.text := AChat.contact.profilePicThumbObj.img;
             TInject1.ReadMessages(AChat.id);
+
+//            if (AMessage.&type = 'image') then
+//            begin
+//              decrypt.processaimagem(AMessage.clientUrl, AMessage.mediaKey, 'jpg');
+//            end;
 
             if chk_AutoResposta.Checked then
                VerificaPalavraChave(AMessage.body, '', telefone, contato);
@@ -690,13 +922,36 @@ end;
 procedure TfrmPrincipal.listaContatosClick(Sender: TObject);
 begin
   mem_message.Text := Copy(listaContatos.Items[listaContatos.Selected.Index].SubItems[1], 0,
-                      Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]))+'c.us';
+    Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]))+'c.us';
 end;
 
 procedure TfrmPrincipal.listaContatosDblClick(Sender: TObject);
 begin
   ed_num.Text :=  Copy(listaContatos.Items[listaContatos.Selected.Index].SubItems[1], 0,
-                  Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]))+'c.us';
+    Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]))+'c.us';
+end;
+
+procedure TfrmPrincipal.listaGruposClick(Sender: TObject);
+begin
+  if listaGrupos.ItemIndex <>  - 1 then
+  begin
+    lbl_idGroup.Caption :=  Copy(listaGrupos.Items[listaGrupos.Selected.Index].SubItems[1], 0,
+      Pos('@', listaGrupos.Items[listaGrupos.Selected.Index].SubItems[1]))+'g.us';
+
+    if not TInject1.Auth then
+      Exit;
+
+    TInject1.listGroupContacts(lbl_idGroup.Caption);
+  end;
+end;
+
+procedure TfrmPrincipal.listaParticipantesClick(Sender: TObject);
+begin
+  if listaParticipantes.ItemIndex <>  - 1 then
+  begin
+    ed_idParticipant.text :=  Copy(listaParticipantes.Items[listaParticipantes.Selected.Index].SubItems[1], 0,
+      Pos('@', listaParticipantes.Items[listaParticipantes.Selected.Index].SubItems[1]))+'c.us';
+  end;
 end;
 
 procedure TfrmPrincipal.SpeedButton1Click(Sender: TObject);
