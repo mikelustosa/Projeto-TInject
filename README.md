@@ -5,7 +5,7 @@ Componente para criação de chatBots com delphi<br>
 
 ## INSTRUÇÕES PARA USO DO COMPONENTE<br></br>
 
-Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br></br>
+Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo, Rio, Sydney.<br></br>
 
 ### Tutorial de instalação no youtube:<br>
 https://www.youtube.com/watch?v=EIxFdtenNxI&t=31s
@@ -20,9 +20,8 @@ https://youtu.be/07RoReOHaT4
 https://youtu.be/cbWW7VNYwEo
 <br><br>
 
-NOVO: Agora o componente possui um instalador, não sendo necessário seguir mais os passos abaixo.<br><br>
-
-Instalação opcional:<br>
+Instalação manual:<br><br>
+### NOVO: Para usar com o delphi 10.4 Sydney, incluir no library path 32 bits a pasta <b>Compilados</b> e suas subpastas.<br><br>
 1-Clonar o repositório Projeto-TInject
 <br></br>
 2-Baixar e instalar o CEF4Delphi em: http://www.softmaisbrasil.com.br/#blog
@@ -60,8 +59,17 @@ Instalação opcional:<br>
 ✔️  Configurações de DDI - International number configuration<br>
 ✔️  Validação de números - number validator<br>
 ✔️  Checagem de conexão - check connection<br>
-❌  Download de arquivos - Download files<br>
+✔️  Download de arquivos - Download files<br>
 ✔️  Download da foto de perfil - Download profile picture<br>
+✔️  Criar grupo - Create group<br>
+✔️  Sair do grupo - Leave the group<br>
+✔️  Adicionar participante ao grupo - Add participant to the group<br>
+✔️  Remover participante do grupo - Remove group member<br>
+✔️  Promover participante adminstrador do grupo - Promote participant group administrator<br>
+✔️  Despromover participanete adminstrador do grupo - Demote participating group administrator<br>
+✔️  Listar todos os grupos - List all groups<br>
+✔️  Listar participantes do grupo - List group participants<br>
+✔️  Entrar em grupo via link convite - Join group via invitation link<br>
 
 ### Cursos do componente / Component lessions:<br>
 
