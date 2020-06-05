@@ -1045,6 +1045,9 @@ var
   I: Integer;
 begin
    try
+   {$IFDEF VER340}
+      PArray := nil;
+   {$ENDIF}
     for i:= Length(PArray)-1 downto 0 do
         {$IFDEF VER300}
           FreeAndNil(PArray[i]);
@@ -1060,10 +1063,6 @@ begin
 
         {$IFDEF VER330}
           FreeAndNil(PArray[i]);
-        {$ENDIF}
-
-        {$IFDEF VER340}
-          //PArray[i].free;
         {$ENDIF}
    finally
      SetLength(PArray, 0);
