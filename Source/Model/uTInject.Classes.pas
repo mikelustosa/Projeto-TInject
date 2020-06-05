@@ -1,4 +1,4 @@
-﻿{####################################################################################################################
+{####################################################################################################################
                               TINJECT - Componente de comunicação (Não Oficial)
                                             www.tinject.com.br
                                             Novembro de 2019
@@ -1046,7 +1046,25 @@ var
 begin
    try
     for i:= Length(PArray)-1 downto 0 do
-        FreeAndNil(PArray[i]);
+        {$IFDEF VER300}
+          FreeAndNil(PArray[i]);
+        {$ENDIF}
+
+        {$IFDEF VER310}
+          FreeAndNil(PArray[i]);
+        {$ENDIF}
+
+        {$IFDEF VER320}
+          FreeAndNil(PArray[i]);
+        {$ENDIF}
+
+        {$IFDEF VER330}
+          FreeAndNil(PArray[i]);
+        {$ENDIF}
+
+        {$IFDEF VER340}
+          //PArray[i].free;
+        {$ENDIF}
    finally
      SetLength(PArray, 0);
    end;
