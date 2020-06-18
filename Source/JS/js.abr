@@ -1963,7 +1963,7 @@ window.WAPI.getMe = function(){
 }
 
 window.WAPI.getStatus = async (id) => {
- SetConsoleMessage("GetStatusRecado", JSON.stringify(await Store.MyStatus.getStatus(id)));	 
+ SetConsoleMessage("GetStatusMessage", JSON.stringify(await Store.MyStatus.getStatus(id)));	 
  //return status; 
 }
 
