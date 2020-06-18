@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min
-//1.0.0.7;1.0.0.9;78.3.0
+//1.0.0.8;1.0.0.9;78.3.0
 //
 //
 //Fonte: https://gist.github.com/phpRajat/a6422922efae32914f4dbd1082f3f412
@@ -1902,4 +1902,85 @@ window.WAPI.sendLocation = async function (chatId, lat, lng, loc) {
     };
     Object.assign(tempMsg, extend);
     return await Promise.all(Store.addAndSendMsgToChat(chat, tempMsg))
+};
+
+// Novas Funcoes incluidas por Marcelo Santos
+
+window.WAPI.quickClean = function (ob) {return JSON.parse(JSON.stringify(ob))};
+
+window.WAPI.setMyName = async function (newName) {
+    if(!Store.Versions.default[11].BinaryProtocol) Store.Versions.default[11].BinaryProtocol=new Store.bp(11);
+    return await Store.Versions.default[11].setPushname(newName);
+}
+
+window.WAPI.clearChat = async function (id) {
+    return await Store.ChatUtil.sendClear(Store.Chat.get(id),true);
+}
+
+window.WAPI.setMyStatus = function (newStatus) {
+    return Store.MyStatus.setMyStatus(newStatus)
+}
+
+window.WAPI.revokeGroupInviteLink = async function (chatId) {
+    var chat = Store.Chat.get(chatId);
+    if(!chat.isGroup) return false;
+    await Store.GroupInvite.revokeGroupInvite(chat);
+    return true;
+}
+
+function SetConsoleMessageString(jsName, StringValue) {
+    Obj = {
+        name: jsName,
+        result: StringValue
+    }
+    console.log(JSON.stringify(Obj));
+}
+
+
+window.WAPI.getGroupInviteLink = async function (chatId) {
+    var chat = Store.Chat.get(chatId);
+    if(!chat.isGroup) return false;
+    await Store.GroupInvite.queryGroupInviteCode(chat);
+    SetConsoleMessageString("GetGroupInviteLink", `https://chat.whatsapp.com/${chat.inviteCode}`);
+	return `https://chat.whatsapp.com/${chat.inviteCode}`
+}
+
+/**
+ * Returns an object with all of your host device details
+ */
+window.WAPI.getMe = function(){
+   	
+	vMe = {...WAPI.quickClean({
+        ...Store.Contact.get(Store.Me.wid).attributes,
+        ...Store.Me.attributes
+    }),
+    me:Store.Me.me};
+ 
+  SetConsoleMessage("GetMe", JSON.stringify(vMe)); 
+  
+  return vMe;
+    
+}
+
+window.WAPI.getStatus = async (id) => {
+ SetConsoleMessage("GetStatusRecado", JSON.stringify(await Store.MyStatus.getStatus(id)));	 
+ //return status; 
+}
+
+window.WAPI.checkNumberStatus = async function (id) {
+    try {
+        const result = await window.Store.WapQuery.queryExist(id);
+        if (result.jid === undefined) throw 404;
+        const data = window.WAPI._serializeNumberStatusObj(result);
+        if (data.status == 200) data.numberExists = true
+      SetConsoleMessage("NewCheckIsValidNumber",    JSON.stringify({ id : id, valid : data.numberExists}));     
+	 return data;
+		
+    } catch (e) {
+            SetConsoleMessage("NewCheckIsValidNumber", JSON.stringify({ id : id,  valid : false}));
+			return window.WAPI._serializeNumberStatusObj({
+                status: e,
+                jid: id
+            });
+    }
 };
