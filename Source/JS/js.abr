@@ -193,7 +193,8 @@ if (!window.Store) {
                 { id: "OpenChat", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.openChat) ? module.default : null },
                 { id: "UserConstructor", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.isServer && module.default.prototype.isUser) ? module.default : null },
                 { id: "SendTextMsgToChat", conditions: (module) => (module.sendTextMsgToChat) ? module.sendTextMsgToChat : null },
-                { id: "SendSeen", conditions: (module) => (module.sendSeen) ? module.sendSeen : null },
+                //old{ id: "SendSeen", conditions: (module) => (module.sendSeen) ? module.sendSeen : null },
+		{ id: "ReadSeen", conditions: (module) => (module.sendSeen) ? module : null },
                 { id: "sendDelete", conditions: (module) => (module.sendDelete) ? module.sendDelete : null },
 				{ id: "MediaUpload", conditions: (module) => (module.default && module.default.mediaUpload) ? module.default : null },
                 { id: "Archive", conditions: (module) => (module.setArchive) ? module : null },
@@ -1165,7 +1166,18 @@ window.WAPI.sendMessage2 = function(id, message, done) {
     return false;
 };
 
+//Funcao adicionada em 18/06/2020 by Mike
+window.WAPI.sendSeen = async function (id) {
+    if (!id) return false;
+    var chat = window.WAPI.getChat(id);
+    if (chat !== undefined) {
+            await Store.ReadSeen.sendSeen(chat, false);
+            return true;
+    }
+    return false;
+};
 
+/*
 //Apos receber uma mensagem, e nao responder, essa funcao nao funciona de forma isolada
 window.WAPI.sendSeen = function(id, done) {
     var chat = window.WAPI.getChat(id);
@@ -1182,7 +1194,7 @@ window.WAPI.sendSeen = function(id, done) {
     }
     if (done !== undefined) done();
     return false;
-}; 
+}; */
 
 /*
 //Alterado em 20/02/2020 Creditos: by Lucas
