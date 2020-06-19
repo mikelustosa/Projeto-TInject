@@ -1113,8 +1113,18 @@ var
   I: Integer;
 begin
    try
+   {$IFDEF VER340}
+      PArray := nil;
+   {$ENDIF}
+
     for i:= Length(PArray)-1 downto 0 do
-        FreeAndNil(PArray[i]);
+        {$IFDEF VER300}
+          freeAndNil(PArray[i]);
+        {$ENDIF}
+
+        {$IFDEF VER330}
+          freeAndNil(PArray[i]);
+        {$ENDIF}
    finally
      SetLength(PArray, 0);
    end;
