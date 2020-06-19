@@ -33,7 +33,8 @@ Uses Winapi.Messages, System.SysUtils, typinfo, REST.Json;
 
 Const
   //Uso GLOBAL
-  TInjectVersion                  = '3.0.0.0'; //  04/06/2020  //Alterado por Mike Lustosa
+                                  //Version updates I=HIGH, II=MEDIUM, III=LOW, IV=VERY LOW
+  TInjectVersion                  = '3.1.0.0'; //  18/06/2020  //Alterado por Mike Lustosa
   CardContact                     = '@c.us';
   CardGroup                       = '@g.us';
   CardList                        = '@broadcast';
@@ -61,7 +62,6 @@ Const
   FrmConsole_JS_Ignorar                 = '{"name":"getUnreadMessages","result":"{\"result\":[]}"}';
   FrmConsole_JS_URL                     = 'https://web.whatsapp.com/';
   FrmConsole_JS_GetAllContacts          = 'window.WAPI.getAllContacts();';
-
   FrmConsole_JS_GetBatteryLevel         = 'window.WAPI.getBatteryLevel();';
   FrmConsole_JS_GetMyNumber             = 'getMyNumber();';
   FrmConsole_JS_GetUnreadMessages       = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
@@ -116,6 +116,15 @@ Const
   FrmConsole_JS_VAR_groupLeave              = 'window.WAPI.leaveGroup("<#GROUP_ID#>");';
   FrmConsole_JS_VAR_groupDelete             = 'window.WAPI.deleteConversation("<#GROUP_ID#>");setTimeout(function(){ window.WAPI.getAllGroups(); }, 3000);';
   FrmConsole_JS_VAR_groupJoinViaLink        = 'window.WAPI.joinGroupViaLink("<#GROUP_LINK#>");setTimeout(function(){ window.WAPI.getAllGroups(); }, 3000);';
+  FrmConsole_JS_VAR_setProfileName          = 'window.WAPI.setMyName("<#NEW_NAME#>");';
+  FrmConsole_JS_VAR_setMyStatus             = 'window.WAPI.setMyStatus("<#NEW_STATUS#>");';
+  FrmConsole_JS_VAR_getStatus               = 'window.WAPI.getStatus("<#PHONE#>");';
+  FrmConsole_JS_VAR_ClearChat               = 'window.WAPI.clearChat("<#PHONE#>");';
+  FrmConsole_JS_VAR_getMe                   = 'window.WAPI.getMe();';
+  FrmConsole_JS_VAR_getGroupInviteLink      = 'window.WAPI.getGroupInviteLink("<#GROUP_ID#>");';
+  FrmConsole_JS_VAR_removeGroupInviteLink   = 'window.WAPI.revokeGroupInviteLink("<#GROUP_ID#>");';
+  FrmConsole_JS_VAR_checkNumberStatus       = 'window.WAPI.checkNumberStatus("<#PHONE#>");';
+
 
 resourcestring
   MSG_ConfigCEF_ExceptNotFoundJS       = '';
@@ -149,7 +158,7 @@ resourcestring
   MSG_ExceptGlobalCef                  = '';
   MSG_WarningClosing                   = '';
   MSG_ExceptMisc                       = '';
-  Text_FrmConsole_Caption              = '';
+  Text_FrmConsole_Caption              = 'TInject component';
   Text_FrmConsole_LblMsg               = '';
   MSG_WarningClassUnknown              = '';
   MSG_Exceptlibeay32dll                = '';
@@ -246,7 +255,10 @@ type
                    Th_ConnectingFt_HTTP=28,     Th_ConnectingNoPhone=29,               Th_Destroy=30,
                    Th_Destroying=31,            Th_NewSyncContact=32,                  Th_Initializing=33,
                    Th_Initialized=34,           Th_Abort=35,                           Th_ForceDisconnect=36,
-                   Th_AlterConfig=37
+                   Th_AlterConfig=37,
+
+                   // Novos Eventos de Retorno by Marcelo
+                   Th_GetStatusMessage=38, Th_GetGroupInviteLink=39, Th_GetMe=40, Th_NewCheckIsValidNumber=41
                    );
 
     Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
@@ -347,7 +359,7 @@ Begin
 End;
 
 function   StrToTypeHeader(PText: string): TTypeHeader;
-const LmaxCount = 30;
+const LmaxCount = 41;
 var
   I: Integer;
   LNome: String;

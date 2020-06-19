@@ -97,6 +97,7 @@ type
       const params: ICefContextMenuParams; const model: ICefMenuModel);
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
+    procedure Image2Click(Sender: TObject);
   protected
     // You have to handle this two messages to call NotifyMoveOrResizeStarted or some page elements will be misaligned.
     procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
@@ -152,7 +153,8 @@ type
 
     Procedure Form_Start;
     Procedure Form_Normal;
-  public
+
+     public
     { Public declarations }
     Function  ConfigureNetWork:Boolean;
     Procedure SetZoom(Pvalue: Integer);
@@ -189,6 +191,15 @@ type
     procedure GroupLeave(vIDGroup: string);
     procedure GroupDelete(vIDGroup: string);
     procedure GroupJoinViaLink(vLinkGroup: string);
+
+    procedure getGroupInviteLink(vIDGroup: string);
+    procedure revokeGroupInviteLink(vIDGroup: string);
+    procedure setNewName(newName: string);
+    procedure setNewStatus(newStatus: string);
+    procedure getStatus(vTelefone: string);
+    procedure CleanChat(vTelefone: string);
+    procedure fGetMe;
+    procedure NewCheckIsValidNumber(vNumber:String);
 
     procedure GetAllChats;
     procedure GetUnreadMessages;
@@ -949,6 +960,19 @@ begin
   ExecuteJS(LJS, False);
 end;
 
+procedure TFrmConsole.NewCheckIsValidNumber(vNumber:String);
+var
+  Ljs: string;
+begin
+   if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   :=  FrmConsole_JS_VAR_checkNumberStatus;
+  FrmConsole_JS_AlterVar(LJS, '#PHONE#', Trim(vNumber));
+  ExecuteJS(LJS, False);
+end;
+
+
 procedure TFrmConsole.Chromium1AfterCreated(Sender: TObject;
   const browser: ICefBrowser);
 begin
@@ -1020,6 +1044,7 @@ var
   LClose     : Boolean;
   LResultStr : String;
 begin
+
   //Nao veio nada
   if (PResponse.JsonString = '') or (PResponse.JsonString = FrmConsole_JS_RetornoVazio) Then
      Exit;
@@ -1186,6 +1211,45 @@ begin
                               Exit;
                             End;
                           end;
+
+
+    Th_GetStatusMessage   : begin
+                            LResultStr := copy(LResultStr, 11, length(LResultStr)); //REMOVENDO RESULT
+                            LResultStr := copy(LResultStr, 0, length(LResultStr)-1); // REMOVENDO }
+                            LOutClass := TResponseStatusMessage.Create(LResultStr);
+                             try
+                               SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
+                             finally
+                               FreeAndNil(LOutClass);
+                             end;
+                           end;
+
+
+    Th_GetGroupInviteLink : begin
+                            if Assigned(TInject(FOwner).OnGetInviteGroup) then
+                              TInject(FOwner).OnGetInviteGroup(LResultStr);
+                            end;
+
+    Th_GetMe              : begin
+                              LResultStr := copy(LResultStr, 11, length(LResultStr)); //REMOVENDO RESULT
+                              LResultStr := copy(LResultStr, 0, length(LResultStr)-1); // REMOVENDO }
+                              LOutClass := TGetMeClass.Create(LResultStr);
+                              try
+                                SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
+                              finally
+                                FreeAndNil(LOutClass);
+                              end;
+                            end;
+    Th_NewCheckIsValidNumber : begin
+                              LResultStr := copy(LResultStr, 11, length(LResultStr)); //REMOVENDO RESULT
+                              LResultStr := copy(LResultStr, 0, length(LResultStr)-1); // REMOVENDO }
+                             LOutClass := TReturnCheckNumber.Create(LResultStr);
+                              try
+                                SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
+                              finally
+                                FreeAndNil(LOutClass);
+                              end;
+                            end;
    end;
 end;
 
@@ -1209,9 +1273,10 @@ begin
        Exit;
   End;
 
-//  LogAdd(message, 'CONSOLE');
+ LogAdd(message, 'CONSOLE');
 
  if message <> 'Uncaught (in promise) TypeError: output.update is not a function' then
+
 
  AResponse := TResponseConsoleMessage.Create( message );
   try
@@ -1520,6 +1585,15 @@ begin
   BorderStyle              := bsDialog;
 end;
 
+procedure TFrmConsole.Image2Click(Sender: TObject);
+var TempPoint : Tpoint;
+begin
+ TempPoint.X := 200;
+ TempPoint.Y := 200;
+
+ Chromium1.ShowDevTools(TempPoint, nil);
+end;
+
 procedure TFrmConsole.Int_FrmQRCodeClose(Sender: TObject);
 begin
   if FFormType = Ft_Desktop then
@@ -1575,6 +1649,69 @@ begin
   FrmConsole_JS_AlterVar(LJS, '#GROUP_ID#', Trim(vIDGroup));
   ExecuteJS(LJS, true);
 end;
+
+procedure TFrmConsole.revokeGroupInviteLink(vIDGroup: string);
+var
+  Ljs: string;
+begin
+  LJS   := FrmConsole_JS_VAR_removeGroupInviteLink;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_ID#', Trim(vIDGroup));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.getGroupInviteLink(vIDGroup: string);
+var
+  Ljs: string;
+begin
+  LJS   := FrmConsole_JS_VAR_getGroupInviteLink;
+  FrmConsole_JS_AlterVar(LJS, '#GROUP_ID#', Trim(vIDGroup));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.setNewName(newName : string);
+var
+  Ljs: string;
+begin
+  LJS   := FrmConsole_JS_VAR_setProfileName;
+  FrmConsole_JS_AlterVar(LJS, '#NEW_NAME#', Trim(newName));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.setNewStatus(newStatus : string);
+var
+  Ljs: string;
+begin
+  LJS   := FrmConsole_JS_VAR_setMyStatus;
+  FrmConsole_JS_AlterVar(LJS, '#NEW_STATUS#', Trim(newStatus));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.fGetMe();
+var
+  Ljs: string;
+begin
+  LJS   := FrmConsole_JS_VAR_getMe;
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.getStatus(vTelefone : string);
+var
+  Ljs: string;
+begin
+  LJS   := FrmConsole_JS_VAR_getStatus;
+  FrmConsole_JS_AlterVar(LJS, '#PHONE#', Trim(vTelefone));
+  ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.CleanChat(vTelefone : string);
+var
+  Ljs: string;
+begin
+  LJS   := FrmConsole_JS_VAR_ClearChat;
+  FrmConsole_JS_AlterVar(LJS, '#PHONE#', Trim(vTelefone));
+  ExecuteJS(LJS, true);
+end;
+
 
 procedure TFrmConsole.Logout;
 var

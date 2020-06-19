@@ -1,4 +1,4 @@
-{####################################################################################################################
+﻿{####################################################################################################################
                               TINJECT - Componente de comunicação (Não Oficial)
                                             www.tinject.com.br
                                             Novembro de 2019
@@ -336,6 +336,74 @@ type
     property participants: TArray<TParticipantsClass>        read FParticipants        write FParticipants;
     property pendingParticipants: TArray<TParticipantsClass> read FPendingParticipants Write FPendingParticipants;  //@LuizAlvez
   end;
+
+
+ TPhoneClass = class(TClassPadrao)
+ private
+    Fdevice_manufacturer: String;
+    Fdevice_model: String;
+    Fos_build_number: String;
+    Fos_version: String;
+    Fmnc: String;
+    Fmcc: String;
+    Fwa_version: String;
+ public
+  property device_manufacturer : String read Fdevice_manufacturer write Fdevice_manufacturer;
+  property device_model        : String read Fdevice_model write Fdevice_model;
+  property mcc                 : String read Fmcc write Fmcc;
+  property mnc                 : String read Fmnc write Fmnc;
+  property os_build_number     : String read Fos_build_number write Fos_build_number;
+  property os_version          : String read Fos_version write Fos_version;
+  property wa_version          : String read Fwa_version write Fwa_version;
+ end;
+
+  TResponseStatusMessage = class(TClassPadrao)
+  private
+   Fid : String;
+   FStatus : String;
+   public
+    property id : String read Fid write Fid;
+    property status : String read FStatus write FStatus;
+  end;
+
+  TReturnCheckNumber = class(TClassPadrao)
+  private
+   Fid : String;
+   Fvalid : boolean;
+   public
+    property id : String read Fid write Fid;
+    property valid : boolean  read Fvalid write Fvalid;
+  end;
+
+
+ TGetMeClass = class(TClassPadrao)
+   private
+    Fbattery: integer;
+    Flocate: String;
+    Flc: String;
+    FserverToken: String;
+    Fplugged: boolean;
+    Fpushname: String;
+    Flg: String;
+    Fme : String;
+    Fphone : TPhoneClass;
+    Fstatus : TResponseStatusMessage;
+   public
+    constructor Create(pAJsonString: string; PJsonOption: TJsonOptions = JsonOptionClassPadrao);
+    destructor Destroy; override;
+    property  battery     : integer read Fbattery write Fbattery;
+    property  lc          : String read Flc write Flc;
+    property  lg          : String read Flg write Flg;
+    property  locate      : String read Flocate write Flocate;
+    property  plugged     : boolean read Fplugged write Fplugged;
+    property  pushname    : String read Fpushname write Fpushname;
+    property  serverToken : String read FserverToken write FserverToken;
+ // property   platform : String
+    property  phone       : TPhoneClass read Fphone write Fphone;
+    property  status      : TResponseStatusMessage read Fstatus write Fstatus;
+    property  me          : String read Fme write Fme;
+ end;
+
 
   TProfilePicThumbObjClass = class(TClassPadrao)
   private
@@ -862,7 +930,7 @@ constructor TResponseConsoleMessage.Create(pAJsonString: string);
 var
   lAJsonObj: TJSONValue;
 begin
-  lAJsonObj := TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(pAJsonString),0);
+  lAJsonObj := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(pAJsonString),0); { TODO : mudei de ASCII para UTF8 aqui }
   try
     if not Assigned(lAJsonObj) then
        Exit;
@@ -1045,25 +1113,8 @@ var
   I: Integer;
 begin
    try
-   {$IFDEF VER340}
-      PArray := nil;
-   {$ENDIF}
     for i:= Length(PArray)-1 downto 0 do
-        {$IFDEF VER300}
-          FreeAndNil(PArray[i]);
-        {$ENDIF}
-
-        {$IFDEF VER310}
-          FreeAndNil(PArray[i]);
-        {$ENDIF}
-
-        {$IFDEF VER320}
-          FreeAndNil(PArray[i]);
-        {$ENDIF}
-
-        {$IFDEF VER330}
-          FreeAndNil(PArray[i]);
-        {$ENDIF}
+        FreeAndNil(PArray[i]);
    finally
      SetLength(PArray, 0);
    end;
@@ -1312,6 +1363,22 @@ destructor TRetornoAllGroupAdmins.Destroy;
 begin
   inherited;
   Freeandnil(FNumbers);
+end;
+
+{ TGetMeClass }
+
+constructor TGetMeClass.Create(pAJsonString: string; PJsonOption: TJsonOptions = JsonOptionClassPadrao);
+begin
+ Fphone    := TPhoneClass.Create(JsonString);
+ Fstatus   := TResponseStatusMessage.Create(JsonString);
+ inherited Create(pAJsonString);
+end;
+
+destructor TGetMeClass.Destroy;
+begin
+  FreeAndNil(Fphone);
+  FreeAndNil(Fstatus);
+  inherited;
 end;
 
 end.
