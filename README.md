@@ -80,11 +80,11 @@ Nota 1: O TInject é de código aberto desenvolvido em comunidade, e não possui
 <br><br>
 Nota 2: Desenvolvido no rad studio 10.3.0 (RIO).<br><br> 
 
-#### Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica<><>
+#### Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica
 
 <br><br>
 
-
+### Official documentation:<br><br>
 | event       | Description                | method                                                                   | return |
 |-------------|----------------------------|--------------------------------------------------------------------------|--------|
 | send        | Send text message          | TInject1.send('55819999999@c.us', 'hello');                              | -      |
