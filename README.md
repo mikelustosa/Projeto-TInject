@@ -86,7 +86,7 @@ Nota 2: Desenvolvido no rad studio 10.3.0 (RIO).<br><br>
 
 ### Official documentation:<br><br>
 
-###Events that send messages<br>
+### Events that send messages<br>
 | event           | Description                | method                                                                               | return |
 |-----------------|----------------------------|--------------------------------------------------------------------------------------|--------|
 | send            | Send text message          | TInject1.send('55819999999@c.us', 'hello');                                          | -      |
