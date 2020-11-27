@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min
-//1.0.0.9;1.0.0.9;78.3.0
+//1.0.1.0;1.0.0.9;78.3.0
 //
 //
 //Fonte: https://gist.github.com/phpRajat/a6422922efae32914f4dbd1082f3f412
@@ -1594,16 +1594,17 @@ window.WAPI.getNewMessageId = function(chatId) {
 };
 
 /**
- * Send Customized VCard without the necessity of contact be a Whatsapp Contact
+ * Send VCARD
  *
  * @param {string} chatId '000000000000@c.us'
- * @param {object|array} vcard { displayName: 'Contact Name', vcard: 'BEGIN:VCARD\nVERSION:3.0\nN:;Contact Name;;;\nEND:VCARD' } | [{ displayName: 'Contact Name 1', vcard: 'BEGIN:VCARD\nVERSION:3.0\nN:;Contact Name 1;;;\nEND:VCARD' }, { displayName: 'Contact Name 2', vcard: 'BEGIN:VCARD\nVERSION:3.0\nN:;Contact Name 2;;;\nEND:VCARD' }]
+ * @param {string} vcard vcard as a string
+ * @param {string} contactName The display name for the contact. CANNOT BE NULL OTHERWISE IT WILL SEND SOME RANDOM CONTACT FROM YOUR ADDRESS BOOK.
+ * @param {string} contactNumber If supplied, this will be injected into the vcard (VERSION 3 ONLY FROM VCARDJS) with the WA id to make it show up with the correct buttons on WA.
  */
-window.WAPI.sendVCard = function(chatId, vcard) {
+window.WAPI.sendVCard = async function (chatId, vcard, contactName, contactNumber) {
     var chat = Store.Chat.get(chatId);
-    var tempMsg = Object.create(Store.Msg.models.filter(msg => msg.__x_isSentByMe)[0]);
+    var tempMsg = Object.create(Store.Msg.models.filter(msg => msg.__x_isSentByMe && !msg.quotedMsg)[0]);
     var newId = window.WAPI.getNewMessageId(chatId);
-
     var extend = {
         ack: 0,
         id: newId,
@@ -1612,29 +1613,29 @@ window.WAPI.sendVCard = function(chatId, vcard) {
         t: parseInt(new Date().getTime() / 1000),
         to: chatId,
         isNewMsg: !0,
+        type: "vcard",
+        clientUrl:undefined,
+        directPath:undefined,
+        filehash:undefined,
+        uploadhash:undefined,
+        mediaKey:undefined,
+        isQuotedMsgAvailable:false,
+        invis:false,
+        mediaKeyTimestamp:undefined,
+        mimetype:undefined,
+        height:undefined,
+        width:undefined,
+        ephemeralStartTimestamp:undefined,
+        body:contactNumber?vcard.replace('TEL;TYPE=WORK,VOICE:',`TEL;TYPE=WORK,VOICE;waid=${contactNumber}:`):vcard,
+        mediaData:undefined,
+        isQuotedMsgAvailable: false,
+        subtype: contactName
     };
-
-    if (Array.isArray(vcard)) {
-        Object.assign(extend, {
-            type: "multi_vcard",
-            vcardList: vcard
-        });
-
-        delete extend.body;
-    } else {
-        Object.assign(extend, {
-            type: "vcard",
-            subtype: vcard.displayName,
-            body: vcard.vcard
-        });
-
-        delete extend.vcardList;
-    }
-
     Object.assign(tempMsg, extend);
-
-    chat.addAndSendMsg(tempMsg);
+    return (await Promise.all(Store.addAndSendMsgToChat(chat, tempMsg)))[1]=="success"
 };
+
+
 /**
  * Block contact
  * @param {string} id '000000000000@c.us'
