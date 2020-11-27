@@ -42,6 +42,8 @@ type
   TInjectEmoticons = record
 
     const Sorridente       = '😄';
+    const SorrisoFechado   = '🙂';
+    const SorrisoNeutro    = '😐';
     const SorridenteLingua = '😝';
     const Impressionado    = '😱';
     const Irritado         = '😤';
@@ -103,16 +105,16 @@ type
     const Check            = '✅';
     const Check2           = '✔';
     const Atencao          = '⚠';
-    const Zero             = '0️⃣';
-    const Um               = '1️⃣';
-    const Dois             = '2️⃣';
-    const Tres             = '3️⃣';
-    const Quatro           = '4️⃣';
-    const Cinco            = '5️⃣';
-    const Seis             = '6️⃣';
-    const Sete             = '7️⃣';
-    const Oito             = '8️⃣';
-    const Nove             = '9️⃣';
+    const Zero             = '0⃣';
+    const Um               = '1⃣';
+    const Dois             = '2⃣';
+    const Tres             = '3⃣';
+    const Quatro           = '4⃣';
+    const Cinco            = '5⃣';
+    const Seis             = '6⃣';
+    const Sete             = '7⃣';
+    const Oito             = '8⃣';
+    const Nove             = '9⃣';
     const Dez              = '🔟';
     const Asterisco        = '*⃣';
     const SetaDireita      = '➡';

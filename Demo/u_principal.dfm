@@ -3,7 +3,7 @@ object frmPrincipal: TfrmPrincipal
   Top = 0
   Caption = 'Demo TInject'
   ClientHeight = 471
-  ClientWidth = 974
+  ClientWidth = 1018
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -19,7 +19,7 @@ object frmPrincipal: TfrmPrincipal
   object Lbl_Avisos: TLabel
     Left = 0
     Top = 439
-    Width = 974
+    Width = 1018
     Height = 13
     Align = alBottom
     Caption = ' '
@@ -29,18 +29,20 @@ object frmPrincipal: TfrmPrincipal
     AlignWithMargins = True
     Left = 3
     Top = 3
-    Width = 968
+    Width = 1012
     Height = 433
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
+    ExplicitWidth = 968
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o / Authentication'
+      ExplicitWidth = 960
       object Pnl_Config: TPanel
         AlignWithMargins = True
         Left = 333
         Top = 3
-        Width = 624
+        Width = 668
         Height = 399
         Align = alClient
         BorderStyle = bsSingle
@@ -49,21 +51,23 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 0
+        ExplicitWidth = 624
         DesignSize = (
-          622
+          666
           397)
         object Image1: TImage
-          Left = 451
+          Left = 495
           Top = 141
           Width = 162
           Height = 169
           Anchors = [akTop, akRight]
           Proportional = True
+          ExplicitLeft = 451
         end
         object SpeedButton2: TSpeedButton
           Left = 1
           Top = 338
-          Width = 620
+          Width = 664
           Height = 29
           Align = alBottom
           Caption = 'Cursos do componente / Component video lessons'
@@ -133,7 +137,7 @@ object frmPrincipal: TfrmPrincipal
         object SpeedButton4: TSpeedButton
           Left = 1
           Top = 367
-          Width = 620
+          Width = 664
           Height = 29
           Align = alBottom
           Caption = 'Youtube channel'
@@ -210,6 +214,7 @@ object frmPrincipal: TfrmPrincipal
           OnClick = SpeedButton4Click
           ExplicitLeft = -1
           ExplicitTop = 373
+          ExplicitWidth = 620
         end
         object Label11: TLabel
           Left = 451
@@ -222,7 +227,7 @@ object frmPrincipal: TfrmPrincipal
           AlignWithMargins = True
           Left = 9
           Top = 9
-          Width = 604
+          Width = 648
           Height = 113
           Margins.Left = 8
           Margins.Top = 8
@@ -230,8 +235,9 @@ object frmPrincipal: TfrmPrincipal
           Margins.Bottom = 8
           Align = alTop
           TabOrder = 0
+          ExplicitWidth = 604
           DesignSize = (
-            604
+            648
             113)
           object Label5: TLabel
             Left = 194
@@ -277,12 +283,13 @@ object frmPrincipal: TfrmPrincipal
           object ComboBox1: TComboBox
             Left = 194
             Top = 19
-            Width = 398
+            Width = 442
             Height = 22
             Style = csOwnerDrawFixed
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 3
             OnExit = Edt_DDIPDRExit
+            ExplicitWidth = 398
           end
         end
         object Pnl_FONE: TPanel
@@ -3680,15 +3687,16 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet3: TTabSheet
       Caption = 'A'#231#245'es Manuais / Actions'
       ImageIndex = 2
+      ExplicitWidth = 960
       object groupEnvioMsg: TGroupBox
         Left = 0
         Top = 0
-        Width = 218
+        Width = 249
         Height = 405
         Align = alLeft
         TabOrder = 0
         DesignSize = (
-          218
+          249
           405)
         object Label1: TLabel
           Left = 5
@@ -3700,9 +3708,9 @@ object frmPrincipal: TfrmPrincipal
         object Label2: TLabel
           Left = 5
           Top = 49
-          Width = 167
+          Width = 227
           Height = 13
-          Caption = 'Texto ou contato / Text or contact'
+          Caption = 'Texto ou contato(sem @c.us) / Text or contact'
         end
         object Label6: TLabel
           Left = 5
@@ -3714,7 +3722,7 @@ object frmPrincipal: TfrmPrincipal
         object mem_message: TMemo
           Left = 5
           Top = 68
-          Width = 208
+          Width = 238
           Height = 51
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 1
@@ -3723,7 +3731,7 @@ object frmPrincipal: TfrmPrincipal
           AlignWithMargins = True
           Left = 5
           Top = 220
-          Width = 208
+          Width = 239
           Height = 25
           Align = alBottom
           Caption = 'Enviar Texto e Arquivo / Text and file'
@@ -3731,12 +3739,13 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 2
           OnClick = btSendTextAndFileClick
+          ExplicitWidth = 208
         end
         object btSendText: TButton
           AlignWithMargins = True
           Left = 5
           Top = 189
-          Width = 208
+          Width = 239
           Height = 25
           Align = alBottom
           Caption = 'Enviar Apenas Texto / Send text'
@@ -3744,11 +3753,12 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 3
           OnClick = btSendTextClick
+          ExplicitWidth = 208
         end
         object ed_num: TComboBox
           Left = 4
           Top = 22
-          Width = 208
+          Width = 239
           Height = 21
           AutoDropDown = True
           AutoCloseUp = True
@@ -3760,6 +3770,7 @@ object frmPrincipal: TfrmPrincipal
           OnChange = ed_numChange
           OnKeyUp = ed_numKeyUp
           OnSelect = ed_numSelect
+          ExplicitWidth = 208
         end
         object CheckBox5: TCheckBox
           Left = 125
@@ -3774,7 +3785,7 @@ object frmPrincipal: TfrmPrincipal
           AlignWithMargins = True
           Left = 5
           Top = 375
-          Width = 208
+          Width = 239
           Height = 25
           Align = alBottom
           Caption = 'Status da Bateria / Battery status'
@@ -3782,12 +3793,13 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 5
           OnClick = btStatusBatClick
+          ExplicitWidth = 208
         end
         object btSendContact: TButton
           AlignWithMargins = True
           Left = 5
           Top = 251
-          Width = 208
+          Width = 239
           Height = 25
           Align = alBottom
           Caption = 'Enviar contato / Send contact'
@@ -3795,12 +3807,13 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 6
           OnClick = btSendContactClick
+          ExplicitWidth = 208
         end
         object btCheckNumber: TButton
           AlignWithMargins = True
           Left = 5
           Top = 344
-          Width = 208
+          Width = 239
           Height = 25
           Align = alBottom
           Caption = 'Verificar n'#250'mero / Check number'
@@ -3808,12 +3821,13 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 7
           OnClick = btCheckNumberClick
+          ExplicitWidth = 208
         end
         object btIsConnected: TButton
           AlignWithMargins = True
           Left = 5
           Top = 158
-          Width = 208
+          Width = 239
           Height = 25
           Align = alBottom
           Caption = 'Checar conex'#227'o / Check connection'
@@ -3821,12 +3835,13 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 8
           OnClick = btIsConnectedClick
+          ExplicitWidth = 208
         end
         object btSendLocation: TButton
           AlignWithMargins = True
           Left = 5
           Top = 313
-          Width = 208
+          Width = 239
           Height = 25
           Align = alBottom
           Caption = 'Enviar localiza'#231#227'o / Send location'
@@ -3834,12 +3849,13 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 9
           OnClick = btSendLocationClick
+          ExplicitWidth = 208
         end
         object btSendLinkWithPreview: TButton
           AlignWithMargins = True
           Left = 5
           Top = 282
-          Width = 208
+          Width = 239
           Height = 25
           Align = alBottom
           Caption = 'Enviar link pr'#233'via / Send link preview'
@@ -3847,25 +3863,28 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 10
           OnClick = btSendLinkWithPreviewClick
+          ExplicitWidth = 208
         end
         object ed_videoLink: TEdit
           Left = 5
           Top = 134
-          Width = 208
+          Width = 238
           Height = 21
           TabOrder = 11
         end
       end
       object Panel1: TPanel
-        Left = 218
+        Left = 249
         Top = 0
-        Width = 742
+        Width = 755
         Height = 405
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel1'
         ShowCaption = False
         TabOrder = 1
+        ExplicitLeft = 218
+        ExplicitWidth = 742
         object Splitter1: TSplitter
           Left = 481
           Top = 0
@@ -4152,16 +4171,18 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
+      ExplicitWidth = 960
       DesignSize = (
-        960
+        1004
         405)
       object Image2: TImage
-        Left = 616
+        Left = 660
         Top = 32
         Width = 328
         Height = 329
         Anchors = [akTop, akRight]
         Stretch = True
+        ExplicitLeft = 616
       end
       object memo_unReadMessage: TMemo
         Left = 0
@@ -4183,15 +4204,16 @@ object frmPrincipal: TfrmPrincipal
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 954
+        Width = 998
         Height = 17
         Align = alTop
         Caption = 'Apagar mensagens ap'#243's receber'
         TabOrder = 1
         OnExit = Edt_DDIPDRExit
+        ExplicitWidth = 954
       end
       object Button1: TButton
-        Left = 846
+        Left = 890
         Top = 1
         Width = 98
         Height = 25
@@ -4199,27 +4221,30 @@ object frmPrincipal: TfrmPrincipal
         Caption = 'Get profile image'
         TabOrder = 2
         OnClick = Button1Click
+        ExplicitLeft = 846
       end
       object ed_profilePicThumbURL: TEdit
         Left = 192
         Top = 3
-        Width = 648
+        Width = 692
         Height = 21
         Anchors = [akLeft, akTop, akRight]
         ParentShowHint = False
         ShowHint = True
         TabOrder = 3
         TextHint = 'ProfilePicThumbURL'
+        ExplicitWidth = 648
       end
     end
     object TabSheet2: TTabSheet
       Caption = 'A'#231#245'es em grupo /  Group actions'
       ImageIndex = 3
+      ExplicitWidth = 960
       object Panel5: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 954
+        Width = 998
         Height = 399
         Align = alClient
         BorderStyle = bsSingle
@@ -4228,8 +4253,9 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 0
+        ExplicitWidth = 954
         DesignSize = (
-          952
+          996
           397)
         object lbl_idGroup: TLabel
           Left = 11
@@ -4272,7 +4298,7 @@ object frmPrincipal: TfrmPrincipal
           AlignWithMargins = True
           Left = 9
           Top = 9
-          Width = 934
+          Width = 978
           Height = 90
           Margins.Left = 8
           Margins.Top = 8
@@ -4280,6 +4306,7 @@ object frmPrincipal: TfrmPrincipal
           Margins.Bottom = 8
           Align = alTop
           TabOrder = 0
+          ExplicitWidth = 934
           object Image3: TImage
             Left = 843
             Top = 0
@@ -5154,7 +5181,7 @@ object frmPrincipal: TfrmPrincipal
   object StatusBar1: TStatusBar
     Left = 0
     Top = 452
-    Width = 974
+    Width = 1018
     Height = 19
     Panels = <
       item
@@ -5165,6 +5192,7 @@ object frmPrincipal: TfrmPrincipal
         Text = 'Offline'
         Width = 50
       end>
+    ExplicitWidth = 974
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Imagens|*jpg;*.jpg;*.bmp;*.png;*.pdf;*.mp4;*.mp3;*.rar'

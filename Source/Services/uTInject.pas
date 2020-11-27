@@ -135,7 +135,7 @@ type
     procedure ReadMessages(vID: string);
 
     procedure Send(PNumberPhone, PMessage: string; PEtapa: string = '');
-    procedure SendContact(PNumberPhone, PNumber: string);
+    procedure SendContact(PNumberPhone, PNumber: string; PNameContact: string = '');
     procedure SendFile(PNumberPhone: String; Const PFileName: String; PMessage: string = '');
     procedure SendBase64(Const vBase64: String; vNum: String;  Const vFileName, vMess: string);     deprecated; //Versao 1.0.2.0 disponivel ate Versao 1.0.6.0
     procedure SendLinkPreview(PNumberPhone, PVideoLink, PMessage: string);
@@ -1476,7 +1476,7 @@ begin
 end;
 
 
-procedure TInject.SendContact(PNumberPhone, PNumber: string);
+procedure TInject.SendContact(PNumberPhone, PNumber: string; PNameContact: string = '');
 var
   lThread : TThread;
 begin
@@ -1486,7 +1486,8 @@ begin
      Exit;
 
   PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
-  if pos('@', PNumberPhone) = 0 then
+
+  if (pos('@', PNumberPhone) = 0) then
   Begin
     Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
     Exit;
@@ -1507,7 +1508,7 @@ begin
         begin
           if Assigned(FrmConsole) then
           begin
-            FrmConsole.SendContact(PNumberPhone, PNumber);
+            FrmConsole.SendContact(PNumberPhone, PNumber, PNameContact);
           end;
         end);
 
@@ -1832,5 +1833,6 @@ end;
 
 
 end.
+
 
 

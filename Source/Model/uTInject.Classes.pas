@@ -774,6 +774,7 @@ public
   property &type:           String         read FType          write FType;
   property name:            String         read FName          write FName;          //@LuizAlvez
   property verifiedName:    String         read FverifiedName  write FverifiedName;  //@LuizAlvez
+
 end;
 
 

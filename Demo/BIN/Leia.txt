@@ -1,7 +1,1 @@
-########  ##    ##    ##            ##    ######   #####   ########
-       ##	      ##    ###  ##            ##    ###         ##                ##
-      ##         ##    ##  ###    ##    ##    ###         ##                ##
-     ##          ##    ##    ##    ######    ######  #####          ##
-Mike W. Lustosa
-
-Extrair aqui todos os arquivos da pasta BIN
+Extraia todos os arquivos da pasta BIN aqui.

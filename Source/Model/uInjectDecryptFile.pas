@@ -3,7 +3,7 @@ unit uInjectDecryptFile;
 interface
 
 uses System.Classes, Vcl.ExtCtrls, System.Generics.Collections,
-  shellapi, Winapi.UrlMon, IdHTTP, Winapi.Windows;
+  shellapi, Winapi.UrlMon, IdHTTP, Winapi.Windows, uTInject.Constant;
 
 type
   TInjectDecryptFile = class(TComponent)
@@ -11,11 +11,11 @@ type
     function DownLoadInternetFile(Source, Dest: string): Boolean;
     procedure DownloadFile(Source, Dest: string);
     function shell(program_path:  string):  string;
-    function idUnique: string;
+    function idUnique(id: string): string;
    public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function download(clientUrl,mediaKey,tipo:string) :string;
+    function download(clientUrl, mediaKey, tipo, id: string) :string;
   end;
 
 implementation
@@ -70,7 +70,7 @@ begin
   end;
 end;
 
-function TInjectDecryptFile.idUnique: String;
+function TInjectDecryptFile.idUnique(id: string): String;
 var
   gID: TGuid;
 begin
@@ -78,8 +78,9 @@ begin
   result := copy(gID.ToString, 2, length(gID.ToString)  - 2);
 end;
 
-function TInjectDecryptFile.download(clientUrl, mediaKey,tipo: string): string;
-var form,imagem,diretorio,arq:string;
+function TInjectDecryptFile.download(clientUrl, mediaKey, tipo, id: string): string;
+var
+  form, imagem, diretorio, arq:string;
 begin
   Result    :=  '';
   diretorio := ExtractFilePath(ParamStr(0)) + 'temp\';
@@ -88,21 +89,18 @@ begin
   if not DirectoryExists(diretorio) then
     CreateDir(diretorio);
 
-  arq     :=  idUnique;
+  arq     :=  idUnique(id);
   imagem  :=  diretorio + arq;
   Sleep(1);
 
   if DownLoadInternetFile(clientUrl, imagem + '.enc') then
-  if FileExists(imagem  + '.enc') then
-  begin
-    form  :=  format('--in %s.enc --out %s.%s --key %s',  [imagem,  imagem, tipo, mediakey]);
-    shell(form);
-    Sleep(10);
-    Result:= imagem + '.' + tipo;
-
-    if fileExists(imagem + '.' + tipo) then
-      deleteFile(imagem + '.enc');
-  end;
+    if FileExists(imagem  + '.enc') then
+    begin
+      form  :=  format('--in %s.enc --out %s.%s --key %s',  [imagem,  imagem, tipo, mediakey]);
+      shell(form);
+      Sleep(10);
+      Result:= imagem + '.' + tipo;
+    end;
 end;
 
 function TInjectDecryptFile.shell(program_path: string): string;

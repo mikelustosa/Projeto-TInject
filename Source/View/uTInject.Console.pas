@@ -175,7 +175,7 @@ type
     Procedure DisConnect;
     procedure Send(vNum, vText:string);
     procedure CheckDelivered;
-    procedure SendContact(vNumDest, vNum:string);
+    procedure SendContact(vNumDest, vNum:string; vNameContact: string = '');
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
     procedure SendLinkPreview(vNum, vLinkPreview, vText: string);
     procedure SendLocation(vNum, vLat, vLng, vText: string);
@@ -227,7 +227,7 @@ implementation
 
 uses
   System.NetEncoding, Vcl.Dialogs, uTInject.ConfigCEF, uTInject, uCEFMiscFunctions,
-  Data.DB, uTInject.FrmConfigNetWork;
+  Data.DB, uTInject.FrmConfigNetWork, Winapi.ShellAPI;
 
 {$R *.dfm}
 
@@ -833,7 +833,7 @@ begin
   END;
 end;
 
-procedure TFrmConsole.SendContact(vNumDest, vNum: string);
+procedure TFrmConsole.SendContact(vNumDest, vNum: string; vNameContact: string = '');
 var
   Ljs: string;
 begin
@@ -844,6 +844,7 @@ begin
   LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendContact;
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE_DEST#',       Trim(vNumDest));
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',            Trim(vNum));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_NAMECONTACT#',      Trim(vNameContact));
   ExecuteJS(LJS, true);
 end;
 
@@ -1027,6 +1028,7 @@ procedure TFrmConsole.Chromium1BeforePopup(Sender: TObject;
   var noJavascriptAccess, Result: Boolean);
 begin
 // bloqueia todas as janelas pop-up e novas guias
+  ShellExecute(Handle, 'open', PChar(targetUrl), '', '', 1);
   Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
 end;
 

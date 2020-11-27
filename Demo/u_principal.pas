@@ -209,18 +209,20 @@ type
     { Private declarations }
     FIniciando: Boolean;
     FStatus: Boolean;
+    FNameContact:  string;
     Procedure ExecuteFilter;
 
   public
     { Public declarations }
     mensagem  : string;
     AFile     : string;
-    function  VerificaPalavraChave( pMensagem, pSessao, pTelefone, pContato : String ) : Boolean;
+
     procedure AddChatList(ANumber: String);
     procedure AddContactList(ANumber: String);
     procedure AddGroupList(ANumber: string);
     procedure AddGroupAdmins(ANumber: string);
     procedure AddGroupContacts(ANumber: string);
+    function  VerificaPalavraChave( pMensagem, pSessao, pTelefone, pContato : String ) : Boolean;
   end;
 
 var
@@ -349,7 +351,7 @@ begin
     if not TInject1.Auth then
        Exit;
 
-    TInject1.sendContact(ed_num.Text, mem_message.Text);
+    TInject1.sendContact(ed_num.Text, mem_message.Text, FNameContact);
   finally
     ed_num.SelectAll;
     ed_num.SetFocus;
@@ -1063,13 +1065,13 @@ begin
 
             //Tratando o tipo do arquivo recebido e faz o download para pasta \BIN\temp
             case AnsiIndexStr(UpperCase(AMessage.&type), ['PTT', 'IMAGE', 'VIDEO', 'AUDIO', 'DOCUMENT']) of
-              0: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'mp3'); end;
-              1: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'jpg'); end;
-              2: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'mp4'); end;
-              3: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'mp3'); end;
-              4: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'pdf'); end;
+              0: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'mp3', AChat.id); end;
+              1: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'jpg', AChat.id); end;
+              2: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'mp4', AChat.id); end;
+              3: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'mp3', AChat.id); end;
+              4: begin injectDecrypt.download(AMessage.clientUrl, AMessage.mediaKey, 'pdf', AChat.id); end;
             end;
-
+            sleepNoFreeze(100);
             memo_unReadMessage.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
             memo_unReadMessage.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
             //memo_unReadMessage.Lines.Add(PChar(AMessage.mediaData.&type) + 'Lat: '+AMessage.lat.ToString + ' Long: '+ AMessage.lng.ToString);
@@ -1081,11 +1083,6 @@ begin
             contato   :=  AMessage.Sender.pushName;
             ed_profilePicThumbURL.text := AChat.contact.profilePicThumbObj.img;
             TInject1.ReadMessages(AChat.id);
-
-//            if (AMessage.&type = 'image') then
-//            begin
-//              decrypt.processaimagem(AMessage.clientUrl, AMessage.mediaKey, 'jpg');
-//            end;
 
             if chk_AutoResposta.Checked then
                VerificaPalavraChave(AMessage.body, '', telefone, contato);
@@ -1113,13 +1110,11 @@ end;
 
 procedure TfrmPrincipal.TInject1NewGetNumber(
   const vCheckNumber: TReturnCheckNumber);
-begin
-
- if vCheckNumber.valid then
-   Showmessage(vCheckNumber.id + ' é um numero Válido')
- else
-   Showmessage(vCheckNumber.id + ' é um numero INVÁLIDO');
-
+begin if vCheckNumber.valid then
+  Showmessage(vCheckNumber.id + ' é um numero Válido')
+
+ else  Showmessage(vCheckNumber.id + ' é um numero INVÁLIDO');
+
 end;
 
 procedure TfrmPrincipal.listaChatsClick(Sender: TObject);
@@ -1136,7 +1131,13 @@ end;
 procedure TfrmPrincipal.listaContatosClick(Sender: TObject);
 begin
   mem_message.Text := Copy(listaContatos.Items[listaContatos.Selected.Index].SubItems[1], 0,
-    Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]))+'c.us';
+     Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]) - 1);
+
+
+  FNameContact :=
+  stringReplace(Copy(listaContatos.Items[listaContatos.Selected.Index].SubItems[1],
+              Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1])+6,
+              length(listaContatos.Items[listaContatos.Selected.Index].SubItems[1])), 'Subitem 2', '', [rfReplaceAll, rfIgnoreCase]);
 
   lblContactStatus.caption := '-';
 end;
