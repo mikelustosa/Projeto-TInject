@@ -44,7 +44,8 @@ uses Generics.Collections, Rest.Json, uTInject.FrmQRCode, Vcl.Graphics, System.I
  {$IFDEF DELPHI25_UP}
     Vcl.IdAntiFreeze,
   {$ENDIF}
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, Vcl.Imaging.jpeg;
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, Vcl.Imaging.jpeg,
+  IdSSLOpenSSL, UrlMon;
 
 type
 
@@ -69,7 +70,9 @@ type
    {$ENDIF}
     FReturnUrl         : TMemoryStream;
     FShowException     : Boolean;
+    SSIOHandler        : TIdSSLIOHandlerSocketOpenSSL;
     Procedure  OnTimeOutIndy(Sender: TObject);
+    function DownLoadInternetFile(Source, Dest: String): Boolean;
   Public
     constructor Create;
     destructor  Destroy; override;
@@ -156,14 +159,14 @@ type
     Property Number : String   Read fNumber  Write fNumber;
   end;
 
-  TResponseCheckDelivered = class(TClassPadrao)
-  private
-    FResult: integer;
-    fNumber: String;
-  Public
-    Property Result : integer  Read FResult  Write FResult;
-    Property Number : String   Read fNumber  Write fNumber;
-  end;
+//  TResponseCheckDelivered = class(TClassPadrao) //Remover
+//  private
+//    FStatus: integer;
+//    FStatusDelivered: String;
+//  Public
+//    Property status : integer  Read FStatus  Write FStatus;
+//    Property StatusDelivered : string  Read FStatusDelivered  Write FStatusDelivered;
+//  end;
 
   TResponseCheckIsConnected = class(TClassPadrao)
   private
@@ -171,6 +174,7 @@ type
   Public
     Property Result : Boolean  Read FResult  Write FResult;
   end;
+
 
   TResponseGetProfilePicThumb = class(TClassPadrao)
   private
@@ -272,6 +276,13 @@ type
   public
     constructor Create(pAJsonString: string);
   end;
+
+  //Mike 29/12/2020
+  TResponseIsDelivered = class(TClassPadraoString)
+  public
+    constructor Create(pAJsonString: string);
+  end;
+
 
   TResponseIsConnected = class(TClassPadraoString) //mike
   public
@@ -697,6 +708,11 @@ end;
 TChatList = class(TClassPadraoList<TChatClass>)
 end;
 
+
+TChatList2 = class(TClassPadraoList<TChatClass>)
+end;
+
+
 TRetornoAllGroupContacts = class(TClassPadraoList<TChatClass>)
 end;
 
@@ -1074,6 +1090,7 @@ constructor TClassPadrao.Create(pAJsonString: string; PJsonOption: TJsonOptions)
 var
   lAJsonObj: TJSONValue;
 begin
+
   lAJsonObj      := TJSONObject.ParseJSONValue(pAJsonString);
   FInjectWorking := False;
   try
@@ -1081,7 +1098,11 @@ begin
     if NOT Assigned(lAJsonObj) then
        Exit;
 
+    //tentar thread aqui...
     TJson.JsonToObject(Self, TJSONObject(lAJsonObj) ,PJsonOption);
+    //tentar thread aqui...
+
+
     FJsonString := pAJsonString;
           SleepNoFreeze(10);
 
@@ -1188,7 +1209,20 @@ begin
 
   HandleRedirects         := True;
   ProtocolVersion         := pv1_1;
+
   Request.UserAgent       := 'Mozilla/5.0 (compatible; Test)';
+  //Request.UserAgent       := 'Mozilla/3.0 (compatible; Indy Library)';
+
+  SSIOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+  Self.IOHandler := SSIOHandler;
+
+  with IOHandler as TIdSSLIOHandlerSocketOpenSSL do
+  begin
+    SSLOptions.method := sslvTLSv1_1;
+    SSLOptions.SSLVersions := [sslvTLSv1_1];
+    SSLOptions.Mode := sslmUnassigned;
+  end;
+
 end;
 
 destructor TUrlIndy.Destroy;
@@ -1196,10 +1230,20 @@ begin
   FTImeOutIndy.Enabled       := False;
   FreeandNil(FReturnUrl);
   FreeandNil(FTImeOutIndy);
+  FreeandNil(SSIOHandler);
   {$IFDEF DELPHI25_UP}
      FreeandNil(FIdAntiFreeze);
   {$ENDIF}
   inherited;
+end;
+
+function TUrlIndy.DownLoadInternetFile(Source, Dest: String): Boolean;
+begin
+  try
+    Result := URLDownloadToFile(nil, PChar(Source), PChar(Dest), 0, nil) = 0
+  except
+    Result := False;
+  end;
 end;
 
 function TUrlIndy.GetUrl(const Purl: String): Boolean;
@@ -1211,7 +1255,11 @@ begin
     FReturnUrl               := TMemoryStream.Create;
     FTImeOutIndy.Enabled     := True;
     try
-      Get(Purl, FReturnUrl);
+      //Get(Purl, FReturnUrl);
+
+      DownLoadInternetFile(TInjectJS_JSUrlPadrao, 'js.abr');
+
+
     Except
       on E : Exception do
       Begin
@@ -1390,6 +1438,14 @@ begin
   FreeAndNil(Fphone);
   FreeAndNil(Fstatus);
   inherited;
+end;
+
+{ TResponseIsDelivered }
+
+constructor TResponseIsDelivered.Create(pAJsonString: string);
+begin
+  inherited Create(pAJsonString);
+  //FResult := (Copy (FResult, Pos ('@c.us_', FResult) + 2, Length (FResult)));
 end;
 
 end.
