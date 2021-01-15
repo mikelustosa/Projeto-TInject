@@ -159,14 +159,14 @@ type
     Property Number : String   Read fNumber  Write fNumber;
   end;
 
-//  TResponseCheckDelivered = class(TClassPadrao) //Remover
-//  private
-//    FStatus: integer;
-//    FStatusDelivered: String;
-//  Public
-//    Property status : integer  Read FStatus  Write FStatus;
-//    Property StatusDelivered : string  Read FStatusDelivered  Write FStatusDelivered;
-//  end;
+  TResponseCheckDelivered = class(TClassPadrao) 
+  private
+    FStatus: integer;
+    FStatusDelivered: String;
+  Public
+    Property status : integer  Read FStatus  Write FStatus;
+    Property StatusDelivered : string  Read FStatusDelivered  Write FStatusDelivered;
+  end;
 
   TResponseCheckIsConnected = class(TClassPadrao)
   private
