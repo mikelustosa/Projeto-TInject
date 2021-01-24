@@ -850,7 +850,8 @@ window.WAPI.isConnected = function (done) {
 };
 
 window.WAPI.teste = function (url) {
-	convertImgToBase64URL(url, function(base64Img){
+	var lUrl = window.Store.ProfilePicThumb._index[url].__x_imgFull;
+	convertImgToBase64URL(lUrl, function(base64Img){
 		SetConsoleMessage("GetProfilePicThumb", JSON.stringify(base64Img));
 	});
 };
