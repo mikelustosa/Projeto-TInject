@@ -159,14 +159,14 @@ type
     Property Number : String   Read fNumber  Write fNumber;
   end;
 
-  TResponseCheckDelivered = class(TClassPadrao) 
-  private
-    FStatus: integer;
-    FStatusDelivered: String;
-  Public
-    Property status : integer  Read FStatus  Write FStatus;
-    Property StatusDelivered : string  Read FStatusDelivered  Write FStatusDelivered;
-  end;
+//  TResponseCheckDelivered = class(TClassPadrao) //Remover
+//  private
+//    FStatus: integer;
+//    FStatusDelivered: String;
+//  Public
+//    Property status : integer  Read FStatus  Write FStatus;
+//    Property StatusDelivered : string  Read FStatusDelivered  Write FStatusDelivered;
+//  end;
 
   TResponseCheckIsConnected = class(TClassPadrao)
   private
@@ -440,7 +440,7 @@ type
     FverifiedName : String;
     Fmsgs         : String;
     FstatusMute   : Boolean;
-      FsectionHeader : String;
+    FsectionHeader : String;
     FLabels       : TArray<String>;
     FFormattedName: String;
 //    FGlobal       : String;
@@ -452,6 +452,11 @@ type
 //    FisContactBlocked: Boolean;
     FIsUser       : Boolean;
     FIsWAContact  : Boolean;
+
+    //Mike teste ok 16/02/2021 --
+    FProfilePicThumb : string;
+    //--
+
     FProfilePicThumbObj: TProfilePicThumbObjClass;
   public
     constructor Create(pAJsonString: string);
@@ -466,16 +471,19 @@ type
     property verifiedName:   String          Read FverifiedName       Write FverifiedName;
 //    property isBusiness:     Boolean         read FIsBusiness         write FIsBusiness;
 //    property isEnterprise:   Boolean         read FIsEnterprise       write FIsEnterprise;
-    property isUser:         Boolean         read FIsUser             write FIsUser;
+    property isUser:          Boolean         read FIsUser             write FIsUser;
 //    property isContactBlocked: Boolean       read FisContactBlocked   write FisContactBlocked;
-    property statusMute:     Boolean         read FStatusMute         write FStatusMute;
-    property labels:         TArray<String>  read FLabels             write FLabels;
-    property isMe:           Boolean         read FIsMe               write FIsMe;
-    property isMyContact:    Boolean         read FIsMyContact        write FIsMyContact;
-    property isPSA:          Boolean         read FIsPSA              write FIsPSA;
-    property isWAContact:    Boolean         read FIsWAContact        write FIsWAContact;
+    property statusMute:      Boolean         read FStatusMute         write FStatusMute;
+    property labels:          TArray<String>  read FLabels             write FLabels;
+    property isMe:            Boolean         read FIsMe               write FIsMe;
+    property isMyContact:     Boolean         read FIsMyContact        write FIsMyContact;
+    property isPSA:           Boolean         read FIsPSA              write FIsPSA;
+    property isWAContact:     Boolean         read FIsWAContact        write FIsWAContact;
+    property profilePicThumb: string          read FProfilePicThumb    write FProfilePicThumb;
+
+
     property &type:          String          read FType               write FType;
-    property profilePicThumbObj: TProfilePicThumbObjClass read FProfilePicThumbObj write FProfilePicThumbObj;
+    //property profilePicThumbObj: TProfilePicThumbObjClass read FProfilePicThumbObj write FProfilePicThumbObj;
     property Msgs:          String           read Fmsgs               write Fmsgs;
   end;
 
@@ -529,7 +537,10 @@ type
     FSubType         : String;
 
     FCaption         : String;
-    FclientUrl       : String;
+
+    //teste
+    FdeprecatedMms3Url: string;
+
     FdirectPath      : String;
     Fmimetype        : String;
     Ffilehash        : String;
@@ -561,6 +572,7 @@ type
     FChatId          : String;
     FquotedMsgObj    : String;
     FMediaData       : TMediaDataClass;
+    FprofilePicThumb : string;
   public
     constructor Create(pAJsonString: string);
     destructor  Destroy;       override;
@@ -601,7 +613,10 @@ type
     property self       : String              read FSelf               write FSelf;
     property mimetype   : String              read Fmimetype           Write Fmimetype;
     property filename   : String              read Ffilename           Write Ffilename;
-    property clientUrl  : String              read FclientUrl          Write FclientUrl;
+    property deprecatedMms3Url  : String      read FdeprecatedMms3Url  Write FdeprecatedMms3Url;
+    //property deprecatedMms3Url: String        read FdeprecatedMms3Url  Write FdeprecatedMms3Url;
+
+
     property directPath : String              read FdirectPath         Write FdirectPath;
     property filehash   : String              read Ffilehash           Write Ffilehash;
     property uploadhash : String              read Fuploadhash         Write Fuploadhash;
@@ -616,6 +631,7 @@ type
     property timestamp  : Extended            read FTimestamp          write FTimestamp;
     property &to        : String              read FTo                 write FTo;   //@LuizAlvez
     property &type      : String              read FType               write FType;
+    property profilePicThumb       : String   read FprofilePicThumb    write FprofilePicThumb;
   end;
 
   TChatClass = class(TClassPadraoList<TMessagesClass>)
@@ -765,6 +781,9 @@ private
   FIsWAContact  : Boolean;
   FLabels            : TArray<String>;
   FProfilePicThumbObj: TProfilePicThumbObjClass;
+
+  FProfilePicThumb   : string;
+
   FPushname     : String;
   FStatusMute   : Boolean;
   FType         : String;
@@ -775,22 +794,22 @@ public
   constructor Create(pAJsonString: string);
 
   property profilePicThumbObj: TProfilePicThumbObjClass read FProfilePicThumbObj write FProfilePicThumbObj;
-  property formattedName:   String         read FFormattedName write FFormattedName;
-  property id:              String         read FId            write FId;
-  property isBusiness:      Boolean        read FIsBusiness    write FIsBusiness;
-  property isEnterprise:    Boolean        read FIsEnterprise  write FIsEnterprise;
-  property isMe:            Boolean        read FIsMe          write FIsMe;
-  property isMyContact:     Boolean        read FIsMyContact   write FIsMyContact;
-  property isPSA:           Boolean        read FIsPSA         write FIsPSA;
-  property isUser:          Boolean        read FIsUser        write FIsUser;
-  property isWAContact:     Boolean        read FIsWAContact   write FIsWAContact;
-  property labels:          TArray<String> read FLabels        write FLabels;
-  property pushname:        String         read FPushname      write FPushname;
-  property statusMute:      Boolean        read FStatusMute    write FStatusMute;
-  property &type:           String         read FType          write FType;
-  property name:            String         read FName          write FName;          //@LuizAlvez
-  property verifiedName:    String         read FverifiedName  write FverifiedName;  //@LuizAlvez
-
+  property formattedName:   String         read FFormattedName    write FFormattedName;
+  property id:              String         read FId               write FId;
+  property isBusiness:      Boolean        read FIsBusiness       write FIsBusiness;
+  property isEnterprise:    Boolean        read FIsEnterprise     write FIsEnterprise;
+  property isMe:            Boolean        read FIsMe             write FIsMe;
+  property isMyContact:     Boolean        read FIsMyContact      write FIsMyContact;
+  property isPSA:           Boolean        read FIsPSA            write FIsPSA;
+  property isUser:          Boolean        read FIsUser           write FIsUser;
+  property isWAContact:     Boolean        read FIsWAContact      write FIsWAContact;
+  property labels:          TArray<String> read FLabels           write FLabels;
+  property pushname:        String         read FPushname         write FPushname;
+  property statusMute:      Boolean        read FStatusMute       write FStatusMute;
+  property &type:           String         read FType             write FType;
+  property name:            String         read FName             write FName;          //@LuizAlvez
+  property verifiedName:    String         read FverifiedName     write FverifiedName;  //@LuizAlvez
+  property profilePicThumb: String         read FProfilePicThumb  write FProfilePicThumb;  //@mikelustosa
 end;
 
 
@@ -964,12 +983,14 @@ end;
 
 constructor TContactClass.Create(pAJsonString: string);
 begin
+  //Deprecated
   FProfilePicThumbObj := TProfilePicThumbObjClass.Create(FJsonString);
   inherited Create(pAJsonString);
 end;
 
 destructor TContactClass.Destroy;
 begin
+  //Deprecated
   FreeAndNil(FProfilePicThumbObj);//.free;
   inherited;
 end;
@@ -1009,12 +1030,14 @@ end;
 {TSenderClass}
 constructor TSenderClass.Create(pAJsonString: string);
 begin
+  //Deprecated
   FProfilePicThumbObj := TProfilePicThumbObjClass.Create(JsonString);
   inherited Create(pAJsonString);
 end;
 
 destructor TSenderClass.Destroy;
 begin
+  //Deprecated
   FreeAndNil(FProfilePicThumbObj);//.free;
   inherited;
 end;
@@ -1329,12 +1352,13 @@ end;
 
 constructor TResponseGetProfilePicThumb.Create(pAJsonString: string);
 begin
- Base64 :=  copy(pAJsonString, 34, length(pAJsonString) - 35);
+  Base64 :=  copy(pAJsonString, 34, length(pAJsonString) - 35);
+  //Base64 := pAJsonString;
 end;
 
 destructor TResponseGetProfilePicThumb.Destroy;
 begin
-
+  //Deprecated
   inherited;
 end;
 
