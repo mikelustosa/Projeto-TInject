@@ -95,7 +95,6 @@ type
     procedure Chromium1BeforeContextMenu(Sender: TObject;
       const browser: ICefBrowser; const frame: ICefFrame;
       const params: ICefContextMenuParams; const model: ICefMenuModel);
-    procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Image2Click(Sender: TObject);
   protected
@@ -247,38 +246,6 @@ begin
   SleepNoFreeze(10);
 end;
 
-procedure TFrmConsole.Button1Click(Sender: TObject);
-begin
-  ExecuteJS('var atual = 0;                                             '+
-'var antigo = 0;                                                        '+
-'var controle = 0;                                                      '+
-'function init() {                                                      '+
-'	var groupCount = window.setInterval(function() {                      '+
-'		WAPI.getGroupParticipantIDs("558196302385-1580928258@g.us")         '+
-'		.then( result =>                                                    '+
-'		{if (result.length != antigo)                                       '+
-'			{                                                                 '+
-'				if (result.length < antigo) {                                   '+
-'					window.WAPI.sendMessageToID("558196302385-1580928258@g.us", "🤖  👋🏻 *JA FOI TARDE!* \n\nTEMOS VAGAS NO GRUPO! '+
-'https://chat.whatsapp.com/CEAX0vjsqpN1z9jzdeVUNm");  '+
-'				} else {                                                                                                                                                               '+
-'				window.WAPI.sendMessageToID("558196302385-1580928258@g.us", "🤖 *BEM VINDO NOVO PARTICIPANTE EU SOU O _THÍTTO_*! \n\nLEIAS AS REGRAS NA DESCRIÇÃO DO GRUPO\n\n*GITHUB* OFICIAL:  '+
-'https://github.com/mikelustosa/Projeto-TInject\n\n*CURSOS* DO TINJECT: http://mikelustosa.kpages.online/tinject"); '+
-'				}                                 '+
-'				antigo = result.length;           '+
-'                                         '+
-'			} else {                            '+
-'				antigo = result.length;           '+
-'			}                                   '+
-'	})                                      '+
-'  .catch(error => JSON.stringify(error));'+
-'    }, 5000);                            '+
-'}                                        '+
-'setTimeout(function() {                  '+
-'    init();                              '+
-'}, 5000);', false);
-end;
-
 procedure TFrmConsole.Button2Click(Sender: TObject);
 begin
   Chromium1.LoadURL(FrmConsole_JS_URL);
@@ -350,7 +317,7 @@ end;
 
 procedure TFrmConsole.QRCodeForm_Start;
 begin
-  ExecuteJS(FrmConsole_JS_monitorQRCode, False );
+  ExecuteJS(FrmConsole_JS_monitorQRCode, False);
 end;
 
 procedure TFrmConsole.OnTimerConnect(Sender: TObject);
@@ -368,7 +335,7 @@ begin
       If Assigned(TInject(FOwner).OnAfterInjectJs) Then
          TInject(FOwner).OnAfterInjectJs(FOwner);
 
-     //Auto monitorar mensagens não lidas
+      //Auto monitorar mensagens não lidas
       StartMonitor(TInject(FOwner).Config.SecondsMonitor);
       SleepNoFreeze(40);
 
@@ -1098,7 +1065,7 @@ begin
                             end;
                           end;
 
-    Th_GetAllChats      : Begin
+    Th_getAllChats      : Begin
                             if Assigned(FChatList) then
                                FChatList.Free;
 
@@ -1147,16 +1114,15 @@ begin
                             End;
                           end;
 
-//    Th_checkDelivered:    begin
-//                            LOutClass := TResponseCheckDelivered.Create(LResultStr);
-//                            //LOutClass := TChatList.Create(LResultStr);
-//                            try
-//                              SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
-//                            finally
-//                              FreeAndNil(LOutClass);
-//                            end;
-//                            FgettingChats := False;
-//                          end;
+    //Mike teste
+    Th_getIsDelivered:    begin
+                            If Assigned(FOnNotificationCenter) Then
+                            Begin
+                              LOutClass := TResponseIsDelivered.Create(LResultStr);
+                              FOnNotificationCenter(PResponse.TypeHeader, TResponseIsDelivered(LOutClass).Result);
+                              FreeAndNil(LOutClass);
+                            End;
+                          end;
 
 
     Th_getMyNumber      : Begin
@@ -1338,6 +1304,8 @@ begin
   end;
   if (LPaginaId <= 3) and (FFormType = Ft_Http) then
     SetZoom(-2);
+
+  ExecuteJS(FrmConsole_JS_refreshOnlyQRCode, true);
 end;
 
 function TFrmConsole.ConfigureNetWork: Boolean;
@@ -1518,6 +1486,7 @@ begin
   Lciclo                    := 60 div (FTimerMonitoring.Interval div 1000);
   FCountBatteryMax          := Lciclo * 3; //(Ser executado a +- cada 3minutos)
 
+
 //Configuracao de proxy (nao testada)
 //Carregar COnfiguraão de rede
 //  Chromium1.ProxyType              := GlobalCEFApp.IniFIle.ReadInteger  ('Config NetWork', 'ProxyType',       0);
@@ -1537,6 +1506,7 @@ begin
 //    else Chromium1.ProxyScheme := psHTTP;
 //  end;
 //  Chromium1.UpdatePreferences;
+
 end;
 
 procedure TFrmConsole.FormDestroy(Sender: TObject);

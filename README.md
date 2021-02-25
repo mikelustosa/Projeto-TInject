@@ -20,8 +20,8 @@ https://youtu.be/07RoReOHaT4
 https://youtu.be/cbWW7VNYwEo
 <br><br>
 
+Instalação manual:<br><br>
 ### NOVO: Para usar com o delphi 10.4 Sydney, incluir no library path 32 bits a pasta <b>Compilados</b> e suas subpastas.<br><br>
-Para mais informações como instalar no Delphi 10.4 acesse: https://drive.google.com/file/d/1ITu6UtD__It6_WkhEUvXNSGvyVpvOJEs/view?usp=sharing <br><br>
 1-Clonar o repositório Projeto-TInject
 <br></br>
 2-Baixar e instalar o CEF4Delphi em: http://www.softmaisbrasil.com.br/#blog
@@ -80,7 +80,7 @@ Nota 1: O TInject é de código aberto desenvolvido em comunidade, e não possui
 <br><br>
 Nota 2: Desenvolvido no rad studio 10.3.0 (RIO).<br><br> 
 
-#### Doações / Donations: PIX mikelustosa@gmail.com
+#### Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica
 
 <br><br>
 

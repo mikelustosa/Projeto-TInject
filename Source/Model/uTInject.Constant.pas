@@ -34,7 +34,7 @@ Uses Winapi.Messages, System.SysUtils, typinfo, REST.Json;
 Const
   //Uso GLOBAL
                                   //Version updates I=HIGH, II=MEDIUM, III=LOW, IV=VERY LOW
-  TInjectVersion                  = '3.2.0.0'; //  26/11/2020  //Alterado por Mike Lustosa
+  TInjectVersion                  = '3.3.0.0'; //  25/02/2021  //Alterado por Mike Lustosa
   CardContact                     = '@c.us';
   CardGroup                       = '@g.us';
   CardList                        = '@broadcast';
@@ -69,6 +69,7 @@ Const
   FrmConsole_JS_checkDelivered          = 'window.WAPI.getDelivered();';
   //FrmConsole_JS_WEBmonitorQRCode      = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
   FrmConsole_JS_WEBmonitorQRCode        = 'var AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
+  FrmConsole_JS_refreshOnlyQRCode       = 'interval = window.setInterval(async function(){new Promise((resolve, reject)=>{let qr = document.getElementsByClassName("n9gYh");resolve(qr[0].click());})},90000)';
   //FrmConsole_JS_monitorQRCode         = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
   FrmConsole_JS_monitorQRCode           = 'var AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
   FrmConsole_JS_StopMonitor             = 'stopMonitor();';
@@ -247,7 +248,7 @@ type
                    //Eventos de Retornos
                    Th_GetAllContacts=1,         Th_GetAllChats=2,                      Th_GetUnreadMessages=3,    Th_GetAllGroupContacts=4,
                    Th_GetBatteryLevel=5,        Th_GetQrCodeForm=6,                    Th_GetQrCodeWEB=7,
-                   Th_GetMyNumber=8,            Th_OnChangeConnect=9,                  Th_GetReserv1=10,
+                   Th_GetMyNumber=8,            Th_OnChangeConnect=9,                  Th_getIsDelivered=10,
                    Th_GetReserv2=11,            Th_GetReserv3=12,                      Th_GetReserv4=13,
                    Th_GetReserv5=14,            Th_GetReserv6=15,                      Th_GetReserv7=16,
                    Th_GetCheckIsValidNumber=17, Th_GetCheckIsConnected=18,             Th_GetProfilePicThumb=19,  Th_getAllGroups=20, Th_getAllGroupAdmins=21,

@@ -181,7 +181,8 @@ begin
   vText  := StringReplace(vText, sLineBreak,'\n' , [rfReplaceAll] );
   vText  := StringReplace(vText, #13       ,''   , [rfReplaceAll] );
   vText  := StringReplace(vText, '"'       ,'\"' , [rfReplaceAll] );
-  vText  := StringReplace(vText, #$A       ,''   , [rfReplaceAll] );
+  vText  := StringReplace(vText, #$A       ,'<br>'   , [rfReplaceAll] );
+  vText  := StringReplace(vText, #$A#$A    ,'<br>'   , [rfReplaceAll] );
   Result := vText;
 end;
 

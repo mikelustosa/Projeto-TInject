@@ -457,6 +457,7 @@ object FrmConsole: TFrmConsole
       Height = 121
       Align = alTop
       TabOrder = 0
+      ExplicitTop = 41
     end
   end
   object Chromium1: TChromium

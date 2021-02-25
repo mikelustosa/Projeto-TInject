@@ -40,6 +40,8 @@ uses
 
 type
   {Events}
+  TOnGetIsDelivered         = Procedure(Sender : TObject; Status: string) of object;
+
   TOnGetCheckIsConnected    = Procedure(Sender : TObject; Connected: Boolean) of object;
   TOnGetCheckIsValidNumber  = Procedure(Sender : TObject; Number: String;  IsValid: Boolean) of object;
   TOnGetProfilePicThumb     = Procedure(Sender : TObject; Base64: String) of object;
@@ -49,7 +51,6 @@ type
   TOnAllGroups              = procedure(Const AllGroups: TRetornoAllGroups) of object;
   TOnAllGroupContacts       = procedure(Const Contacts: TClassAllGroupContacts) of object;
   TOnAllGroupAdmins         = procedure(Const AllGroups: TRetornoAllGroupAdmins) of object;
-  TOnCheckDelivered         = procedure(Const Result: TResponseCheckDelivered) of object;
   TOnGetStatusMessage       = procedure(Const Result: TResponseStatusMessage) of object;
   TOnGetInviteGroup         = procedure(Const Invite : String) of object;
   TOnGetMe                  = procedure(Const vMe : TGetMeClass) of object;
@@ -65,8 +66,11 @@ type
     FDestroyTmr             : Ttimer;
     FFormQrCodeType         : TFormQrCodeType;
     FMyNumber               : string;
-    FGetBatteryLevel        : Integer;
 
+    //Mike 29/12/2020
+    FIsDelivered            : string;
+
+    FGetBatteryLevel        : Integer;
     FGetIsConnected         : Boolean;
 
     Fversion                : String;
@@ -108,6 +112,10 @@ type
     FOnUpdateJS                 : TNotifyEvent;
     FOnGetChatList              : TGetUnReadMessages;
     FOnGetMyNumber              : TNotifyEvent;
+
+    //Mike 29/12/2020
+    FOnGetIsDelivered           : TNotifyEvent;
+
     FOnGetStatus                : TNotifyEvent;
     FOnConnected                : TNotifyEvent;
     FOnDisconnected             : TNotifyEvent;
@@ -118,7 +126,7 @@ type
     FOnGetInviteGroup           : TOnGetInviteGroup;
     FOnGetMe                    : TOnGetMe;
     FOnNewCheckNumber           : TOnNewCheckNumber;
-    FOnCheckDelivered           : TOnCheckDelivered;
+
 
     procedure Int_OnNotificationCenter(PTypeHeader: TTypeHeader; PValue: String; Const PReturnClass : TObject= nil);
 
@@ -174,12 +182,15 @@ type
     Property  BatteryLevel      : Integer              Read FGetBatteryLevel;
     Property  IsConnected       : Boolean              Read FGetIsConnected;
     Property  MyNumber          : String               Read FMyNumber;
+
+    //Mike 29/12/2020
+    Property  IsDelivered       : String               Read FIsDelivered;
+
     property  Authenticated     : boolean              read TestConnect;
     property  Status            : TStatusType          read FStatus;
     Function  StatusToStr       : String;
     Property  Emoticons         : TInjectEmoticons     Read FEmoticons                     Write FEmoticons;
     property  FormQrCodeShowing : Boolean              read GetAppShowing                  Write SetAppShowing;
-    //property  Typing            : Boolean              read FTyping                        Write FTyping;
     Procedure FormQrCodeStart(PViewForm:Boolean = true);
     Procedure FormQrCodeStop;
     Procedure FormQrCodeReloader;
@@ -201,8 +212,6 @@ type
     property OnGetChatList               : TGetUnReadMessages         read FOnGetChatList                  write FOnGetChatList;
     property OnGetUnReadMessages         : TGetUnReadMessages         read FOnGetUnReadMessages            write FOnGetUnReadMessages;
     property OnGetAllGroupContacts       : TOnAllGroupContacts        read FOnGetAllGroupContacts          write FOnGetAllGroupContacts;
-
-
     property OnGetStatus                 : TNotifyEvent               read FOnGetStatus                    write FOnGetStatus;
     property OnGetBatteryLevel           : TNotifyEvent               read FOnGetBatteryLevel              write FOnGetBatteryLevel;
     property OnIsConnected               : TOnGetCheckIsConnected     read FOnGetCheckIsConnected          write FOnGetCheckIsConnected;
@@ -210,12 +219,16 @@ type
     property OnGetCheckIsValidNumber     : TOnGetCheckIsValidNumber   read FOnGetCheckIsValidNumber        write FOnGetCheckIsValidNumber;
     property OnGetProfilePicThumb        : TOnGetProfilePicThumb      read FOnGetProfilePicThumb           write FOnGetProfilePicThumb;
     property OnGetMyNumber               : TNotifyEvent               read FOnGetMyNumber                  write FOnGetMyNumber;
+
+    //Mike 29/12/2020
+    property OnGetIsDelivered            : TNotifyEvent               read FOnGetIsDelivered               write FOnGetIsDelivered;
+
+
     property OnUpdateJS                  : TNotifyEvent               read FOnUpdateJS                     write FOnUpdateJS;
     property OnConnected                 : TNotifyEvent               read FOnConnected                    write FOnConnected;
     property OnDisconnected              : TNotifyEvent               read FOnDisconnected                 write FOnDisconnected;
     property OnDisconnectedBrute         : TNotifyEvent               read FOnDisconnectedBrute            write FOnDisconnectedBrute;
     property OnErroAndWarning            : TOnErroInternal            read FOnErroInternal                 write FOnErroInternal;
-    property OnCheckDelivered            : TOnCheckDelivered          read FOnCheckDelivered               write FOnCheckDelivered;
     property OnGetStatusMessage          : TOnGetStatusMessage        read FOnGetStatusMessage             write FOnGetStatusMessage;
     property OnGetInviteGroup            : TOnGetInviteGroup          read FOnGetInviteGroup               write FOnGetInviteGroup;
     property OnGetMe                     : TOnGetMe                   read FOnGetMe                        write FOnGetMe;
@@ -1033,16 +1046,16 @@ begin
     Begin
       if Assigned(OnGetUnReadMessages) then
          OnGetUnReadMessages(TChatList(PReturnClass));
+
+//      if Assigned(OnIsDelivered) then
+//         OnIsDelivered(TChatList(PReturnClass));
+
     end;
 
 
-//    If PTypeHeader = Th_checkDelivered Then
-//    Begin
-//      if Assigned(OnCheckDelivered) then
-//         OnCheckDelivered(TResponseCheckDelivered(PReturnClass));
-//    end;
     Exit;
   end;
+
 
 
   if PTypeHeader in [Th_ConnectedDown] then
@@ -1116,6 +1129,16 @@ begin
     if Assigned(FOnGetMyNumber) then
        FOnGetMyNumber(Self);
   end;
+
+
+  //Mike 29/12/2020
+  if PTypeHeader = Th_getIsDelivered then
+  Begin
+    FIsDelivered := FAdjustNumber.FormatOut(PValue);
+    if Assigned(FOnGetIsDelivered) then
+       FOnGetIsDelivered(Self);
+  end;
+
 
   if PTypeHeader = Th_GetStatusMessage then
   Begin
