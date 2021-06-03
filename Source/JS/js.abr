@@ -1,8 +1,7 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min
-//1.0.1.0;1.0.0.9;78.3.0
+//1.0.2.0;1.0.0.9;78.3.0
 //
 //
-//Fonte: https://gist.github.com/phpRajat/a6422922efae32914f4dbd1082f3f412
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -107,7 +106,11 @@ if (!window.Store||!window.Store.Msg) {
                 { id: "_Presence", conditions: (module) => (module.setPresenceAvailable && module.setPresenceUnavailable) ? module : null },
                 { id: "WapDelete", conditions: (module) => (module.sendConversationDelete && module.sendConversationDelete.length == 2) ? module : null },
                 { id: "Conn", conditions: (module) => (module.default && module.default.ref && module.default.refTTL) ? module.default : null },
-                { id: "WapQuery", conditions: (module) => (module.queryExist) ? module : ((module.default && module.default.queryExist) ? module.default : null) },
+				
+                //{ id: "WapQuery", conditions: (module) => (module.queryExist) ? module : ((module.default && module.default.queryExist) ? module.default : null) }, //deprecated
+				
+				{ id: "WapQuery", conditions: (module) => (module.default && module.default.queryExist) ? module.default : null }, //Mike 03/06/2021
+				
                 { id: "CryptoLib", conditions: (module) => (module.decryptE2EMedia) ? module : null },
                 { id: "OpenChat", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.openChat) ? module.default : null },
                 { id: "UserConstructor", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.isServer && module.default.prototype.isUser) ? module.default : null },
@@ -124,8 +127,9 @@ if (!window.Store||!window.Store.Msg) {
                 { id: "Me", conditions: (module) => (module.PLATFORMS && module.Conn) ? module.default : null },
                 { id: "CallUtils", conditions: (module) => (module.sendCallEnd && module.parseCall) ? module : null },
                 { id: "Identity", conditions: (module) => (module.queryIdentity && module.updateIdentity) ? module : null },
-                { id: "MyStatus", conditions: (module) => (module.getStatus && module.setMyStatus) ? module : null },
-                { id: "ChatStates", conditions: (module) => (module.sendChatStatePaused && module.sendChatStateRecording && module.sendChatStateComposing) ? module : null },
+                { id: "MyStatus", conditions: (module) => (module.getStatus && module.setMyStatus) ? module : null },				
+                
+				{ id: "ChatStates", conditions: (module) => (module.sendChatStatePaused && module.sendChatStateRecording && module.sendChatStateComposing) ? module : null },				
                 { id: "GroupActions", conditions: (module) => (module.sendExitGroup && module.localExitGroup) ? module : null },
                 { id: "Features", conditions: (module) => (module.FEATURE_CHANGE_EVENT && module.features) ? module : null },
                 { id: "MessageUtils", conditions: (module) => (module.storeMessages && module.appendMessage) ? module : null },
@@ -441,20 +445,31 @@ window.WAPI.getAllGroupsList = function(done) {
  * returns {boolean}
  */
 window.WAPI.sendChatstate = async function (state, chatId) {
-    switch(state) {
-        case 0:
-            await window.Store.ChatStates.sendChatStateComposing(chatId);
-            break;
-        case 1:
-            await window.Store.ChatStates.sendChatStateRecording(chatId);
-            break;
-        case 2:
-            await window.Store.ChatStates.sendChatStatePaused(chatId);
-            break;
-        default:
-            return false
+
+   switch(state) {
+        
+			case 0:
+				
+					await window.Store.ChatStates.sendChatStateComposing(chatId);
+					break;
+
+			case 1:
+
+					await window.Store.ChatStates.sendChatStateRecording(chatId);
+					break;
+
+			case 2:
+
+					await window.Store.ChatStates.sendChatStatePaused(chatId);
+					break;
+				
+			default:
+			
+				return false
+
     }
     return true;
+
 };
 
 /**
