@@ -1,4 +1,4 @@
-﻿{####################################################################################################################
+{####################################################################################################################
                               TINJECT - Componente de comunicação (Não Oficial)
                                             www.tinject.com.br
                                             Novembro de 2019
@@ -891,9 +891,9 @@ begin
        Exit;
 
     FreeAndNil(FAQrCodeImage);
-    FAQrCodeImage  := TPicture.Create;       
+    FAQrCodeImage  := TPicture.Create;
     FAQrCodeImageStream.Position := 0;
-    
+
     {$IFDEF VER330}
       FAQrCodeImage.LoadFromStream(FAQrCodeImageStream);
    {$ELSE}
