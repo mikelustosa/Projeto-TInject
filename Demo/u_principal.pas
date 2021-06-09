@@ -1,4 +1,4 @@
-﻿unit u_principal;
+unit u_principal;
 
 interface
 
@@ -19,7 +19,9 @@ uses
   Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.Mask, Data.DB, Vcl.DBCtrls, Vcl.Grids,
   Vcl.DBGrids, Vcl.Dialogs, IdBaseComponent, IdComponent, IdTCPConnection,
   IdTCPClient, Vcl.OleCtrls, SHDocVw, IdHTTP, IdIOHandler,
-  IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, Vcl.Imaging.jpeg;
+  IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, Vcl.Imaging.jpeg,
+  REST.Types, REST.Client, Data.Bind.Components, Data.Bind.ObjectScope, ClipBrd,
+  Vcl.Menus;
 
 type
   TfrmPrincipal = class(TForm)
@@ -62,7 +64,6 @@ type
     btStatusBat: TButton;
     Rdb_FormaConexao: TRadioGroup;
     SpeedButton1: TSpeedButton;
-    Image1: TImage;
     Panel4: TPanel;
     Button2: TButton;
     chk_AutoResposta: TCheckBox;
@@ -131,7 +132,36 @@ type
     lblContactStatus: TLabel;
     lblContactNumber: TLabel;
     SpeedButton4: TSpeedButton;
+    TabSheet5: TTabSheet;
+    Label16: TLabel;
+    Label17: TLabel;
+    Label18: TLabel;
+    Label19: TLabel;
+    edtToken: TEdit;
+    Panel10: TPanel;
+    Image1: TImage;
     Label11: TLabel;
+    SpeedButton11: TSpeedButton;
+    PopupMenu1: TPopupMenu;
+    Copyall1: TMenuItem;
+    PopupMenu2: TPopupMenu;
+    MenuItem1: TMenuItem;
+    Copy1: TMenuItem;
+    Copy2: TMenuItem;
+    PopupMenu3: TPopupMenu;
+    MenuItem2: TMenuItem;
+    MenuItem3: TMenuItem;
+    PopupMenu4: TPopupMenu;
+    MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
+    Panel11: TPanel;
+    Image4: TImage;
+    SpeedButton13: TSpeedButton;
+    SpeedButton14: TSpeedButton;
+    SpeedButton6: TSpeedButton;
+    SpeedButton7: TSpeedButton;
+    SpeedButton8: TSpeedButton;
+    Image5: TImage;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btSendTextClick(Sender: TObject);
@@ -204,12 +234,31 @@ type
     procedure listaChatsClick(Sender: TObject);
     procedure ed_numKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure SpeedButton4Click(Sender: TObject);
+    procedure BitBtn6Click(Sender: TObject);
+    procedure BitBtn7Click(Sender: TObject);
+    procedure SpeedButton7Click(Sender: TObject);
+    procedure SpeedButton8Click(Sender: TObject);
+    procedure SpeedButton9Click(Sender: TObject);
+    procedure SpeedButton10Click(Sender: TObject);
+    procedure SpeedButton11Click(Sender: TObject);
+    procedure Copyall1Click(Sender: TObject);
+    procedure MenuItem1Click(Sender: TObject);
+    procedure Copy1Click(Sender: TObject);
+    procedure Copy2Click(Sender: TObject);
+    procedure MenuItem2Click(Sender: TObject);
+    procedure MenuItem3Click(Sender: TObject);
+    procedure MenuItem4Click(Sender: TObject);
+    procedure MenuItem5Click(Sender: TObject);
+    procedure SpeedButton12Click(Sender: TObject);
+    procedure SpeedButton13Click(Sender: TObject);
+    procedure SpeedButton6Click(Sender: TObject);
 
   private
     { Private declarations }
     FIniciando: Boolean;
     FStatus: Boolean;
     FNameContact:  string;
+    FChatID: string;
     Procedure ExecuteFilter;
 
   public
@@ -310,8 +359,7 @@ end;
 
 procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  TInject1.ShutDown;
-//  FreeAndNil(GlobalCEFApp);
+//  TInject1.ShutDown;
 end;
 
 Procedure TfrmPrincipal.AddChatList(ANumber: String);
@@ -334,6 +382,24 @@ begin
   trayIcon1.Visible := true;
   TrayIcon1.Animate := True;
   TrayIcon1.ShowBalloonHint;
+end;
+
+procedure TfrmPrincipal.BitBtn6Click(Sender: TObject);
+begin
+  if MessageDlg('Olá! Você será direcionado para o site do Enviazap. Cadastre-se usando seu número de Whatsapp e ative sua licença corporate. '+#13+#13+'Ao ativar você ganhará um token de acesso. Insira o seu token na propriedade SERIALCORPORATE do seu TInject.'+#13+#13+'*Não esqueça de validar o seu token.'+#13+#13+'Prosseguir?', mtConfirmation,
+    [mbYes, mbNo], 0) = mrYes then
+  begin
+    ShellExecute(Handle, 'open', 'https://mensageria.hci.com.br/enviazap', '', '', 1);
+  end
+end;
+
+procedure TfrmPrincipal.BitBtn7Click(Sender: TObject);
+begin
+  if MessageDlg('Olá! Você será direcionado para o site do Enviazap. Cadastre-se usando seu número de Whatsapp e ative sua licença corporate. '+#13+#13+'Ao ativar você ganhará um token de acesso. Insira o seu token na propriedade SERIALCORPORATE do seu TInject.'+#13+#13+'*Não esqueça de validar o seu token.'+#13+#13+'Prosseguir?', mtConfirmation,
+    [mbYes, mbNo], 0) = mrYes then
+  begin
+    ShellExecute(Handle, 'open', 'https://mensageria.hci.com.br/enviazap', '', '', 1);
+  end
 end;
 
 procedure TfrmPrincipal.btCheckNumberClick(Sender: TObject);
@@ -632,10 +698,10 @@ procedure TfrmPrincipal.Button1Click(Sender: TObject);
 var
   JS: string;
 begin
-  if (not TInject1.Auth) or (ed_profilePicThumbURL.Text = '') then
-       Exit;
+  if (not TInject1.Auth)  then
+    Exit;
 
-  TInject1.getProfilePicThumb(ed_profilePicThumbURL.Text);
+  TInject1.getProfilePicThumb(FChatID);
 end;
 
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
@@ -722,6 +788,45 @@ end;
 procedure TfrmPrincipal.chk_3Click(Sender: TObject);
 begin
   ExecuteFilter;
+end;
+
+procedure TfrmPrincipal.Copy1Click(Sender: TObject);
+begin
+  try
+    Clipboard.AsText := listaGrupos.Selected.Caption;
+  except
+  end;
+end;
+
+procedure TfrmPrincipal.Copy2Click(Sender: TObject);
+begin
+  try
+    Clipboard.AsText := listaParticipantes.Selected.Caption;
+  except
+  end;
+end;
+
+procedure TfrmPrincipal.Copyall1Click(Sender: TObject);
+var
+  sl: TStringlist;
+  i, k: integer;
+  s: string;
+  Item: TListItem;
+begin
+  sl := TStringlist.Create;
+  try
+    For i := 0 To listaParticipantes.items.count-1 Do Begin
+      item := listaParticipantes.Items[i];
+      S   := item.Caption;
+      sl.Add( S );
+    End; { For }
+    Clipboard.AsText := sl.Text;
+  finally
+    begin
+      sl.free;
+      application.MessageBox('All Copied', 'Message' , MB_OK + MB_ICONASTERISK)
+    end;
+  end;
 end;
 
 procedure TfrmPrincipal.ed_numChange(Sender: TObject);
@@ -1045,8 +1150,7 @@ begin
       LOutput.Free;
       AStr.Free;
     end;
-  end
-  );
+  end);
   lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
@@ -1148,7 +1252,8 @@ begin
 
   begin
 
-    lblContactStatus.Caption := Result.status
+    //lblContactStatus.Caption := Result.status ;
+     showmessage(Result.id + ' - ' + Result.status);
 
   end else
 
@@ -1175,6 +1280,7 @@ begin
       begin
         if not AChat.isGroup then //Não exibe mensages de grupos
         begin
+
           if not AMessage.sender.isMe then  //Não exibe mensages enviadas por mim
           begin
             memo_unReadMessage.Clear;
@@ -1189,15 +1295,18 @@ begin
             end;
             sleepNoFreeze(100);
             memo_unReadMessage.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
-            memo_unReadMessage.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
-            //memo_unReadMessage.Lines.Add(PChar(AMessage.mediaData.&type) + 'Lat: '+AMessage.lat.ToString + ' Long: '+ AMessage.lng.ToString);
-            //memo_unReadMessage.Lines.Add(PChar(AMessage.mediaKey));
+              memo_unReadMessage.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
+            FChatID := AChat.id;
+
             memo_unReadMessage.Lines.Add(PChar('Tipo mensagem: '      + AMessage.&type));
             memo_unReadMessage.Lines.Add( StringReplace(AMessage.body, #$A, #13#10, [rfReplaceAll, rfIgnoreCase]));
 
             telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
             contato   :=  AMessage.Sender.pushName;
+
             ed_profilePicThumbURL.text := AChat.contact.profilePicThumb;
+
+
             TInject1.ReadMessages(AChat.id);
 
             if chk_AutoResposta.Checked then
@@ -1298,6 +1407,123 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.MenuItem1Click(Sender: TObject);
+var
+  sl: TStringlist;
+  i, k: integer;
+  s: string;
+  Item: TListItem;
+begin
+
+  sl := TStringlist.Create;
+
+  try
+    for i := 0 To listaGrupos.items.count-1 Do
+    begin
+      item := listaGrupos.Items[i];
+      S   := item.Caption;
+      sl.Add( S );
+    end;
+
+    Clipboard.AsText := sl.Text;
+
+  finally
+    begin
+      sl.free;
+      application.MessageBox('All Copied', 'Message' , MB_OK + MB_ICONASTERISK);
+    end;
+  end;
+
+end;
+
+procedure TfrmPrincipal.MenuItem2Click(Sender: TObject);
+begin
+  try
+    Clipboard.AsText := listaAdministradores.Selected.Caption;
+  except
+  end;
+end;
+
+procedure TfrmPrincipal.MenuItem3Click(Sender: TObject);
+var
+  sl: TStringlist;
+  i, k: integer;
+  s: string;
+  Item: TListItem;
+begin
+  sl := TStringlist.Create;
+  try
+    for i := 0 to listaAdministradores.items.count-1 Do Begin
+      item := listaAdministradores.Items[i];
+      S   := item.Caption;
+      sl.Add( S );
+    end;
+    Clipboard.AsText := sl.Text;
+  finally
+    begin
+      sl.free;
+      application.MessageBox('All Copied', 'Message' , MB_OK + MB_ICONASTERISK)
+    end;
+  end;
+
+end;
+
+procedure TfrmPrincipal.MenuItem4Click(Sender: TObject);
+begin
+  try
+    Clipboard.AsText := listaContatos.Selected.Caption;
+  except
+  end;
+end;
+
+procedure TfrmPrincipal.MenuItem5Click(Sender: TObject);
+var
+  sl: TStringlist;
+  i, k: integer;
+  s: string;
+  Item: TListItem;
+begin
+  sl := TStringlist.Create;
+  try
+    For i := 0 To listaContatos.items.count-1 Do Begin
+      item := listaContatos.Items[i];
+      S   := item.Caption;
+      sl.Add( S );
+    End; { For }
+    Clipboard.AsText := sl.Text;
+  finally
+    begin
+      sl.free;
+      application.MessageBox('All Copied', 'Message' , MB_OK + MB_ICONASTERISK)
+    end;
+  end;
+
+end;
+
+procedure TfrmPrincipal.SpeedButton10Click(Sender: TObject);
+begin
+  application.MessageBox('Suporte TInject especializado de seg à sex das 08hs às 17hs pelo WhatsApp', 'Plano standard', MB_OK + MB_ICONASTERISK);
+end;
+
+procedure TfrmPrincipal.SpeedButton11Click(Sender: TObject);
+begin
+  ShellExecute(Handle, 'open', 'https://github.com/mikelustosa/Projeto-TInject', '', '', 1);
+end;
+
+procedure TfrmPrincipal.SpeedButton12Click(Sender: TObject);
+begin
+  application.MessageBox('Suporte via acesso remoto de seg à sex das 08hs às 17hs', 'Plano standard', MB_OK + MB_ICONASTERISK);
+end;
+
+procedure TfrmPrincipal.SpeedButton13Click(Sender: TObject);
+begin
+  if MessageDlg('Olá! Você será direcionado para o site do Enviazap. Cadastre-se usando seu número de Whatsapp e ative sua licença corporate. '+#13+#13+'Ao ativar você ganhará um token de acesso. Insira o seu token na propriedade SERIALCORPORATE do seu TInject.'+#13+#13+'*Não esqueça de validar o seu token.'+#13+#13+'Prosseguir?', mtConfirmation,
+    [mbYes, mbNo], 0) = mrYes then
+  begin
+    ShellExecute(Handle, 'open', 'https://mensageria.hci.com.br/enviazap', '', '', 1);
+  end
+end;
+
 procedure TfrmPrincipal.SpeedButton1Click(Sender: TObject);
 begin
   if not TInject1.Auth(false) then
@@ -1328,6 +1554,48 @@ end;
 procedure TfrmPrincipal.SpeedButton4Click(Sender: TObject);
 begin
   ShellExecute(Handle, 'open', 'https://www.youtube.com/user/mikelustosa', '', '', 1);
+end;
+
+procedure TfrmPrincipal.SpeedButton6Click(Sender: TObject);
+Type
+  TactiveToken = function(token: string): string; stdcall;
+var
+  error: string;
+  lHandle: THandle;
+  DoCallDll: TactiveToken;
+begin
+    if edtToken.Text <> '' then
+    begin
+      try
+        lHandle := LoadLibrary ('sendAndReceiveDLL.dll');
+
+        if lHandle <> 0 then
+        begin
+          DoCallDll := GetProcAddress (lHandle, 'activateToken');
+          if @DoCallDll <> nil then
+            application.MessageBox( pchar(DoCallDll (edtToken.Text)) , '' , MB_OK + MB_ICONINFORMATION);
+        end;
+
+      except on e:exception do
+       error := e.message;
+      end;
+    end;
+
+end;
+
+procedure TfrmPrincipal.SpeedButton7Click(Sender: TObject);
+begin
+  ShellExecute(Handle, 'open', 'https://api.whatsapp.com/send?phone=558199301443&text=Preciso%20de%20suporte', '', '', 1);
+end;
+
+procedure TfrmPrincipal.SpeedButton8Click(Sender: TObject);
+begin
+  ShellExecute(Handle, 'open', 'https://youtu.be/dZ1RRXKbjCU', '', '', 1);
+end;
+
+procedure TfrmPrincipal.SpeedButton9Click(Sender: TObject);
+begin
+  application.MessageBox('Novos recursos do componente serão disponibilizados automaticamente', 'Plano standard', MB_OK + MB_ICONASTERISK);
 end;
 
 procedure TfrmPrincipal.Timer2Timer(Sender: TObject);
