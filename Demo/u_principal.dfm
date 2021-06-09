@@ -4073,7 +4073,7 @@ object frmPrincipal: TfrmPrincipal
         end
         object ed_videoLink: TEdit
           Left = 5
-          Top = 134
+          Top = 235
           Width = 238
           Height = 21
           TabOrder = 11
