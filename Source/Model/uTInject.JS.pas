@@ -33,9 +33,17 @@ unit uTInject.JS;
 
 interface
 
+//uses
+//  System.Classes, uTInject.Classes, System.MaskUtils, Data.DB, uCSV.Import,
+//  Vcl.ExtCtrls, IdHTTP, ;
 uses
-  System.Classes, uTInject.Classes, System.MaskUtils, Data.DB, uCSV.Import,
-  Vcl.ExtCtrls, IdHTTP, uTInject.Diversos;
+  uTInject.Classes, uTInject.constant, uTInject.Emoticons, uTInject.Config,
+  uTInject.Console, uTInject.Diversos, Data.DB, uCSV.Import, Vcl.ExtCtrls, IdHTTP,
+  uTInject.languages,
+  uTInject.AdjustNumber, UBase64,
+
+  System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, System.MaskUtils,
+  System.UiTypes,  Generics.Collections, System.TypInfo, Vcl.Imaging.jpeg;
 
 {$M+}{$TYPEINFO ON}
 {$I cef.inc}
@@ -70,9 +78,10 @@ type
     Function   ReadCSV(Const PLineCab, PLineValues: String): Boolean;
     procedure  SetInjectScript(const Value: TstringList);
     function   PegarLocalJS_Designer: String;
-    function   PegarLocalJS_Web: String;
-    Function   AtualizarInternamente(PForma: TFormaUpdate):Boolean;
+    function   PegarLocalJS_Web(Pvalue: string): String;
+    Function   AtualizarInternamente(PForma: TFormaUpdate; Pvalue: string = ''):Boolean;
     Function   ValidaJs(Const TValor: Tstrings): Boolean;
+
   protected
 //    procedure Loaded; override;
   public
@@ -80,8 +89,9 @@ type
     property    InjectJSDefine  : TInjectJSDefine Read FInjectJSDefine;
     property    OnErrorInternal : TOnErroInternal Read FOnErrorInternal  Write FOnErrorInternal;
     destructor  Destroy; override;
-    Function    UpdateNow:Boolean;
+    function    UpdateNow(Fvalue: string) :Boolean;
     Procedure   DelFileTemp;
+
  published
     property   AutoUpdate         : Boolean   read FAutoUpdate           write FAutoUpdate          default True;
     property   AutoUpdateTimeOut  : Integer   Read FAutoUpdateTimeOut    Write FAutoUpdateTimeOut   Default 4;
@@ -91,32 +101,66 @@ type
     property   JSScript      : TstringList    read FJSScript             Write SetInjectScript;
   end;
 
+ //function  sendAndReceive(token: string): string; stdcall; external 'sendAndReceiveDLL.dll' name 'sendAndReceive';
 
 implementation
 
-uses uTInject.Constant, System.SysUtils, uTInject.ExePath, Vcl.Forms,
-     IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
-     Winapi.Windows, uTInject.ConfigCEF, Vcl.Dialogs;
+//uses uTInject.Constant, System.SysUtils, uTInject.ExePath, Vcl.Forms,
+//     IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient,
+//     Winapi.Windows, uTInject.ConfigCEF, Vcl.Dialogs;
+
+uses
+  uCEFTypes, uTInject.ConfigCEF, Winapi.Windows, Winapi.Messages,
+  uCEFConstants, Datasnap.DBClient, Vcl.WinXCtrls, Vcl.Controls, Vcl.StdCtrls,
+  uTInject.FrmQRCode, System.NetEncoding, uTInject.ExePath;
 
 
 { TInjectAutoUpdate }
 
-function TInjectJS.AtualizarInternamente(PForma: TFormaUpdate): Boolean;
+function TInjectJS.AtualizarInternamente(PForma: TFormaUpdate; Pvalue: string = ''): Boolean;
 var
   Ltmp: String;
+type
+  TCallMeDll = function(token: string): string;
+Type
+  TsendAndReceive = function(token: string): string; stdcall;
+var
+  error: string;
+  lHandle: THandle;
+  DoGetProc: TsendAndReceive;
 begin
   try
-    case pforma  of
-      Tup_Local:Begin
-                  Ltmp := GlobalCEFApp.PathJs;
-                End;
+    if PValue <> '' then
+    begin
+      try
+        lHandle := LoadLibrary ('sendAndReceiveDLL.dll');
 
-      Tup_Web:  Begin
-                  if (csDesigning in Owner.ComponentState) then
-                     Ltmp := PegarLocalJS_Designer  Else   //Em modo Desenvolvimento
-                     Ltmp := PegarLocalJS_Web;             //Rodando.. Pega na WEB
-                end;
-    end;
+        if lHandle <> 0 then
+        begin
+          DoGetProc := GetProcAddress (lHandle, 'sendAndReceive');
+          if @DoGetProc <> nil then
+            FJSScript.text :=  DoGetProc (Pvalue);
+        end;
+
+
+      except on e:exception do
+       error := e.message;
+      end;
+
+    end else
+      begin
+        case pforma  of
+          Tup_Local:Begin
+                      Ltmp := GlobalCEFApp.PathJs;
+                    End;
+
+          Tup_Web:  Begin
+                      if (csDesigning in Owner.ComponentState) then
+                         Ltmp := PegarLocalJS_Designer  Else   //Em modo Desenvolvimento
+                         Ltmp := PegarLocalJS_Web(Pvalue);             //Rodando.. Pega na WEB
+                    end;
+        end;
+      end;
 
     if Ltmp = '' then
        Exit;
@@ -137,11 +181,12 @@ begin
     End;
   finally
     Result        := (FJSScript.Count >= TInjectJS_JSLinhasMInimas);
-    if Result then
+    if (Result) then
     begin
       //Atualzia o arquivo interno
       GlobalCEFApp.UpdateDateIniFile;
-      if UpperCase(GlobalCEFApp.PathJs) <> UpperCase(Ltmp) then
+
+      if (UpperCase(GlobalCEFApp.PathJs) <> UpperCase(Ltmp)) and  (PValue = '') then
          FJSScript.SaveToFile(GlobalCEFApp.PathJs, TEncoding.UTF8);
       if Assigned(FOnUpdateJS) Then
          FOnUpdateJS(Self);
@@ -162,7 +207,7 @@ begin
   FJSURL                     := TInjectJS_JSUrlPadrao;
   FInjectJSDefine            := TInjectJSDefine.Create;
   FReady                     := False;
-  UpdateNow;
+  UpdateNow('');
 end;
 
 procedure TInjectJS.DelFileTemp;
@@ -189,21 +234,22 @@ begin
 end;
 
 
-function TInjectJS.UpdateNow: Boolean;
+function TInjectJS.UpdateNow(Fvalue: string): Boolean;
 begin
   if FAutoUpdate  Then
   Begin
     //Atualiza pela Web  O retorno e o SUCESSO do que esta programado para trabalhar!!
     //Se nao obter sucesso da WEB.. ele vai usar o arquivo local..
     //Se estiver tudo ok.. ele esta PRONTO
+
     if ( GlobalCEFApp.PathJsOverdue = False) and (FileExists(GlobalCEFApp.PathJs)) Then
     Begin
-      Result      := AtualizarInternamente(Tup_Local);
+      Result      := AtualizarInternamente(Tup_Local, Fvalue);
     End else
     Begin
-      Result      := AtualizarInternamente(Tup_Web);
+      Result      := AtualizarInternamente(Tup_Web, Fvalue);
       If not Result Then
-         Result      := AtualizarInternamente(Tup_Local);  //Se nao consegui ele pega o arquivo Local
+         Result      := AtualizarInternamente(Tup_Local, Fvalue);  //Se nao consegui ele pega o arquivo Local
     end;
   End else
   Begin
@@ -284,7 +330,7 @@ begin
 end;
 
 
-function TInjectJS.PegarLocalJS_Web: String;
+function TInjectJS.PegarLocalJS_Web(Pvalue: string): String;
 var
   LHttp        : TUrlIndy;
   LSalvamento  : String;
@@ -350,4 +396,3 @@ end;
 
 
 end.
-
