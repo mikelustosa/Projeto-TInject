@@ -4506,7 +4506,7 @@ object frmPrincipal: TfrmPrincipal
           Align = alTop
           TabOrder = 0
           object Image3: TImage
-            Left = 982
+            Left = 1126
             Top = 5
             Width = 72
             Height = 68
@@ -7937,6 +7937,7 @@ object frmPrincipal: TfrmPrincipal
     OnGetCheckIsValidNumber = TInject1GetCheckIsValidNumber
     OnGetProfilePicThumb = TInject1GetProfilePicThumb
     OnGetMyNumber = TInject1GetMyNumber
+    OnGetIsDelivered = TInject1GetIsDelivered
     OnDisconnectedBrute = TInject1DisconnectedBrute
     OnErroAndWarning = TInject1ErroAndWarning
     OnGetStatusMessage = TInject1GetStatusMessage

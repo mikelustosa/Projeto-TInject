@@ -252,6 +252,7 @@ type
     procedure SpeedButton12Click(Sender: TObject);
     procedure SpeedButton13Click(Sender: TObject);
     procedure SpeedButton6Click(Sender: TObject);
+    procedure TInject1GetIsDelivered(Sender: TObject);
 
   private
     { Private declarations }
@@ -1037,6 +1038,11 @@ begin
 end;
 
 
+
+procedure TfrmPrincipal.TInject1GetIsDelivered(Sender: TObject);
+begin
+  showmessage(TInject(Sender).IsDelivered);
+end;
 
 procedure TfrmPrincipal.TInject1GetMe(const vMe: TGetMeClass);
 var aList : TStringList;
