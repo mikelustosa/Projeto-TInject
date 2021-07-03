@@ -44,13 +44,13 @@ Instalação manual:<br><br>
 ✔️  Logout<br>
 ✔️  Enviar mensagens de texto para números fora da agenda- Send text message<br>
 ✔️  Enviar mensagens para grupos - Send group messages<br>
-✔️  Enviar contatos - Send phone contacts<br>
+❌  Enviar contatos - Send phone contacts<br>
 ✔️  Enviar MP3 - Send MP3<br>
 ✔️  Enviar MP4 - Send MP4<br>
 ✔️  Enviar IMG - Send IMG<br>
 ✔️  Enviar RAR - Send RAR<br>
 ✔️  Enviar Link com prévia - Sending and preview<br>
-✔️  Enviar localização - Location sending<br>
+❌  Enviar localização - Location sending<br>
 ✔️  Listar contatos - Contact list<br>
 ✔️  Listar bate papos - Conversation list<br>
 ✔️  Status da bateria - Battery status<br>
