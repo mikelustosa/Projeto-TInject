@@ -64,7 +64,7 @@ Nota 1: O TInject é de código aberto desenvolvido em comunidade, e não possui
 <br><br>
 Nota 2: Desenvolvido no rad studio 10.3.0 (RIO).<br><br> 
 
-#### Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica
+#### Doações via PIX / PIX Donations: comercial.softmais@gmail.com
 
 <br><br>
 
