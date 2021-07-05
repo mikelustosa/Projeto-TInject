@@ -5,14 +5,14 @@ CEF4 não é compatível com o Windows XP, Windows Vista, Windows Server 2003 e Win
 De propriedade intelectual de Salvador Díaz Fau, obtido em https://github.com/Dorpoa/CEF4Delphi
 ####################################################################################################################
 Arquivos binários Homologada para a execução do Chromium em conjunto com o componente TInject.
-   Versão: Chromium 78.0.3904.108
-     Data: Novembro 2019
+Versão do CEF 91.1.22   
+Versão Chromium 91.0.4472.124
+Data: 04/07/2021
 
-Para obter a versão mais atualizada do Chromium acesse http://opensource.spotify.com/cefbuilds/index.html
-ou acesse o repositório Principal: https://github.com/CEF4Delphi
+Para obter a versão mais atualizada do CEF acesse https://github.com/CEF4Delphi
 
 ####################################################################################################################
-OBS: - Você pode descompactar em qualquer lugar, desde que aponte o arquivo ConfTinject.ini para o local desejado..
+OBS: - Você pode descompactar em qualquer lugar, desde que aponte o arquivo ConfTinject.ini para o local desejado.
   Exemplo (ConfTinject.ini):
   [Path Defines]
    FrameWork=E:\BIN

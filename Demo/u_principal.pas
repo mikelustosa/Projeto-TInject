@@ -360,7 +360,7 @@ end;
 
 procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-//  TInject1.ShutDown;
+  TInject1.ShutDown;
 end;
 
 Procedure TfrmPrincipal.AddChatList(ANumber: String);

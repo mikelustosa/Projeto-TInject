@@ -1,4 +1,4 @@
-{####################################################################################################################
+﻿{####################################################################################################################
                               TINJECT - Componente de mensageria
 ####################################################################################################################
 
@@ -54,7 +54,7 @@ type
   TOnGetInviteGroup         = procedure(Const Invite : String) of object;
   TOnGetMe                  = procedure(Const vMe : TGetMeClass) of object;
   TOnNewCheckNumber         = procedure(Const vCheckNumber : TReturnCheckNumber) of object;
-  //TOnGetSerialCorporate     = procedure(result: string) of object;
+
 
   TInject = class(TComponent)
   private
@@ -66,19 +66,14 @@ type
     FDestroyTmr             : Ttimer;
     FFormQrCodeType         : TFormQrCodeType;
     FMyNumber               : string;
-
     FserialCorporate        : string;
-
-    //Mike 29/12/2020
     FIsDelivered            : string;
-
     FGetBatteryLevel        : Integer;
     FGetIsConnected         : Boolean;
-
     Fversion                : String;
     Fstatus                 : TStatusType;
     FDestruido              : Boolean;
-    //Typing                  : Boolean;
+
     FLanguageInject         : TLanguageInject;
     FOnDisconnectedBrute    : TNotifyEvent;
     { Private  declarations }
@@ -115,10 +110,7 @@ type
     FOnUpdateJS                 : TNotifyEvent;
     FOnGetChatList              : TGetUnReadMessages;
     FOnGetMyNumber              : TNotifyEvent;
-
-    //Mike 29/12/2020
     FOnGetIsDelivered           : TNotifyEvent;
-
     FOnGetStatus                : TNotifyEvent;
     FOnConnected                : TNotifyEvent;
     FOnDisconnected             : TNotifyEvent;
@@ -415,7 +407,7 @@ begin
   inherited;
   FDestroyTmr                         := Ttimer.Create(nil);
   FDestroyTmr.Enabled                 := False;
-  FDestroyTmr.Interval                := 1200;     //Tempo exigido pelo CEF
+  FDestroyTmr.Interval                := 4000;     //Tempo exigido pelo CEF
   FDestroyTmr.OnTimer                 := OnDestroyConsole;
 
   FTranslatorInject                   := TTranslatorInject.create;
