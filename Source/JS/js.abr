@@ -1861,11 +1861,12 @@ function SetConsoleMessageString(jsName, StringValue) {
 
 
 window.WAPI.getGroupInviteLink = async function (chatId) {
-    var chat = Store.Chat.get(chatId);
-    if(!chat.isGroup) return false;
-    await Store.GroupInvite.queryGroupInviteCode(chat);
-    SetConsoleMessageString("GetGroupInviteLink", `https://chat.whatsapp.com/${chat.inviteCode}`);
-	return `https://chat.whatsapp.com/${chat.inviteCode}`
+    let chat = Store.Chat.get(chatId);
+
+	let code = chat.groupMetadata && chat.groupMetadata.inviteCode  ? 
+	chat.groupMetadata.inviteCode : await Store.GroupInvite.sendQueryGroupInviteCode(chat.id);	
+    SetConsoleMessageString("GetGroupInviteLink", `https://chat.whatsapp.com/${code}`);
+	return `https://chat.whatsapp.com/${code}`;
 }
 
 /**
