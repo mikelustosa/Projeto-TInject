@@ -3925,7 +3925,7 @@ object frmPrincipal: TfrmPrincipal
           Top = 49
           Width = 227
           Height = 13
-          Caption = 'Texto ou contato(sem @c.us) / Text or contact'
+          Caption = 'Texto ou contato(com @c.us) / Text or contact'
         end
         object Label6: TLabel
           Left = 5
@@ -3935,10 +3935,10 @@ object frmPrincipal: TfrmPrincipal
           Caption = 'Video Link'
         end
         object mem_message: TMemo
-          Left = 5
+          Left = 4
           Top = 68
-          Width = 238
-          Height = 156
+          Width = 239
+          Height = 118
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 1
         end
@@ -4077,6 +4077,15 @@ object frmPrincipal: TfrmPrincipal
           Width = 238
           Height = 21
           TabOrder = 11
+          TextHint = 'URL Video'
+        end
+        object ed_contactName: TEdit
+          Left = 5
+          Top = 200
+          Width = 238
+          Height = 21
+          TabOrder = 12
+          TextHint = 'Contact name'
         end
       end
       object Panel1: TPanel
@@ -4376,6 +4385,10 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       DesignSize = (
         1235
         510)
@@ -4440,6 +4453,10 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'A'#231#245'es em grupo /  Group actions'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel5: TPanel
         AlignWithMargins = True
         Left = 3
@@ -5381,6 +5398,10 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet5: TTabSheet
       Caption = 'NEW TInject Corporate'
       ImageIndex = 4
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label16: TLabel
         Left = 925
         Top = 134

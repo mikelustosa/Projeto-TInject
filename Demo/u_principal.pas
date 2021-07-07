@@ -162,6 +162,7 @@ type
     SpeedButton7: TSpeedButton;
     SpeedButton8: TSpeedButton;
     Image5: TImage;
+    ed_contactName: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btSendTextClick(Sender: TObject);
@@ -418,7 +419,7 @@ begin
     if not TInject1.Auth then
        Exit;
 
-    TInject1.sendContact(ed_num.Text, mem_message.Text, FNameContact);
+    TInject1.sendContact(ed_num.Text, mem_message.Text, ed_contactName.text);
   finally
     ed_num.SelectAll;
     ed_num.SetFocus;
@@ -1371,13 +1372,15 @@ end;
 procedure TfrmPrincipal.listaContatosClick(Sender: TObject);
 begin
   mem_message.Text := Copy(listaContatos.Items[listaContatos.Selected.Index].SubItems[1], 0,
-     Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]) - 1);
+     Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]) + 3);
 
 
   FNameContact :=
   stringReplace(Copy(listaContatos.Items[listaContatos.Selected.Index].SubItems[1],
               Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1])+6,
               length(listaContatos.Items[listaContatos.Selected.Index].SubItems[1])), 'Subitem 2', '', [rfReplaceAll, rfIgnoreCase]);
+
+  mem_message.Text := FNameContact;
 
   lblContactStatus.caption := '-';
 end;
