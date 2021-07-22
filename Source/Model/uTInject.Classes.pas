@@ -1168,7 +1168,7 @@ begin
         {$ENDIF}
 
         {$IFDEF VER340}
-          var a: TArray<TClassPadrao>;
+          //var a: TArray<TClassPadrao>;
           a := TArray<TClassPadrao>(PArray);
           FreeAndNil(a[i]);
         {$ENDIF}
