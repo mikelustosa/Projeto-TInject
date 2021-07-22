@@ -1,4 +1,4 @@
-﻿{####################################################################################################################
+{####################################################################################################################
                               TINJECT - Componente de comunicação (Não Oficial)
                                             www.tinject.com.br
                                             Novembro de 2019
@@ -1168,9 +1168,7 @@ begin
         {$ENDIF}
 
         {$IFDEF VER340}
-          //var a: TArray<TClassPadrao>;
-          a := TArray<TClassPadrao>(PArray);
-          FreeAndNil(a[i]);
+          freeAndNil(TArray<TClassPadrao>(PArray)[i]);
         {$ENDIF}
    finally
      SetLength(PArray, 0);
