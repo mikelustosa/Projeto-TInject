@@ -1,4 +1,4 @@
-{####################################################################################################################
+﻿{####################################################################################################################
                               TINJECT - Componente de comunicação (Não Oficial)
                                             www.tinject.com.br
                                             Novembro de 2019
@@ -891,9 +891,9 @@ begin
        Exit;
 
     FreeAndNil(FAQrCodeImage);
-    FAQrCodeImage  := TPicture.Create;
+    FAQrCodeImage  := TPicture.Create;       
     FAQrCodeImageStream.Position := 0;
-
+    
     {$IFDEF VER330}
       FAQrCodeImage.LoadFromStream(FAQrCodeImageStream);
    {$ELSE}
@@ -1158,6 +1158,10 @@ var
   I: Integer;
 begin
    try
+   {$IFDEF VER340}
+      PArray := nil;
+   {$ENDIF}
+
     for i:= Length(PArray)-1 downto 0 do
         {$IFDEF VER300}
           freeAndNil(PArray[i]);
@@ -1165,10 +1169,6 @@ begin
 
         {$IFDEF VER330}
           freeAndNil(PArray[i]);
-        {$ENDIF}
-
-        {$IFDEF VER340}
-          freeAndNil(TArray<TClassPadrao>(PArray)[i]);
         {$ENDIF}
    finally
      SetLength(PArray, 0);

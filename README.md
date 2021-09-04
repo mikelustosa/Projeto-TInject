@@ -20,20 +20,37 @@ https://youtu.be/07RoReOHaT4
 https://youtu.be/cbWW7VNYwEo
 <br><br>
 
+Instalação manual:<br><br>
 ### NOVO: Para usar com o delphi 10.4 Sydney, incluir no library path 32 bits a pasta <b>Compilados</b> e suas subpastas.<br><br>
+1-Clonar o repositório Projeto-TInject
+<br></br>
+2-Baixar e instalar o CEF4Delphi em: http://www.softmaisbrasil.com.br/#blog
+<br></br>
+3-Baixar a pasta BIN em: http://www.softmaisbrasil.com.br/#blog
+<br></br>
+4-Copiar todo o conteúdo baixado da pasta BIN no passo 3 para a pasta BIN na raiz do projeto (Caso não exista a pasta BIN em seu projeto Crie)
+<br></br>
+5-Adicione ao libary path do Delphi a pasta TInject-whatsapp-delphi e todas as subpastas
+<br><br>
+6-Clique no menu *Component* > *Install component*. Selecione a unit uTinject pasta(service) e selecionar a opção *install into a new package*. Por fim, digite o nome TInject em *Package name*.
+<br><br>
+7-Dê um Compile e depois dê um build
+<br><br>
+8-Abra o arquivo demo Tinject.dproj
+<br></br>
 
 ### Recursos / Resources<br><br>
 ✔️  Login<br>
 ✔️  Logout<br>
 ✔️  Enviar mensagens de texto para números fora da agenda- Send text message<br>
 ✔️  Enviar mensagens para grupos - Send group messages<br>
-❌  Enviar contatos - Send phone contacts<br>
+✔️  Enviar contatos - Send phone contacts<br>
 ✔️  Enviar MP3 - Send MP3<br>
 ✔️  Enviar MP4 - Send MP4<br>
 ✔️  Enviar IMG - Send IMG<br>
 ✔️  Enviar RAR - Send RAR<br>
 ✔️  Enviar Link com prévia - Sending and preview<br>
-❌  Enviar localização - Location sending<br>
+✔️  Enviar localização - Location sending<br>
 ✔️  Listar contatos - Contact list<br>
 ✔️  Listar bate papos - Conversation list<br>
 ✔️  Status da bateria - Battery status<br>
@@ -52,7 +69,6 @@ https://youtu.be/cbWW7VNYwEo
 ✔️  Despromover participanete adminstrador do grupo - Demote participating group administrator<br>
 ✔️  Listar todos os grupos - List all groups<br>
 ✔️  Listar participantes do grupo - List group participants<br>
-❌  Obter link convite de grupos - Get Group invitation link<br>
 ✔️  Entrar em grupo via link convite - Join group via invitation link<br>
 
 ### Cursos do componente / Component lessions:<br>
@@ -64,7 +80,7 @@ Nota 1: O TInject é de código aberto desenvolvido em comunidade, e não possui
 <br><br>
 Nota 2: Desenvolvido no rad studio 10.3.0 (RIO).<br><br> 
 
-#### Doações via PIX / PIX Donations: comercial.softmais@gmail.com
+#### Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica
 
 <br><br>
 

@@ -19,9 +19,7 @@ uses
   Vcl.Imaging.pngimage, Vcl.Buttons, Vcl.Mask, Data.DB, Vcl.DBCtrls, Vcl.Grids,
   Vcl.DBGrids, Vcl.Dialogs, IdBaseComponent, IdComponent, IdTCPConnection,
   IdTCPClient, Vcl.OleCtrls, SHDocVw, IdHTTP, IdIOHandler,
-  IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, Vcl.Imaging.jpeg,
-  REST.Types, REST.Client, Data.Bind.Components, Data.Bind.ObjectScope, ClipBrd,
-  Vcl.Menus;
+  IdIOHandlerSocket, IdIOHandlerStack, IdSSL, IdSSLOpenSSL, Vcl.Imaging.jpeg;
 
 type
   TfrmPrincipal = class(TForm)
@@ -64,6 +62,7 @@ type
     btStatusBat: TButton;
     Rdb_FormaConexao: TRadioGroup;
     SpeedButton1: TSpeedButton;
+    Image1: TImage;
     Panel4: TPanel;
     Button2: TButton;
     chk_AutoResposta: TCheckBox;
@@ -132,37 +131,7 @@ type
     lblContactStatus: TLabel;
     lblContactNumber: TLabel;
     SpeedButton4: TSpeedButton;
-    TabSheet5: TTabSheet;
-    Label16: TLabel;
-    Label17: TLabel;
-    Label18: TLabel;
-    Label19: TLabel;
-    edtToken: TEdit;
-    Panel10: TPanel;
-    Image1: TImage;
     Label11: TLabel;
-    SpeedButton11: TSpeedButton;
-    PopupMenu1: TPopupMenu;
-    Copyall1: TMenuItem;
-    PopupMenu2: TPopupMenu;
-    MenuItem1: TMenuItem;
-    Copy1: TMenuItem;
-    Copy2: TMenuItem;
-    PopupMenu3: TPopupMenu;
-    MenuItem2: TMenuItem;
-    MenuItem3: TMenuItem;
-    PopupMenu4: TPopupMenu;
-    MenuItem4: TMenuItem;
-    MenuItem5: TMenuItem;
-    Panel11: TPanel;
-    Image4: TImage;
-    SpeedButton13: TSpeedButton;
-    SpeedButton14: TSpeedButton;
-    SpeedButton6: TSpeedButton;
-    SpeedButton7: TSpeedButton;
-    SpeedButton8: TSpeedButton;
-    Image5: TImage;
-    ed_contactName: TEdit;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btSendTextClick(Sender: TObject);
@@ -235,25 +204,7 @@ type
     procedure listaChatsClick(Sender: TObject);
     procedure ed_numKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure SpeedButton4Click(Sender: TObject);
-    procedure BitBtn6Click(Sender: TObject);
-    procedure BitBtn7Click(Sender: TObject);
-    procedure SpeedButton7Click(Sender: TObject);
-    procedure SpeedButton8Click(Sender: TObject);
-    procedure SpeedButton9Click(Sender: TObject);
-    procedure SpeedButton10Click(Sender: TObject);
-    procedure SpeedButton11Click(Sender: TObject);
-    procedure Copyall1Click(Sender: TObject);
-    procedure MenuItem1Click(Sender: TObject);
-    procedure Copy1Click(Sender: TObject);
-    procedure Copy2Click(Sender: TObject);
-    procedure MenuItem2Click(Sender: TObject);
-    procedure MenuItem3Click(Sender: TObject);
-    procedure MenuItem4Click(Sender: TObject);
-    procedure MenuItem5Click(Sender: TObject);
-    procedure SpeedButton12Click(Sender: TObject);
-    procedure SpeedButton13Click(Sender: TObject);
-    procedure SpeedButton6Click(Sender: TObject);
-    procedure TInject1GetIsDelivered(Sender: TObject);
+    procedure TInject1Disconnected(Sender: TObject);
 
   private
     { Private declarations }
@@ -362,6 +313,7 @@ end;
 procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   TInject1.ShutDown;
+//  FreeAndNil(GlobalCEFApp);
 end;
 
 Procedure TfrmPrincipal.AddChatList(ANumber: String);
@@ -386,24 +338,6 @@ begin
   TrayIcon1.ShowBalloonHint;
 end;
 
-procedure TfrmPrincipal.BitBtn6Click(Sender: TObject);
-begin
-  if MessageDlg('Olá! Você será direcionado para o site do Enviazap. Cadastre-se usando seu número de Whatsapp e ative sua licença corporate. '+#13+#13+'Ao ativar você ganhará um token de acesso. Insira o seu token na propriedade SERIALCORPORATE do seu TInject.'+#13+#13+'*Não esqueça de validar o seu token.'+#13+#13+'Prosseguir?', mtConfirmation,
-    [mbYes, mbNo], 0) = mrYes then
-  begin
-    ShellExecute(Handle, 'open', 'https://mensageria.hci.com.br/enviazap', '', '', 1);
-  end
-end;
-
-procedure TfrmPrincipal.BitBtn7Click(Sender: TObject);
-begin
-  if MessageDlg('Olá! Você será direcionado para o site do Enviazap. Cadastre-se usando seu número de Whatsapp e ative sua licença corporate. '+#13+#13+'Ao ativar você ganhará um token de acesso. Insira o seu token na propriedade SERIALCORPORATE do seu TInject.'+#13+#13+'*Não esqueça de validar o seu token.'+#13+#13+'Prosseguir?', mtConfirmation,
-    [mbYes, mbNo], 0) = mrYes then
-  begin
-    ShellExecute(Handle, 'open', 'https://mensageria.hci.com.br/enviazap', '', '', 1);
-  end
-end;
-
 procedure TfrmPrincipal.btCheckNumberClick(Sender: TObject);
 begin
   if not TInject1.Auth then
@@ -419,7 +353,7 @@ begin
     if not TInject1.Auth then
        Exit;
 
-    TInject1.sendContact(ed_num.Text, mem_message.Text, ed_contactName.text);
+    TInject1.sendContact(ed_num.Text, mem_message.Text, FNameContact);
   finally
     ed_num.SelectAll;
     ed_num.SetFocus;
@@ -478,14 +412,10 @@ end;
 
 
 {procedure TfrmPrincipal.btNewCheckNumberClick(Sender: TObject);
-begin
-
-
-
-end;
-
-
-
+begin
+
+end;
+
  Funcao nao utilizada
 function DownloadArquivo(const Origem, Destino: String): Boolean;
 const BufferSize = 1024;
@@ -549,10 +479,8 @@ begin
 end;
 
 procedure TfrmPrincipal.btGetSeveralStatusClick(Sender: TObject);
-begin
-
-  try
-
+begin
+  try
     FStatus := false;
     if not TInject1.Auth then
        Exit;
@@ -561,61 +489,40 @@ begin
     TInject1.GetStatusContact('558198007759@c.us');
   finally
 
-  end;
-
-end;
-
-
-
+  end;
+end;
+
 procedure TfrmPrincipal.btGetMeClick(Sender: TObject);
-begin
-
-  try
-
+begin
+  try
     if not TInject1.Auth then
        Exit;
 
     TInject1.GetMe();
   finally
 
-  end;
-
-end;
-
-
-
+  end;
+end;
+
 procedure TfrmPrincipal.Button19Click(Sender: TObject);
-begin
-
-   if not TInject1.Auth then
-
+begin
+   if not TInject1.Auth then
      Exit;
 
-  TInject1.GetGroupInviteLink(lbl_idGroup.Caption);//  '558192317066-1592044430@g.us'
-
-end;
-
-
-
+  TInject1.GetGroupInviteLink(lbl_idGroup.Caption);//  '558192317066-1592044430@g.us'
+end;
+
 procedure TfrmPrincipal.btCleanChatClick(Sender: TObject);
-begin
-
-  if not TInject1.Auth then
-
+begin
+  if not TInject1.Auth then
      Exit;
-
-
-  TInject1.CleanALLChat(ed_num.Text);
-
-end;
-
-
-
+
+  TInject1.CleanALLChat(ed_num.Text);
+end;
+
 procedure TfrmPrincipal.btGetStatusClick(Sender: TObject);
-begin
-
-  try
-
+begin
+  try
     FStatus := true;
     if not TInject1.Auth then
        Exit;
@@ -623,15 +530,11 @@ begin
     TInject1.GetStatusContact(ed_num.Text);
   finally
 
-  end;
-
-end;
-
-
-
+  end;
+end;
+
 procedure TfrmPrincipal.btnRemoveGroupLinkClick(Sender: TObject);
-begin
-   try
+begin   try
 
     if not TInject1.Auth then
        Exit;
@@ -639,63 +542,43 @@ begin
     TInject1.GroupRemoveInviteLink(lbl_idGroup.Caption);
   finally
 
-  end;
-
-end;
-
-
-
+  end;
+end;
+
 procedure TfrmPrincipal.btSetProfileNameClick(Sender: TObject);
-begin
-
-  try
-
+begin
+  try
     if not TInject1.Auth then
        Exit;
 
     TInject1.SetProfileName(ed_profileData.Text);
   finally
 
-  end;
-
-end;
-
-
-
+  end;
+end;
+
 procedure TfrmPrincipal.btSetProfileStatusClick(Sender: TObject);
-begin
-
-   try
-
+begin
+   try
     if not TInject1.Auth then
        Exit;
 
     TInject1.SetStatus(ed_profileData.Text);
   finally
 
-  end;
-
-end;
-
-
-
+  end;
+end;
+
 procedure TfrmPrincipal.btnTestCheckNumberClick(Sender: TObject);
-begin
-
- if not TInject1.Auth then
-
+begin
+ if not TInject1.Auth then
      Exit;
 
-  TInject1.NewCheckIsValidNumber('558195833533@c.us');
-
-  TInject1.NewCheckIsValidNumber('558195833532@c.us');
-
-  TInject1.NewCheckIsValidNumber('558195833531@c.us');
-
-end;
-
-
-
+  TInject1.NewCheckIsValidNumber('558195833533@c.us');
+  TInject1.NewCheckIsValidNumber('558195833532@c.us');
+  TInject1.NewCheckIsValidNumber('558195833531@c.us');
+end;
+
 procedure TfrmPrincipal.Button1Click(Sender: TObject);
 var
   JS: string;
@@ -792,45 +675,6 @@ begin
   ExecuteFilter;
 end;
 
-procedure TfrmPrincipal.Copy1Click(Sender: TObject);
-begin
-  try
-    Clipboard.AsText := listaGrupos.Selected.Caption;
-  except
-  end;
-end;
-
-procedure TfrmPrincipal.Copy2Click(Sender: TObject);
-begin
-  try
-    Clipboard.AsText := listaParticipantes.Selected.Caption;
-  except
-  end;
-end;
-
-procedure TfrmPrincipal.Copyall1Click(Sender: TObject);
-var
-  sl: TStringlist;
-  i, k: integer;
-  s: string;
-  Item: TListItem;
-begin
-  sl := TStringlist.Create;
-  try
-    For i := 0 To listaParticipantes.items.count-1 Do Begin
-      item := listaParticipantes.Items[i];
-      S   := item.Caption;
-      sl.Add( S );
-    End; { For }
-    Clipboard.AsText := sl.Text;
-  finally
-    begin
-      sl.free;
-      application.MessageBox('All Copied', 'Message' , MB_OK + MB_ICONASTERISK)
-    end;
-  end;
-end;
-
 procedure TfrmPrincipal.ed_numChange(Sender: TObject);
 var
   LRet: TStringList;
@@ -876,18 +720,12 @@ begin
 end;
 
 procedure TfrmPrincipal.ed_numKeyUp(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-
-begin
-
-  lblContactNumber.Caption := ed_num.Text;
-
-  lblContactStatus.Caption := '-';
-
-end;
-
-
-
+  Shift: TShiftState);
+begin
+  lblContactNumber.Caption := ed_num.Text;
+  lblContactStatus.Caption := '-';
+end;
+
 procedure TfrmPrincipal.ed_numSelect(Sender: TObject);
 begin
   if not CheckBox5.Checked then
@@ -930,6 +768,11 @@ begin
   ExecuteFilter;
 
   TInject1.LanguageInject                := TLanguageInject(ComboBox1.ItemIndex);
+end;
+
+procedure TfrmPrincipal.TInject1Disconnected(Sender: TObject);
+begin
+  ShowMessage('Conexão foi finalizada');
 end;
 
 procedure TfrmPrincipal.TInject1DisconnectedBrute(Sender: TObject);
@@ -1032,96 +875,49 @@ begin
 end;
 
 procedure TfrmPrincipal.TInject1GetInviteGroup(const Invite: string);
-begin
-
- ShowMessage(Invite);
-
-end;
-
-
-
-procedure TfrmPrincipal.TInject1GetIsDelivered(Sender: TObject);
-begin
-  showmessage(TInject(Sender).IsDelivered);
-end;
-
+begin
+ ShowMessage(Invite);
+end;
+
 procedure TfrmPrincipal.TInject1GetMe(const vMe: TGetMeClass);
-var aList : TStringList;
-
-begin
-
- try
-
-  aList := TStringList.Create();
-
-
-
-  aList.Add('Battery: ' + vME.battery.ToString);
-
-  aList.Add('LC: ' +  vMe.lc);
-
-  aList.Add('LG: ' + vMe.lg);
-
-  aList.Add('Locate: ' + vMe.locate);
-
-
-
-  if vMe.plugged then
-
-   aList.Add('Plugged: true')
-
-  else
-
-   aList.Add('Plugged: false');
-
-
-
-  aList.Add('Pushname: ' + vMe.pushname);
-
-  aList.Add('ServerToken: ' + vMe.serverToken);
-
-  aList.Add('Status: ' + vMe.status.status);
-
-  aList.Add('Me: ' + vMe.me);
-
-  aList.Add('Phone Device_Manufacturer:  ' + vMe.phone.device_manufacturer);
-
-  aList.Add('Phone Device Model: ' + vMe.phone.device_model);
-
-  aList.Add('Phone MCC: ' + vMe.phone.mcc);
-
-  aList.Add('Phone MNC: ' + vMe.phone.mnc);
-
-  aList.Add('Phone OS Builder Number: ' + vMe.phone.os_build_number);
-
-  aList.Add('Phone OS Version: ' + vMe.phone.os_version);
-
-  aList.Add('Phone wa Version: ' + vMe.phone.wa_version);
-
-
-
-  if vME.phone.InjectWorking then
-
-   aList.Add('Phone InjectWorkink: true')
-
-  else
-
-   aList.Add('Phone InjectWorkin: false');
-
-
-
-  Showmessage (aList.Text);
-
- finally
-
-  aList.Free;
-
- end;
-
-end;
-
-
-
+var aList : TStringList;
+begin
+ try
+  aList := TStringList.Create();
+
+  aList.Add('Battery: ' + vME.battery.ToString);
+  aList.Add('LC: ' +  vMe.lc);
+  aList.Add('LG: ' + vMe.lg);
+  aList.Add('Locate: ' + vMe.locate);
+
+  if vMe.plugged then
+   aList.Add('Plugged: true')
+  else
+   aList.Add('Plugged: false');
+
+  aList.Add('Pushname: ' + vMe.pushname);
+  aList.Add('ServerToken: ' + vMe.serverToken);
+  aList.Add('Status: ' + vMe.status.status);
+  aList.Add('Me: ' + vMe.me);
+  aList.Add('Phone Device_Manufacturer:  ' + vMe.phone.device_manufacturer);
+  aList.Add('Phone Device Model: ' + vMe.phone.device_model);
+  aList.Add('Phone MCC: ' + vMe.phone.mcc);
+  aList.Add('Phone MNC: ' + vMe.phone.mnc);
+  aList.Add('Phone OS Builder Number: ' + vMe.phone.os_build_number);
+  aList.Add('Phone OS Version: ' + vMe.phone.os_version);
+  aList.Add('Phone wa Version: ' + vMe.phone.wa_version);
+
+  if vME.phone.InjectWorking then
+   aList.Add('Phone InjectWorkink: true')
+  else
+   aList.Add('Phone InjectWorkin: false');
+
+  Showmessage (aList.Text);
+ finally
+  aList.Free;
+ end;
+end;
+
 procedure TfrmPrincipal.TInject1GetMyNumber(Sender: TObject);
 begin
   lblNumeroConectado.Caption :=   TInject(Sender).MyNumber;
@@ -1239,41 +1035,23 @@ begin
 end;
 
 procedure TfrmPrincipal.TInject1GetStatusMessage(
-  const Result: TResponseStatusMessage);
-
-var
-
-  i: integer;
-
-var
-
-  AResult: String;
-
-var
-
- cara: TResponseStatusMessage;
-
-begin
-
-  if FStatus = true then
-
-  begin
-
-    //lblContactStatus.Caption := Result.status ;
-     showmessage(Result.id + ' - ' + Result.status);
-
-  end else
-
-    begin
-
-      showmessage(Result.id + ' - ' + Result.status);
-
-    end;
-
-end;
-
-
-
+  const Result: TResponseStatusMessage);
+var
+  i: integer;
+var
+  AResult: String;
+var
+ cara: TResponseStatusMessage;
+begin
+  if FStatus = true then
+  begin
+    //lblContactStatus.Caption := Result.status ;     showmessage(Result.id + ' - ' + Result.status);
+  end else
+    begin
+      showmessage(Result.id + ' - ' + Result.status);
+    end;
+end;
+
 procedure TfrmPrincipal.TInject1GetUnReadMessages(Const Chats: TChatList);
 var
   AChat: TChatClass;
@@ -1341,28 +1119,19 @@ begin
 end;
 
 procedure TfrmPrincipal.TInject1NewGetNumber(
-  const vCheckNumber: TReturnCheckNumber);
-
-begin
- if vCheckNumber.valid then
+  const vCheckNumber: TReturnCheckNumber);
+begin if vCheckNumber.valid then
   Showmessage(vCheckNumber.id + ' é um numero Válido')
 
- else
-  Showmessage(vCheckNumber.id + ' é um numero INVÁLIDO');
+ else  Showmessage(vCheckNumber.id + ' é um numero INVÁLIDO');
 
-end;
-
-
-
+end;
+
 procedure TfrmPrincipal.listaChatsClick(Sender: TObject);
-begin
-
-  lblContactStatus.caption := '-';
-
-end;
-
-
-
+begin
+  lblContactStatus.caption := '-';
+end;
+
 procedure TfrmPrincipal.listaChatsDblClick(Sender: TObject);
 begin
   ed_num.Text := TInject1.GetChat(listaChats.Selected.Index).id;
@@ -1372,15 +1141,13 @@ end;
 procedure TfrmPrincipal.listaContatosClick(Sender: TObject);
 begin
   mem_message.Text := Copy(listaContatos.Items[listaContatos.Selected.Index].SubItems[1], 0,
-     Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]) + 3);
+     Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]) - 1);
 
 
   FNameContact :=
   stringReplace(Copy(listaContatos.Items[listaContatos.Selected.Index].SubItems[1],
               Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1])+6,
               length(listaContatos.Items[listaContatos.Selected.Index].SubItems[1])), 'Subitem 2', '', [rfReplaceAll, rfIgnoreCase]);
-
-  mem_message.Text := FNameContact;
 
   lblContactStatus.caption := '-';
 end;
@@ -1416,123 +1183,6 @@ begin
   end;
 end;
 
-procedure TfrmPrincipal.MenuItem1Click(Sender: TObject);
-var
-  sl: TStringlist;
-  i, k: integer;
-  s: string;
-  Item: TListItem;
-begin
-
-  sl := TStringlist.Create;
-
-  try
-    for i := 0 To listaGrupos.items.count-1 Do
-    begin
-      item := listaGrupos.Items[i];
-      S   := item.Caption;
-      sl.Add( S );
-    end;
-
-    Clipboard.AsText := sl.Text;
-
-  finally
-    begin
-      sl.free;
-      application.MessageBox('All Copied', 'Message' , MB_OK + MB_ICONASTERISK);
-    end;
-  end;
-
-end;
-
-procedure TfrmPrincipal.MenuItem2Click(Sender: TObject);
-begin
-  try
-    Clipboard.AsText := listaAdministradores.Selected.Caption;
-  except
-  end;
-end;
-
-procedure TfrmPrincipal.MenuItem3Click(Sender: TObject);
-var
-  sl: TStringlist;
-  i, k: integer;
-  s: string;
-  Item: TListItem;
-begin
-  sl := TStringlist.Create;
-  try
-    for i := 0 to listaAdministradores.items.count-1 Do Begin
-      item := listaAdministradores.Items[i];
-      S   := item.Caption;
-      sl.Add( S );
-    end;
-    Clipboard.AsText := sl.Text;
-  finally
-    begin
-      sl.free;
-      application.MessageBox('All Copied', 'Message' , MB_OK + MB_ICONASTERISK)
-    end;
-  end;
-
-end;
-
-procedure TfrmPrincipal.MenuItem4Click(Sender: TObject);
-begin
-  try
-    Clipboard.AsText := listaContatos.Selected.Caption;
-  except
-  end;
-end;
-
-procedure TfrmPrincipal.MenuItem5Click(Sender: TObject);
-var
-  sl: TStringlist;
-  i, k: integer;
-  s: string;
-  Item: TListItem;
-begin
-  sl := TStringlist.Create;
-  try
-    For i := 0 To listaContatos.items.count-1 Do Begin
-      item := listaContatos.Items[i];
-      S   := item.Caption;
-      sl.Add( S );
-    End; { For }
-    Clipboard.AsText := sl.Text;
-  finally
-    begin
-      sl.free;
-      application.MessageBox('All Copied', 'Message' , MB_OK + MB_ICONASTERISK)
-    end;
-  end;
-
-end;
-
-procedure TfrmPrincipal.SpeedButton10Click(Sender: TObject);
-begin
-  application.MessageBox('Suporte TInject especializado de seg à sex das 08hs às 17hs pelo WhatsApp', 'Plano standard', MB_OK + MB_ICONASTERISK);
-end;
-
-procedure TfrmPrincipal.SpeedButton11Click(Sender: TObject);
-begin
-  ShellExecute(Handle, 'open', 'https://github.com/mikelustosa/Projeto-TInject', '', '', 1);
-end;
-
-procedure TfrmPrincipal.SpeedButton12Click(Sender: TObject);
-begin
-  application.MessageBox('Suporte via acesso remoto de seg à sex das 08hs às 17hs', 'Plano standard', MB_OK + MB_ICONASTERISK);
-end;
-
-procedure TfrmPrincipal.SpeedButton13Click(Sender: TObject);
-begin
-  if MessageDlg('Olá! Você será direcionado para o site do Enviazap. Cadastre-se usando seu número de Whatsapp e ative sua licença corporate. '+#13+#13+'Ao ativar você ganhará um token de acesso. Insira o seu token na propriedade SERIALCORPORATE do seu TInject.'+#13+#13+'*Não esqueça de validar o seu token.'+#13+#13+'Prosseguir?', mtConfirmation,
-    [mbYes, mbNo], 0) = mrYes then
-  begin
-    ShellExecute(Handle, 'open', 'https://mensageria.hci.com.br/enviazap', '', '', 1);
-  end
-end;
-
 procedure TfrmPrincipal.SpeedButton1Click(Sender: TObject);
 begin
   if not TInject1.Auth(false) then
@@ -1563,48 +1213,6 @@ end;
 procedure TfrmPrincipal.SpeedButton4Click(Sender: TObject);
 begin
   ShellExecute(Handle, 'open', 'https://www.youtube.com/user/mikelustosa', '', '', 1);
-end;
-
-procedure TfrmPrincipal.SpeedButton6Click(Sender: TObject);
-Type
-  TactiveToken = function(token: string): string; stdcall;
-var
-  error: string;
-  lHandle: THandle;
-  DoCallDll: TactiveToken;
-begin
-    if edtToken.Text <> '' then
-    begin
-      try
-        lHandle := LoadLibrary ('sendAndReceiveDLL.dll');
-
-        if lHandle <> 0 then
-        begin
-          DoCallDll := GetProcAddress (lHandle, 'activateToken');
-          if @DoCallDll <> nil then
-            application.MessageBox( pchar(DoCallDll (edtToken.Text)) , '' , MB_OK + MB_ICONINFORMATION);
-        end;
-
-      except on e:exception do
-       error := e.message;
-      end;
-    end;
-
-end;
-
-procedure TfrmPrincipal.SpeedButton7Click(Sender: TObject);
-begin
-  ShellExecute(Handle, 'open', 'https://api.whatsapp.com/send?phone=558199301443&text=Preciso%20de%20suporte', '', '', 1);
-end;
-
-procedure TfrmPrincipal.SpeedButton8Click(Sender: TObject);
-begin
-  ShellExecute(Handle, 'open', 'https://youtu.be/dZ1RRXKbjCU', '', '', 1);
-end;
-
-procedure TfrmPrincipal.SpeedButton9Click(Sender: TObject);
-begin
-  application.MessageBox('Novos recursos do componente serão disponibilizados automaticamente', 'Plano standard', MB_OK + MB_ICONASTERISK);
 end;
 
 procedure TfrmPrincipal.Timer2Timer(Sender: TObject);
