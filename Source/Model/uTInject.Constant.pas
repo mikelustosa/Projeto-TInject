@@ -79,13 +79,13 @@ Const
   FrmConsole_JS_VAR_DeleteMessages      = 'window.WAPI.deleteConversation("<#MSG_PHONE#>")';
   FrmConsole_JS_VAR_SendBase64          = 'window.WAPI.sendImage("<#MSG_BASE64#>","<#MSG_PHONE#>", "<#MSG_NOMEARQUIVO#>", "<#MSG_CORPO#>")';
   //FrmConsole_JS_VAR_SendMsg             = 'window.WAPI.sendMessageToID("<#MSG_PHONE#>","<#MSG_CORPO#>")';
-  FrmConsole_JS_VAR_SendMsg             = 'window.WAPI.sendMessage("<#MSG_PHONE#>","<#MSG_CORPO#>")';
+  FrmConsole_JS_VAR_SendMsg             = 'window.WAPI.sendMessageToID("<#MSG_PHONE#>","<#MSG_CORPO#>")';
   FrmConsole_JS_VAR_SendTyping          = 'Store.WapQuery.sendChatstateComposing("<#MSG_PHONE#>");';
   FrmConsole_JS_VAR_SendLinkPreview     = 'window.WAPI.sendLinkWithAutoPreview("<#MSG_PHONE#>", "<#MSG_LINK#>", "<#MSG_CORPO#>")';
   FrmConsole_JS_VAR_SendLocation        = 'window.WAPI.sendLocation("<#MSG_PHONE#>", "<#MSG_LAT#>", "<#MSG_LNG#>", "<#MSG_CORPO#>")';
   FrmConsole_JS_VAR_Logout              = 'localStorage.clear(); location.reload();';
   //FrmConsole_JS_VAR_SendContact         = 'window.WAPI.sendContact("<#MSG_PHONE_DEST#>", "<#MSG_PHONE#>")';
-  FrmConsole_JS_VAR_SendContact         = 'window.WAPI.sendVCard("<#MSG_PHONE_DEST#>","BEGIN:VCARD\nVERSION:3.0\nN:;0;;;\nFN:<#MSG_NAMECONTACT#>\nTEL;type=CELL;waid=<#MSG_PHONE#>:<#MSG_PHONE#>\nEND:VCARD");';
+  FrmConsole_JS_VAR_SendContact         = 'window.WAPI.sendVCard("<#MSG_PHONE_DEST#>", "<#MSG_PHONE#>")'; //'window.WAPI.sendVCard("<#MSG_PHONE_DEST#>","BEGIN:VCARD\nVERSION:3.0\nN:;0;;;\nFN:<#MSG_NAMECONTACT#>\nTEL;type=CELL;waid=<#MSG_PHONE#>:<#MSG_PHONE#>\nEND:VCARD");';
   //FrmConsole_JS_VAR_SendContact         = 'window.WAPI.sendVCard("558199301443@c.us","BEGIN:VCARD\nVERSION:3.0\nN:;0;;;\nFN:Ricardo Rohde\nTEL;type=CELL;waid=554699155657:554699155657\nEND:VCARD");';
 
   //FrmConsole_JS_VAR_CheckIsValidNumber  = 'window.WAPI.isValidNumber("<#MSG_PHONE#>")';

@@ -352,8 +352,9 @@ begin
   try
     if not TInject1.Auth then
        Exit;
-
-    TInject1.sendContact(ed_num.Text, mem_message.Text, FNameContact);
+    //               Dest                    Contact
+    //               ex: 558199301443@c.us   558187576958@c.us
+    TInject1.sendContact(ed_num.Text,        mem_message.Text);
   finally
     ed_num.SelectAll;
     ed_num.SetFocus;
@@ -1141,7 +1142,7 @@ end;
 procedure TfrmPrincipal.listaContatosClick(Sender: TObject);
 begin
   mem_message.Text := Copy(listaContatos.Items[listaContatos.Selected.Index].SubItems[1], 0,
-     Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]) - 1);
+     Pos('@', listaContatos.Items[listaContatos.Selected.Index].SubItems[1]) + 4);
 
 
   FNameContact :=
