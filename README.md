@@ -42,6 +42,7 @@ Instalação manual:<br><br>
 ### Recursos / Resources<br><br>
 ✔️  Login<br>
 ✔️  Logout<br>
+✔️  Enviar mensagens de texto com botões - Send text message with buttons (NEW)<br>
 ✔️  Enviar mensagens de texto para números fora da agenda- Send text message<br>
 ✔️  Enviar mensagens para grupos - Send group messages<br>
 ✔️  Enviar contatos - Send phone contacts<br>
@@ -80,7 +81,7 @@ Nota 1: O TInject é de código aberto desenvolvido em comunidade, e não possui
 <br><br>
 Nota 2: Desenvolvido no rad studio 10.3.0 (RIO).<br><br> 
 
-#### Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica
+#### Doações via PIX / Donations PIX: comercial.softmais@gmail.com
 
 <br><br>
 

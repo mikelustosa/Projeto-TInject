@@ -76,7 +76,6 @@ type
     Edt_DDIPDR: TLabeledEdit;
     CheckBox4: TCheckBox;
     btSendContact: TButton;
-    SpeedButton2: TSpeedButton;
     SpeedButton3: TSpeedButton;
     btCheckNumber: TButton;
     btIsConnected: TButton;
@@ -130,8 +129,13 @@ type
     lblNumeroConectado: TLabel;
     lblContactStatus: TLabel;
     lblContactNumber: TLabel;
-    SpeedButton4: TSpeedButton;
     Label11: TLabel;
+    btSendTextButton: TButton;
+    SpeedButton2: TSpeedButton;
+    SpeedButton4: TSpeedButton;
+    SpeedButton8: TSpeedButton;
+    SpeedButton11: TSpeedButton;
+    SpeedButton7: TSpeedButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btSendTextClick(Sender: TObject);
@@ -205,6 +209,10 @@ type
     procedure ed_numKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure SpeedButton4Click(Sender: TObject);
     procedure TInject1Disconnected(Sender: TObject);
+    procedure SpeedButton8Click(Sender: TObject);
+    procedure SpeedButton11Click(Sender: TObject);
+    procedure SpeedButton7Click(Sender: TObject);
+    procedure btSendTextButtonClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -401,6 +409,22 @@ Begin
     ed_num.SelectAll;
     ed_num.SetFocus;
   end;
+end;
+
+procedure TfrmPrincipal.btSendTextButtonClick(Sender: TObject);
+const buttons = '[{buttonId: "id1", buttonText:{displayText: "OPTION1"}, type: 1}, {buttonId: "id2", buttonText: {displayText: "OPTION2"}, type: 1}]';
+const footer = 'Choose option';
+begin
+  try
+    if not TInject1.Auth then
+       Exit;
+
+    TInject1.sendButtons(ed_num.Text, mem_message.Text, Buttons, footer);
+  finally
+    ed_num.SelectAll;
+    ed_num.SetFocus;
+  end;
+
 end;
 
 procedure TfrmPrincipal.btIsConnectedClick(Sender: TObject);
@@ -1184,6 +1208,11 @@ begin
   end;
 end;
 
+procedure TfrmPrincipal.SpeedButton11Click(Sender: TObject);
+begin
+  ShellExecute(Handle, 'open', 'https://github.com/mikelustosa/Projeto-TInject', '', '', 1);
+end;
+
 procedure TfrmPrincipal.SpeedButton1Click(Sender: TObject);
 begin
   if not TInject1.Auth(false) then
@@ -1214,6 +1243,16 @@ end;
 procedure TfrmPrincipal.SpeedButton4Click(Sender: TObject);
 begin
   ShellExecute(Handle, 'open', 'https://www.youtube.com/user/mikelustosa', '', '', 1);
+end;
+
+procedure TfrmPrincipal.SpeedButton7Click(Sender: TObject);
+begin
+ShellExecute(Handle, 'open', 'https://api.whatsapp.com/send?phone=558199301443&text=Preciso%20de%20suporte', '', '', 1);
+end;
+
+procedure TfrmPrincipal.SpeedButton8Click(Sender: TObject);
+begin
+  ShellExecute(Handle, 'open', 'https://youtu.be/dZ1RRXKbjCU', '', '', 1);
 end;
 
 procedure TfrmPrincipal.Timer2Timer(Sender: TObject);

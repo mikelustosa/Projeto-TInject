@@ -1,6 +1,5 @@
 ﻿{####################################################################################################################
-                              TINJECT - Componente de comunicação (Não Oficial)
-                                         (Não Oficial WhatsApp)
+                              TINJECT - Componente de mensageria
 ####################################################################################################################
 
 ####################################################################################################################
@@ -34,8 +33,8 @@ uses
   uTInject.AdjustNumber, UBase64,
 
   System.SysUtils, System.Classes, Vcl.Forms, Vcl.Dialogs, System.MaskUtils,
-  System.UiTypes,  Generics.Collections,   System.TypInfo, Data.DB, Vcl.ExtCtrls,
-   uTInject.Diversos, Vcl.Imaging.jpeg;
+  System.UiTypes,  Generics.Collections, System.TypInfo, Data.DB, Vcl.ExtCtrls,
+  uTInject.Diversos, Vcl.Imaging.jpeg;
 
 
 type
@@ -56,6 +55,7 @@ type
   TOnGetMe                  = procedure(Const vMe : TGetMeClass) of object;
   TOnNewCheckNumber         = procedure(Const vCheckNumber : TReturnCheckNumber) of object;
 
+
   TInject = class(TComponent)
   private
     FInjectConfig           : TInjectConfig;
@@ -66,17 +66,14 @@ type
     FDestroyTmr             : Ttimer;
     FFormQrCodeType         : TFormQrCodeType;
     FMyNumber               : string;
-
-    //Mike 29/12/2020
+    FserialCorporate        : string;
     FIsDelivered            : string;
-
     FGetBatteryLevel        : Integer;
     FGetIsConnected         : Boolean;
-
     Fversion                : String;
     Fstatus                 : TStatusType;
     FDestruido              : Boolean;
-    //Typing                  : Boolean;
+
     FLanguageInject         : TLanguageInject;
     FOnDisconnectedBrute    : TNotifyEvent;
     { Private  declarations }
@@ -94,6 +91,7 @@ type
     procedure SetInjectConfig(const Value: TInjectConfig);
     procedure SetdjustNumber(const Value: TInjectAdjusteNumber);
     procedure SetInjectJS(const Value: TInjectJS);
+    procedure SetSerialCorporate(const Value: TInjectJS);
     procedure OnDestroyConsole(Sender : TObject);
 
   protected
@@ -112,10 +110,7 @@ type
     FOnUpdateJS                 : TNotifyEvent;
     FOnGetChatList              : TGetUnReadMessages;
     FOnGetMyNumber              : TNotifyEvent;
-
-    //Mike 29/12/2020
     FOnGetIsDelivered           : TNotifyEvent;
-
     FOnGetStatus                : TNotifyEvent;
     FOnConnected                : TNotifyEvent;
     FOnDisconnected             : TNotifyEvent;
@@ -126,7 +121,6 @@ type
     FOnGetInviteGroup           : TOnGetInviteGroup;
     FOnGetMe                    : TOnGetMe;
     FOnNewCheckNumber           : TOnNewCheckNumber;
-
 
     procedure Int_OnNotificationCenter(PTypeHeader: TTypeHeader; PValue: String; Const PReturnClass : TObject= nil);
 
@@ -142,8 +136,10 @@ type
     //Olhar em uTInject.Console funcao ConfigureNetWork
     //Function    ConfigureNetwork: Boolean;
     procedure ReadMessages(vID: string);
-    Function  TestConnect:  Boolean;
+    function  TestConnect:  Boolean;
     procedure Send(PNumberPhone, PMessage: string; PEtapa: string = '');
+    procedure SendButtons(phoneNumber: string; titleText: string; buttons: string; footerText: string; etapa: string = '');
+    procedure deleteConversation(PNumberPhone: string);
     procedure SendContact(PNumberPhone, PNumber: string; PNameContact: string = '');
     procedure SendFile(PNumberPhone: String; Const PFileName: String; PMessage: string = '');
     procedure SendBase64(Const vBase64: String; vNum: String;  Const vFileName, vMess: string);     deprecated; //Versao 1.0.2.0 disponivel ate Versao 1.0.6.0
@@ -202,6 +198,7 @@ type
     Property InjectJS                    : TInjectJS                  read FInjectJS                       Write SetInjectJS;
     property Config                      : TInjectConfig              read FInjectConfig                   Write SetInjectConfig;
     property AjustNumber                 : TInjectAdjusteNumber       read FAdjustNumber                   Write SetdjustNumber;
+    property serialCorporate             : string                     read FserialCorporate                write FserialCorporate;
     property FormQrCodeType              : TFormQrCodeType            read FFormQrCodeType                 Write SetQrCodeStyle                      Default Ft_Desktop;
     property LanguageInject              : TLanguageInject            read FLanguageInject                 Write SetLanguageInject                   Default TL_Portugues_BR;
     property OnGetAllContactList         : TOnAllContacts             read FOnGetAllContactList            write FOnGetAllContactList;
@@ -236,14 +233,13 @@ type
     property OnNewGetNumber              : TOnNewCheckNumber          read FOnNewCheckNumber               write FOnNewCheckNumber;
   end;
 
-
 procedure Register;
 
 
 implementation
 
 uses
-  uCEFTypes,   uTInject.ConfigCEF, Winapi.Windows, Winapi.Messages,
+  uCEFTypes, uTInject.ConfigCEF, Winapi.Windows, Winapi.Messages,
   uCEFConstants, Datasnap.DBClient, Vcl.WinXCtrls, Vcl.Controls, Vcl.StdCtrls,
   uTInject.FrmQRCode, System.NetEncoding;
 
@@ -337,10 +333,10 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 
-//    if Assigned(FrmConsole) then
-//     FrmConsole.CheckIsValidNumber(PNumberPhone);
 end;
 
 procedure TInject.NewCheckIsValidNumber(PNumberPhone: string);
@@ -370,10 +366,10 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 
-//    if Assigned(FrmConsole) then
-//     FrmConsole.CheckIsValidNumber(PNumberPhone);
 end;
 
 
@@ -389,8 +385,8 @@ begin
 
     if not Assigned(FrmConsole) Then
     Begin
-      InjectJS.UpdateNow;
-      if InjectJS.Ready then
+      InjectJS.UpdateNow();
+      if InjectJS.Ready then //Read? Get random key....
       Begin
         FDestruido                      := False;
         FrmConsole                      := TFrmConsole.Create(nil);
@@ -412,7 +408,7 @@ begin
   inherited;
   FDestroyTmr                         := Ttimer.Create(nil);
   FDestroyTmr.Enabled                 := False;
-  FDestroyTmr.Interval                := 1200;     //Tempo exigido pelo CEF
+  FDestroyTmr.Interval                := 4000;     //Tempo exigido pelo CEF
   FDestroyTmr.OnTimer                 := OnDestroyConsole;
 
   FTranslatorInject                   := TTranslatorInject.create;
@@ -478,17 +474,37 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
+end;
+
+procedure TInject.deleteConversation(PNumberPhone: string);
+var
+  lThread : TThread;
+begin
+  if Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  if Assigned(FrmConsole) then
+  begin
+    FrmConsole.ReadMessagesAndDelete(PNumberPhone);//Deleta a conversa
+  end;
+
 end;
 
 destructor TInject.Destroy;
 begin
+
   FormQrCodeStop;
   FreeAndNil(FDestroyTmr);
   FreeAndNil(FTranslatorInject);
   FreeAndNil(FInjectConfig);
   FreeAndNil(FAdjustNumber);
   FreeAndNil(FInjectJS);
+
   inherited;
 end;
 
@@ -550,6 +566,8 @@ begin
           end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -582,6 +600,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -612,6 +632,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -644,6 +666,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -674,6 +698,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -704,6 +730,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -736,6 +764,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -768,6 +798,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -781,6 +813,11 @@ begin
 
   FrmConsole.setNewName(vName);
 
+end;
+
+procedure TInject.SetSerialCorporate(const Value: TInjectJS);
+begin
+  FInjectJS.Assign(Value);
 end;
 
 procedure TInject.SetStatus(vStatus: String);
@@ -869,6 +906,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -891,9 +930,6 @@ begin
 
   FrmConsole.CleanChat(PNumber);
 end;
-
-
-
 
 procedure TInject.Int_OnErroInterno(Sender : TObject; Const PError: String; Const PInfoAdc:String);
 begin
@@ -949,6 +985,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 
 end;
@@ -983,6 +1021,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -1048,15 +1088,10 @@ begin
       if Assigned(OnGetUnReadMessages) then
          OnGetUnReadMessages(TChatList(PReturnClass));
 
-//      if Assigned(OnIsDelivered) then
-//         OnIsDelivered(TChatList(PReturnClass));
-
     end;
-
 
     Exit;
   end;
-
 
 
   if PTypeHeader in [Th_ConnectedDown] then
@@ -1159,13 +1194,6 @@ begin
        FOnNewCheckNumber(TReturnCheckNumber(PReturnClass));
   end;
 
-//  if PTypeHeader = Th_GetAllGroupContacts then
-//  Begin
-//    FMyNumber := FAdjustNumber.FormatOut(PValue);
-//    if Assigned(FOnGetMyNumber) then
-//       FOnGetMyNumber(Self);
-//  end;
-
 
   if PTypeHeader = Th_GetBatteryLevel then
   Begin
@@ -1208,6 +1236,7 @@ begin
     LimparQrCodeInterno;
     Exit;
   end;
+
 
   if PTypeHeader in [Th_Abort]  then
   Begin
@@ -1294,6 +1323,7 @@ begin
         end);
 
       end);
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -1362,6 +1392,7 @@ begin
           end;
         end);
       end);
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 end;
 
@@ -1408,6 +1439,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 
 end;
@@ -1455,6 +1488,8 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
 
 end;
@@ -1496,9 +1531,59 @@ begin
           end;
         end);
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
+
 end;
 
+
+procedure TInject.SendButtons(phoneNumber, titleText, buttons,
+  footerText: string; etapa: string = '');
+var
+  lThread : TThread;
+begin
+  If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  phoneNumber := AjustNumber.FormatIn(phoneNumber);
+  if pos('@', phoneNumber) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, phoneNumber);
+    Exit;
+  end;
+
+  if Trim(titleText) = '' then
+  begin
+    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, phoneNumber);
+    Exit;
+  end;
+
+  lThread := TThread.CreateAnonymousThread(procedure
+      begin
+        if Config.AutoDelay > 0 then
+           sleep(random(Config.AutoDelay));
+
+        TThread.Synchronize(nil, procedure
+        begin
+          if Assigned(FrmConsole) then
+          begin
+            FrmConsole.ReadMessages(phoneNumber); //Marca como lida a mensagem
+            FrmConsole.SendButtons(phoneNumber, titleText, buttons, footerText);
+            if etapa <> '' then
+            begin
+              FrmConsole.ReadMessagesAndDelete(phoneNumber);//Deleta a conversa
+            end;
+          end;
+        end);
+
+      end);
+  lThread.FreeOnTerminate := true;
+  lThread.Start;
+
+end;
 
 procedure TInject.SendContact(PNumberPhone, PNumber: string; PNameContact: string = '');
 var
@@ -1537,7 +1622,10 @@ begin
         end);
 
       end);
+
+  lThread.FreeOnTerminate := true;
   lThread.Start;
+
 end;
 
 procedure TInject.SetAuth(const Value: boolean);
@@ -1643,7 +1731,7 @@ begin
       Begin
          LForced := true;
          FrmConsole.CEFSentinel1.Start;
-         SleepNoFreeze(100);
+         SleepNoFreeze(1000);
          FrmConsole.Chromium1.ShutdownDragAndDrop;
          PostMessage(FrmConsole.Handle, CEF_DESTROY, 0, 0);
       end
@@ -1738,6 +1826,7 @@ begin
        Abort;
   end;
 
+
   LForm := Tform.Create(Nil);
   try
     LForm.BorderStyle                 := bsDialog;
@@ -1781,7 +1870,8 @@ begin
     LForm.close;
   finally
     FreeAndNil(LForm);
-//    FreeAndNil(GlobalCEFApp);
+    //FreeAndNil(GlobalCEFApp);
+    //if CallTerminateProcs then PostQuitMessage(0);
   end
 end;
 
@@ -1795,34 +1885,35 @@ end;
 
 
 procedure TInject.FormQrCodeStart(PViewForm: Boolean);
-Var
+var
    LState: Boolean;
 begin
-  If Application.Terminated Then
+  if Application.Terminated Then
      Exit;
   LState := Assigned(FrmConsole);
 
   if Status in [Inject_Destroying, Server_Disconnecting] then
-  Begin
+  begin
     Application.MessageBox(PWideChar(MSG_WarningQrCodeStart1), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
     Exit;
   end;
 
   if Status in [Server_Disconnected, Inject_Destroy] then
-  Begin
+  begin
     if not ConsolePronto then
-    Begin
+    begin
       Application.MessageBox(PWideChar(MSG_ConfigCEF_ExceptConsoleNaoPronto), PWideChar(Application.Title), MB_ICONERROR + mb_ok);
       Exit;
     end;
     //Reseta o FORMULARIO
     if LState Then
        FormQrCodeReloader;
-  End else
-  Begin
-    //Ja esta logado!!! chamou apenas por chamar!! ou porque nao esta visivel..
-    PViewForm :=true
-  end;
+  end else
+    begin
+      //Ja esta logado. chamou apenas por chamar ou porque nao esta visivel..
+      PViewForm :=true
+    end;
+
   //Faz uma parada forçada para que tudo seja concluido
   SleepNoFreeze(30);
   FrmConsole.StartQrCode(FormQrCodeType, PViewForm);
@@ -1857,6 +1948,3 @@ end;
 
 
 end.
-
-
-
