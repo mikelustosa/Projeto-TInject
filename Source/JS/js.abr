@@ -8,7 +8,7 @@ function getAllGroupContacts(Contacts) {
 }
 
 function getMyNumber() {
-    SetConsoleMessage('getMyNumber', localStorage.getItem('last-wid'));
+    SetConsoleMessage('getMyNumber', localStorage.getItem('last-wid-md'));
     return true;
 }
 
