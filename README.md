@@ -50,7 +50,7 @@ Instalação manual:<br><br>
 ✔️  Enviar MP4 - Send MP4<br>
 ✔️  Enviar IMG - Send IMG<br>
 ✔️  Enviar RAR - Send RAR<br>
-✔️  Enviar Link com prévia - Sending and preview<br>
+❌  Enviar Link com prévia - Sending and preview<br>
 ✔️  Enviar localização - Location sending<br>
 ✔️  Listar contatos - Contact list<br>
 ✔️  Listar bate papos - Conversation list<br>
@@ -62,12 +62,12 @@ Instalação manual:<br><br>
 ✔️  Checagem de conexão - check connection<br>
 ✔️  Download de arquivos - Download files<br>
 ✔️  Download da foto de perfil - Download profile picture<br>
-✔️  Criar grupo - Create group<br>
-✔️  Sair do grupo - Leave the group<br>
-✔️  Adicionar participante ao grupo - Add participant to the group<br>
-✔️  Remover participante do grupo - Remove group member<br>
-✔️  Promover participante adminstrador do grupo - Promote participant group administrator<br>
-✔️  Despromover participanete adminstrador do grupo - Demote participating group administrator<br>
+❌  Criar grupo - Create group<br>
+❌  Sair do grupo - Leave the group<br>
+❌  Adicionar participante ao grupo - Add participant to the group<br>
+❌  Remover participante do grupo - Remove group member<br>
+❌  Promover participante adminstrador do grupo - Promote participant group administrator<br>
+❌  Despromover participanete adminstrador do grupo - Demote participating group administrator<br>
 ✔️  Listar todos os grupos - List all groups<br>
 ✔️  Listar participantes do grupo - List group participants<br>
 ✔️  Entrar em grupo via link convite - Join group via invitation link<br>
