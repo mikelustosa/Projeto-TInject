@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//1.0.7.0;1.0.0.9;78.3.0
+//1.0.8.0;1.0.0.9;78.3.0
 //
 //
 
@@ -95,7 +95,7 @@ if (!window.Store||!window.Store.Msg) {
             let foundCount = 0;
             let neededObjects = [
                 { id: "Store", conditions: (module) => (module.default && module.default.Chat && module.default.Msg) ? module.default : null},
-                { id: 'Conn', conditions: (module) => module.default && module.default.ref && module.default.refTTL ? module.default : null },
+  				{ id: "Conn", conditions: (module) => (module.default && module.default.ref && module.default.refTTL) ? module.default : (module.Conn ? module.Conn : null)},
                 { id: "MediaCollection", conditions: (module) => (module.default && module.default.prototype && (module.default.prototype.processFiles !== undefined||module.default.prototype.processAttachments !== undefined)) ? module.default : null },
                 { id: "MediaProcess", conditions: (module) => (module.BLOB) ? module : null },
                 { id: "Archive", conditions: (module) => (module.setArchive) ? module : null },
@@ -107,7 +107,6 @@ if (!window.Store||!window.Store.Msg) {
                 { id: "State", conditions: (module) => (module.STATE && module.STREAM) ? module : null },
                 { id: "_Presence", conditions: (module) => (module.setPresenceAvailable && module.setPresenceUnavailable) ? module : null },
                 { id: "WapDelete", conditions: (module) => (module.sendConversationDelete && module.sendConversationDelete.length == 2) ? module : null },
-                { id: "Conn", conditions: (module) => (module.default && module.default.ref && module.default.refTTL) ? module.default : null },
                 { id: 'FindChat', conditions: (module) => (module && module.findChat) ? module : null},				
 				{ id: "WapQuery", conditions: (module) => (module.default && module.default.queryExist) ? module.default : null },				
                 { id: 'Perfil', conditions: (module) => module.__esModule === true && module.setPushname && !module.getComposeContents ? module : null},
@@ -538,22 +537,24 @@ window.WAPI.sendLinkWithAutoPreview = async function (chatId, url, text) {
         intentionallyUsePrivateConstructor: true
     });
 
-    const fromwWid = await window.Store.Conn.wid;
-    const linkPreview = await Store.WapQuery.queryLinkPreview(url);
+
+	const fromwWid = await window.Store.Conn.wid;
+
+	const linkPreview =  await Store.WapQuery.queryLinkPreview(url)
 
     let queue = await Store.Contact.get(chatId);
     const contact = await Store.FindChat.findChat(idUser)
     const newChat = await Object.assign(queue, contact);
-    
-    console.log(newChat)
 
+    
     var newId = window.WAPI.getNewMessageId(chatId);
 
-    var message = {
-        id: newId,
+    var message =  {
+		id: newId,
         ack: 0,
         body: `${url}\n${text}`,
-        from: fromwWid,
+        //from: fromwWid._serialized, //MD
+		from: fromwWid,
         to: contact.id,
         local: !0,
         self: 'out',
@@ -568,8 +569,8 @@ window.WAPI.sendLinkWithAutoPreview = async function (chatId, url, text) {
         preview: linkPreview.preview,
         thumbnail: linkPreview.thumbnail,
         title: linkPreview.title
-      };
-      
+	};
+
       return await Promise.all(Store.addAndSendMsgToChat(newChat, message))
 }
 
