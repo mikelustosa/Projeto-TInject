@@ -62,7 +62,7 @@ Instalação manual:<br><br>
 ✔️  Checagem de conexão - check connection<br>
 ✔️  Download de arquivos - Download files<br>
 ✔️  Download da foto de perfil - Download profile picture<br>
-❌  Criar grupo - Create group<br>
+✔️  Criar grupo - Create group<br>
 ❌  Sair do grupo - Leave the group<br>
 ❌  Adicionar participante ao grupo - Add participant to the group<br>
 ❌  Remover participante do grupo - Remove group member<br>
