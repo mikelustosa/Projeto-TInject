@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//1.0.8.0;1.0.0.9;78.3.0
+//1.0.9.0;1.0.0.9;78.3.0
 //
 //
 
@@ -7,9 +7,31 @@ function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
 }
 
-function getMyNumber() {
-    SetConsoleMessage('getMyNumber', localStorage.getItem('last-wid'));
-    return true;
+function localStorageGetItem(item){
+	let aJson = localStorage.getItem(item);
+	SetConsoleMessage('getMyNumber', aJson.replace(/(?=:)(.*.?)(?=@)/g,''));
+}
+
+function localStorageGetItemID(item){
+	let aNumberID = localStorage.getItem(item);
+	return aNumberID;
+}
+
+function getMyNumber() {    
+	localStorage.getItem('last-wid-md') ? 
+		localStorageGetItem('last-wid-md') : 
+		localStorageGetItem('last-wid')
+		
+	return true;
+}
+
+function getMyNumberID() {    
+	let numberID =	
+		localStorage.getItem('last-wid-md') ? 
+		localStorageGetItemID('last-wid-md') : 
+		localStorageGetItemID('last-wid')
+		
+	return numberID;
 }
 
 
