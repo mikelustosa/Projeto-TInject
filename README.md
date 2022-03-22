@@ -1,16 +1,17 @@
 ﻿# Componente TInject
-Componente mais RECIFENSE da internet!<br>
-Para criação de chatBots com delphi e o whatsapp<br></br><br></br>
+## Componente mais RECIFENSE da internet!<br>
+Componente para criação de chatBots com delphi<br>
+<i>Component for creating chatBots with delphi</i><br></br>
 
-INSTRUÇÕES PARA USO DO COMPONENTE--><br></br>
+## INSTRUÇÕES PARA USO DO COMPONENTE<br></br>
 
-Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo e Rio.<br></br>
+Compatibilidade testada nas versões do Delphi: Seattle, Berlim, Tokyo, Rio, Sydney.<br></br>
 
-Tutorial de instalação no youtube:<br>
-https://www.youtube.com/watch?v=4fbSepeZPDU&t=2s
+### Tutorial de instalação no youtube:<br>
+https://www.youtube.com/watch?v=EIxFdtenNxI&t=31s
 
 <br>
-Vídeos demo:
+Videos demo:
 <br>
 https://youtu.be/YEmwghSGoFA
 <br>
@@ -19,9 +20,8 @@ https://youtu.be/07RoReOHaT4
 https://youtu.be/cbWW7VNYwEo
 <br><br>
 
-NOVO: Agora o componente possui um instalador, não sendo necessário seguir mais os passos abaixo.<br><br>
-
-Instalaçao opcional:<br>
+Instalação manual:<br><br>
+### NOVO: Para usar com o delphi 10.4 Sydney, incluir no library path 32 bits a pasta <b>Compilados</b> e suas subpastas.<br><br>
 1-Clonar o repositório Projeto-TInject
 <br></br>
 2-Baixar e instalar o CEF4Delphi em: http://www.softmaisbrasil.com.br/#blog
@@ -39,27 +39,67 @@ Instalaçao opcional:<br>
 8-Abra o arquivo demo Tinject.dproj
 <br></br>
 
-Recursos / Resources<br>
-1 - Login whatsapp - OK<br>
-2 - Logout whatsapp - OK<br>
-3 - Enviar mensagens de texto para números fora da agenda- Send text message - OK<br>
-4 - Enviar mensagens para grupos - Send group messages - OK<br>
-5 - Enviar contatos - Send phone contacts - OK<br>
-6 - Enviar MP3 - Send MP3 - OK<br>
-7 - Enviar MP4 - Send MP4 - OK<br>
-8 - Enviar IMG - Send IMG - OK<br>
-9 - Enviar RAR - Send RAR - OK<br>
-10 - Listar contatos - Contact list - OK<br>
-11 - Listar bate papos - Conversation list - OK<br>
-12 - Status da bateria - Battery status - OK<br>
-13 - Simular digitando - Typing simulation - OK<br>
-14 - Recebimento de novas mensagem - Receiving new messages - OK<br>
-15 - Configurações de DDI - International number configuration - OK<br>
-16 - Validação de números do whatsapp - Whatsapp number validator - OK<br>
+### Recursos / Resources<br><br>
+✔️  Login<br>
+✔️  Logout<br>
+✔️  Enviar mensagens de texto com botões - Send text message with buttons (NEW)<br>
+✔️  Enviar mensagens de texto para números fora da agenda- Send text message<br>
+✔️  Enviar mensagens para grupos - Send group messages<br>
+✔️  Enviar contatos - Send phone contacts<br>
+✔️  Enviar MP3 - Send MP3<br>
+✔️  Enviar MP4 - Send MP4<br>
+✔️  Enviar IMG - Send IMG<br>
+✔️  Enviar RAR - Send RAR<br>
+❌  Enviar Link com prévia - Sending and preview<br>
+✔️  Enviar localização - Location sending<br>
+✔️  Listar contatos - Contact list<br>
+✔️  Listar bate papos - Conversation list<br>
+✔️  Status da bateria - Battery status<br>
+✔️  Simular digitando - Typing simulation<br>
+✔️  Recebimento de novas mensagem - Receiving new messages<br>
+✔️  Configurações de DDI - International number configuration<br>
+✔️  Validação de números - number validator<br>
+✔️  Checagem de conexão - check connection<br>
+✔️  Download de arquivos - Download files<br>
+✔️  Download da foto de perfil - Download profile picture<br>
+✔️  Criar grupo - Create group<br>
+❌  Sair do grupo - Leave the group<br>
+❌  Adicionar participante ao grupo - Add participant to the group<br>
+❌  Remover participante do grupo - Remove group member<br>
+❌  Promover participante adminstrador do grupo - Promote participant group administrator<br>
+❌  Despromover participanete adminstrador do grupo - Demote participating group administrator<br>
+✔️  Listar todos os grupos - List all groups<br>
+✔️  Listar participantes do grupo - List group participants<br>
+✔️  Entrar em grupo via link convite - Join group via invitation link<br>
+✔️  Enviar botões na conversa - Send buttons in chat(Not functional in WhatsApp Multi devices Beta)<br>
+
+### Cursos do componente / Component lessions:<br>
+
+[Clique aqui / Click where](http://mikelustosa.kpages.online/tinject)
 
 
-*Nota 1: O TInject é de código aberto, e não possui *nenhum outro componente* de terceiro além do TChromium vinculado ao código, nem muito menos utilização de *licenças* ou afins de outros componentes. Baixem os *fontes* para comprovar.
+Nota 1: O TInject é de código aberto desenvolvido em comunidade, e não possui *nenhum outro componente* de terceiro além do TChromium vinculado ao código.
 <br><br>
-*Nota 2: O projeto não usa API oficial do whatsapp, e foi desenvolvido no rad studio 10.3.0 (RIO)* use com consciência.<br><br> 
+Nota 2: Desenvolvido no rad studio 10.3.0 (RIO).<br><br> 
 
-Doações / Donations: ag 2193 op 013 cp 2833-7 Caixa Econômica
+#### Doações via PIX / Donations PIX: comercial.softmais@gmail.com
+
+<br><br>
+
+### Official documentation:<br><br>
+
+### Events that send messages<br>
+| event           | Description                | Example                                                                              | return |
+|-----------------|----------------------------|--------------------------------------------------------------------------------------|--------|
+| send            | Send text message          | TInject1.send('55819999999@c.us', 'hello');                                          | -      |
+| sendFile        | Send file and text message | TInject1.SendFile('558199999999@c.us', 'c:\myFile.pdf', 'hello');                    | -      |
+| sendContact     | Send whatsapp contact      | TInject1.sendContact('destinationContact@c.us', 'contactToBeSent@c.us');             | -      |
+| sendLinkPreview | Send preview link          | TInject1.sendLinkPreview('558199999999@c.us', 'https://youtube.com/video', 'hello'); | -      |
+| sendLocation    | Send Location              | TInject1.sendLocation('55819999999@c.us', '-70.4078', '25.3789', 'my location');     |        |<br><br>
+
+### Verifications events<br>
+| event                 | Description                                             | example                                              | event return      | return                       |
+|-----------------------|---------------------------------------------------------|------------------------------------------------------|-------------------|------------------------------|
+| CheckIsConnected      | Checks the connection between the device and whatsapp   | TInject1.CheckIsConnected();                         | OnIsConnected     | boolean                      |
+| NewCheckIsValidNumber | Checks whether one or more numbers are whatsapp numbers | TInject1.NewCheckIsValidNumber('558199999999@c.us'); | OnNewGetNumber    | TReturnCheckNumber           |
+| GetBatteryStatus      | Checks the device's battery level                       | TInject1.GetBatteryStatus;                           | OnGetBatteryLevel | TInject(Sender).BatteryLevel |

@@ -41,7 +41,7 @@ Type
   private
     FControlSend    : Boolean;
     FAutoStart      : Boolean;
-    FSecondsMonitor : Integer;
+    FSecondsMonitor : integer;
     FAutoDelete     : Boolean;
     FAutoDelay      : Integer;
     FSyncContacts   : Boolean;
@@ -54,7 +54,7 @@ Type
 
     FReceiveAttachmentAuto: Boolean;
     FZoom: SmallInt;
-    procedure SetSecondsMonitor(const Value: Integer);
+    procedure SetSecondsMonitor(const Value: integer);
     procedure SetLowBattery(const Value: SmallInt);
     procedure SetControlSendTimeSec(const Value: SmallInt);
     procedure SetReceiveAttachmentPath(const Value: String);
@@ -76,7 +76,7 @@ Type
 
 
     property LowBatteryIs  : SmallInt         read FLowBattery            write SetLowBattery              default 30;
-    property SecondsMonitor: Integer          read FSecondsMonitor        write SetSecondsMonitor          default 3;
+    property SecondsMonitor: integer          read FSecondsMonitor        write SetSecondsMonitor          default 3;
     property SyncContacts  : Boolean          read FSyncContacts          write FSyncContacts              default true;
     property ShowRandom    : Boolean          read FShowRandom            write FShowRandom                default true;
   end;
@@ -155,11 +155,11 @@ begin
 
 end;
 
-procedure TInjectConfig.SetSecondsMonitor(const Value: Integer);
+procedure TInjectConfig.SetSecondsMonitor(const Value: integer);
 begin
   FSecondsMonitor := Value;
   //Não permitir que fique zero ou negativo.
-  if Value < 1 then
+  if Value < 0.1 then
      FSecondsMonitor := 3;
 end;
 

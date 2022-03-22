@@ -33,7 +33,8 @@ Uses Winapi.Messages, System.SysUtils, typinfo, REST.Json;
 
 Const
   //Uso GLOBAL
-  TInjectVersion                  = '1.0.2.18'; //  04/01/2019  //Alterado por Daniel Rodrigues
+                                  //Version updates I=HIGH, II=MEDIUM, III=LOW, IV=VERY LOW
+  TInjectVersion                  = '3.5.0.0'; //  08/09/2021  //Alterado por Mike Lustosa
   CardContact                     = '@c.us';
   CardGroup                       = '@g.us';
   CardList                        = '@broadcast';
@@ -45,6 +46,7 @@ Const
   VersaoMinima_CF4_Release        = 0;
   Versao0porCasas                 = 3;
   MinutosCOnsideradoObsoletooJS   = 50;
+  Enter                           = sLineBreak;
   ConfigCEF_Path_Locales          = 'locales';
   ConfigCEF_Path_Cache            = 'cache';
   ConfigCEF_Path_UserData         = 'User Data';
@@ -64,9 +66,9 @@ Const
   FrmConsole_JS_GetMyNumber             = 'getMyNumber();';
   FrmConsole_JS_GetUnreadMessages       = 'window.WAPI.getUnreadMessages(includeMe="True", includeNotifications="True", use_unread_count="True");';
   FrmConsole_JS_GetAllChats             = 'window.WAPI.getAllChats();';
-  //FrmConsole_JS_WEBmonitorQRCode      = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
+  FrmConsole_JS_checkDelivered          = 'window.WAPI.getDelivered();';
   FrmConsole_JS_WEBmonitorQRCode        = 'var AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
-  //FrmConsole_JS_monitorQRCode         = 'var AQrCode = document.getElementsByTagName("img")[0].getAttribute("src");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
+  FrmConsole_JS_refreshOnlyQRCode       = 'interval = window.setInterval(async function(){new Promise((resolve, reject)=>{let all = []; all = document.querySelectorAll("button"); if(all[0]){ all[0].click() }})},60000)';
   FrmConsole_JS_monitorQRCode           = 'var AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
   FrmConsole_JS_StopMonitor             = 'stopMonitor();';
   FrmConsole_JS_IsLoggedIn              = 'WAPI.isLoggedIn();';
@@ -75,16 +77,57 @@ Const
   FrmConsole_JS_VAR_DeleteMessages      = 'window.WAPI.deleteConversation("<#MSG_PHONE#>")';
   FrmConsole_JS_VAR_SendBase64          = 'window.WAPI.sendImage("<#MSG_BASE64#>","<#MSG_PHONE#>", "<#MSG_NOMEARQUIVO#>", "<#MSG_CORPO#>")';
   FrmConsole_JS_VAR_SendMsg             = 'window.WAPI.sendMessageToID("<#MSG_PHONE#>","<#MSG_CORPO#>")';
+  FrmConsole_JS_VAR_SendButtons         = 'window.WAPI.sendButtons("<#MSG_PHONE#>","<#MSG_TITLE#>",<#MSG_BUTTONS#>,"<#MSG_FOOTER#>")';
   FrmConsole_JS_VAR_SendTyping          = 'Store.WapQuery.sendChatstateComposing("<#MSG_PHONE#>");';
+  FrmConsole_JS_VAR_SendLinkPreview     = 'window.WAPI.sendLinkWithAutoPreview("<#MSG_PHONE#>", "<#MSG_LINK#>", "<#MSG_CORPO#>")';
+  FrmConsole_JS_VAR_SendLocation        = 'window.WAPI.sendLocation("<#MSG_PHONE#>", "<#MSG_LAT#>", "<#MSG_LNG#>", "<#MSG_CORPO#>")';
   FrmConsole_JS_VAR_Logout              = 'localStorage.clear(); location.reload();';
-  FrmConsole_JS_VAR_SendContact         = 'window.WAPI.sendContact("<#MSG_PHONE_DEST#>", "<#MSG_PHONE#>")';
-  //FrmConsole_JS_VAR_CheckIsValidNumber  = 'window.WAPI.isValidNumber("<#MSG_PHONE#>")';
-  FrmConsole_JS_VAR_CheckIsValidNumber = 'window.WAPI.isValidNumber("<#MSG_PHONE#>")'+
+  FrmConsole_JS_VAR_SendContact         = 'window.WAPI.sendVCard("<#MSG_PHONE_DEST#>", "<#MSG_PHONE#>")';
+  FrmConsole_JS_VAR_CheckIsValidNumber  = 'window.WAPI.isValidNumber("<#MSG_PHONE#>")'+
                                         '.then(result => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(result)))'+
                                         '.catch(error => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(error)));';
-                                        //E tive que deixar a contante dessa forma, fazendo o parser por aqui.... TAVA ASSIM NE?arruma  Ve se é isso ..rodaaa
-//+ " <#MSG_PHONE#>"
-                                        //aqui....
+  FrmConsole_JS_VAR_IsConnected         = 'window.WAPI.isConnected();';
+
+  FrmConsole_JS_VAR_ProfilePicThumb     = 'function convertImgToBase64URL(url, callback, outputFormat){ '+
+
+                                          'var img = new Image();          '+
+                                          'img.crossOrigin = "Anonymous";  '+
+                                          'img.onload = function(){        '+
+                                          '    var canvas = document.createElement("CANVAS"), '+
+                                          '    ctx = canvas.getContext("2d"), dataURL;        '+
+                                          '    canvas.height = img.height;                    '+
+                                          '    canvas.width = img.width;                      '+
+                                          '    ctx.drawImage(img, 0, 0);                      '+
+                                          '    dataURL = canvas.toDataURL(outputFormat);      '+
+                                          '    callback(dataURL);                             '+
+                                          '    canvas = null;                                 '+
+                                          '};                                                 '+
+                                          'img.src = url;                                     '+
+                                          '};';
+
+
+  FrmConsole_JS_VAR_getProfilePicThumb      = 'window.WAPI.teste("<#PROFILE_PICTHUMB_URL#>");';
+  FrmConsole_JS_VAR_CreateGroup             = 'window.WAPI.createGroup("<#GROUP_NAME#>", "<#PARTICIPANT_NUMBER#>");setTimeout(function(){ window.WAPI.getAllGroups(); }, 3000);';
+
+  FrmConsole_JS_GetAllGroups                = 'window.WAPI.getAllGroups();';//'window.WAPI.listMyGroups();';
+  FrmConsole_JS_GetGroupAdmins              = 'window.WAPI.getGroupAdmins("<#GROUP_ID#>");';
+  FrmConsole_JS_VAR_listGroupContacts       = 'window.WAPI.getGroupParticipantIDs("<#GROUP_ID#>");';
+  FrmConsole_JS_VAR_groupAddParticipant     = 'window.WAPI.addParticipant("<#GROUP_ID#>", "<#PARTICIPANT_NUMBER#>");setTimeout(function(){ window.WAPI.getGroupParticipantIDs("<#GROUP_ID#>"); }, 3000);';
+  FrmConsole_JS_VAR_groupRemoveParticipant  = 'window.WAPI.removeParticipant("<#GROUP_ID#>", "<#PARTICIPANT_NUMBER#>");setTimeout(function(){ window.WAPI.getGroupParticipantIDs("<#GROUP_ID#>"); }, 3000);';
+  FrmConsole_JS_VAR_groupPromoteParticipant = 'window.WAPI.promoteParticipant("<#GROUP_ID#>", "<#PARTICIPANT_NUMBER#>");setTimeout(function(){ window.WAPI.getGroupAdmins("<#GROUP_ID#>"); }, 3000);';
+  FrmConsole_JS_VAR_groupDemoteParticipant  = 'window.WAPI.demoteParticipant("<#GROUP_ID#>", "<#PARTICIPANT_NUMBER#>");setTimeout(function(){ window.WAPI.getGroupAdmins("<#GROUP_ID#>"); }, 3000);';
+  FrmConsole_JS_VAR_groupLeave              = 'window.WAPI.leaveGroup("<#GROUP_ID#>");';
+  FrmConsole_JS_VAR_groupDelete             = 'window.WAPI.deleteConversation("<#GROUP_ID#>");setTimeout(function(){ window.WAPI.getAllGroups(); }, 3000);';
+  FrmConsole_JS_VAR_groupJoinViaLink        = 'window.WAPI.joinGroupViaLink("<#GROUP_LINK#>");setTimeout(function(){ window.WAPI.getAllGroups(); }, 3000);';
+  FrmConsole_JS_VAR_setProfileName          = 'window.WAPI.setMyName("<#NEW_NAME#>");';
+  FrmConsole_JS_VAR_setMyStatus             = 'window.WAPI.setMyStatus("<#NEW_STATUS#>");';
+  FrmConsole_JS_VAR_getStatus               = 'window.WAPI.getStatus("<#PHONE#>");';
+  FrmConsole_JS_VAR_ClearChat               = 'window.WAPI.clearChat("<#PHONE#>");';
+  FrmConsole_JS_VAR_getMe                   = 'window.WAPI.getMe();';
+  FrmConsole_JS_VAR_getGroupInviteLink      = 'window.WAPI.getGroupInviteLink("<#GROUP_ID#>");';
+  FrmConsole_JS_VAR_removeGroupInviteLink   = 'window.WAPI.revokeGroupInviteLink("<#GROUP_ID#>");';
+  FrmConsole_JS_VAR_checkNumberStatus       = 'window.WAPI.checkNumberStatus("<#PHONE#>");';
+
 
 resourcestring
   MSG_ConfigCEF_ExceptNotFoundJS       = '';
@@ -118,7 +161,7 @@ resourcestring
   MSG_ExceptGlobalCef                  = '';
   MSG_WarningClosing                   = '';
   MSG_ExceptMisc                       = '';
-  Text_FrmConsole_Caption              = '';
+  Text_FrmConsole_Caption              = 'TInject component';
   Text_FrmConsole_LblMsg               = '';
   MSG_WarningClassUnknown              = '';
   MSG_Exceptlibeay32dll                = '';
@@ -192,6 +235,7 @@ type
 
     TFormQrCodeType       = (Ft_Desktop=0,       Ft_Http=1,    Ft_None=2);  //Form ou RestDataWare
     TSendFile_Image       = (Tsf_Jpg=0, Tsf_Jpeg=1, Tsf_Tif=2, Tsf_Ico=3, Tsf_Bmp=4, Tsf_Png=5, Tsf_Raw=6);
+    TSendFile_Audio       = (Tsf_Mp3=0);
 
     TStatusType           = (Inject_Initialized,            Inject_Initializing,       Inject_Destroying,      Inject_Destroy,
                              Server_Disconnected,           Server_Disconnecting,
@@ -202,19 +246,23 @@ type
 
     TTypeHeader = (Th_None = 0,
                    //Eventos de Retornos
-                   Th_GetAllContacts=1,         Th_GetAllChats=2,                      Th_GetUnreadMessages=3,
-                   Th_GetBatteryLevel=4,        Th_GetQrCodeForm=5,                    Th_GetQrCodeWEB=6,
-                   Th_GetMyNumber=7,            Th_OnChangeConnect=8,                  Th_GetReserv1=9,
-                   Th_GetReserv2=10,            Th_GetReserv3=11,                      Th_GetReserv4=12,
-                   Th_GetReserv5=13,            Th_GetReserv6=14,                      Th_GetReserv7=15,
-                   Th_GetCheckIsValidNumber=16,
+                   Th_GetAllContacts=1,         Th_GetAllChats=2,                      Th_GetUnreadMessages=3,    Th_GetAllGroupContacts=4,
+                   Th_GetBatteryLevel=5,        Th_GetQrCodeForm=6,                    Th_GetQrCodeWEB=7,
+                   Th_GetMyNumber=8,            Th_OnChangeConnect=9,                  Th_getIsDelivered=10,
+                   Th_GetReserv2=11,            Th_GetReserv3=12,                      Th_GetReserv4=13,
+                   Th_GetReserv5=14,            Th_GetReserv6=15,                      Th_GetReserv7=16,
+                   Th_GetCheckIsValidNumber=17, Th_GetCheckIsConnected=18,             Th_GetProfilePicThumb=19,  Th_getAllGroups=20, Th_getAllGroupAdmins=21,
 
                    //Eventos Conexao
-                   Th_Disconnected=17,          Th_Disconnecting=18,         Th_Connected=19,
-                   Th_ConnectedDown=20,         Th_Connecting=21,            Th_ConnectingFt_Desktop=22,
-                   Th_ConnectingFt_HTTP=23,     Th_ConnectingNoPhone=24,     Th_Destroy=25,       Th_Destroying=26,
-                   Th_NewSyncContact=27,        Th_Initializing=28,          Th_Initialized=29,
-                   Th_Abort=30,                 Th_ForceDisconnect=31,       Th_AlterConfig=32
+                   Th_Disconnected=22,          Th_Disconnecting=23,                   Th_Connected=24,
+                   Th_ConnectedDown=25,         Th_Connecting=26,                      Th_ConnectingFt_Desktop=27,
+                   Th_ConnectingFt_HTTP=28,     Th_ConnectingNoPhone=29,               Th_Destroy=30,
+                   Th_Destroying=31,            Th_NewSyncContact=32,                  Th_Initializing=33,
+                   Th_Initialized=34,           Th_Abort=35,                           Th_ForceDisconnect=36,
+                   Th_AlterConfig=37,
+
+                   // Novos Eventos de Retorno by Marcelo
+                   Th_GetStatusMessage=38, Th_GetGroupInviteLink=39, Th_GetMe=40, Th_NewCheckIsValidNumber=41
                    );
 
     Function   VerificaCompatibilidadeVersao(PVersaoExterna:String; PversaoInterna:String):Boolean;
@@ -300,7 +348,7 @@ Begin
   LExt   := LowerCase(Copy(ExtractFileExt(PFileName),2,50));
   Result := 'data:application/';
   try
-    for I := 0 to 10 do
+    for I := 0 to 6 do
     begin
       Ltmp := LowerCase(Copy(GetEnumName(TypeInfo(TSendFile_Image), ord(TSendFile_Image(i))), 3, 50));
       if pos(LExt, Ltmp) > 0 Then
@@ -309,13 +357,24 @@ Begin
         Exit;
       end
     end;
+
+    for I := 0 to 0 do
+    begin
+      Ltmp := LowerCase(Copy(GetEnumName(TypeInfo(TSendFile_Audio), ord(TSendFile_Audio(i))), 3, 50));
+      if pos(LExt, Ltmp) > 0 Then
+      Begin
+        Result := 'data:audio/';
+        Exit;
+      end
+    end;
+
   finally
      Result := Result + LExt + ';base64,' ;
   end;
 End;
 
 function   StrToTypeHeader(PText: string): TTypeHeader;
-const LmaxCount = 30;
+const LmaxCount = 41;
 var
   I: Integer;
   LNome: String;

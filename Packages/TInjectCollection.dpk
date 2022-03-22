@@ -24,8 +24,8 @@
 
 package TInjectCollection;
 
-
 {$R *.res}
+{$R *.dcr}
 {$IFDEF IMPLICITBUILDING This IFDEF should not be used by users}
 {$ALIGN 8}
 {$ASSERTIONS ON}
@@ -51,7 +51,7 @@ package TInjectCollection;
 {$DEFINE DEBUG}
 {$ENDIF IMPLICITBUILDING}
 {$DESCRIPTION 'TInject Brasil'}
-{$IMPLICITBUILD OFF}
+{$IMPLICITBUILD ON}
 
 requires
   designide,
@@ -71,7 +71,7 @@ requires
   vclwinx,
   adortl,
   RESTComponents,
-  CEF4Delphi,
+  CEF4DelphiVCLRTL,
   VclSmp;
 
 contains
@@ -90,8 +90,7 @@ contains
   uTInject.Emoticons in '..\Source\Model\uTInject.Emoticons.pas',
   uTInject.ExePath in '..\Source\Model\uTInject.ExePath.pas',
   uTInject.JS in '..\Source\Model\uTInject.JS.pas',
-  uCSV.Import in '..\Source\Model\uCSV.Import.pas',
-  u_principal in '..\Demo\u_principal.pas' {frmPrincipal};
+  uCSV.Import in '..\Source\Model\uCSV.Import.pas' {u_principal in '..\Demo\u_principal.pas' {frmPrincipal};
 
 end.
 

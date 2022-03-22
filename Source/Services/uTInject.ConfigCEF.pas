@@ -203,7 +203,7 @@ end;
 
 Procedure TCEFConfig.SetDefault;
 begin
-  if not FInDesigner then
+  if not FInDesigner then //padrão aqui é if not FInDesigner - Mike 28/12/2020
   Begin
     FIniFIle.WriteString ('Informacao', 'Aplicativo vinculado',    Application.ExeName);
     FIniFIle.WriteBool   ('Informacao', 'Valor True',    True);
@@ -337,7 +337,7 @@ var
   LVReque, LVerIdent: String;
   FDirApp, Lx: String;
 begin
-//ta lento pq estou conectado em um tunel estou daki ao meu pc.;. do meu pc a
+  //ta lento pq estou conectado em um tunel estou daki ao meu pc.;. do meu pc a
   Result  := (Self.status = asInitialized);
   if (Result) Then
   Begin

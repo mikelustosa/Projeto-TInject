@@ -1,6 +1,6 @@
 ﻿{####################################################################################################################
                               TINJECT - Componente de comunicação (Não Oficial)
-                                           www.tinject.com.br
+                                            www.tinject.com.br
                                             Novembro de 2019
 ####################################################################################################################
     Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
@@ -44,7 +44,8 @@ uses Generics.Collections, Rest.Json, uTInject.FrmQRCode, Vcl.Graphics, System.I
  {$IFDEF DELPHI25_UP}
     Vcl.IdAntiFreeze,
   {$ENDIF}
-  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient;
+  IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, Vcl.Imaging.jpeg,
+  IdSSLOpenSSL, UrlMon;
 
 type
 
@@ -69,13 +70,15 @@ type
    {$ENDIF}
     FReturnUrl         : TMemoryStream;
     FShowException     : Boolean;
+    SSIOHandler        : TIdSSLIOHandlerSocketOpenSSL;
     Procedure  OnTimeOutIndy(Sender: TObject);
+    function DownLoadInternetFile(Source, Dest: String): Boolean;
   Public
     constructor Create;
     destructor  Destroy; override;
-    Function   GetUrl(Const Purl:String):Boolean;
+    Function    GetUrl(Const Purl:String):Boolean;
 
-    Property   ReturnUrl  : TMemoryStream         Read FReturnUrl;
+    Property    ReturnUrl  : TMemoryStream         Read FReturnUrl;
 
 
     Property    TimeOut : Integer         Read FTimeOut        Write FTimeOut;
@@ -110,6 +113,16 @@ type
   end;
 
 
+  TClassAllGroupContacts = class
+  private
+    FResult: String;
+  public
+    constructor Create(pAJsonString: string; PJsonOption: TJsonOptions = JsonOptionClassPadrao);
+    property result: String read FResult write FResult;
+    function ToJsonString: string;
+    class function FromJsonString(AJsonString: string): TClassAllGroupContacts;
+  end;
+
 
   TClassPadraoList<T> = class(TClassPadrao)
   private
@@ -121,7 +134,6 @@ type
   end;
 
 
-
   {########################################################################################################################################}
   TResponseConsoleMessage = class(TClassPadraoString)
   private
@@ -131,7 +143,11 @@ type
     constructor Create(pAJsonString: string);
   end;
 
-  TResponseBattery = class(TClassPadraoString)
+  TResponseBattery = class(TClassPadrao)//class(TClassPadraoString)
+  private
+    FResult: string;
+  Public
+    Property Result : string  Read FResult  Write FResult;
   end;
 
   TResponseCheckIsValidNumber = class(TClassPadrao)
@@ -142,6 +158,33 @@ type
     Property Result : Boolean  Read FResult  Write FResult;
     Property Number : String   Read fNumber  Write fNumber;
   end;
+
+//  TResponseCheckDelivered = class(TClassPadrao) //Remover
+//  private
+//    FStatus: integer;
+//    FStatusDelivered: String;
+//  Public
+//    Property status : integer  Read FStatus  Write FStatus;
+//    Property StatusDelivered : string  Read FStatusDelivered  Write FStatusDelivered;
+//  end;
+
+  TResponseCheckIsConnected = class(TClassPadrao)
+  private
+    FResult: Boolean;
+  Public
+    Property Result : Boolean  Read FResult  Write FResult;
+  end;
+
+
+  TResponseGetProfilePicThumb = class(TClassPadrao)
+  private
+    fBase64: String;
+  Public
+    Property Base64 : String   Read fBase64  Write fBase64;
+    constructor Create(pAJsonString: string);
+    destructor  Destroy;       override;
+  end;
+
 
   TOnChangeConnect = class(TClassPadrao)
   private
@@ -234,6 +277,18 @@ type
     constructor Create(pAJsonString: string);
   end;
 
+  //Mike 29/12/2020
+  TResponseIsDelivered = class(TClassPadraoString)
+  public
+    constructor Create(pAJsonString: string);
+  end;
+
+
+  TResponseIsConnected = class(TClassPadraoString) //mike
+  public
+    constructor Create(pAJsonString: string);
+  end;
+
   TChatStatesClass = class(TClassPadrao)
   private
     FTeste: String;
@@ -264,6 +319,7 @@ type
     property isSuperAdmin: Boolean  read   FIsSuperAdmin write FIsSuperAdmin;
   end;
 
+
   TGroupMetadataClass = class(TClassPadraoList<TParticipantsClass>)
   private
     FCreation : Extended;
@@ -292,6 +348,74 @@ type
     property pendingParticipants: TArray<TParticipantsClass> read FPendingParticipants Write FPendingParticipants;  //@LuizAlvez
   end;
 
+
+ TPhoneClass = class(TClassPadrao)
+ private
+    Fdevice_manufacturer: String;
+    Fdevice_model: String;
+    Fos_build_number: String;
+    Fos_version: String;
+    Fmnc: String;
+    Fmcc: String;
+    Fwa_version: String;
+ public
+  property device_manufacturer : String read Fdevice_manufacturer write Fdevice_manufacturer;
+  property device_model        : String read Fdevice_model write Fdevice_model;
+  property mcc                 : String read Fmcc write Fmcc;
+  property mnc                 : String read Fmnc write Fmnc;
+  property os_build_number     : String read Fos_build_number write Fos_build_number;
+  property os_version          : String read Fos_version write Fos_version;
+  property wa_version          : String read Fwa_version write Fwa_version;
+ end;
+
+  TResponseStatusMessage = class(TClassPadrao)
+  private
+   Fid : String;
+   FStatus : String;
+   public
+    property id : String read Fid write Fid;
+    property status : String read FStatus write FStatus;
+  end;
+
+  TReturnCheckNumber = class(TClassPadrao)
+  private
+   Fid : String;
+   Fvalid : boolean;
+   public
+    property id : String read Fid write Fid;
+    property valid : boolean  read Fvalid write Fvalid;
+  end;
+
+
+ TGetMeClass = class(TClassPadrao)
+   private
+    Fbattery: integer;
+    Flocate: String;
+    Flc: String;
+    FserverToken: String;
+    Fplugged: boolean;
+    Fpushname: String;
+    Flg: String;
+    Fme : String;
+    Fphone : TPhoneClass;
+    Fstatus : TResponseStatusMessage;
+   public
+    constructor Create(pAJsonString: string; PJsonOption: TJsonOptions = JsonOptionClassPadrao);
+    destructor Destroy; override;
+    property  battery     : integer read Fbattery write Fbattery;
+    property  lc          : String read Flc write Flc;
+    property  lg          : String read Flg write Flg;
+    property  locate      : String read Flocate write Flocate;
+    property  plugged     : boolean read Fplugged write Fplugged;
+    property  pushname    : String read Fpushname write Fpushname;
+    property  serverToken : String read FserverToken write FserverToken;
+ // property   platform : String
+    property  phone       : TPhoneClass read Fphone write Fphone;
+    property  status      : TResponseStatusMessage read Fstatus write Fstatus;
+    property  me          : String read Fme write Fme;
+ end;
+
+
   TProfilePicThumbObjClass = class(TClassPadrao)
   private
     FEurl   : String;
@@ -316,7 +440,7 @@ type
     FverifiedName : String;
     Fmsgs         : String;
     FstatusMute   : Boolean;
-      FsectionHeader : String;
+    FsectionHeader : String;
     FLabels       : TArray<String>;
     FFormattedName: String;
 //    FGlobal       : String;
@@ -328,6 +452,11 @@ type
 //    FisContactBlocked: Boolean;
     FIsUser       : Boolean;
     FIsWAContact  : Boolean;
+
+    //Mike teste ok 16/02/2021 --
+    FProfilePicThumb : string;
+    //--
+
     FProfilePicThumbObj: TProfilePicThumbObjClass;
   public
     constructor Create(pAJsonString: string);
@@ -342,16 +471,19 @@ type
     property verifiedName:   String          Read FverifiedName       Write FverifiedName;
 //    property isBusiness:     Boolean         read FIsBusiness         write FIsBusiness;
 //    property isEnterprise:   Boolean         read FIsEnterprise       write FIsEnterprise;
-    property isUser:         Boolean         read FIsUser             write FIsUser;
+    property isUser:          Boolean         read FIsUser             write FIsUser;
 //    property isContactBlocked: Boolean       read FisContactBlocked   write FisContactBlocked;
-    property statusMute:     Boolean         read FStatusMute         write FStatusMute;
-    property labels:         TArray<String>  read FLabels             write FLabels;
-    property isMe:           Boolean         read FIsMe               write FIsMe;
-    property isMyContact:    Boolean         read FIsMyContact        write FIsMyContact;
-    property isPSA:          Boolean         read FIsPSA              write FIsPSA;
-    property isWAContact:    Boolean         read FIsWAContact        write FIsWAContact;
+    property statusMute:      Boolean         read FStatusMute         write FStatusMute;
+    property labels:          TArray<String>  read FLabels             write FLabels;
+    property isMe:            Boolean         read FIsMe               write FIsMe;
+    property isMyContact:     Boolean         read FIsMyContact        write FIsMyContact;
+    property isPSA:           Boolean         read FIsPSA              write FIsPSA;
+    property isWAContact:     Boolean         read FIsWAContact        write FIsWAContact;
+    property profilePicThumb: string          read FProfilePicThumb    write FProfilePicThumb;
+
+
     property &type:          String          read FType               write FType;
-    property profilePicThumbObj: TProfilePicThumbObjClass read FProfilePicThumbObj write FProfilePicThumbObj;
+    //property profilePicThumbObj: TProfilePicThumbObjClass read FProfilePicThumbObj write FProfilePicThumbObj;
     property Msgs:          String           read Fmsgs               write Fmsgs;
   end;
 
@@ -366,6 +498,21 @@ type
     property fromMe:      Boolean  read FFromMe      write FFromMe;
     property id:          String   read FId          write FId;
     property remote:      String   read FRemote      write FRemote;
+  end;
+
+  //Experimental - Mike
+  TButtonsClass = class(TClassPadrao)
+  private
+    FID            :string;
+    FDisplayText   :string;
+    FSubtype       :string;
+    FSelectionId   :string;
+
+  public
+    property    ID          :string read FID          write FID;
+    property    DisplayText :string read FDisplayText write FDisplayText;
+    property    Subtype     :string read FSubtype     write FSubtype;
+    property    SelectionId :string read FSelectionId write FSelectionId;
   end;
 
   TMessagesClass = class(TClassPadrao)
@@ -386,8 +533,14 @@ type
 
     FLat             : Extended;
     FLng             : Extended;
+
+    FSubType         : String;
+
     FCaption         : String;
-    FclientUrl       : String;
+
+    //teste
+    FdeprecatedMms3Url: string;
+
     FdirectPath      : String;
     Fmimetype        : String;
     Ffilehash        : String;
@@ -400,6 +553,11 @@ type
 
     FBroadcast       : Boolean;
     FMentionedJidList: TArray<String>;
+
+    //Experimental - Mike
+    FButtons          : TArray<TButtonsClass>;
+    //Experimental - Mike
+
     FIsForwarded     : Boolean;
     FLabels          : TArray<String>;
     FSender          : TSenderClass;
@@ -414,6 +572,7 @@ type
     FChatId          : String;
     FquotedMsgObj    : String;
     FMediaData       : TMediaDataClass;
+    FprofilePicThumb : string;
   public
     constructor Create(pAJsonString: string);
     destructor  Destroy;       override;
@@ -437,17 +596,27 @@ type
     property lat        : Extended            read FLat                write FLat;
     property lng        : Extended            read FLng                write FLng;
 
+    property subType    : String              read FSubType            write FSubType;
+
     property isNotification: Boolean          read FIsNotification     write FIsNotification;
     property isPSA      : Boolean             read FIsPSA              write FIsPSA;
     property labels     : TArray<String>      read FLabels             write FLabels;
     property mediaData  : TMediaDataClass     read FMediaData          write FMediaData;
     property mentionedJidList: TArray<String> read FMentionedJidList   write FMentionedJidList;
+
+    //Experimental - Mike
+    property buttons: TArray<TButtonsClass>    read FButtons             write FButtons;
+    //Experimental - Mike
+
     property notifyName : String              read FNotifyName         write FNotifyName;
     property recvFresh  : Boolean             read FRecvFresh          write FRecvFresh;
     property self       : String              read FSelf               write FSelf;
     property mimetype   : String              read Fmimetype           Write Fmimetype;
     property filename   : String              read Ffilename           Write Ffilename;
-    property clientUrl  : String              read FclientUrl          Write FclientUrl;
+    property deprecatedMms3Url  : String      read FdeprecatedMms3Url  Write FdeprecatedMms3Url;
+    //property deprecatedMms3Url: String        read FdeprecatedMms3Url  Write FdeprecatedMms3Url;
+
+
     property directPath : String              read FdirectPath         Write FdirectPath;
     property filehash   : String              read Ffilehash           Write Ffilehash;
     property uploadhash : String              read Fuploadhash         Write Fuploadhash;
@@ -462,6 +631,7 @@ type
     property timestamp  : Extended            read FTimestamp          write FTimestamp;
     property &to        : String              read FTo                 write FTo;   //@LuizAlvez
     property &type      : String              read FType               write FType;
+    property profilePicThumb       : String   read FprofilePicThumb    write FprofilePicThumb;
   end;
 
   TChatClass = class(TClassPadraoList<TMessagesClass>)
@@ -481,10 +651,10 @@ type
     FKind           : String;
     FKindTypeNumber : TTypeNumber;
     FIsGroup        : Boolean;
-       FContact        : TContactClass;
+    FContact        : TContactClass;
     FGroupMetadata  : TGroupMetadataClass;
-       FPresence       : TPresenceClass;
-       FMessages       : tArray<TMessagesClass>;
+    FPresence       : TPresenceClass;
+    FMessages       : tArray<TMessagesClass>;
     FIsAnnounceGrpRestrict: Boolean;
   public
     constructor Create(pAJsonString: string);
@@ -521,7 +691,45 @@ Public
   constructor Create(pAJsonString: string);
 end;
 
+//Mike
+//TRetornoAllGroups = class(TClassPadraoList<TContactClass>)
+//Public
+//  constructor Create(pAJsonString: string);
+//end;
+
+TRetornoAllGroups = class(TClassPadrao)
+  private
+    FNumbers: TStringList;
+  public
+    property    Numbers: TStringList   read FNumbers;
+    constructor Create(pAJsonString: string);
+    destructor Destroy; override;
+end;
+
+
+TRetornoAllGroupAdmins = class(TClassPadrao)
+private
+  FNumbers: TStringList;
+public
+  property    Numbers: TStringList   read FNumbers;
+  constructor Create(pAJsonString: string);
+  destructor Destroy; override;
+end;
+
+//TRetornoAllGroups = class(TClassPadraoList<TClassGetAllGroupContacts>)
+//Public
+//  constructor Create(pAJsonString: string);
+//end;
+
 TChatList = class(TClassPadraoList<TChatClass>)
+end;
+
+
+TChatList2 = class(TClassPadraoList<TChatClass>)
+end;
+
+
+TRetornoAllGroupContacts = class(TClassPadraoList<TChatClass>)
 end;
 
 
@@ -573,6 +781,9 @@ private
   FIsWAContact  : Boolean;
   FLabels            : TArray<String>;
   FProfilePicThumbObj: TProfilePicThumbObjClass;
+
+  FProfilePicThumb   : string;
+
   FPushname     : String;
   FStatusMute   : Boolean;
   FType         : String;
@@ -583,21 +794,22 @@ public
   constructor Create(pAJsonString: string);
 
   property profilePicThumbObj: TProfilePicThumbObjClass read FProfilePicThumbObj write FProfilePicThumbObj;
-  property formattedName:   String         read FFormattedName write FFormattedName;
-  property id:              String         read FId            write FId;
-  property isBusiness:      Boolean        read FIsBusiness    write FIsBusiness;
-  property isEnterprise:    Boolean        read FIsEnterprise  write FIsEnterprise;
-  property isMe:            Boolean        read FIsMe          write FIsMe;
-  property isMyContact:     Boolean        read FIsMyContact   write FIsMyContact;
-  property isPSA:           Boolean        read FIsPSA         write FIsPSA;
-  property isUser:          Boolean        read FIsUser        write FIsUser;
-  property isWAContact:     Boolean        read FIsWAContact   write FIsWAContact;
-  property labels:          TArray<String> read FLabels        write FLabels;
-  property pushname:        String         read FPushname      write FPushname;
-  property statusMute:      Boolean        read FStatusMute    write FStatusMute;
-  property &type:           String         read FType          write FType;
-  property name:            String         read FName          write FName;          //@LuizAlvez
-  property verifiedName:    String         read FverifiedName  write FverifiedName;  //@LuizAlvez
+  property formattedName:   String         read FFormattedName    write FFormattedName;
+  property id:              String         read FId               write FId;
+  property isBusiness:      Boolean        read FIsBusiness       write FIsBusiness;
+  property isEnterprise:    Boolean        read FIsEnterprise     write FIsEnterprise;
+  property isMe:            Boolean        read FIsMe             write FIsMe;
+  property isMyContact:     Boolean        read FIsMyContact      write FIsMyContact;
+  property isPSA:           Boolean        read FIsPSA            write FIsPSA;
+  property isUser:          Boolean        read FIsUser           write FIsUser;
+  property isWAContact:     Boolean        read FIsWAContact      write FIsWAContact;
+  property labels:          TArray<String> read FLabels           write FLabels;
+  property pushname:        String         read FPushname         write FPushname;
+  property statusMute:      Boolean        read FStatusMute       write FStatusMute;
+  property &type:           String         read FType             write FType;
+  property name:            String         read FName             write FName;          //@LuizAlvez
+  property verifiedName:    String         read FverifiedName     write FverifiedName;  //@LuizAlvez
+  property profilePicThumb: String         read FProfilePicThumb  write FProfilePicThumb;  //@mikelustosa
 end;
 
 
@@ -754,7 +966,7 @@ constructor TResponseConsoleMessage.Create(pAJsonString: string);
 var
   lAJsonObj: TJSONValue;
 begin
-  lAJsonObj := TJSONObject.ParseJSONValue(TEncoding.ASCII.GetBytes(pAJsonString),0);
+  lAJsonObj := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(pAJsonString),0); { TODO : mudei de ASCII para UTF8 aqui }
   try
     if not Assigned(lAJsonObj) then
        Exit;
@@ -771,12 +983,14 @@ end;
 
 constructor TContactClass.Create(pAJsonString: string);
 begin
+  //Deprecated
   FProfilePicThumbObj := TProfilePicThumbObjClass.Create(FJsonString);
   inherited Create(pAJsonString);
 end;
 
 destructor TContactClass.Destroy;
 begin
+  //Deprecated
   FreeAndNil(FProfilePicThumbObj);//.free;
   inherited;
 end;
@@ -816,12 +1030,14 @@ end;
 {TSenderClass}
 constructor TSenderClass.Create(pAJsonString: string);
 begin
+  //Deprecated
   FProfilePicThumbObj := TProfilePicThumbObjClass.Create(JsonString);
   inherited Create(pAJsonString);
 end;
 
 destructor TSenderClass.Destroy;
 begin
+  //Deprecated
   FreeAndNil(FProfilePicThumbObj);//.free;
   inherited;
 end;
@@ -897,6 +1113,7 @@ constructor TClassPadrao.Create(pAJsonString: string; PJsonOption: TJsonOptions)
 var
   lAJsonObj: TJSONValue;
 begin
+
   lAJsonObj      := TJSONObject.ParseJSONValue(pAJsonString);
   FInjectWorking := False;
   try
@@ -904,7 +1121,11 @@ begin
     if NOT Assigned(lAJsonObj) then
        Exit;
 
+    //tentar thread aqui...
     TJson.JsonToObject(Self, TJSONObject(lAJsonObj) ,PJsonOption);
+    //tentar thread aqui...
+
+
     FJsonString := pAJsonString;
           SleepNoFreeze(10);
 
@@ -937,8 +1158,18 @@ var
   I: Integer;
 begin
    try
+   {$IFDEF VER340}
+      PArray := nil;
+   {$ENDIF}
+
     for i:= Length(PArray)-1 downto 0 do
-        FreeAndNil(PArray[i]);
+        {$IFDEF VER300}
+          freeAndNil(PArray[i]);
+        {$ENDIF}
+
+        {$IFDEF VER330}
+          freeAndNil(PArray[i]);
+        {$ENDIF}
    finally
      SetLength(PArray, 0);
    end;
@@ -987,7 +1218,6 @@ begin
     inherited create;
   {$ENDIF}
 
-
   FTimeOut                := 10;
   FTImeOutIndy            := TTimer.Create(Nil);
   FTImeOutIndy.OnTimer    := OnTimeOutIndy;
@@ -1002,7 +1232,20 @@ begin
 
   HandleRedirects         := True;
   ProtocolVersion         := pv1_1;
+
   Request.UserAgent       := 'Mozilla/5.0 (compatible; Test)';
+  //Request.UserAgent       := 'Mozilla/3.0 (compatible; Indy Library)';
+
+  SSIOHandler := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+  Self.IOHandler := SSIOHandler;
+
+  with IOHandler as TIdSSLIOHandlerSocketOpenSSL do
+  begin
+    SSLOptions.method := sslvTLSv1_1;
+    SSLOptions.SSLVersions := [sslvTLSv1_1];
+    SSLOptions.Mode := sslmUnassigned;
+  end;
+
 end;
 
 destructor TUrlIndy.Destroy;
@@ -1010,10 +1253,20 @@ begin
   FTImeOutIndy.Enabled       := False;
   FreeandNil(FReturnUrl);
   FreeandNil(FTImeOutIndy);
+  FreeandNil(SSIOHandler);
   {$IFDEF DELPHI25_UP}
      FreeandNil(FIdAntiFreeze);
   {$ENDIF}
   inherited;
+end;
+
+function TUrlIndy.DownLoadInternetFile(Source, Dest: String): Boolean;
+begin
+  try
+    Result := URLDownloadToFile(nil, PChar(Source), PChar(Dest), 0, nil) = 0
+  except
+    Result := False;
+  end;
 end;
 
 function TUrlIndy.GetUrl(const Purl: String): Boolean;
@@ -1025,7 +1278,11 @@ begin
     FReturnUrl               := TMemoryStream.Create;
     FTImeOutIndy.Enabled     := True;
     try
-      Get(Purl, FReturnUrl);
+      //Get(Purl, FReturnUrl);
+
+      DownLoadInternetFile(TInjectJS_JSUrlPadrao, 'js.abr');
+
+
     Except
       on E : Exception do
       Begin
@@ -1056,9 +1313,6 @@ begin
 end;
 
 
-
-
-
 { TMediaDataClass }
 
 constructor TMediaDataClass.Create(pAJsonString: string);
@@ -1085,5 +1339,137 @@ begin
   inherited;
 end;
 
+
+{ TResponseIsConnected }
+
+constructor TResponseIsConnected.Create(pAJsonString: string);
+begin
+  inherited Create(pAJsonString);
+  //FResult := FResult;//Copy(FResult, 0 , Pos('@', FResult)-1);
+end;
+
+{ TResponseGetProfilePicThumb }
+
+constructor TResponseGetProfilePicThumb.Create(pAJsonString: string);
+begin
+  Base64 :=  copy(pAJsonString, 34, length(pAJsonString) - 35);
+  //Base64 := pAJsonString;
+end;
+
+destructor TResponseGetProfilePicThumb.Destroy;
+begin
+  //Deprecated
+  inherited;
+end;
+
+{ TRetornoAllGroups }
+
+constructor TRetornoAllGroups.Create(pAJsonString: string);
+begin
+  inherited Create(pAJsonString);
+  FNumbers      := TStringList.create;
+  FNumbers.Text := FJsonString;
+  //Quebrar linhas de acordo com cada valor separado por virgula
+  FNumbers.Text := StringReplace(FNumbers.Text, '",', Enter, [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '"' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '{result:[' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, ']}' , '',    [rfReplaceAll]);
+end;
+
+destructor TRetornoAllGroups.Destroy;
+begin
+  inherited;
+  Freeandnil(FNumbers);
+end;
+
+{ TClassGetAllGroupContacts }
+
+constructor TClassAllGroupContacts.Create(pAJsonString: string;
+  PJsonOption: TJsonOptions);
+var
+  lAJsonObj: TJSONValue;
+begin
+  lAJsonObj      := TJSONObject.ParseJSONValue(pAJsonString);
+
+  try
+   try
+    if NOT Assigned(lAJsonObj) then
+       Exit;
+
+    TJson.JsonToObject(Self, TJSONObject(lAJsonObj) ,PJsonOption);
+
+          SleepNoFreeze(10);
+
+    If LowerCase(SELF.ClassName) <> LowerCase('TResponseConsoleMessage') Then
+       LogAdd(PrettyJSON(pAJsonString), SELF.ClassName);
+
+
+   Except
+     on E : Exception do
+       LogAdd(e.Message, 'ERROR ' + SELF.ClassName);
+   end;
+  finally
+    FreeAndNil(lAJsonObj);
+  end;
+
+end;
+
+class function TClassAllGroupContacts.FromJsonString(
+  AJsonString: string): TClassAllGroupContacts;
+begin
+  result := TJson.JsonToObject<TClassAllGroupContacts>(AJsonString)
+end;
+
+function TClassAllGroupContacts.ToJsonString: string;
+begin
+  result := TJson.ObjectToJsonString(self);
+end;
+
+{ TRetornoAllGroupAdmins }
+
+constructor TRetornoAllGroupAdmins.Create(pAJsonString: string);
+begin
+  inherited Create(pAJsonString);
+  FNumbers      := TStringList.create;
+  FNumbers.Text := FJsonString;
+  //Quebrar linhas de acordo com cada valor separado por virgula
+  FNumbers.Text := StringReplace(FNumbers.Text, '",', Enter, [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '"' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '{result:[' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '[' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, ']' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '}' , '',    [rfReplaceAll]);
+
+end;
+
+destructor TRetornoAllGroupAdmins.Destroy;
+begin
+  inherited;
+  Freeandnil(FNumbers);
+end;
+
+{ TGetMeClass }
+
+constructor TGetMeClass.Create(pAJsonString: string; PJsonOption: TJsonOptions = JsonOptionClassPadrao);
+begin
+ Fphone    := TPhoneClass.Create(JsonString);
+ Fstatus   := TResponseStatusMessage.Create(JsonString);
+ inherited Create(pAJsonString);
+end;
+
+destructor TGetMeClass.Destroy;
+begin
+  FreeAndNil(Fphone);
+  FreeAndNil(Fstatus);
+  inherited;
+end;
+
+{ TResponseIsDelivered }
+
+constructor TResponseIsDelivered.Create(pAJsonString: string);
+begin
+  inherited Create(pAJsonString);
+  //FResult := (Copy (FResult, Pos ('@c.us_', FResult) + 2, Length (FResult)));
+end;
 
 end.

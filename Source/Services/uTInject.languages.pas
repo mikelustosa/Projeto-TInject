@@ -77,7 +77,7 @@ begin
   SetResourceString(@MSG_WarningDuplicityDetected         , 'Enviando o mesmo comando em um intervalo pequeno');
   SetResourceString(@MSG_ExceptJS_ABRUnknown              , 'Retorno JS.ABR não conhecido');
   SetResourceString(@MSG_ExceptNotAssignedOnGetQrCode     , 'OnGetQrCode não foi definido');
-  SetResourceString(@Text_FrmClose_Caption                , 'Aguarde.. Finalizando o TInject..');
+  SetResourceString(@Text_FrmClose_Caption                , 'Aguarde.. Finalizando o serviço..');
   SetResourceString(@Text_FrmClose_Label                  , 'Finalizando todas as threads com segurança');
   SetResourceString(@Text_FrmClose_WarningClose           , 'Deseja Finalizar a aplicação?');
   SetResourceString(@Text_FrmQRCode_CaptionStart          , 'Carregando QR Code...');
@@ -102,8 +102,8 @@ begin
   SetResourceString(@Text_Vcard_Comments2                 , 'Contato Silenciado');
   SetResourceString(@Text_Vcard_Comments3                 , 'Capturado em:');
   SetResourceString(@MSG_WarningQrCodeStart1              , 'A sessão anterior ainda está sendo finalizada, tente novamente mais tarde');
-  SetResourceString(@Text_Status_Serv_Initialized         , 'TInject conectado com sucesso ao Servidor de serviço');
-  SetResourceString(@Text_Status_Serv_Initializing        , 'Inicializando TInject ao Servidor de serviço');
+  SetResourceString(@Text_Status_Serv_Initialized         , 'Conectado com sucesso ao Servidor de serviço');
+  SetResourceString(@Text_Status_Serv_Initializing        , 'Inicializando Servidor de serviço');
   SetResourceString(@Text_Status_Serv_Disconnected        , 'Não Conectado ao Servidor de serviço e TInject');
   SetResourceString(@Text_Status_Serv_Disconnecting       , 'Desconectado do Servidor de serviço e TInject ');
   SetResourceString(@Text_Status_Serv_Connected           , 'Servidor de serviço Conectado');
