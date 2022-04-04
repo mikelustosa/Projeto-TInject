@@ -164,7 +164,9 @@ if (!window.Store||!window.Store.Msg) {
                 { id: "MediaUpload", conditions: (module) => (module.default && module.default.mediaUpload) ? module.default : null },
                 { id: "UploadUtils", conditions: (module) => (module.default && module.default.encryptAndUpload) ? module.default : null },
 				{ id: 'UserPrefs', conditions: (module) => (module.getMaybeMeUser ? module : null), },
-                { id: 'Vcard', conditions: (module) => (module.vcardFromContactModel ? module : null)}
+                { id: 'Vcard', conditions: (module) => (module.vcardFromContactModel ? module : null)},
+				{ id: 'pinChat', conditions: (module) => (module.setPin ? module : null)},
+				{ id: 'MaybeMeUser', conditions: (module) => (module.getMaybeMeUser ? module : null)}
             ];
             for (let idx in modules) {
             	if ((typeof modules[idx] === "object") && (modules[idx] !== null)) {
@@ -2067,6 +2069,98 @@ window.WAPI.sendButtons = async function (chatId, title, buttons, description = 
     };
     
     return WAPI.sendMessageOptions(chatId, title, options);
+};
+
+window.WAPI.markUnseenMessage = async function (chatId) {
+  if (!chatId) { 
+   return false;  
+  }
+  var chat = window.WAPI.getChat(chatId);
+  if (chat !== undefined) {
+    await window.Store.ReadSeen.markUnread(chat, true); 
+	  return true;
+  } else {
+      return false;
+  }
+};
+
+window.WAPI.unblockContact = async function(chatId) {
+ if (!chatId) {
+    return false;
+  }
+  const __contact = window.Store.Contact.get(chatId);
+  if (__contact !== undefined) {
+    await Store.Block.unblockContact(__contact);
+    return true;
+  } else {
+    return false;
+  }
+};
+
+window.WAPI.blockContact = async function(chatId) {
+  if (!chatId) {
+    return false;
+  }
+  const __contact = window.Store.Contact.get(chatId);
+  if (__contact !== undefined) {
+    await Store.Block.blockContact(__contact);
+    return true;
+  } else {
+    return false;
+  }
+};
+
+window.WAPI.getHost = async function(){
+  const fromwWid = await Store.MaybeMeUser.getMaybeMeUser();
+  const idUser = await new window.Store.UserConstructor(chatId, {
+        intentionallyUsePrivateConstructor: true
+    });
+  const infoUser = await Store.MyStatus.getStatus(idUser);
+  return await WAPI._serializeMeObj(infoUser);
+};
+
+window.WAPI.scope = async function(id, erro, status, text = null, result = null) {
+  const object = {
+    me: WAPI.getMe(),
+    to: id,
+    erro: erro,
+    text: text,
+    status: status,
+    result: result
+  };
+  return object;
+};
+
+window.WAPI.pinChat = async function(chatId, type = true, notExist = false) {
+  if (typeof type != 'boolean' || typeof notExist != 'boolean') {
+    var text = 'incorrect parameter, insert a boolean true or false';
+    return WAPI.scope(chatId, true, null, text);
+  }
+  let typeFix = type ? 'pin' : 'unpin',
+    retult = void 0;
+  var chat = await WAPI.getChat(chatId);
+  if (!chat.erro) {
+    var m = {
+        type: 'pinChat',
+        typefix: typeFix
+      },
+      To = await WAPI.getChatById(chat.id);
+    await Store.pinChat
+      .setPin(chat, type)
+      .then((_) => {
+        var obj = WAPI.scope(To, false, 'OK', null);
+        Object.assign(obj, m);
+        retult = obj;
+      })
+      .catch((error) => {
+        var obj = WAPI.scope(To, true, error, 'Pin Chat first');
+        Object.assign(obj, m);
+        retult = obj;
+      });
+    return retult;
+  } else {
+    return chat;
+  }
 };
 
 window.WAPI.sendMessageOptions = async function (chatId, content, options = {}) {
