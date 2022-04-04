@@ -145,6 +145,7 @@ type
     procedure SendBase64(Const vBase64: String; vNum: String;  Const vFileName, vMess: string);     deprecated; //Versao 1.0.2.0 disponivel ate Versao 1.0.6.0
     procedure SendLinkPreview(PNumberPhone, PVideoLink, PMessage: string);
     procedure SendLocation(PNumberPhone, PLat, PLng, PMessage: string);
+    procedure MarkAsUnread(PNumberPhone: String);
     procedure Logtout();
     procedure GetBatteryStatus;
     procedure CheckIsValidNumber(PNumberPhone: string);
@@ -152,6 +153,8 @@ type
     procedure CheckIsConnected;
     procedure GetAllContacts;
     procedure GetAllGroups;
+    procedure BlockContact(PNumberPhone: string);
+    procedure UnblockContact(PNumberPhone: string);
     procedure GroupAddParticipant(PIDGroup, PNumber: string);
     procedure GroupRemoveParticipant(PIDGroup, PNumber: string);
     procedure GroupPromoteParticipant(PIDGroup, PNumber: string);
@@ -170,6 +173,8 @@ type
 
     Function  GetContact(Pindex: Integer): TContactClass;  deprecated;  //Versao 1.0.2.0 disponivel ate Versao 1.0.6.0
     procedure GetAllChats;
+    procedure PinChat(PNumberPhone: String);
+    procedure UnPinChat(PNumberPhone: string);
     Function  GetChat(Pindex: Integer):TChatClass;
     function  GetUnReadMessages: String;
     function  CheckDelivered: String;
@@ -275,6 +280,24 @@ begin
 
   Result := FrmConsole.ConfigureNetWork;
 end; }
+
+procedure TInject.BlockContact(PNumberPhone: string);
+begin
+  If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
+
+  if pos('@', PNumberPhone) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
+    Exit;
+  end;
+
+  FrmConsole.BlockContact(PNumberPhone);
+end;
 
 function TInject.CheckDelivered: String;
 var
@@ -1026,6 +1049,26 @@ begin
   lThread.Start;
 end;
 
+procedure TInject.MarkAsUnread(PNumberPhone: String);
+begin
+   If Application.Terminated Then
+     Exit;
+
+  if not Assigned(FrmConsole) then
+     Exit;
+
+
+  PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
+
+  if pos('@', PNumberPhone) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
+    Exit;
+  end;
+
+  FrmConsole.MarkAsUnread(PNumberPhone);
+end;
+
 procedure TInject.Int_OnNotificationCenter(PTypeHeader: TTypeHeader; PValue: String; Const PReturnClass : TObject);
 begin
   {###########################  ###########################}
@@ -1748,6 +1791,44 @@ begin
   Result := (Fstatus = Inject_Initialized);
 end;
 
+procedure TInject.UnblockContact(PNumberPhone: string);
+begin
+  If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
+
+  if pos('@', PNumberPhone) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
+    Exit;
+  end;
+
+  FrmConsole.UnblockContact(PNumberPhone);
+end;
+
+procedure TInject.UnPinChat(PNumberPhone: string);
+begin
+  If Application.Terminated Then
+     Exit;
+
+  if not Assigned(FrmConsole) then
+     Exit;
+
+
+  PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
+
+  if pos('@', PNumberPhone) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
+    Exit;
+  end;
+
+  FrmConsole.UnPinChat(PNumberPhone);
+end;
+
 function TInject.GetAppShowing: Boolean;
 var
   lForm: Tform;
@@ -1811,6 +1892,26 @@ begin
        FrmConsole := Nil;
   except
   end;
+end;
+
+procedure TInject.PinChat(PNumberPhone: String);
+begin
+  If Application.Terminated Then
+     Exit;
+
+  if not Assigned(FrmConsole) then
+     Exit;
+
+
+  PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
+
+  if pos('@', PNumberPhone) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
+    Exit;
+  end;
+
+  FrmConsole.PinChat(PNumberPhone);
 end;
 
 procedure TInject.ShutDown(PWarning:Boolean);

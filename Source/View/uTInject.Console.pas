@@ -176,6 +176,8 @@ type
     procedure SendButtons(phoneNumber, titleText, buttons, footerText: string; etapa: string = '');
     procedure CheckDelivered;
     procedure SendContact(vNumDest, vNum:string; vNameContact: string = '');
+    procedure BlockContact(vNumber: String);
+    procedure UnblockContact(vNumber:String);
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
     procedure SendLinkPreview(vNum, vLinkPreview, vText: string);
     procedure SendLocation(vNum, vLat, vLng, vText: string);
@@ -198,11 +200,14 @@ type
     procedure setNewStatus(newStatus: string);
     procedure getStatus(vTelefone: string);
     procedure CleanChat(vTelefone: string);
+    procedure PinChat(vNumber: String);
+    procedure UnPinChat(vNumber: String);
     procedure fGetMe;
     procedure NewCheckIsValidNumber(vNumber:String);
 
     procedure GetAllChats;
     procedure GetUnreadMessages;
+    procedure MarkAsUnread(vNumber: String);
     procedure GetBatteryLevel;
     procedure CheckIsValidNumber(vNumber:string);
     procedure CheckIsConnected;
@@ -234,6 +239,18 @@ uses
 procedure TFrmConsole.App_EventMinimize(Sender: TObject);
 begin
   Hide;
+end;
+
+procedure TFrmConsole.BlockContact(vNumber: String);
+var
+  LJS: String;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   :=  FrmConsole_JS_VAR_BlockContact;
+  FrmConsole_JS_AlterVar(LJS, '#PHONE#', Trim(vNumber));
+  ExecuteJS(LJS, False);
 end;
 
 procedure TFrmConsole.BrowserDestroyMsg(var aMessage : TMessage);
@@ -385,6 +402,18 @@ begin
   finally
     FTimerMonitoring.Enabled := FConectado;
   end;
+end;
+
+procedure TFrmConsole.PinChat(vNumber: String);
+var
+  LJS: String;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   :=  FrmConsole_JS_VAR_PinChat;
+  FrmConsole_JS_AlterVar(LJS, '#PHONE#', Trim(vNumber));
+  ExecuteJS(LJS, False);
 end;
 
 procedure TFrmConsole.ProcessGroupBook(PCommand: string);
@@ -667,6 +696,30 @@ begin
 
   SendNotificationCenterDirect(Th_Abort);
   LPaginaId := 0;
+end;
+
+procedure TFrmConsole.UnblockContact(vNumber: String);
+var
+  LJS: String;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   :=  FrmConsole_JS_VAR_UnblockContact;
+  FrmConsole_JS_AlterVar(LJS, '#PHONE#', Trim(vNumber));
+  ExecuteJS(LJS, False);
+end;
+
+procedure TFrmConsole.UnPinChat(vNumber: String);
+var
+  LJS: String;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   :=  FrmConsole_JS_VAR_UnPinChat;
+  FrmConsole_JS_AlterVar(LJS, '#PHONE#', Trim(vNumber));
+  ExecuteJS(LJS, False);
 end;
 
 procedure TFrmConsole.ReadMessages(vID: string);
@@ -1713,6 +1766,18 @@ begin
 
   LJS   := FrmConsole_JS_VAR_Logout;
   ExecuteJS(LJS, true);
+end;
+
+procedure TFrmConsole.MarkAsUnread(vNumber: String);
+var
+  LJS: String;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  LJS   :=  FrmConsole_JS_VAR_markUnseenMessage;
+  FrmConsole_JS_AlterVar(LJS, '#PHONE#', Trim(vNumber));
+  ExecuteJS(LJS, False);
 end;
 
 end.

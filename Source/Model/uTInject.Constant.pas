@@ -127,6 +127,11 @@ Const
   FrmConsole_JS_VAR_getGroupInviteLink      = 'window.WAPI.getGroupInviteLink("<#GROUP_ID#>");';
   FrmConsole_JS_VAR_removeGroupInviteLink   = 'window.WAPI.revokeGroupInviteLink("<#GROUP_ID#>");';
   FrmConsole_JS_VAR_checkNumberStatus       = 'window.WAPI.checkNumberStatus("<#PHONE#>");';
+  FrmConsole_JS_VAR_markUnseenMessage       = 'window.WAPI.markUnseenMessage("<#PHONE#>");';
+  FrmConsole_JS_VAR_BlockContact            = 'window.WAPI.blockContact("<#PHONE#>");';
+  FrmConsole_JS_VAR_UnblockContact          = 'window.WAPI.unblockContact("<#PHONE#>");';
+  FrmConsole_JS_VAR_PinChat                 = 'window.WAPI.pinChat("<#PHONE#>");';
+  FrmConsole_JS_VAR_UnPinChat               = 'window.WAPI.pinChat("<#PHONE#>", false);';
 
 
 resourcestring
