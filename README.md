@@ -72,6 +72,7 @@ Instalação manual:<br><br>
 ✔️  Listar participantes do grupo - List group participants<br>
 ✔️  Entrar em grupo via link convite - Join group via invitation link<br>
 ✔️  Enviar botões na conversa - Send buttons in chat(Not functional in WhatsApp Multi devices Beta)<br>
+✔️  Responder mensagem específica - Reply to specific message<br>
 
 ### Cursos do componente / Component lessions:<br>
 

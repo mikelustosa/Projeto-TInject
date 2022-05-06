@@ -21,6 +21,11 @@
   Data.........:
   Identificador:
   Modificação..:
+  Autor........: Gabriel Rocha
+  Email........: d3lph14n0@gmail.com
+  Data.........: 06/05/2022
+  Identificador: #Gabriel Rocha
+  Modificação..: Adicionada procedure sendQuoted para responder mensagem específica
 ####################################################################################################################
 }
 unit uTInject.Console;
@@ -172,6 +177,7 @@ type
 
     Procedure Connect;
     Procedure DisConnect;
+    procedure SendQuoted(vNum, vText, vIDQuote: string); //#Gabriel Rocha
     procedure Send(vNum, vText:string);
     procedure SendButtons(phoneNumber, titleText, buttons, footerText: string; etapa: string = '');
     procedure CheckDelivered;
@@ -898,6 +904,22 @@ begin
   If Assigned(OnNotificationCenter) then
      OnNotificationCenter(PValor, '', PSender);
   Application.ProcessMessages;
+end;
+
+//Gabriel Rocha
+procedure TFrmConsole.SendQuoted(vNum, vText, vIDQuote: string);
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  vText := CaractersWeb(vText);
+  LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendQuoted;
+  FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',       Trim(vNum));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_CORPO#',       Trim(vText));
+  FrmConsole_JS_AlterVar(LJS, '#QUOTED_ID#',       Trim(vIDQuote));
+  ExecuteJS(LJS, true);
 end;
 
 procedure TFrmConsole.Send(vNum, vText: string);

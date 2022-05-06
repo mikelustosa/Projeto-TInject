@@ -37,8 +37,8 @@ object FrmConsole: TFrmConsole
     object Lbl_Caption: TLabel
       Left = 1
       Top = 1
-      Width = 90
-      Height = 13
+      Width = 785
+      Height = 18
       Align = alClient
       Alignment = taCenter
       Caption = 'TInject component'
@@ -49,6 +49,8 @@ object FrmConsole: TFrmConsole
       Font.Style = []
       ParentFont = False
       Layout = tlCenter
+      ExplicitWidth = 90
+      ExplicitHeight = 13
     end
     object lbl_Versao: TLabel
       AlignWithMargins = True
@@ -457,7 +459,6 @@ object FrmConsole: TFrmConsole
       Height = 121
       Align = alTop
       TabOrder = 0
-      ExplicitTop = 41
     end
   end
   object Chromium1: TChromium

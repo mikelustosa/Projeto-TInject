@@ -19,6 +19,11 @@
   Data.........:
   Identificador:
   Modificação..:
+  Autor........: Gabriel Rocha
+  Email........: d3lph14n0@gmail.com
+  Data.........: 06/05/2022
+  Identificador: #Gabriel Rocha
+  Modificação..: Adicionada procedure para responder mensagem específica
 ####################################################################################################################
 }
 
@@ -138,6 +143,7 @@ type
     procedure ReadMessages(vID: string);
     function  TestConnect:  Boolean;
     procedure Send(PNumberPhone, PMessage: string; PEtapa: string = '');
+    procedure sendQuoted(PNumberPhone, PMessage, PIDQuote: string; PEtapa: string = ''); //#Gabriel Rocha
     procedure SendButtons(phoneNumber: string; titleText: string; buttons: string; footerText: string; etapa: string = '');
     procedure deleteConversation(PNumberPhone: string);
     procedure SendContact(PNumberPhone, PNumber: string; PNameContact: string = '');
@@ -1280,6 +1286,52 @@ begin
     if assigned(FrmConsole) then
        FrmConsole.ReadMessages(vID);
   end;
+end;
+
+//Gabriel Rocha
+procedure TInject.sendQuoted(PNumberPhone, PMessage, PIDQuote: string; PEtapa: string = '');
+var
+  lThread : TThread;
+begin
+  If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
+  if pos('@', PNumberPhone) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
+    Exit;
+  end;
+
+  if Trim(PMessage) = '' then
+  begin
+    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, PNumberPhone);
+    Exit;
+  end;
+
+  lThread := TThread.CreateAnonymousThread(procedure
+      begin
+        if Config.AutoDelay > 0 then
+           sleep(random(Config.AutoDelay));
+
+        TThread.Synchronize(nil, procedure
+        begin
+          if Assigned(FrmConsole) then
+          begin
+            FrmConsole.ReadMessages(PNumberPhone); //Marca como lida a mensagem
+            FrmConsole.SendQuoted(PNumberPhone, PMessage, PIDQuote);
+            if PEtapa <> '' then
+            begin
+              FrmConsole.ReadMessagesAndDelete(PNumberPhone);//Deleta a conversa
+            end;
+          end;
+        end);
+
+      end);
+  lThread.FreeOnTerminate := true;
+  lThread.Start;
 end;
 
 procedure TInject.send(PNumberPhone, PMessage: string; PEtapa: string = '');

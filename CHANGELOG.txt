@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------
+3.2.0.1
+06/05/2022   - d3lph14n0@gmail.com (Gabriel Rocha)
+  - Adicionado botão para responder mensagem;
+
+-------------------------------------------------------------------------
 1.0.2.18
 04/01/2021   - Dor_poa@hotmail.com (Daniel Rodrigues)
 Rep Revisão 220

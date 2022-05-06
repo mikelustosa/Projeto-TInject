@@ -2069,6 +2069,15 @@ window.WAPI.sendButtons = async function (chatId, title, buttons, description = 
     return WAPI.sendMessageOptions(chatId, title, options);
 };
 
+//(Gabriel Rocha
+window.WAPI.sendQuoted = async function (chatId, content, QuotedId) {	
+	let options = {
+        quotedMessageId: QuotedId
+    };
+	
+    return WAPI.sendMessageOptions(chatId, content, options);
+};//)
+
 window.WAPI.sendMessageOptions = async function (chatId, content, options = {}) {
     var idUser = new window.Store.UserConstructor(chatId, {
         intentionallyUsePrivateConstructor: true
@@ -2093,11 +2102,14 @@ window.WAPI.sendMessageOptions = async function (chatId, content, options = {}) 
   
     let quotedMsgOptions = {};
     if (options.quotedMessageId) {
-      let quotedMessage = await getMessageById(
+	  //( Gabriel Rocha
+	  /*let quotedMessage = await window.WAPI.getMessageById(
         options.quotedMessageId,
         null,
         false
-      );
+      );*/
+      let quotedMessage = window.Store.Msg.get(options.quotedMessageId);
+	  //)
       if (quotedMessage && quotedMessage.canReply()) {
         quotedMsgOptions = quotedMessage.msgContextInfo(chat);
       }
@@ -2195,6 +2207,11 @@ window.WAPI.sendMessageOptions = async function (chatId, content, options = {}) 
       ...quotedMsgOptions,
       ...vcardOptions,
     };
+	
+	//Gabriel Rocha - Sem essa linha ocorrem falhas principalmente 
+	//no WhatsApp-Web ao responder uma mensagem
+	delete message.quotedRemoteJid;	
+	//
   
     await window.Store.addAndSendMsgToChat(chat, message);
   
