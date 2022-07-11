@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//1.2.0.0;1.0.0.9;78.3.0
+//1.3.0.0;1.0.0.9;78.3.0
 //
 //
 
@@ -117,23 +117,23 @@ if (!window.Store||!window.Store.Msg) {
             let foundCount = 0;
             let neededObjects = [
                 { id: "Store", conditions: (module) => (module.default && module.default.Chat && module.default.Msg) ? module.default : null},
-  				{ id: "Conn", conditions: (module) => (module.default && module.default.ref && module.default.refTTL) ? module.default : (module.Conn ? module.Conn : null)},
+  		{ id: "Conn", conditions: (module) => (module.default && module.default.ref && module.default.refTTL) ? module.default : (module.Conn ? module.Conn : null)},
                 { id: "MediaCollection", conditions: (module) => (module.default && module.default.prototype && (module.default.prototype.processFiles !== undefined||module.default.prototype.processAttachments !== undefined)) ? module.default : null },
                 { id: "MediaProcess", conditions: (module) => (module.BLOB) ? module : null },
                 { id: "Archive", conditions: (module) => (module.setArchive) ? module : null },
                 { id: "Block", conditions: (module) => (module.blockContact && module.unblockContact) ? module : null },
                 { id: "ChatUtil", conditions: (module) => (module.sendClear) ? module : null },
-				{ id: "GroupInvite", conditions: (module) => (module.sendQueryGroupInviteCode ) ? module : null },
+		{ id: "GroupInvite", conditions: (module) => (module.sendQueryGroupInviteCode ) ? module : null },
                 { id: "Wap", conditions: (module) => (module.createGroup) ? module : null },
                 { id: "ServiceWorker", conditions: (module) => (module.default && module.default.killServiceWorker) ? module : null },
                 { id: "State", conditions: (module) => (module.STATE && module.STREAM) ? module : null },
                 { id: "_Presence", conditions: (module) => (module.setPresenceAvailable && module.setPresenceUnavailable) ? module : null },
                 { id: "WapDelete", conditions: (module) => (module.sendConversationDelete && module.sendConversationDelete.length == 2) ? module : null },
                 { id: 'FindChat', conditions: (module) => (module && module.findChat) ? module : null},				
-				{ id: "WapQuery", conditions: (module) => (module.default && module.default.queryExist) ? module.default : null },				
-                { id: "WapQueryMD", conditions: (module) => (module.queryExist && module) ? module : null },
-				{ id: 'Perfil', conditions: (module) => module.__esModule === true && module.setPushname && !module.getComposeContents ? module : null},
-				{ id: "CryptoLib", conditions: (module) => (module.decryptE2EMedia) ? module : null },
+		{ id: "WapQuery", conditions: (module) => (module.default && module.default.queryExist) ? module.default : null },				
+         	{ id: "WapQueryMD", conditions: (module) => module.queryExists && module.queryPhoneExists ? module : null},
+		{ id: 'Perfil', conditions: (module) => module.__esModule === true && module.setPushname && !module.getComposeContents ? module : null},
+		{ id: "CryptoLib", conditions: (module) => (module.decryptE2EMedia) ? module : null },
                 { id: "OpenChat", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.openChat) ? module.default : null },
                 { id: "UserConstructor", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.isServer && module.default.prototype.isUser) ? module.default : null },
                 { id: "SendTextMsgToChat", conditions: (module) => (module.sendTextMsgToChat) ? module.sendTextMsgToChat : null },
@@ -2002,13 +2002,13 @@ window.WAPI.checkNumberStatus = async function (id) {
         let isMd = true
 		let result
 		try {
-			 result = await window.Store.WapQueryMD.queryExist('+'+id);
+			 result = await window.Store.WapQueryMD.queryPhoneExists(id);
 			
 		}
 		catch(e){		
 			isMd = false
 		}
-		result = isMd ? result : await window.Store.WapQuery.queryExist(id);//MD
+		result = isMd ? result : await window.Store.WapQuery.queryPhoneExists(id);
 				
 		let data = isMd ? window.WAPI._serializeNumberStatusObjMD(result) :  window.WAPI._serializeNumberStatusObj(result)
 		
