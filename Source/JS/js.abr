@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//1.3.0.0;1.0.0.9;78.3.0
+//1.4.0.0;1.0.0.9;78.3.0
 //
 //
 
@@ -117,23 +117,23 @@ if (!window.Store||!window.Store.Msg) {
             let foundCount = 0;
             let neededObjects = [
                 { id: "Store", conditions: (module) => (module.default && module.default.Chat && module.default.Msg) ? module.default : null},
-  		{ id: "Conn", conditions: (module) => (module.default && module.default.ref && module.default.refTTL) ? module.default : (module.Conn ? module.Conn : null)},
+  		        { id: "Conn", conditions: (module) => (module.default && module.default.ref && module.default.refTTL) ? module.default : (module.Conn ? module.Conn : null)},
                 { id: "MediaCollection", conditions: (module) => (module.default && module.default.prototype && (module.default.prototype.processFiles !== undefined||module.default.prototype.processAttachments !== undefined)) ? module.default : null },
                 { id: "MediaProcess", conditions: (module) => (module.BLOB) ? module : null },
                 { id: "Archive", conditions: (module) => (module.setArchive) ? module : null },
                 { id: "Block", conditions: (module) => (module.blockContact && module.unblockContact) ? module : null },
                 { id: "ChatUtil", conditions: (module) => (module.sendClear) ? module : null },
-		{ id: "GroupInvite", conditions: (module) => (module.sendQueryGroupInviteCode ) ? module : null },
+		        { id: "GroupInvite", conditions: (module) => (module.sendQueryGroupInviteCode ) ? module : null },
                 { id: "Wap", conditions: (module) => (module.createGroup) ? module : null },
                 { id: "ServiceWorker", conditions: (module) => (module.default && module.default.killServiceWorker) ? module : null },
                 { id: "State", conditions: (module) => (module.STATE && module.STREAM) ? module : null },
                 { id: "_Presence", conditions: (module) => (module.setPresenceAvailable && module.setPresenceUnavailable) ? module : null },
                 { id: "WapDelete", conditions: (module) => (module.sendConversationDelete && module.sendConversationDelete.length == 2) ? module : null },
                 { id: 'FindChat', conditions: (module) => (module && module.findChat) ? module : null},				
-		{ id: "WapQuery", conditions: (module) => (module.default && module.default.queryExist) ? module.default : null },				
-         	{ id: "WapQueryMD", conditions: (module) => module.queryExists && module.queryPhoneExists ? module : null},
-		{ id: 'Perfil', conditions: (module) => module.__esModule === true && module.setPushname && !module.getComposeContents ? module : null},
-		{ id: "CryptoLib", conditions: (module) => (module.decryptE2EMedia) ? module : null },
+		        { id: "WapQuery", conditions: (module) => (module.default && module.default.queryExist) ? module.default : null },				
+         	    { id: "WapQueryMD", conditions: (module) => module.queryExists && module.queryPhoneExists ? module : null},
+		        { id: 'Perfil', conditions: (module) => module.__esModule === true && module.setPushname && !module.getComposeContents ? module : null},
+		        { id: "CryptoLib", conditions: (module) => (module.decryptE2EMedia) ? module : null },
                 { id: "OpenChat", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.openChat) ? module.default : null },
                 { id: "UserConstructor", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.isServer && module.default.prototype.isUser) ? module.default : null },
                 { id: "SendTextMsgToChat", conditions: (module) => (module.sendTextMsgToChat) ? module.sendTextMsgToChat : null },
@@ -164,13 +164,18 @@ if (!window.Store||!window.Store.Msg) {
                 { id: "MediaUpload", conditions: (module) => (module.default && module.default.mediaUpload) ? module.default : null },
                 { id: "UploadUtils", conditions: (module) => (module.default && module.default.encryptAndUpload) ? module.default : null },
 				{ id: 'UserPrefs', conditions: (module) => (module.getMaybeMeUser ? module : null), },
-                { id: 'Vcard', conditions: (module) => (module.vcardFromContactModel ? module : null)}
+                { id: 'Vcard', conditions: (module) => (module.vcardFromContactModel ? module : null)},
+                { id: 'Clock', conditions: (module) => (module.Clock ? module.Clock : null)},
+                { id: 'ACK', conditions: (module) => (module.ACK ? module.ACK : null)},
+				{ id: 'TemplateButtonCollection', conditions: (module) => (module.TemplateButtonCollectionImpl || module.TemplateButtonCollection ? module.TemplateButtonCollection : null)},
+                { id: 'ButtonCollection', conditions: (module) => (module.ButtonCollectionImpl || module.ButtonCollection ? module.ButtonCollection : null)},
             ];
             for (let idx in modules) {
             	if ((typeof modules[idx] === "object") && (modules[idx] !== null)) {
                     neededObjects.forEach((needObj) => {
                     	if (!needObj.conditions || needObj.foundedModule)
                             return;
+                            // console.log(modules[idx]);
                     	let neededModule = needObj.conditions(modules[idx]);
                     	if (neededModule !== null) {
                             foundCount++;
@@ -2038,6 +2043,250 @@ window.WAPI.sendButtons = async function (chatId, title, buttons, description = 
     
     return WAPI.sendMessageOptions(chatId, title, options);
 };
+
+const defaultSendMessageOptions = {
+    createChat: false,
+    detectMentioned: true,
+    linkPreview: true,
+    markIsRead: true,
+    waitForAck: true,
+};
+
+function prepareMessageButtons(message, options) {
+    if (!options.buttons) {
+        return message;
+    }
+    if (!Array.isArray(options.buttons)) {
+        throw 'Buttons options is not a array';
+    }
+    if (typeof options.useTemplateButtons === 'undefined') {
+        options.useTemplateButtons = options.buttons.some((button) => 'phoneNumber' in button || 'url' in button);
+    }
+    if (options.useTemplateButtons) {
+        if (options.buttons.length === 0 || options.buttons.length > 5) {
+            throw 'Buttons options must have between 1 and 5 options';
+        }
+    }
+    else {
+        if (options.buttons.length === 0 || options.buttons.length > 3) {
+            throw 'Buttons options must have between 1 and 3 options';
+        }
+    }
+    message.title = options.title;
+    message.footer = options.footer;
+    if (options.useTemplateButtons) {
+        message.isFromTemplate = true;
+        message.buttons = new Store.TemplateButtonCollection();
+        message.hydratedButtons = options.buttons.map((button, index) => {
+            if ('phoneNumber' in button) {
+                return {
+                    index: index,
+                    callButton: {
+                        displayText: button.text,
+                        phoneNumber: button.phoneNumber,
+                    },
+                };
+            }
+            if ('url' in button) {
+                return {
+                    index: index,
+                    urlButton: {
+                        displayText: button.text,
+                        url: button.url,
+                    },
+                };
+            }
+            return {
+                index: index,
+                quickReplyButton: {
+                    displayText: button.text,
+                    id: button.id || `${index}`,
+                },
+            };
+        });
+        message.buttons.add(message.hydratedButtons.map((e, t) => {
+            var _a, _b, _c, _d;
+            const i = `${null != e.index ? e.index : t}`;
+            if (e.urlButton) {
+                return {
+                    id: i,
+                    displayText: (_a = e.urlButton) === null || _a === void 0 ? void 0 : _a.displayText,
+                    url: (_b = e.urlButton) === null || _b === void 0 ? void 0 : _b.url,
+                    subtype: 'url',
+                };
+            }
+            if (e.callButton) {
+                return {
+                    id: i,
+                    displayText: e.callButton.displayText,
+                    phoneNumber: e.callButton.phoneNumber,
+                    subtype: 'call',
+                };
+            }
+            return {
+                id: i,
+                displayText: (_c = e.quickReplyButton) === null || _c === void 0 ? void 0 : _c.displayText,
+                selectionId: (_d = e.quickReplyButton) === null || _d === void 0 ? void 0 : _d.id,
+                subtype: 'quick_reply',
+            };
+        }));
+    }
+    else {
+        message.isDynamicReplyButtonsMsg = true;
+        message.dynamicReplyButtons = options.buttons.map((button, index) => ({
+            buttonId: button.id || `${index}`,
+            buttonText: { displayText: button.text },
+            type: 1,
+        }));
+        // For UI only
+        message.replyButtons = new Store.ButtonCollection();
+        message.replyButtons.add(message.dynamicReplyButtons.map((b) => {
+            var _a;
+            return {
+                id: b.buttonId,
+                displayText: ((_a = b.buttonText) === null || _a === void 0 ? void 0 : _a.displayText) || undefined,
+            };
+        }));
+    }
+    return message;
+}
+
+window.WAPI.generateMessageID = async function (chat) {
+    let to = chat.id;
+    return new Store.MsgKey({
+        from: Store.UserPrefs.getMaybeMeUser(),
+        to: chat.id,
+        id: WAPI.getNewId(),
+        selfDir: 'out',
+    });
+}
+
+async function prepareRawMessage(chat, message, options = {}) {
+    options = Object.assign(Object.assign({}, defaultSendMessageOptions), options);
+    message = Object.assign({ t: Store.Clock.globalUnixTime(), from: Store.UserPrefs.getMaybeMeUser(), to: chat.id, self: 'out', isNewMsg: true, local: true, ack: 0 }, message);
+    if (options.messageId) {
+        if (typeof options.messageId === 'string') {
+            options.messageId = Store.MsgKey.fromString(options.messageId);
+        }
+        if (!options.messageId.fromMe) {
+            throw Error('Message key is not from me, messageId: ' + options.messageId.toString());
+        }
+        if (!options.messageId.remote.equals(chat.id)) {
+            throw Error('Message key remote ID is not same of chat, messageId: ' + options.messageId.toString());
+        }
+        message.id = options.messageId;
+    }
+    if (!message.id) {
+        message.id = WAPI.generateMessageID(chat);
+    }
+    if (options.mentionedList && !Array.isArray(options.mentionedList)) {
+        throw Error('The option mentionedList is not an array, mentionedList: ' + options.mentionedList);
+    }
+    
+    return message; 
+	
+	
+	
+	/*
+	//Teste mike
+	//e=chat t=message  r=options
+	if (options = Object.assign(Object.assign({}, defaultSendMessageOptions), options), message = Object.assign({
+							t: Store.Clock.globalUnixTime(),
+							from: Store.UserPrefs.getMaybeMeUser(),
+							to: chat.id,
+							self: "out",
+							isNewMsg: !0,
+							local: !0,
+							ack: Store.ACK.CLOCK
+						}, message), options.messageId) {
+						if ("string" == typeof options.messageId && (options.messageId = Store.MsgKey.fromString(options.messageId)), !options.messageId.fromMe) throw Error('Message key is not from me, messageId: ' + options.messageId.toString(),
+						{
+							messageId: options.messageId.toString()
+						});
+						if (!options.messageId.remote.equals(chat.id)) throw Error("message_key_remote_id_is_not_same_of_chat", {
+							messageId: options.messageId.toString()
+						});
+						message.id = options.messageId
+					}
+					if (message.id || (message.id = (0, WAPI.generateMessageID)(chat)), options.mentionedList && !Array.isArray(options.mentionedList)) throw Error('The option mentionedList is not an array, mentionedList: ' + options.mentionedList, {
+						mentionedList: options.mentionedList
+					});
+					if (options.detectMentioned && chat.isGroup && (!options.mentionedList || !options.mentionedList.length)) {
+						const n = "chat" === message.type ? message.body : message.caption;
+						options.mentionedList = options.mentionedList || [];
+						const i = (null == n ? void 0 : n.match(/(?<=@)(\d+)\b/g)) || [];
+						if (i.length > 0) {
+							const t = (await (0, o.getParticipants)(chat.id)).map((chat => chat.id.toString()));
+							for (const chat of i) {
+								const n = `${chat}@c.us`;
+								t.includes(n) && options.mentionedList.push(n)
+							}
+						}
+					}
+					if (options.mentionedList) {
+						const e = options.mentionedList.map((e => e instanceof Store.Wid ? e : (0, n.assertWid)(e)));
+						for (const message of e)
+							if (!message.isUser()) throw Error("mentioned_is_not_user", {
+								mentionedId: message.toString()
+							});
+						message.mentionedJidList = e
+					}
+					if (options.quotedMsg) {
+						if ("string" == typeof options.quotedMsg && (options.quotedMsg = s.MsgKey.fromString(options.quotedMsg)), options.quotedMsg instanceof Store.MsgKey && (options.quotedMsg = await (0, c.getMessageById)(options.quotedMsg)), !(options.quotedMsg instanceof Store.MsgModel)) throw Erro("invalid_quoted_msg", {
+							quotedMsg: options.quotedMsg
+						});
+						if (!options.quotedMsg.canReply()) throw Error("quoted_msg_can_not_reply", {
+							quotedMsg: options.quotedMsg
+						});
+						message = Object.assign(Object.assign({}, message), options.quotedMsg.msgContextInfo(e))
+					}
+					return message */
+	
+	
+	
+	
+}
+
+async function sendRawMessage(chatId, rawMessage, options = {}) {
+    options = Object.assign(Object.assign({}, defaultSendMessageOptions), options);
+    const chat = options.createChat
+        ? await Store.FindChat.findChat(chatId)
+        : WAPI.getChat(chatId);
+    rawMessage = await prepareRawMessage(chat, rawMessage, options);
+    // if (options.markIsRead) {
+    //     debug(`marking chat is read before send message`);
+    //     // Try to mark is read and ignore errors
+    //     await (0, _1.markIsRead)(chat.id).catch(() => null);
+    // }
+    // debug(`sending message (${rawMessage.type}) with id ${rawMessage.id}`);
+    const result = await Store.addAndSendMsgToChat(chat, rawMessage);
+    // debug(`message ${rawMessage.id} queued`);
+    const message = await result[0];
+    if (options.waitForAck) {
+        // debug(`waiting ack for ${rawMessage.id}`);
+        const sendResult = await result[1];
+        // debug(`ack received for ${rawMessage.id} (ACK: ${message.ack}, SendResult: ${sendResult})`);
+    }
+    return {
+        id: message.id.toString(),
+        ack: message.ack,
+        sendMsgResult: result[1],
+    };
+}
+
+window.WAPI.sendTextMessage = async function (chatId, content, options = {}) {
+    options = Object.assign(Object.assign({}, defaultSendMessageOptions), options);
+    let rawMessage = {
+        body: content,
+        type: 'chat',
+        subtype: null,
+        urlText: null,
+        urlNumber: null,
+    };
+    rawMessage = prepareMessageButtons(rawMessage, options);
+    // rawMessage = await (0, _1.prepareLinkPreview)(rawMessage, options);
+    return await sendRawMessage(chatId, rawMessage, options);
+}
 
 window.WAPI.sendMessageOptions = async function (chatId, content, options = {}) {
     var idUser = new window.Store.UserConstructor(chatId, {
