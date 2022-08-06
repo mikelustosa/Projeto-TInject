@@ -166,8 +166,7 @@ if (!window.Store||!window.Store.Msg) {
 				{ id: 'UserPrefs', conditions: (module) => (module.getMaybeMeUser ? module : null), },
                 { id: 'Vcard', conditions: (module) => (module.vcardFromContactModel ? module : null)},
                 { id: 'Clock', conditions: (module) => (module.Clock ? module.Clock : null)},
-                { id: 'ACK', conditions: (module) => (module.ACK ? module.ACK : null)},
-				{ id: 'TemplateButtonCollection', conditions: (module) => (module.TemplateButtonCollectionImpl || module.TemplateButtonCollection ? module.TemplateButtonCollection : null)},
+                { id: 'TemplateButtonCollection', conditions: (module) => (module.TemplateButtonCollectionImpl || module.TemplateButtonCollection ? module.TemplateButtonCollection : null)},
                 { id: 'ButtonCollection', conditions: (module) => (module.ButtonCollectionImpl || module.ButtonCollection ? module.ButtonCollection : null)},
             ];
             for (let idx in modules) {
@@ -2151,7 +2150,7 @@ function prepareMessageButtons(message, options) {
     return message;
 }
 
-window.WAPI.generateMessageID = async function (chat) {
+function generateMessageID(chat) {
     let to = chat.id;
     return new Store.MsgKey({
         from: Store.UserPrefs.getMaybeMeUser(),
@@ -2177,74 +2176,68 @@ async function prepareRawMessage(chat, message, options = {}) {
         message.id = options.messageId;
     }
     if (!message.id) {
-        message.id = WAPI.generateMessageID(chat);
+        message.id = generateMessageID(chat);
     }
     if (options.mentionedList && !Array.isArray(options.mentionedList)) {
         throw Error('The option mentionedList is not an array, mentionedList: ' + options.mentionedList);
     }
-    
-    return message; 
-	
-	
-	
-	/*
-	//Teste mike
-	//e=chat t=message  r=options
-	if (options = Object.assign(Object.assign({}, defaultSendMessageOptions), options), message = Object.assign({
-							t: Store.Clock.globalUnixTime(),
-							from: Store.UserPrefs.getMaybeMeUser(),
-							to: chat.id,
-							self: "out",
-							isNewMsg: !0,
-							local: !0,
-							ack: Store.ACK.CLOCK
-						}, message), options.messageId) {
-						if ("string" == typeof options.messageId && (options.messageId = Store.MsgKey.fromString(options.messageId)), !options.messageId.fromMe) throw Error('Message key is not from me, messageId: ' + options.messageId.toString(),
-						{
-							messageId: options.messageId.toString()
-						});
-						if (!options.messageId.remote.equals(chat.id)) throw Error("message_key_remote_id_is_not_same_of_chat", {
-							messageId: options.messageId.toString()
-						});
-						message.id = options.messageId
-					}
-					if (message.id || (message.id = (0, WAPI.generateMessageID)(chat)), options.mentionedList && !Array.isArray(options.mentionedList)) throw Error('The option mentionedList is not an array, mentionedList: ' + options.mentionedList, {
-						mentionedList: options.mentionedList
-					});
-					if (options.detectMentioned && chat.isGroup && (!options.mentionedList || !options.mentionedList.length)) {
-						const n = "chat" === message.type ? message.body : message.caption;
-						options.mentionedList = options.mentionedList || [];
-						const i = (null == n ? void 0 : n.match(/(?<=@)(\d+)\b/g)) || [];
-						if (i.length > 0) {
-							const t = (await (0, o.getParticipants)(chat.id)).map((chat => chat.id.toString()));
-							for (const chat of i) {
-								const n = `${chat}@c.us`;
-								t.includes(n) && options.mentionedList.push(n)
-							}
-						}
-					}
-					if (options.mentionedList) {
-						const e = options.mentionedList.map((e => e instanceof Store.Wid ? e : (0, n.assertWid)(e)));
-						for (const message of e)
-							if (!message.isUser()) throw Error("mentioned_is_not_user", {
-								mentionedId: message.toString()
-							});
-						message.mentionedJidList = e
-					}
-					if (options.quotedMsg) {
-						if ("string" == typeof options.quotedMsg && (options.quotedMsg = s.MsgKey.fromString(options.quotedMsg)), options.quotedMsg instanceof Store.MsgKey && (options.quotedMsg = await (0, c.getMessageById)(options.quotedMsg)), !(options.quotedMsg instanceof Store.MsgModel)) throw Erro("invalid_quoted_msg", {
-							quotedMsg: options.quotedMsg
-						});
-						if (!options.quotedMsg.canReply()) throw Error("quoted_msg_can_not_reply", {
-							quotedMsg: options.quotedMsg
-						});
-						message = Object.assign(Object.assign({}, message), options.quotedMsg.msgContextInfo(e))
-					}
-					return message */
-	
-	
-	
-	
+    /**
+     * Try to detect mentioned list from message
+     */
+    // if (options.detectMentioned &&
+    //     chat.isGroup &&
+    //     (!options.mentionedList || !options.mentionedList.length)) {
+    //     const text = message.type === 'chat' ? message.body : message.caption;
+    //     options.mentionedList = options.mentionedList || [];
+    //     const ids = (text === null || text === void 0 ? void 0 : text.match(/(?<=@)(\d+)\b/g)) || [];
+    //     if (ids.length > 0) {
+    //         const participants = (await (0, group_1.getParticipants)(chat.id)).map((p) => p.id.toString());
+    //         for (const id of ids) {
+    //             const wid = `${id}@c.us`;
+    //             if (!participants.includes(wid)) {
+    //                 continue;
+    //             }
+    //             options.mentionedList.push(wid);
+    //         }
+    //     }
+    // }
+    /**
+     * Add the metadata for  mentioned list
+     */
+    // if (options.mentionedList) {
+    //     const mentionedList = options.mentionedList.map((m) => m instanceof whatsapp_1.Wid ? m : (0, assert_1.assertWid)(m));
+    //     for (const m of mentionedList) {
+    //         if (!m.isUser()) {
+    //             throw new util_1.WPPError('mentioned_is_not_user', 'Mentioned is not an user', {
+    //                 mentionedId: m.toString(),
+    //             });
+    //         }
+    //     }
+    //     message.mentionedJidList = mentionedList;
+    // }
+    /**
+     * Quote a message, like a reply message
+     */
+    // if (options.quotedMsg) {
+    //     if (typeof options.quotedMsg === 'string') {
+    //         options.quotedMsg = whatsapp_1.MsgKey.fromString(options.quotedMsg);
+    //     }
+    //     if (options.quotedMsg instanceof whatsapp_1.MsgKey) {
+    //         options.quotedMsg = await (0, _1.getMessageById)(options.quotedMsg);
+    //     }
+    //     if (!(options.quotedMsg instanceof whatsapp_1.MsgModel)) {
+    //         throw new util_1.WPPError('invalid_quoted_msg', 'Invalid quotedMsg', {
+    //             quotedMsg: options.quotedMsg,
+    //         });
+    //     }
+    //     if (!options.quotedMsg.canReply()) {
+    //         throw new util_1.WPPError('quoted_msg_can_not_reply', 'QuotedMsg can not reply', {
+    //             quotedMsg: options.quotedMsg,
+    //         });
+    //     }
+    //     message = Object.assign(Object.assign({}, message), options.quotedMsg.msgContextInfo(chat));
+    // }
+    return message;
 }
 
 async function sendRawMessage(chatId, rawMessage, options = {}) {
