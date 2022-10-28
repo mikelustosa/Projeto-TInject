@@ -136,6 +136,7 @@ type
     SpeedButton8: TSpeedButton;
     SpeedButton11: TSpeedButton;
     SpeedButton7: TSpeedButton;
+    btnSendPool: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btSendTextClick(Sender: TObject);
@@ -150,7 +151,6 @@ type
     procedure TrayIcon1Click(Sender: TObject);
     procedure ApplicationEvents1Minimize(Sender: TObject);
     procedure TInject1GetStatus(Sender: TObject);
-    procedure btStatusBatClick(Sender: TObject);
     procedure Edt_DDIPDRExit(Sender: TObject);
     procedure ed_numChange(Sender: TObject);
     procedure ed_numSelect(Sender: TObject);
@@ -559,15 +559,16 @@ begin
 end;
 
 procedure TfrmPrincipal.btnRemoveGroupLinkClick(Sender: TObject);
-begin   try
-
-    if not TInject1.Auth then
-       Exit;
-
-    TInject1.GroupRemoveInviteLink(lbl_idGroup.Caption);
-  finally
-
-  end;
+begin//Em breve / Coming soon
+//   try
+//
+//    if not TInject1.Auth then
+//       Exit;
+//
+//    TInject1.sendPool(lbl_idGroup.Caption, '');
+//  finally
+//
+//  end;
 end;
 
 procedure TfrmPrincipal.btSetProfileNameClick(Sender: TObject);
@@ -648,14 +649,6 @@ begin
      Exit;
 
   TInject1.groupAddParticipant(lbl_idGroup.Caption, ed_idParticipant.text);
-end;
-
-procedure TfrmPrincipal.btStatusBatClick(Sender: TObject);
-begin
-  if not TInject1.Auth then
-     Exit;
-
-  TInject1.GetBatteryStatus;
 end;
 
 procedure TfrmPrincipal.btSendTextClick(Sender: TObject);

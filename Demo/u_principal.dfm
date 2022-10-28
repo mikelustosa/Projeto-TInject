@@ -34,8 +34,6 @@ object frmPrincipal: TfrmPrincipal
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = -2
-    ExplicitTop = 0
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o / Authentication'
       object Pnl_Config: TPanel
@@ -4001,7 +3999,6 @@ object frmPrincipal: TfrmPrincipal
           ImageIndex = 0
           Images = ImageList1
           TabOrder = 5
-          OnClick = btStatusBatClick
         end
         object btSendContact: TButton
           AlignWithMargins = True
@@ -5380,6 +5377,18 @@ object frmPrincipal: TfrmPrincipal
           ImageIndex = 0
           Images = ImageList1
           TabOrder = 15
+          OnClick = btnRemoveGroupLinkClick
+        end
+        object btnSendPool: TButton
+          AlignWithMargins = True
+          Left = 651
+          Top = 212
+          Width = 191
+          Height = 25
+          Caption = 'Enviar enquete / Send pool'
+          ImageIndex = 0
+          Images = ImageList1
+          TabOrder = 16
           OnClick = btnRemoveGroupLinkClick
         end
       end
