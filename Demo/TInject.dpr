@@ -4,8 +4,6 @@ uses
   Vcl.Forms,
   Windows,
   uTInject.ConfigCEF,
-  iniFiles,
-  SysUtils,
   u_principal in 'u_principal.pas' {frmPrincipal};
 
 {$R *.res}
@@ -29,7 +27,7 @@ begin
   GlobalCEFApp.PathUserDataPath     := arqIni.ReadString('CONFIG', 'USERDATA', ''); //'C:\TInject\Projeto-TInject-master\Demo\BIN\User Data';
  }
 
-  //Forma 1 GlobalCEFApp.Pathxx       := '';                      //Irá procura procurar o Arquivo PADRAO no mesmo local do EXE
+  //Forma 1 GlobalCEFApp.Pathxx       := '';                        //Irá procurar o Arquivo PADRAO no mesmo local do EXE
   //Forma 2 GlobalCEFApp.Pathxx       := 'C:\Componentes\demo\bin'; //<-  NOME do ARQUIVO INFORMADO
   //Forma 3 GlobalCEFApp.Pathxx       := 'BIN';                     //<-  NOME do ARQUIVO INFORMADO
   //Forma 4 GlobalCEFApp.Pathx         := '..\Source\;              //<-  NOME do ARQUIVO INFORMADO

@@ -4,7 +4,7 @@
 CEF4 não é compatível com o Windows XP, Windows Vista, Windows Server 2003 e Windows Server 2008.
 De propriedade intelectual de Salvador Díaz Fau, obtido em https://github.com/Dorpoa/CEF4Delphi
 ####################################################################################################################
-Arquivos binários Homologada para a execução do Chromium em conjunto com o componente TInject.
+Arquivos binários mínimos Homologada para a execução do Chromium em conjunto com o componente TInject.
 Versão do CEF 91.1.22   
 Versão Chromium 91.0.4472.124
 Data: 04/07/2021

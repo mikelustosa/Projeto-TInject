@@ -790,7 +790,8 @@ begin
        LLine := LLine + LBase64[i];
     vBase64 := LLine;
 
-    LJS := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendBase64;
+    //LJS := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendBase64;
+    LJS := FrmConsole_JS_VAR_SendBase64;
     FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',       Trim(vNum));
     FrmConsole_JS_AlterVar(LJS, '#MSG_NOMEARQUIVO#', Trim(vFileName));
     FrmConsole_JS_AlterVar(LJS, '#MSG_CORPO#',       Trim(vText));
@@ -810,7 +811,8 @@ begin
     raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
 
   titleText := CaractersWeb(titleText);
-  LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendButtons;
+  //LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendButtons;
+  LJS   := FrmConsole_JS_VAR_SendButtons;
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',       Trim(phoneNumber));
   FrmConsole_JS_AlterVar(LJS, '#MSG_TITLE#',       Trim(titleText));
   FrmConsole_JS_AlterVar(LJS, '#MSG_BUTTONS#',     Trim(buttons));
@@ -826,11 +828,10 @@ begin
   if not FConectado then
     raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
 
-  //vText := CaractersWeb(vText);
-  LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendContact;
+  //LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendContact;
+  LJS   := FrmConsole_JS_VAR_SendContact;
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE_DEST#',       Trim(vNumDest));
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',            Trim(vNum));
-  //FrmConsole_JS_AlterVar(LJS, '#MSG_NAMECONTACT#',      Trim(vNameContact));
   ExecuteJS(LJS, true);
 end;
 
@@ -842,7 +843,8 @@ begin
     raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
 
   vText := CaractersWeb(vText);
-  LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendLinkPreview;
+  //LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendLinkPreview;
+  LJS   := FrmConsole_JS_VAR_SendLinkPreview;
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',      Trim(vNum));
   FrmConsole_JS_AlterVar(LJS, '#MSG_LINK#',       Trim(vLinkPreview));
   FrmConsole_JS_AlterVar(LJS, '#MSG_CORPO#',      Trim(vText));
@@ -857,7 +859,8 @@ begin
     raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
 
   vText := CaractersWeb(vText);
-  LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendLocation;
+  //LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendLocation;
+  LJS   := FrmConsole_JS_VAR_SendLocation;
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',     Trim(vNum));
   FrmConsole_JS_AlterVar(LJS, '#MSG_LAT#',       Trim(vLat));
   FrmConsole_JS_AlterVar(LJS, '#MSG_LNG#',       Trim(vLng));
@@ -908,7 +911,8 @@ begin
     raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
 
   vText := CaractersWeb(vText);
-  LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendMsg;
+  //LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendMsg;
+  LJS   := FrmConsole_JS_VAR_SendMsg;
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',       Trim(vNum));
   FrmConsole_JS_AlterVar(LJS, '#MSG_CORPO#',       Trim(vText));
   ExecuteJS(LJS, true);
