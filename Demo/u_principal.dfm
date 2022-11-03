@@ -581,8 +581,6 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 1
-        ExplicitLeft = 8
-        ExplicitTop = 20
         DesignSize = (
           364
           422)
@@ -5514,7 +5512,7 @@ object frmPrincipal: TfrmPrincipal
     OnGetInviteGroup = TInject1GetInviteGroup
     OnGetMe = TInject1GetMe
     OnNewGetNumber = TInject1NewGetNumber
-    Left = 200
-    Top = 312
+    Left = 368
+    Top = 240
   end
 end
