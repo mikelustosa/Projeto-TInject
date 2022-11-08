@@ -34,7 +34,7 @@ Uses Winapi.Messages, System.SysUtils, typinfo, REST.Json;
 Const
   //Uso GLOBAL
                                   //Version updates I=HIGH, II=MEDIUM, III=LOW, IV=VERY LOW
-  TInjectVersion                  = '3.6.0.0'; //  31/10/2022  //Alterado por Mike Lustosa
+  TInjectVersion                  = '3.7.0.0'; //  08/11/2022  //Alterado por Mike Lustosa
   CardContact                     = '@c.us';
   CardGroup                       = '@g.us';
   CardList                        = '@broadcast';
@@ -76,6 +76,7 @@ Const
   FrmConsole_JS_VAR_ReadMessages        = 'window.WAPI.sendSeen("<#MSG_PHONE#>")';
   FrmConsole_JS_VAR_DeleteMessages      = 'window.WAPI.deleteConversation("<#MSG_PHONE#>")';
   FrmConsole_JS_VAR_SendBase64          = 'window.WAPI.sendImage("<#MSG_BASE64#>","<#MSG_PHONE#>", "<#MSG_NOMEARQUIVO#>", "<#MSG_CORPO#>")';
+  FrmConsole_JS_VAR_SendSurvey          = 'window.WAPI.sendPool("<#MSG_GROUPID#>","<#MSG_TITLE#>", <#MSG_SURVEY#>)';
   FrmConsole_JS_VAR_SendMsg             = 'window.WAPI.sendMessageToID("<#MSG_PHONE#>","<#MSG_CORPO#>")';
   FrmConsole_JS_VAR_SendButtons         = 'window.WAPI.sendButtons("<#MSG_PHONE#>","<#MSG_TITLE#>",<#MSG_BUTTONS#>,"<#MSG_FOOTER#>")';
   //FrmConsole_JS_VAR_SendTyping          = '';//Deprecated
@@ -261,7 +262,6 @@ type
                    Th_Initialized=34,           Th_Abort=35,                           Th_ForceDisconnect=36,
                    Th_AlterConfig=37,
 
-                   // Novos Eventos de Retorno by Marcelo
                    Th_GetStatusMessage=38, Th_GetGroupInviteLink=39, Th_GetMe=40, Th_NewCheckIsValidNumber=41
                    );
 

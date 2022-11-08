@@ -559,16 +559,10 @@ begin
 end;
 
 procedure TfrmPrincipal.btnRemoveGroupLinkClick(Sender: TObject);
-begin//Em breve / Coming soon
-//   try
-//
-//    if not TInject1.Auth then
-//       Exit;
-//
-//    TInject1.sendPool(lbl_idGroup.Caption, '');
-//  finally
-//
-//  end;
+begin  if not TInject1.Auth then
+       Exit;
+
+    TInject1.sendPool(edt_nomeGrupo.Text, 'TInject Community. Novo recurso de Enquete: Qual a melhor linguagem?', '["DELPHI", "JAVA", "C#", "PYTHON", "JAVASCRIPT", "PHP"]');
 end;
 
 procedure TfrmPrincipal.btSetProfileNameClick(Sender: TObject);
@@ -1230,6 +1224,7 @@ begin
     exit;
 
    TInject1.Logtout;
+   sleepNoFreeze(3000);
    TInject1.Disconnect;
 end;
 

@@ -66,7 +66,6 @@ type
     FDestroyTmr             : Ttimer;
     FFormQrCodeType         : TFormQrCodeType;
     FMyNumber               : string;
-    FserialCorporate        : string;
     FIsDelivered            : string;
     FGetBatteryLevel        : Integer;
     FGetIsConnected         : Boolean;
@@ -91,7 +90,6 @@ type
     procedure SetInjectConfig(const Value: TInjectConfig);
     procedure SetdjustNumber(const Value: TInjectAdjusteNumber);
     procedure SetInjectJS(const Value: TInjectJS);
-    procedure SetSerialCorporate(const Value: TInjectJS);
     procedure OnDestroyConsole(Sender : TObject);
 
   protected
@@ -139,6 +137,7 @@ type
     function  TestConnect:  Boolean;
     procedure Send(PNumberPhone, PMessage: string; PEtapa: string = '');
     procedure SendButtons(phoneNumber: string; titleText: string; buttons: string; footerText: string; etapa: string = '');
+    procedure sendPool(PGroupID, PTitle, PSurvey: string);
     procedure deleteConversation(PNumberPhone: string);
     procedure SendContact(PNumberPhone, PNumber: string; PNameContact: string = '');
     procedure SendFile(PNumberPhone: String; Const PFileName: String; PMessage: string = '');
@@ -198,7 +197,6 @@ type
     Property InjectJS                    : TInjectJS                  read FInjectJS                       Write SetInjectJS;
     property Config                      : TInjectConfig              read FInjectConfig                   Write SetInjectConfig;
     property AjustNumber                 : TInjectAdjusteNumber       read FAdjustNumber                   Write SetdjustNumber;
-    property serialCorporate             : string                     read FserialCorporate                write FserialCorporate;
     property FormQrCodeType              : TFormQrCodeType            read FFormQrCodeType                 Write SetQrCodeStyle                      Default Ft_Desktop;
     property LanguageInject              : TLanguageInject            read FLanguageInject                 Write SetLanguageInject                   Default TL_Portugues_BR;
     property OnGetAllContactList         : TOnAllContacts             read FOnGetAllContactList            write FOnGetAllContactList;
@@ -813,11 +811,6 @@ begin
 
   FrmConsole.setNewName(vName);
 
-end;
-
-procedure TInject.SetSerialCorporate(const Value: TInjectJS);
-begin
-  FInjectJS.Assign(Value);
 end;
 
 procedure TInject.SetStatus(vStatus: String);
@@ -1484,6 +1477,49 @@ begin
           begin
             FrmConsole.ReadMessages(PNumberPhone); //Marca como lida a mensagem
             FrmConsole.sendLocation(PNumberPhone, PLat, PLng, PMessage);
+          end;
+        end);
+
+      end);
+
+  lThread.FreeOnTerminate := true;
+  lThread.Start;
+
+end;
+
+procedure TInject.sendPool(PGroupID, PTitle, PSurvey: string);
+var
+  lThread : TThread;
+begin
+  If Application.Terminated Then
+     Exit;
+  if not Assigned(FrmConsole) then
+     Exit;
+
+  PGroupID := AjustNumber.FormatIn(PGroupID);
+
+  if pos('@', PGroupID) = 0 then
+  Begin
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PGroupID);
+    Exit;
+  end;
+
+  if Trim(PTitle) = '' then
+  begin
+    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, PTitle);
+    Exit;
+  end;
+
+  lThread := TThread.CreateAnonymousThread(procedure
+      begin
+        if Config.AutoDelay > 0 then
+           sleep(random(Config.AutoDelay));
+
+        TThread.Synchronize(nil, procedure
+        begin
+          if Assigned(FrmConsole) then
+          begin
+            FrmConsole.sendPool(PGroupID, PTitle, PSurvey);
           end;
         end);
 

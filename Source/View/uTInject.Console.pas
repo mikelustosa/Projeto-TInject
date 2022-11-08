@@ -174,6 +174,7 @@ type
     Procedure DisConnect;
     procedure Send(vNum, vText:string);
     procedure SendButtons(phoneNumber, titleText, buttons, footerText: string; etapa: string = '');
+    procedure SendPool(vGroupID, vTitle, vSurvey: string);
     procedure CheckDelivered;
     procedure SendContact(vNumDest, vNum:string; vNameContact: string = '');
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
@@ -901,6 +902,20 @@ begin
   If Assigned(OnNotificationCenter) then
      OnNotificationCenter(PValor, '', PSender);
   Application.ProcessMessages;
+end;
+
+procedure TFrmConsole.SendPool(vGroupID, vTitle, vSurvey: string);
+var
+  Ljs: string;
+begin
+  vTitle := CaractersWeb(vTitle);
+
+  LJS   := FrmConsole_JS_VAR_SendSurvey;
+
+  FrmConsole_JS_AlterVar(LJS, '#MSG_GROUPID#',     Trim(vGroupID));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_TITLE#',       Trim(vTitle));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_SURVEY#',      Trim(vSurvey));
+  ExecuteJS(LJS, true);
 end;
 
 procedure TFrmConsole.Send(vNum, vText: string);
