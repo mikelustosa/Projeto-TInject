@@ -2192,6 +2192,7 @@ function generateMessageID(chat) {
     });
 }
 
+/*Font https://github.com/wppconnect-team/wa-js/blob/main/src/chat/functions/prepareRawMessage.ts*/
 async function prepareRawMessageWAPI(chat, message, options = {}) {
     options = Object.assign(Object.assign({}, defaultSendMessageOptionsWAPI), options);
     message = Object.assign({ t: 0, from: Store.UserPrefs.getMaybeMeUser(), to: chat.id, self: 'out', isNewMsg: true, local: true, ack: 0 }, message);
@@ -2217,6 +2218,7 @@ async function prepareRawMessageWAPI(chat, message, options = {}) {
     return message;
 }
 
+/*Font https://github.com/wppconnect-team/wa-js/blob/main/src/chat/functions/sendRawMessage.ts*/
 async function sendRawMessageWAPI(chatId, rawMessage, options = {}) {
     options = Object.assign(Object.assign({}, defaultSendMessageOptionsWAPI), options);
     const chat = options.createChat
@@ -2237,6 +2239,7 @@ async function sendRawMessageWAPI(chatId, rawMessage, options = {}) {
     };
 }
 
+/*https://github.com/wppconnect-team/wa-js/blob/main/src/chat/functions/sendCreatePollMessage.ts*/
 window.WAPI.sendPool = async function(chatId, title, surveyList) {
     const survey = {
 		type: "poll_creation",

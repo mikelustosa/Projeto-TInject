@@ -1,7 +1,11 @@
 ﻿{####################################################################################################################
-                              TINJECT - Componente de mensageria
+                              TINJECT - Componente de comunicação (Não Oficial)
+                                           www.tinject.com.br
+                                            Novembro de 2019
 ####################################################################################################################
-
+    Owner.....: Mike W. Lustosa            - mikelustosa@gmail.com   - +55 81 9.9630-2385
+    Developer.: Joathan Theiller           - jtheiller@hotmail.com   -
+                Daniel Oliveira Rodrigues  - Dor_poa@hotmail.com     - +55 51 9.9155-9228
 ####################################################################################################################
   Obs:
      - Código aberto a comunidade Delphi, desde que mantenha os dados dos autores e mantendo sempre o nome do IDEALIZADOR
@@ -36,6 +40,12 @@ uses
   System.UiTypes,  Generics.Collections, System.TypInfo, Data.DB, Vcl.ExtCtrls,
   uTInject.Diversos, Vcl.Imaging.jpeg;
 
+
+  {$IF DECLARED(FireMonkeyVersion)}
+    {$DEFINE HAS_FMX}
+  {$ELSE}
+    {$DEFINE HAS_VCL}
+  {$IFEND}
 
 type
   {Events}
@@ -403,6 +413,7 @@ end;
 
 constructor TInject.Create(AOwner: TComponent);
 begin
+  
   inherited;
   FDestroyTmr                         := Ttimer.Create(nil);
   FDestroyTmr.Enabled                 := False;
@@ -1899,7 +1910,12 @@ begin
     LAbel1.Caption                    := Text_FrmClose_Label;
     LAbel1.AlignWithMargins           := true;
     LForm.Visible                     := True;
-    Application.MainForm.Visible      := False;
+
+//    Causando problema no FMX
+//    {$IFDEF HAS_VCL}
+//    Application.MainForm.Visible      := False;
+//    {$ENDIF}
+
     LForm.Show;
 
     Disconnect;

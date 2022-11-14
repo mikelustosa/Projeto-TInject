@@ -36,7 +36,7 @@ begin
 
   If not GlobalCEFApp.StartMainProcess then
      Exit;
-
+  ReportMemoryLeaksOnShutdown := true;
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.CreateForm(TfrmPrincipal, frmPrincipal);
