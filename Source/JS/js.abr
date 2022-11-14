@@ -65,6 +65,7 @@ var gettingUnreadMessages = false;
 
 function startMonitor(intervalSeconds = 0) {
     isLoggedStatus = WAPI.isLoggedIn();
+	window.WAPI.onIncomingCall();
 	
     if (intervalSeconds >= 1) {
         intervalMonitor = window.setInterval(monitorUnReadMessages, intervalSeconds * 1000);
@@ -2239,7 +2240,7 @@ async function sendRawMessageWAPI(chatId, rawMessage, options = {}) {
     };
 }
 
-/*https://github.com/wppconnect-team/wa-js/blob/main/src/chat/functions/sendCreatePollMessage.ts*/
+/*font https://github.com/wppconnect-team/wa-js/blob/main/src/chat/functions/sendCreatePollMessage.ts*/
 window.WAPI.sendPool = async function(chatId, title, surveyList) {
     const survey = {
 		type: "poll_creation",
@@ -2254,4 +2255,21 @@ window.WAPI.sendPool = async function(chatId, title, surveyList) {
     };
     
 	return await (0, sendRawMessageWAPI)(chatId, survey)
+}
+
+//Mike W. Lustosa 14/11/2022
+window.WAPI.onIncomingCall = function (onIncomingCallCallback) {
+	window.Store.Call.on('add', WAPI.onIncomingCallCallback);		
+    return true;	
+}
+
+//Mike W. Lustosa 14/11/2022
+window.WAPI.onIncomingCallCallback = async function() {
+	
+	//SetConsoleMessage('getIncomingCall', JSON.stringify({ Result : window.Store.Call._models[0].__x_peerJid.user }))
+	
+	//SetConsoleMessage('getIncomingCall', JSON.stringify( window.Store.Call._models[0].__x_peerJid.user))
+	SetConsoleMessage('getIncomingCall', window.Store.Call._models[0].__x_peerJid.user)
+	
+	window.Store.Call._models = []
 }

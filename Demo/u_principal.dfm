@@ -5512,6 +5512,7 @@ object frmPrincipal: TfrmPrincipal
     OnGetInviteGroup = TInject1GetInviteGroup
     OnGetMe = TInject1GetMe
     OnNewGetNumber = TInject1NewGetNumber
+    OnGetIncomingCall = TInject1GetIncomingCall
     Left = 192
     Top = 320
   end

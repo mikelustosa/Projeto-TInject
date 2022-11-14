@@ -213,6 +213,7 @@ type
     procedure SpeedButton11Click(Sender: TObject);
     procedure SpeedButton7Click(Sender: TObject);
     procedure btSendTextButtonClick(Sender: TObject);
+    procedure TInject1GetIncomingCall(const incomingCall: TReturnIncomingCall);
 
   private
     { Private declarations }
@@ -886,10 +887,14 @@ begin
      ShowMessage('Whatsapp Invalid') ;
 end;
 
+procedure TfrmPrincipal.TInject1GetIncomingCall(
+  const incomingCall: TReturnIncomingCall);
+begin
+  memo_unReadMessage.Text := 'Incoming call: ' + incomingCall.contact;
+end;
+
 procedure TfrmPrincipal.TInject1GetInviteGroup(const Invite: string);
-begin
- ShowMessage(Invite);
-end;
+begin ShowMessage(Invite);end;
 
 procedure TfrmPrincipal.TInject1GetMe(const vMe: TGetMeClass);
 var aList : TStringList;

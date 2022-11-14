@@ -64,6 +64,7 @@ type
   TOnGetInviteGroup         = procedure(Const Invite : String) of object;
   TOnGetMe                  = procedure(Const vMe : TGetMeClass) of object;
   TOnNewCheckNumber         = procedure(Const vCheckNumber : TReturnCheckNumber) of object;
+  TOnGetIncomingCall        = procedure(Const incomingCall: TReturnIncomingCall) of object;
 
 
   TInject = class(TComponent)
@@ -129,6 +130,7 @@ type
     FOnGetInviteGroup           : TOnGetInviteGroup;
     FOnGetMe                    : TOnGetMe;
     FOnNewCheckNumber           : TOnNewCheckNumber;
+    FOnGetIncomingCall          : TOnGetIncomingCall;
 
     procedure Int_OnNotificationCenter(PTypeHeader: TTypeHeader; PValue: String; Const PReturnClass : TObject= nil);
 
@@ -239,6 +241,7 @@ type
     property OnGetInviteGroup            : TOnGetInviteGroup          read FOnGetInviteGroup               write FOnGetInviteGroup;
     property OnGetMe                     : TOnGetMe                   read FOnGetMe                        write FOnGetMe;
     property OnNewGetNumber              : TOnNewCheckNumber          read FOnNewCheckNumber               write FOnNewCheckNumber;
+    property OnGetIncomingCall           : TOnGetIncomingCall         read FOnGetIncomingCall              write FOnGetIncomingCall;
   end;
 
 procedure Register;
@@ -1196,6 +1199,12 @@ begin
   begin
     if Assigned(FOnNewCheckNumber) then
        FOnNewCheckNumber(TReturnCheckNumber(PReturnClass));
+  end;
+
+  if PTypeHeader = Th_GetIncomingCall  then
+  begin
+    if Assigned(FOnGetIncomingCall) then
+       FOnGetIncomingCall(TReturnIncomingCall(PReturnClass));
   end;
 
 

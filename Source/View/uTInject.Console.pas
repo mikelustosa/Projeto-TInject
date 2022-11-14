@@ -1256,6 +1256,17 @@ begin
                                 FreeAndNil(LOutClass);
                               end;
                             end;
+
+    Th_GetIncomingCall        : begin
+                                LOutClass := TReturnIncomingCall.Create(LResultStr);
+                              try
+                                SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
+                              finally
+                                FreeAndNil(LOutClass);
+                              end;
+
+
+                            end;
    end;
 end;
 

@@ -386,6 +386,20 @@ type
     property valid : boolean  read Fvalid write Fvalid;
   end;
 
+  TIncomingCall = class(TClassPadrao)
+  private
+    FID: String;
+  public
+    property ID : string read FID write FID;
+  end;
+
+  TReturnIncomingCall = class(TClassPadrao)
+  private
+   FContact : string;
+  public
+    constructor Create(pAJsonString: string);
+    property contact : string read FContact write FContact;
+  end;
 
  TGetMeClass = class(TClassPadrao)
    private
@@ -1113,18 +1127,15 @@ constructor TClassPadrao.Create(pAJsonString: string; PJsonOption: TJsonOptions)
 var
   lAJsonObj: TJSONValue;
 begin
-
   lAJsonObj      := TJSONObject.ParseJSONValue(pAJsonString);
   FInjectWorking := False;
+
   try
    try
     if NOT Assigned(lAJsonObj) then
        Exit;
 
-    //tentar thread aqui...
     TJson.JsonToObject(Self, TJSONObject(lAJsonObj) ,PJsonOption);
-    //tentar thread aqui...
-
 
     FJsonString := pAJsonString;
           SleepNoFreeze(10);
@@ -1472,6 +1483,26 @@ constructor TResponseIsDelivered.Create(pAJsonString: string);
 begin
   inherited Create(pAJsonString);
   //FResult := (Copy (FResult, Pos ('@c.us_', FResult) + 2, Length (FResult)));
+end;
+
+{ TReturnIncomingCall }
+
+constructor TReturnIncomingCall.Create(pAJsonString: string);
+var
+  lAJsonObj: TJSONValue;
+begin
+  lAJsonObj      := TJSONObject.ParseJSONValue(pAJsonString);
+
+   try
+    if NOT Assigned(lAJsonObj) then
+       Exit;
+
+    FContact := lAJsonObj.FindValue('result').Value;
+
+   finally
+    freeAndNil(lAJsonObj);
+   end;
+
 end;
 
 end.
