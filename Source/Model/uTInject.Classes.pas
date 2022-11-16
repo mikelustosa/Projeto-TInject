@@ -18,20 +18,12 @@
 ####################################################################################################################
                                   Evolução do Código
 ####################################################################################################################
-  Autor........:
-  Email........:
-  Data.........:
-  Identificador:
-  Modificação..:
-
   Autor........: Luiz Alves
   Email........: cprmlao@gmail.com
   Data.........: 17/12/2019
   Identificador: @LuizAlvez
   Modificação..: Adicionadas novas propriedades das mensagens conforme verificação com o LOG
-
-####################################################################################################################
-}
+####################################################################################################################}
 
 unit uTInject.Classes;
 
@@ -1490,18 +1482,27 @@ end;
 constructor TReturnIncomingCall.Create(pAJsonString: string);
 var
   lAJsonObj: TJSONValue;
+  aJson: TJSONObject;
 begin
   lAJsonObj      := TJSONObject.ParseJSONValue(pAJsonString);
 
-   try
-    if NOT Assigned(lAJsonObj) then
-       Exit;
+  if NOT Assigned(lAJsonObj) then
+    Exit;
 
+  {$IF COMPILERVERSION > 31}
+  try
     FContact := lAJsonObj.FindValue('result').Value;
-
-   finally
+  finally
     freeAndNil(lAJsonObj);
-   end;
+  end;
+  {$ELSE}
+  try
+    aJson := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(pAJsonString), 0) as TJSONObject;
+    FContact := aJson.GetValue('result').Value;
+  finally
+    freeAndNil(aJson)
+  end;
+  {$ENDIF}
 
 end;
 
