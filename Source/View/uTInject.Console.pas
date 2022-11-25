@@ -153,7 +153,8 @@ type
     Procedure Form_Start;
     Procedure Form_Normal;
 
-     public
+
+    public
     { Public declarations }
     Function  ConfigureNetWork:Boolean;
     Procedure SetZoom(Pvalue: Integer);
@@ -174,6 +175,7 @@ type
     Procedure DisConnect;
     procedure Send(vNum, vText:string);
     procedure SendButtons(phoneNumber, titleText, buttons, footerText: string; etapa: string = '');
+    procedure SendButtonList(phoneNumber, titleText1, titleText2, titleButton, options: string; etapa: string = '');
     procedure SendPool(vGroupID, vTitle, vSurvey: string);
     procedure CheckDelivered;
     procedure SendContact(vNumDest, vNum:string; vNameContact: string = '');
@@ -819,7 +821,27 @@ begin
   FrmConsole_JS_AlterVar(LJS, '#MSG_BUTTONS#',     Trim(buttons));
   FrmConsole_JS_AlterVar(LJS, '#MSG_FOOTER#',      Trim(footerText));
   ExecuteJS(LJS, true);
+end;
 
+procedure TFrmConsole.SendButtonList(phoneNumber, titleText1, titleText2, titleButton, options: string; etapa: string = '');
+var
+  Ljs: string;
+begin
+  if not FConectado then
+    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+
+  titleText1  := CaractersWeb(titleText1);
+  titleText2  := CaractersWeb(titleText2);
+  titleButton := CaractersWeb(titleButton);
+
+  LJS   := FrmConsole_JS_VAR_SendButtonList;
+
+  FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',      Trim(phoneNumber));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_TITLE1#',     Trim(titleText1));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_TITLE2#',     Trim(titleText2));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_TITLEBUTTON#',Trim(titleButton));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_OPTIONS#',    Trim(options));
+  ExecuteJS(LJS, true);
 end;
 
 procedure TFrmConsole.SendContact(vNumDest, vNum: string; vNameContact: string = '');
