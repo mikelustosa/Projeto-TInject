@@ -267,7 +267,7 @@ window.WAPI._serializeMessageObj = (obj) => {
     if (obj == undefined) {
         return null;
     }
-    console.log('Mike obj: ' + Object. keys(obj))
+
 	const _chat = obj['chat'] ? WAPI._serializeChatObj(obj['chat']) : {};
 
     return Object.assign(window.WAPI._serializeRawObj(obj), {
