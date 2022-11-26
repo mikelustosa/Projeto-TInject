@@ -1021,7 +1021,7 @@ begin
   Except
   end;
 
-  if (TInject(Sender).Status = Inject_Initialized) then
+  if (TInject(Sender).Status = Inject_Initialized) and (TInject1.Auth) then
   begin
     lblStatus.Caption            := 'Online';
     lblStatus.Font.Color         := $0000AE11;
