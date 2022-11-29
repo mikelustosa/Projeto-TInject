@@ -23,7 +23,6 @@ object frmPrincipal: TfrmPrincipal
     Height = 13
     Align = alBottom
     Caption = ' '
-    ExplicitTop = 515
     ExplicitWidth = 3
   end
   object PageControl1: TPageControl
@@ -32,13 +31,11 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 1096
     Height = 527
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 0
-    ExplicitHeight = 509
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o / Authentication'
-      ExplicitHeight = 481
       object Pnl_Config: TPanel
         AlignWithMargins = True
         Left = 375
@@ -52,7 +49,6 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 0
-        ExplicitHeight = 475
         DesignSize = (
           708
           491)
@@ -585,7 +581,6 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 1
-        ExplicitHeight = 475
         DesignSize = (
           364
           491)
@@ -3903,7 +3898,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet3: TTabSheet
       Caption = 'A'#231#245'es Manuais / Actions'
       ImageIndex = 2
-      ExplicitHeight = 481
       object groupEnvioMsg: TGroupBox
         Left = 0
         Top = 0
@@ -3911,9 +3905,6 @@ object frmPrincipal: TfrmPrincipal
         Height = 499
         Align = alLeft
         TabOrder = 0
-        ExplicitLeft = 3
-        ExplicitTop = 1
-        ExplicitHeight = 522
         DesignSize = (
           249
           499)
@@ -3958,7 +3949,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 2
           OnClick = btSendTextAndFileClick
-          ExplicitTop = 296
         end
         object btSendText: TButton
           AlignWithMargins = True
@@ -3972,7 +3962,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 3
           OnClick = btSendTextClick
-          ExplicitTop = 265
         end
         object ed_num: TComboBox
           Left = 4
@@ -4010,7 +3999,6 @@ object frmPrincipal: TfrmPrincipal
           ImageIndex = 0
           Images = ImageList1
           TabOrder = 5
-          ExplicitTop = 451
         end
         object btSendContact: TButton
           AlignWithMargins = True
@@ -4024,7 +4012,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 6
           OnClick = btSendContactClick
-          ExplicitTop = 327
         end
         object btCheckNumber: TButton
           AlignWithMargins = True
@@ -4038,7 +4025,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 7
           OnClick = btCheckNumberClick
-          ExplicitTop = 420
         end
         object btIsConnected: TButton
           AlignWithMargins = True
@@ -4052,7 +4038,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 8
           OnClick = btIsConnectedClick
-          ExplicitTop = 172
         end
         object btSendLocation: TButton
           AlignWithMargins = True
@@ -4066,7 +4051,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 9
           OnClick = btSendLocationClick
-          ExplicitTop = 389
         end
         object btSendLinkWithPreview: TButton
           AlignWithMargins = True
@@ -4080,7 +4064,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 10
           OnClick = btSendLinkWithPreviewClick
-          ExplicitTop = 358
         end
         object ed_videoLink: TEdit
           Left = 5
@@ -4101,7 +4084,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 12
           OnClick = btSendTextButtonClick
-          ExplicitTop = 234
         end
         object btSendButtonList: TButton
           AlignWithMargins = True
@@ -4115,7 +4097,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 13
           OnClick = btSendButtonListClick
-          ExplicitTop = 203
         end
       end
       object Panel1: TPanel
@@ -4128,7 +4109,6 @@ object frmPrincipal: TfrmPrincipal
         Caption = 'Panel1'
         ShowCaption = False
         TabOrder = 1
-        ExplicitHeight = 481
         object Splitter1: TSplitter
           Left = 481
           Top = 0
@@ -4150,7 +4130,6 @@ object frmPrincipal: TfrmPrincipal
           Font.Style = []
           ParentFont = False
           TabOrder = 0
-          ExplicitHeight = 481
           object Button3: TButton
             AlignWithMargins = True
             Left = 5
@@ -4187,7 +4166,6 @@ object frmPrincipal: TfrmPrincipal
             ViewStyle = vsSmallIcon
             OnClick = listaChatsClick
             OnDblClick = listaChatsDblClick
-            ExplicitHeight = 427
           end
         end
         object groupListaContatos: TGroupBox
@@ -4197,7 +4175,6 @@ object frmPrincipal: TfrmPrincipal
           Height = 499
           Align = alLeft
           TabOrder = 1
-          ExplicitHeight = 481
           object Panel4: TPanel
             Left = 2
             Top = 15
@@ -4243,7 +4220,6 @@ object frmPrincipal: TfrmPrincipal
             ViewStyle = vsSmallIcon
             OnClick = listaContatosClick
             OnDblClick = listaContatosDblClick
-            ExplicitHeight = 427
           end
         end
         object GroupBox2: TGroupBox
@@ -4253,7 +4229,6 @@ object frmPrincipal: TfrmPrincipal
           Height = 499
           Align = alLeft
           TabOrder = 2
-          ExplicitHeight = 481
           object lblNumeroConectado: TLabel
             Left = 2
             Top = 112
@@ -4320,7 +4295,6 @@ object frmPrincipal: TfrmPrincipal
             Images = ImageList1
             TabOrder = 0
             OnClick = btCleanChatClick
-            ExplicitTop = 389
           end
           object btGetMe: TButton
             AlignWithMargins = True
@@ -4334,7 +4308,6 @@ object frmPrincipal: TfrmPrincipal
             Images = ImageList1
             TabOrder = 1
             OnClick = btGetMeClick
-            ExplicitTop = 451
           end
           object btnTestCheckNumber: TButton
             AlignWithMargins = True
@@ -4348,7 +4321,6 @@ object frmPrincipal: TfrmPrincipal
             Images = ImageList1
             TabOrder = 2
             OnClick = btnTestCheckNumberClick
-            ExplicitTop = 420
           end
           object btGetSeveralStatus: TButton
             AlignWithMargins = True
@@ -4362,7 +4334,6 @@ object frmPrincipal: TfrmPrincipal
             Images = ImageList1
             TabOrder = 3
             OnClick = btGetSeveralStatusClick
-            ExplicitTop = 358
           end
           object btGetStatus: TButton
             AlignWithMargins = True
@@ -4376,7 +4347,6 @@ object frmPrincipal: TfrmPrincipal
             Images = ImageList1
             TabOrder = 4
             OnClick = btGetStatusClick
-            ExplicitTop = 327
           end
           object Panel7: TPanel
             AlignWithMargins = True
@@ -4425,7 +4395,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet4: TTabSheet
       Caption = 'Logs'
       ImageIndex = 3
-      ExplicitHeight = 481
       DesignSize = (
         1088
         499)
@@ -4490,7 +4459,6 @@ object frmPrincipal: TfrmPrincipal
     object TabSheet2: TTabSheet
       Caption = 'A'#231#245'es em grupo /  Group actions'
       ImageIndex = 3
-      ExplicitHeight = 481
       object Panel5: TPanel
         AlignWithMargins = True
         Left = 3
@@ -4504,7 +4472,6 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 0
-        ExplicitHeight = 475
         DesignSize = (
           1080
           491)
@@ -5257,7 +5224,6 @@ object frmPrincipal: TfrmPrincipal
           TabOrder = 1
           ViewStyle = vsSmallIcon
           OnClick = listaGruposClick
-          ExplicitHeight = 345
         end
         object listaParticipantes: TListView
           AlignWithMargins = True
@@ -5275,7 +5241,6 @@ object frmPrincipal: TfrmPrincipal
           TabOrder = 2
           ViewStyle = vsSmallIcon
           OnClick = listaParticipantesClick
-          ExplicitHeight = 246
         end
         object Button5: TButton
           AlignWithMargins = True
@@ -5456,7 +5421,6 @@ object frmPrincipal: TfrmPrincipal
         Text = 'Offline'
         Width = 50
       end>
-    ExplicitTop = 528
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Imagens|*jpg;*.jpg;*.bmp;*.png;*.pdf;*.mp4;*.mp3;*.rar'

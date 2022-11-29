@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//1.4.0.0;1.0.0.9;78.3.0
+//1.5.0.0;1.0.0.9;78.3.0
 //
 //
 
@@ -1654,7 +1654,7 @@ window.WAPI.sendContact = function(to, contact) {
  * @param {string} chatId '000000000000@c.us'
  */
 window.WAPI.getNewMessageId = function(chatId) {
-    var newMsgId = Store.Msg.models[0].__x_id.clone();
+    var newMsgId = Store.Msg._models[0].__x_id.clone();
 
     newMsgId.fromMe = true;
     newMsgId.id = WAPI.getNewId().toUpperCase();
@@ -2274,6 +2274,20 @@ window.WAPI.onIncomingCallCallback = async function() {
 	
 	window.Store.Call._models = []
 }
+
+window.WAPI.getchatId = async function (chatId) {
+    var to = await WAPI.getChatById(chatId),
+    objTo = to.lastReceivedKey || {},
+    extend = {
+      formattedName: to.contact.formattedName,
+      isBusiness: to.contact.isBusiness,
+      isMyContact: to.contact.isMyContact,
+      verifiedName: to.contact.verifiedName,
+      pushname: to.contact.pushname,
+    };
+  Object.assign(objTo, extend);
+  return objTo;
+};
 
 window.WAPI.sendOptions = async function (to, title, subTitle, description, buttonText, menu) {
     if (!title && typeof title != 'string') {

@@ -375,7 +375,7 @@ begin
     if not TInject1.Auth then
        Exit;
 
-    TInject1.sendButtonList(ed_num.Text, mem_message.Text, 'TInject Corporate. Valor total da sua compra: R$299', 'Escolha uma opção de pagamento:', options);
+    TInject1.sendButtonList(ed_num.Text, mem_message.Text, 'TInject Community. Valor total da sua compra: R$299', 'Escolha uma opção de pagamento:', options);
   finally
     ed_num.SelectAll;
     ed_num.SetFocus;
