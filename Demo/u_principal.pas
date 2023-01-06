@@ -921,11 +921,9 @@ begin
 end;
 
 procedure TfrmPrincipal.TInject1GetInviteGroup(const Invite: string);
-begin ShowMessage(Invite);end;
-
+begin  edt_groupInviteLink.Text := Invite;  ShowMessage(Invite);end;
 procedure TfrmPrincipal.TInject1GetMe(const vMe: TGetMeClass);
-var aList : TStringList;
-begin
+var aList : TStringList;begin
  try
   aList := TStringList.Create();
 

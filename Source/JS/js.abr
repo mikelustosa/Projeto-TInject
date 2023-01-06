@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//1.5.0.0;1.0.0.9;78.3.0
+//1.6.0.0;1.0.0.9;78.3.0
 //
 //
 
@@ -1797,7 +1797,9 @@ window.WAPI.joinGroupViaLink = async function(link){
         if(!link.match(/chat.whatsapp.com\/([\w\d]*)/g).length) return false;
         code = link.match(/chat.whatsapp.com\/([\w\d]*)/g)[0].replace('chat.whatsapp.com\/','');
     }
-    const group = await Store.GroupInvite.joinGroupViaInvite(code);
+
+	const group = await Store.GroupInvite.sendJoinGroupViaInvite(code);	
+
     if(!group.id) return false;
     return group.id._serialized
 }
