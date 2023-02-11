@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//1.6.0.0;1.0.0.9;78.3.0
+//1.8.0.0;1.0.0.9;78.3.0
 //
 //
 
@@ -131,8 +131,8 @@ if (!window.Store||!window.Store.Msg) {
                 { id: "_Presence", conditions: (module) => (module.setPresenceAvailable && module.setPresenceUnavailable) ? module : null },
                 { id: "WapDelete", conditions: (module) => (module.sendConversationDelete && module.sendConversationDelete.length == 2) ? module : null },
                 { id: 'FindChat', conditions: (module) => (module && module.findChat) ? module : null},				
-				{ id: "WapQuery", conditions: (module) => (module.default && module.default.queryExist) ? module.default : null },				
-				{ id: "WapQueryMD", conditions: (module) => module.queryExists && module.queryPhoneExists ? module : null},
+				{ id: "WapQuery", conditions: (module) => (module.default && module.default.queryExist) ? module.default : null },			
+				{ id: "WapQueryMD", conditions: (module) => (module.queryWidExists && module.queryPhoneExists) || (module.queryExists && module.queryPhoneExists) ? module : null},
 				{ id: 'Perfil', conditions: (module) => module.__esModule === true && module.setPushname && !module.getComposeContents ? module : null},
 				{ id: "CryptoLib", conditions: (module) => (module.decryptE2EMedia) ? module : null },
                 { id: "OpenChat", conditions: (module) => (module.default && module.default.prototype && module.default.prototype.openChat) ? module.default : null },
@@ -147,8 +147,8 @@ if (!window.Store||!window.Store.Msg) {
                 { id: "MsgKey", conditions: (module) => (module.default&&module.default.toString&&module.default.toString().includes('MsgKey error: obj is null/undefined')) ? module.default : null },
                 { id: "Parser", conditions: (module) => (module.convertToTextWithoutSpecialEmojis) ? module.default : null },
                 { id: "Builders", conditions: (module) => (module.TemplateMessage && module.HydratedFourRowTemplate) ? module : null },
-                { id: "Me", conditions: (module) => (module.PLATFORMS && module.Conn) ? module.default : null },
-                { id: "CallUtils", conditions: (module) => (module.sendCallEnd && module.parseCall) ? module : null },
+                { id: "Me", conditions: (module) => (module.PLATFORMS && module.Conn) ? module.default : null },  
+				{ id: "CallUtils", conditions: (module) => (module.sendCallEnd && module.parseCall) ? module : null },
                 { id: "Identity", conditions: (module) => (module.queryIdentity && module.updateIdentity) ? module : null },
                 { id: "MyStatus", conditions: (module) => (module.getStatus && module.setMyStatus) ? module : null },                
 				{ id: "ChatStates", conditions: (module) => (module.sendChatStatePaused && module.sendChatStateRecording && module.sendChatStateComposing) ? module : null },				
@@ -157,7 +157,9 @@ if (!window.Store||!window.Store.Msg) {
                 { id: "MessageUtils", conditions: (module) => (module.storeMessages && module.appendMessage) ? module : null },
                 { id: "WebMessageInfo", conditions: (module) => (module.WebMessageInfo && module.WebFeatures) ? module.WebMessageInfo : null },
                 { id: "createMessageKey", conditions: (module) => (module.createMessageKey && module.createDeviceSentMessage) ? module.createMessageKey : null },
-                { id: "Participants", conditions: (module) => (module.addParticipants && module.removeParticipants && module.promoteParticipants && module.demoteParticipants) ? module : null },
+                { id: "Participants", conditions: (module) => (module.addParticipants && module.removeParticipants && module.promoteParticipants && module.demoteParticipants && module.demoteCommmunityParticipants && module.promoteCommmunityParticipants) ? module : null },
+				{ id: "sendRemoveParticipants", conditions: (module) => module.sendRemoveParticipants ? module.sendRemoveParticipants : null },
+				{ id: "Community", conditions: (module) => (module.sendCreateCommunity && module.sendDeactivateCommunity && module.sendLinkSubgroups && module.sendRemoveFromCommunityCommunity && module.sendUnlinkSubgroups) ? module : null },
                 { id: "WidFactory", conditions: (module) => (module.isWidlike && module.createWid && module.createWidFromWidLike) ? module : null },
                 { id: "Base", conditions: (module) => (module.setSubProtocol && module.binSend && module.actionNode) ? module : null },
    				{ id: "Versions", conditions: (module) => (module.loadProtoVersions && module.default && module.default["15"] && module.default["16"] && module.default["17"]) ? module : null },
@@ -169,6 +171,8 @@ if (!window.Store||!window.Store.Msg) {
 				{ id: 'Clock', conditions: (module) => (module.Clock ? module.Clock : null)},
                 { id: 'TemplateButtonCollection', conditions: (module) => (module.TemplateButtonCollectionImpl || module.TemplateButtonCollection ? module.TemplateButtonCollection : null)},
                 { id: 'ButtonCollection', conditions: (module) => (module.ButtonCollectionImpl || module.ButtonCollection ? module.ButtonCollection : null)},
+				{ id: 'Communities', conditions: (module) => (module.sendCreateCommunity ? module : null)},
+				
             ];
             for (let idx in modules) {
             	if ((typeof modules[idx] === "object") && (modules[idx] !== null)) {
@@ -357,8 +361,9 @@ window.WAPI.createGroup = async function (name, contactsId) {
     if (!Array.isArray(contactsId)) {
         contactsId = [contactsId];
     }
+	const participantWIDs = contactsId.map(p => window.Store.WidFactory.createWid(p));
 
-    return await window.Store.WapQuery.createGroup(name, contactsId);;
+	return await window.Store.Wap.createGroup(name, participantWIDs, 0)
 };
 
 window.WAPI.leaveGroup = function(groupId) {
@@ -1822,24 +1827,92 @@ window.WAPI.addParticipant = async function (idGroup, idParticipant) {
  * @param {*} idGroup '0000000000-00000000@g.us'
  * @param {*} idParticipant '000000000000@c.us'
  */
-window.WAPI.removeParticipant = async function (idGroup, idParticipant) {
+
+/*window.WAPI.removeParticipant = async function (idGroup, contactsId) {
     const chat = Store.Chat.get(idGroup);
+	//const chat = window.Store.WidFactory.createWid(idGroup)
+    const rm = chat.groupMetadata.participants.get(contactsId);
+    //await window.Store.Participants.removeParticipants(chat, [rm]);
+    //return true;
+	
+	console.log(chat)
+	//const participantID = idParticipant.map(p => window.Store.WidFactory.createWid(p));
+	//return await window.Store.Participants.removeParticipants(chat, participantID, 0)
+	//return await window.Store.Wap.createGroup(name, participantWIDs, 0)
+	
+	if (!Array.isArray(contactsId)) {
+		contactsId = [contactsId];
+	}
+
+	contactsId = await Promise.all(
+		contactsId.map((c) => window.Store.WidFactory.createWid(c))
+	);
+
+	if (!contactsId.length) {
+		return false;
+	}
+
+	const participants = contactsId.map((p) =>
+		window.Store.WidFactory.createWid(p)
+	);
+	console.log('Oolha ai', participants)
+	
+	return window.Store.Participants.removeParticipants(rm, [participants], 0);
+} */
+
+window.WAPI.removeParticipant = async function(idGroup, idParticipant){
+    /*const metaDataGroup = window.Store.GroupMetadata.get(idGroup);
+    if (metaDataGroup === undefined){
+        done(false); return false;
+    }
+    
+    const participant = metaDataGroup.participants.get(idParticipant);
+    if (participant === undefined){
+        done(false); return false;
+    }
+    
+    await metaDataGroup.participants.remove(participant) /*.then((ret)=>{
+        const check = metaDataGroup.participants.get(idParticipant);
+        if (check === undefined){ done(true); return true; }
+        done(false); return false; 
+    }) */
+	
+	/*
+	const chatWid = window.Store.WidFactory.createWid(idGroup);
+    const chat = await window.Store.Chat.find(chatWid);
+    const participants = idParticipant.map(p => {
+                return chat.groupMetadata.participants.get(p);
+            }).filter(p => Boolean(p));
+	console.log('Grupo: ',chatWid);
+	console.log('Contato: ', participants)
+            await window.Store.Participants.removeParticipants(chatWid, participants); */
+			
+			
+	/*const chat = Store.Chat.get(idGroup);
+    const rm = chat.groupMetadata.participants.get(idParticipant);
+    window.Store.Participants.removeParticipants(chat, [rm]).then(() => {
+        checkParticipant = metaDataGroup.participants._index[idParticipant];
+		if (checkParticipant != undefined){
+			done(true); 
+			return true;	
+		}
+		
+    }).catch(e => console.log(e)) */
+	
+	const chat = Store.Chat.get(idGroup);
     const rm = chat.groupMetadata.participants.get(idParticipant);
     await window.Store.Participants.removeParticipants(chat, [rm]);
     return true;
-}
+    
+} 
+
 
 /**
  * Promote Participant to Admin in Group
  * @param {*} idGroup '0000000000-00000000@g.us'
  * @param {*} idParticipant '000000000000@c.us'
  */
-window.WAPI.promoteParticipant = async function (idGroup, idParticipant) {
-    const chat = Store.Chat.get(idGroup);
-    const promote = chat.groupMetadata.participants.get(idParticipant);
-    await window.Store.Participants.promoteParticipants(chat, [promote]);
-    return true;
-}
+
 
 /**
  * Demote Admin of Group
