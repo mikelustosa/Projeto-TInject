@@ -5,7 +5,7 @@ Componente para criação de chatBots com delphi<br>
 
 ## INSTRUÇÕES PARA USO DO COMPONENTE<br></br>
 
-Compatibilidade testada nas versões do Delphi: Seattle, Berlin, Tokyo, Rio, Sydney, Alexandria.<br></br>
+Delphi versions: Seattle, Berlin, Tokyo, Rio, Sydney, Alexandria.<br></br>
 
 ### Tutorial de instalação no youtube:<br>
 https://www.youtube.com/watch?v=EIxFdtenNxI&t=31s
