@@ -54,7 +54,7 @@ Instalação manual:<br><br>
 ✔️  Enviar localização - Location sending<br>
 ✔️  Listar contatos - Contact list<br>
 ✔️  Listar bate papos - Conversation list<br>
-✔️  Status da bateria - Battery status<br>
+❌  Status da bateria - Battery status<br>
 ✔️  Simular digitando - Typing simulation<br>
 ✔️  Recebimento de novas mensagem - Receiving new messages<br>
 ✔️  Configurações de DDI - International number configuration<br>
@@ -71,7 +71,8 @@ Instalação manual:<br><br>
 ✔️  Listar todos os grupos - List all groups<br>
 ✔️  Listar participantes do grupo - List group participants<br>
 ✔️  Entrar em grupo via link convite - Join group via invitation link<br>
-✔️  Enviar botões na conversa - Send buttons in chat(Not functional in WhatsApp Multi devices Beta)<br>
+❌  Enviar botões na conversa - Send buttons in chat(Not functional in WhatsApp Multi devices Beta)<br>
+✔️  Criar enquetes. Create Pool<br>
 
 ### Cursos do componente / Component lessions:<br>
 
