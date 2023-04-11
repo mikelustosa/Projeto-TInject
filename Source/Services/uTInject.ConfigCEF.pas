@@ -73,6 +73,7 @@ type
     FHandleFrm           : HWND;
     FInDesigner          : Boolean;
     FLogConsoleActive    : Boolean;
+    FDirIni              : String;
     procedure SetDefault;
     procedure SetPathCache   (const Value: String);
     procedure SetPathFrameworkDirPath(const Value: String);
@@ -114,7 +115,7 @@ type
     Property   Chromium             : TChromium    Read FChromium             Write SetChromium;
     Property   ChromiumForm         : TForm        Read FChromiumForm;
     Property   ErrorInt             : Boolean      Read FErrorInt;
-
+    Property   DirINI               : String       Read FDirINI               Write FDirINI;
   end;
 
 
@@ -159,6 +160,7 @@ end;
 constructor TCEFConfig.Create;
 begin
   FInDesigner          := True;
+  FDirIni := '';
   inherited;
 end;
 
@@ -347,7 +349,11 @@ begin
 
   FInDesigner          := False;
   FDirApp              := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName));
-  FIniFIle             := TIniFile.create(FDirApp + NomeArquivoIni);
+
+  if FDirIni = '' then
+    FDirIni := FDirApp;
+
+  FIniFIle             := TIniFile.create(FDirIni + NomeArquivoIni);
   Lx                   := FIniFIle.ReadString('Tinject Comp', 'Ultima interação', '01/01/1500 05:00:00');
   FPathJS              := FDirApp + NomeArquivoInject;
   FErrorInt            := False;
