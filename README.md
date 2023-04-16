@@ -39,6 +39,8 @@ Instalação manual:<br><br>
 8-Abra o arquivo demo Tinject.dproj
 <br></br>
 
+[![Star History Chart](https://star-history.com/#mikelustosa/Projeto-TInject&Date)]
+
 ### Recursos / Resources<br><br>
 ✔️  Login<br>
 ✔️  Logout<br>
