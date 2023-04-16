@@ -39,8 +39,6 @@ Instalação manual:<br><br>
 8-Abra o arquivo demo Tinject.dproj
 <br></br>
 
-(https://www.youtube.com/watch?v=Hc79sDi3f0U "Now in Android: 55")
-
 ### Recursos / Resources<br><br>
 ✔️  Login<br>
 ✔️  Logout<br>
