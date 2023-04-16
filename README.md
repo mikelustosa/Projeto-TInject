@@ -39,6 +39,8 @@ Instalação manual:<br><br>
 8-Abra o arquivo demo Tinject.dproj
 <br></br>
 
+<iframe style="width:100%;height:auto;min-width:600px;min-height:400px;" src="https://star-history.com/embed?secret=Z2l0aHViX3BhdF8xMUFLWDNKNVkwcUIzeFB4RXlCanYxX1FHQVlqMk9tYnBCWFBxbWNjeDF5VTlGbXk4bkNtOTlsNVdqVlY5djg5N21CWTdVUExVU1l1eTNNTXhH#mikelustosa/Projeto-TInject&Date" frameBorder="0"></iframe>
+
 ### Recursos / Resources<br><br>
 ✔️  Login<br>
 ✔️  Logout<br>
