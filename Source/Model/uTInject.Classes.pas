@@ -529,6 +529,7 @@ type
     FT               : Extended;
     FNotifyName      : String;
     FFrom            : String;
+    FFromMe          : Boolean;
     FTo              : String;
     FSelf            : String;
     FAck             : Extended;
@@ -591,6 +592,7 @@ type
     property Caption    : String              Read FCaption            Write FCaption;
     property content    : String              read FContent            write FContent;
     property from       : String              read FFrom               write FFrom;
+    property fromMe     : Boolean             read FFromMe             write FFromMe;
     property id         : String              read FId                 write FId;
     property invis      : Boolean             read FInvis              write FInvis;
     property isForwarded: Boolean             read FIsForwarded        write FIsForwarded;
@@ -780,7 +782,8 @@ private
   FId           : String;
   FIsBusiness   : Boolean;
   FIsEnterprise : Boolean;
-  FIsMe         : Boolean;
+  //FIsMe         : Boolean; deprecated
+  FFromMe       : Boolean;
   FIsMyContact  : Boolean;
   FIsPSA        : Boolean;
   FIsUser       : Boolean;
@@ -804,7 +807,8 @@ public
   property id:              String         read FId               write FId;
   property isBusiness:      Boolean        read FIsBusiness       write FIsBusiness;
   property isEnterprise:    Boolean        read FIsEnterprise     write FIsEnterprise;
-  property isMe:            Boolean        read FIsMe             write FIsMe;
+  //property isMe:            Boolean        read FIsMe             write FIsMe; deprecated
+  property fromMe:          Boolean        read FFromMe           write FFromMe;
   property isMyContact:     Boolean        read FIsMyContact      write FIsMyContact;
   property isPSA:           Boolean        read FIsPSA            write FIsPSA;
   property isUser:          Boolean        read FIsUser           write FIsUser;
