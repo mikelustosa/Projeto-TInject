@@ -183,6 +183,10 @@ begin
   vText  := StringReplace(vText, '"'       ,'\"' , [rfReplaceAll] );
   vText  := StringReplace(vText, #$A       ,'<br>'   , [rfReplaceAll] );
   vText  := StringReplace(vText, #$A#$A    ,'<br>'   , [rfReplaceAll] );
+  vText  := StringReplace(vText, '\r'      ,''    , [rfReplaceAll] );
+  vText  := StringReplace(vText, '<br>'    ,' \n' , [rfReplaceAll] );
+  vText  := StringReplace(vText, '<br />'  ,' \n' , [rfReplaceAll] );
+  vText  := StringReplace(vText, '<br/>'   ,' \n' , [rfReplaceAll] );
   Result := vText;
 end;
 

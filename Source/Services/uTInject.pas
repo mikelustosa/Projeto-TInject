@@ -1981,14 +1981,10 @@ begin
   finally
     if assigned(LForm) then
       FreeAndNil(LForm);
-
     sleepNoFreeze(5000);
-
     if assigned(GlobalCEFApp) then
       FreeAndNil(GlobalCEFApp);
-
     sleepNoFreeze(5000);
-
     try
       if CallTerminateProcs then PostQuitMessage(0);
     except
