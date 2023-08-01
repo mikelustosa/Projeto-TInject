@@ -3931,9 +3931,9 @@ object frmPrincipal: TfrmPrincipal
         object Label2: TLabel
           Left = 5
           Top = 49
-          Width = 227
+          Width = 167
           Height = 13
-          Caption = 'Texto ou contato(sem @c.us) / Text or contact'
+          Caption = 'Texto ou contato / Text or contact'
         end
         object Label6: TLabel
           Left = 5

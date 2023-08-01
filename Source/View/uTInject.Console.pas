@@ -181,7 +181,7 @@ type
     procedure SendContact(vNumDest, vNum:string; vNameContact: string = '');
     procedure SendBase64(vBase64, vNum, vFileName, vText:string);
     procedure SendLinkPreview(vNum, vLinkPreview, vText: string);
-    procedure SendLocation(vNum, vLat, vLng, vText: string);
+    procedure SendLocation(vNum, vLat, vLng, vName, vAddress: string);
     procedure Logout();
     procedure ReloaderWeb;
     procedure StopWebBrowser;
@@ -851,7 +851,6 @@ begin
   if not FConectado then
     raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
 
-  //LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendContact;
   LJS   := FrmConsole_JS_VAR_SendContact;
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE_DEST#',       Trim(vNumDest));
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',            Trim(vNum));
@@ -874,20 +873,22 @@ begin
   ExecuteJS(LJS, true);
 end;
 
-procedure TFrmConsole.SendLocation(vNum, vLat, vLng, vText: string);
+procedure TFrmConsole.SendLocation(vNum, vLat, vLng, vName, vAddress: string);
 var
   Ljs: string;
 begin
   if not FConectado then
     raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
 
-  vText := CaractersWeb(vText);
-  //LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendLocation;
+  vName     := CaractersWeb(vName);
+  vAddress  := CaractersWeb(vAddress);
+
   LJS   := FrmConsole_JS_VAR_SendLocation;
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',     Trim(vNum));
   FrmConsole_JS_AlterVar(LJS, '#MSG_LAT#',       Trim(vLat));
   FrmConsole_JS_AlterVar(LJS, '#MSG_LNG#',       Trim(vLng));
-  FrmConsole_JS_AlterVar(LJS, '#MSG_CORPO#',     Trim(vText));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_NAME#',      Trim(vName));
+  FrmConsole_JS_AlterVar(LJS, '#MSG_ADDRESS#',   Trim(vAddress));
   ExecuteJS(LJS, true);
 end;
 

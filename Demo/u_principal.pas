@@ -415,8 +415,8 @@ begin
   try
     if not TInject1.Auth then
        Exit;
-    //                    number        lat         lgn        Message link
-    TInject1.sendLocation(ed_num.Text, '-70.4078', '25.3789', 'Segue a localização');
+    //                    number        lat         lgn        Name               Address
+    TInject1.sendLocation(ed_num.Text, '-22.95201', '-43.2102601', 'Cristo Rendentor', 'Parque Nacional da Tijuca - Alto da Boa Vista, Rio de Janeiro - RJ');
   finally
     ed_num.SelectAll;
     ed_num.SetFocus;

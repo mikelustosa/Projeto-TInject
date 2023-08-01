@@ -153,11 +153,11 @@ type
     procedure SendButtonList(phoneNumber: string; titleText1: string; titleText2: string; titleButton: string; options: string; etapa: string = '');
     procedure sendPool(PGroupID, PTitle, PSurvey: string);
     procedure deleteConversation(PNumberPhone: string);
-    procedure SendContact(PNumberPhone, PNumber: string; PNameContact: string = '');
+    procedure SendContact(PPhoneDestiny, PPhoneContact: string; PNameContact: string = '');
     procedure SendFile(PNumberPhone: String; Const PFileName: String; PMessage: string = '');
     procedure SendBase64(Const vBase64: String; vNum: String;  Const vFileName, vMess: string);     deprecated; //Versao 1.0.2.0 disponivel ate Versao 1.0.6.0
     procedure SendLinkPreview(PNumberPhone, PVideoLink, PMessage: string);
-    procedure SendLocation(PNumberPhone, PLat, PLng, PMessage: string);
+    procedure SendLocation(PNumberPhone, PLat, PLng, PName, PAddress: string);
     procedure Logtout();
     procedure GetBatteryStatus;
     procedure CheckIsValidNumber(PNumberPhone: string);
@@ -1460,7 +1460,7 @@ begin
 
 end;
 
-procedure TInject.SendLocation(PNumberPhone, PLat, PLng, PMessage: string);
+procedure TInject.SendLocation(PNumberPhone, PLat, PLng, PName, PAddress: string);
 var
   lThread : TThread;
 begin
@@ -1476,11 +1476,11 @@ begin
     Exit;
   end;
 
-  if Trim(PMessage) = '' then
-  begin
-    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, PNumberPhone);
-    Exit;
-  end;
+//  if Trim(PMessage) = '' then
+//  begin
+//    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, PNumberPhone);
+//    Exit;
+//  end;
 
   if (Trim(PLat) = '') or (Trim(PLng) = '') then
   begin
@@ -1498,7 +1498,7 @@ begin
           if Assigned(FrmConsole) then
           begin
             FrmConsole.ReadMessages(PNumberPhone); //Marca como lida a mensagem
-            FrmConsole.sendLocation(PNumberPhone, PLat, PLng, PMessage);
+            FrmConsole.sendLocation(PNumberPhone, PLat, PLng, PName, PAddress);
           end;
         end);
 
@@ -1690,7 +1690,7 @@ begin
 
 end;
 
-procedure TInject.SendContact(PNumberPhone, PNumber: string; PNameContact: string = '');
+procedure TInject.SendContact(PPhoneDestiny, PPhoneContact: string; PNameContact: string = '');
 var
   lThread : TThread;
 begin
@@ -1699,17 +1699,17 @@ begin
   if not Assigned(FrmConsole) then
      Exit;
 
-  PNumberPhone := AjustNumber.FormatIn(PNumberPhone);
+  PPhoneDestiny := AjustNumber.FormatIn(PPhoneDestiny);
 
-  if (pos('@', PNumberPhone) = 0) then
+  if (pos('@', PPhoneDestiny) = 0) then
   Begin
-    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PNumberPhone);
+    Int_OnErroInterno(Self, MSG_ExceptPhoneNumberError, PPhoneDestiny);
     Exit;
   end;
 
-  if Trim(PNumber) = '' then
+  if Trim(PPhoneContact) = '' then
   begin
-    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, PNumberPhone);
+    Int_OnErroInterno(Self, MSG_WarningNothingtoSend, PPhoneContact);
     Exit;
   end;
 
@@ -1722,7 +1722,7 @@ begin
         begin
           if Assigned(FrmConsole) then
           begin
-            FrmConsole.SendContact(PNumberPhone, PNumber, PNameContact);
+            FrmConsole.SendContact(PPhoneDestiny, PPhoneContact, PNameContact);
           end;
         end);
 

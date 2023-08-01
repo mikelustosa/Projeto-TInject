@@ -34,7 +34,7 @@ Uses Winapi.Messages, System.SysUtils, typinfo, REST.Json;
 Const
   //Uso GLOBAL
                                   //Version updates I=HIGH, II=MEDIUM, III=LOW, IV=VERY LOW
-  TInjectVersion                  = '3.9.0.0'; //  29/06/2023  //Alterado por Mike Lustosa
+  TInjectVersion                  = '4.0.0.0'; //  31/07/2023  //Alterado por Mike Lustosa
   CardContact                     = '@c.us';
   CardGroup                       = '@g.us';
   CardList                        = '@broadcast';
@@ -81,9 +81,9 @@ Const
   FrmConsole_JS_VAR_SendButtons         = 'window.WAPI.sendButtons("<#MSG_PHONE#>","<#MSG_TITLE#>",<#MSG_BUTTONS#>,"<#MSG_FOOTER#>")';
   FrmConsole_JS_VAR_SendButtonList      = 'window.WAPI.sendOptions("<#MSG_PHONE#>","<#MSG_TITLE1#>","","<#MSG_TITLE2#>","<#MSG_TITLEBUTTON#>",<#MSG_OPTIONS#>)';
   FrmConsole_JS_VAR_SendLinkPreview     = 'window.WAPI.sendLinkWithAutoPreview("<#MSG_PHONE#>", "<#MSG_LINK#>", "<#MSG_CORPO#>")';
-  FrmConsole_JS_VAR_SendLocation        = 'window.WAPI.sendLocation("<#MSG_PHONE#>", "<#MSG_LAT#>", "<#MSG_LNG#>", "<#MSG_CORPO#>")';
+  FrmConsole_JS_VAR_SendLocation        = 'window.WAPI.sendLocation("<#MSG_PHONE#>",{lat:"<#MSG_LAT#>",lng:"<#MSG_LNG#>",name:"<#MSG_NAME#>",address:"<#MSG_ADDRESS#>",});';
   FrmConsole_JS_VAR_Logout              = 'localStorage.clear(); location.reload();';
-  FrmConsole_JS_VAR_SendContact         = 'window.WAPI.sendVCard("<#MSG_PHONE_DEST#>", "<#MSG_PHONE#>")';
+  FrmConsole_JS_VAR_SendContact         = 'window.WAPI.sendContact("<#MSG_PHONE_DEST#>", "<#MSG_PHONE#>")';
   FrmConsole_JS_VAR_CheckIsValidNumber  = 'window.WAPI.isValidNumber("<#MSG_PHONE#>")'+
                                         '.then(result => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(result)))'+
                                         '.catch(error => SetConsoleMessage("GetCheckIsValidNumber", JSON.stringify(error)));';
