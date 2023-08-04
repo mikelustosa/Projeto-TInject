@@ -3,7 +3,6 @@
 Componente para criação de chatBots com delphi<br>
 <i>Component for creating chatBots with delphi</i><br></br>
 
-
 ## INSTRUÇÕES PARA USO DO COMPONENTE<br></br>
 
 Delphi versions: Seattle, Berlin, Tokyo, Rio, Sydney, Alexandria.<br></br>
