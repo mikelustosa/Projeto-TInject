@@ -2,8 +2,8 @@ object FrmConsole: TFrmConsole
   Left = 0
   Top = 0
   Caption = 'TInject component'
-  ClientHeight = 518
-  ClientWidth = 881
+  ClientHeight = 517
+  ClientWidth = 877
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -22,8 +22,8 @@ object FrmConsole: TFrmConsole
   object Pnl_Top: TPanel
     AlignWithMargins = True
     Left = 3
-    Top = 493
-    Width = 875
+    Top = 492
+    Width = 871
     Height = 22
     Align = alBottom
     BorderStyle = bsSingle
@@ -32,8 +32,8 @@ object FrmConsole: TFrmConsole
     ParentBackground = False
     ParentCtl3D = False
     TabOrder = 0
-    ExplicitTop = 494
-    ExplicitWidth = 879
+    ExplicitTop = 493
+    ExplicitWidth = 875
     object Lbl_Caption: TLabel
       Left = 1
       Top = 1
@@ -52,7 +52,7 @@ object FrmConsole: TFrmConsole
     end
     object lbl_Versao: TLabel
       AlignWithMargins = True
-      Left = 789
+      Left = 785
       Top = 4
       Width = 82
       Height = 12
@@ -440,8 +440,8 @@ object FrmConsole: TFrmConsole
     AlignWithMargins = True
     Left = 3
     Top = 1
-    Width = 875
-    Height = 486
+    Width = 871
+    Height = 485
     Margins.Top = 1
     Align = alClient
     BevelOuter = bvNone
@@ -450,16 +450,15 @@ object FrmConsole: TFrmConsole
     ParentDoubleBuffered = False
     ShowCaption = False
     TabOrder = 1
-    ExplicitWidth = 879
-    ExplicitHeight = 487
+    ExplicitWidth = 875
+    ExplicitHeight = 486
     object CEFWindowParent1: TCEFWindowParent
       Left = 0
       Top = 0
-      Width = 879
+      Width = 875
       Height = 121
       Align = alTop
       TabOrder = 0
-      ExplicitTop = 41
     end
   end
   object Chromium1: TChromium

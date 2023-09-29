@@ -29,7 +29,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 1096
     Height = 527
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 0
     ExplicitWidth = 1092
@@ -5525,6 +5525,7 @@ object frmPrincipal: TfrmPrincipal
     OnGetQrCode = TInject1GetQrCode
     OnGetChatList = TInject1GetChatList
     OnGetUnReadMessages = TInject1GetUnReadMessages
+    OnGetUnReadMessagesFromMe = TInject1GetUnReadMessagesFromMe
     OnGetAllGroupContacts = TInject1GetAllGroupContacts
     OnGetStatus = TInject1GetStatus
     OnGetBatteryLevel = TInject1GetBatteryLevel
