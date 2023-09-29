@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//2.0.0.0;1.0.0.9;78.3.0
+//2.0.2.0;1.0.0.9;78.3.0
 //
 
 function getAllGroupContacts(Contacts) {
@@ -61,12 +61,16 @@ function SetConsoleMessage(jsName, resultValue) {
 var intervalMonitor;
 var isLoggedStatus = false;
 var gettingUnreadMessages = false;
+var WAVersion;
 
 function startMonitor(intervalSeconds = 0) {
     isLoggedStatus = WAPI.isLoggedIn();
 	window.WAPI.onIncomingCall();
-	
-    if (intervalSeconds >= 1) {
+	window.WAPI.onGetUnReadMessageFromMe();
+	WAVersion = WAPI.getWAVersion();
+	WAVersion = WAVersion.replace(/\./g, '');
+    
+	if (intervalSeconds >= 1) {
         intervalMonitor = window.setInterval(monitorUnReadMessages, intervalSeconds * 1000);
     }
 }
@@ -1574,13 +1578,23 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption) {
                     var mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
             var mc = new Store.MediaCollection(chat);
             
-    
-            //New - Mike Lustosa 07/06/2022
-            mc.processAttachments([{file: mediaBlob}, 1], chat, 1).then(() => {
-                let media = mc._models[0];
-                media.sendToChat(chat, {caption:caption});
-                return true;
-            });
+			console.log('WAVersion: ', WAVersion);
+			
+			if (WAVersion >= 223409)	{
+				mc.processAttachments([{file: mediaBlob}, 1], 1, chat).then(() => {
+					let media = mc._models[0];
+					media.sendToChat(chat, {caption:caption});
+					return true;
+				});
+			
+			} else {
+				mc.processAttachments([{file: mediaBlob}, 1], chat, 1).then(() => {
+					let media = mc._models[0];
+					media.sendToChat(chat, {caption:caption});
+					return true;
+				});
+			}
+            
         });
     
 }
@@ -2357,6 +2371,13 @@ window.WAPI.sendPool = async function(chatId, title, surveyList) {
 window.WAPI.onIncomingCall = function (onIncomingCallCallback) {
 	window.Store.Call.on('add', WAPI.onIncomingCallCallback);		
     return true;	
+}
+
+//Mike W. Lustosa 05/08/2023
+window.WAPI.onGetUnReadMessageFromMe = function () {
+	Store.Chat.on("change:hasUnread", (jsonMsg) => {
+		SetConsoleMessage("getUnreadMessagesFromMe", JSON.stringify(jsonMsg));
+	});
 }
 
 //Mike W. Lustosa 14/11/2022

@@ -55,6 +55,7 @@ type
   TOnGetCheckIsValidNumber  = Procedure(Sender : TObject; Number: String;  IsValid: Boolean) of object;
   TOnGetProfilePicThumb     = Procedure(Sender : TObject; Base64: String) of object;
   TGetUnReadMessages        = procedure(Const Chats: TChatList) of object;
+  TGetUnReadMessagesFromMe  = procedure(Const Chats: TChatList) of object;
   TOnGetQrCode              = procedure(Const Sender: Tobject; Const QrCode: TResultQRCodeClass) of object;
   TOnAllContacts            = procedure(Const AllContacts: TRetornoAllContacts) of object;
   TOnAllGroups              = procedure(Const AllGroups: TRetornoAllGroups) of object;
@@ -107,6 +108,7 @@ type
   protected
     { Protected declarations }
     FOnGetUnReadMessages        : TGetUnReadMessages;
+    FOnGetUnReadMessagesFromMe  : TGetUnReadMessagesFromMe;
     FOnGetAllGroupContacts      : TOnAllGroupContacts;
     FOnGetAllContactList        : TOnAllContacts;
     FOnGetAllGroupList          : TOnAllGroups;
@@ -221,6 +223,7 @@ type
     property OnGetQrCode                 : TOnGetQrCode               read FOnGetQrCode                    write FOnGetQrCode;
     property OnGetChatList               : TGetUnReadMessages         read FOnGetChatList                  write FOnGetChatList;
     property OnGetUnReadMessages         : TGetUnReadMessages         read FOnGetUnReadMessages            write FOnGetUnReadMessages;
+    property OnGetUnReadMessagesFromMe   : TGetUnReadMessagesFromMe   read FOnGetUnReadMessagesFromMe      write FOnGetUnReadMessagesFromMe;
     property OnGetAllGroupContacts       : TOnAllGroupContacts        read FOnGetAllGroupContacts          write FOnGetAllGroupContacts;
     property OnGetStatus                 : TNotifyEvent               read FOnGetStatus                    write FOnGetStatus;
     property OnGetBatteryLevel           : TNotifyEvent               read FOnGetBatteryLevel              write FOnGetBatteryLevel;
@@ -1081,7 +1084,7 @@ begin
   end;
 
 
-  if (PTypeHeader In [Th_GetAllChats, Th_getUnreadMessages]) then
+  if (PTypeHeader In [Th_GetAllChats, Th_getUnreadMessages, Th_getUnreadMessagesFromMe]) then
   Begin
     if not Assigned(PReturnClass) then
       raise Exception.Create(MSG_ExceptMisc + ' in Int_OnNotificationCenter' );
@@ -1096,6 +1099,13 @@ begin
     Begin
       if Assigned(OnGetUnReadMessages) then
          OnGetUnReadMessages(TChatList(PReturnClass));
+
+    end;
+
+    If PTypeHeader = Th_getUnreadMessagesFromMe Then
+    Begin
+      if Assigned(OnGetUnReadMessagesFromMe) then
+         OnGetUnReadMessagesFromMe(TChatList(PReturnClass));
 
     end;
 
@@ -1342,9 +1352,8 @@ begin
   lThread.Start;
 end;
 
-
 procedure TInject.SendFile(PNumberPhone: string;
-  const PFileName: String; PMessage: string);
+  const PFileName: String; PMessage: string = '');
 var
   lThread     : TThread;
   LStream     : TMemoryStream;
@@ -1373,6 +1382,7 @@ begin
 
   LStream     := TMemoryStream.Create;
   LBase64File := TBase64Encoding.Create;
+
   try
     try
       LStream.LoadFromFile(PFileName);
@@ -1404,6 +1414,8 @@ begin
           begin
             FrmConsole.ReadMessages(PNumberPhone); //Marca como lida a mensagem
             FrmConsole.sendBase64(LBase64, PNumberPhone, PFileName, PMessage);
+            //FrmConsole.sendBase64(PFileName, PNumberPhone, PFileName, PMessage);
+
           end;
         end);
       end);
