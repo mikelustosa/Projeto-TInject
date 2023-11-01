@@ -1256,10 +1256,15 @@ begin
   if PTypeHeader in [Th_Connected, Th_Disconnected]  then
   Begin
     if PTypeHeader = Th_Connected then
-       SetAuth(True) else
-       SetAuth(False);
-    LimparQrCodeInterno;
-    Exit;
+    begin
+       SetAuth(True);
+       FrmConsole.setIntervalEnd;
+    end else
+      begin
+         SetAuth(False);
+        LimparQrCodeInterno;
+        Exit;
+      end;
   end;
 
 

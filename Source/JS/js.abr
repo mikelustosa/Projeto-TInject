@@ -62,6 +62,7 @@ var intervalMonitor;
 var isLoggedStatus = false;
 var gettingUnreadMessages = false;
 var WAVersion;
+var intervalEnd = false;
 
 function startMonitor(intervalSeconds = 0) {
     isLoggedStatus = WAPI.isLoggedIn();
@@ -1577,9 +1578,7 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption) {
         return Store.FindChat.findChat(idUser).then((chat) => {
                     var mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
             var mc = new Store.MediaCollection(chat);
-            
-			console.log('WAVersion: ', WAVersion);
-			
+            			
 			if (WAVersion >= 223409)	{
 				mc.processAttachments([{file: mediaBlob}, 1], 1, chat).then(() => {
 					let media = mc._models[0];

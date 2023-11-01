@@ -153,9 +153,9 @@ type
     Procedure Form_Start;
     Procedure Form_Normal;
 
-
     public
     { Public declarations }
+    procedure setIntervalEnd;
     Function  ConfigureNetWork:Boolean;
     Procedure SetZoom(Pvalue: Integer);
     Property  Conectado: Boolean    Read FConectado;
@@ -670,6 +670,11 @@ begin
 
   SendNotificationCenterDirect(Th_Abort);
   LPaginaId := 0;
+end;
+
+procedure TFrmConsole.setIntervalEnd();
+begin
+  ExecuteJS('intervalEnd = true', False);
 end;
 
 procedure TFrmConsole.ReadMessages(vID: string);

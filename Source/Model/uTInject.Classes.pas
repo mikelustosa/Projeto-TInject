@@ -890,7 +890,7 @@ begin
 end;
 
 function TResultQRCodeClass.CreateImage: Boolean;
-{$IFNDEF VER330}
+{$IF CompilerVersion >= 31}
 var
     PNG: TpngImage;
 {$ENDIF}
@@ -901,21 +901,24 @@ begin
        Exit;
 
     FreeAndNil(FAQrCodeImage);
-    FAQrCodeImage  := TPicture.Create;       
+    FAQrCodeImage  := TPicture.Create;
     FAQrCodeImageStream.Position := 0;
-    
-    {$IFDEF VER330}
+
+   {$IF CompilerVersion >= 31}
       FAQrCodeImage.LoadFromStream(FAQrCodeImageStream);
-   {$ELSE}
+      result := True;
+   {$ENDIF}
+
+   {$IF CompilerVersion < 31}
       PNG := TPngImage.Create;
       try
         Png.LoadFromStream(FAQrCodeImageStream);
         FAQrCodeImage.Graphic := PNG;
+        result := True;
       finally
         PNG.Free;
       end;
    {$ENDIF}
-    result := True;
   Except
   end;
 end;

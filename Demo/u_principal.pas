@@ -322,8 +322,7 @@ end;
 
 procedure TfrmPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  TInject1.ShutDown;
-//  FreeAndNil(GlobalCEFApp);
+  TInject1.ShutDown(true);//true or false para exibir ou ocultar a caixa de dialogo
 end;
 
 Procedure TfrmPrincipal.AddChatList(ANumber: String);

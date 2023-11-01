@@ -49,6 +49,8 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 0
+        ExplicitWidth = 706
+        ExplicitHeight = 492
         DesignSize = (
           708
           491)
@@ -444,6 +446,7 @@ object frmPrincipal: TfrmPrincipal
           Margins.Bottom = 8
           Align = alTop
           TabOrder = 0
+          ExplicitWidth = 686
           DesignSize = (
             690
             113)
@@ -501,6 +504,7 @@ object frmPrincipal: TfrmPrincipal
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 3
             OnExit = Edt_DDIPDRExit
+            ExplicitWidth = 480
           end
         end
         object Pnl_FONE: TPanel
@@ -589,6 +593,7 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 1
+        ExplicitHeight = 492
         DesignSize = (
           364
           491)
@@ -3913,7 +3918,6 @@ object frmPrincipal: TfrmPrincipal
         Height = 499
         Align = alLeft
         TabOrder = 0
-        ExplicitHeight = 498
         DesignSize = (
           249
           499)
