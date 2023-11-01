@@ -1135,11 +1135,12 @@ begin
   if PTypeHeader = Th_Initialized then
   Begin
     FStatus := Inject_Initialized;
+
     if Assigned(FOnAfterInitialize) then
        FOnAfterInitialize(Self);
 
     if Assigned(fOnGetStatus ) then
-       fOnGetStatus(Self);
+      fOnGetStatus(Self);
   end;
 
 
@@ -1150,7 +1151,6 @@ begin
 
     FrmConsole.GetMyNumber;
     SleepNoFreeze(40);
-
 
     FrmConsole.GetAllContacts(true);
     if Assigned(fOnGetStatus ) then
@@ -1182,7 +1182,10 @@ begin
   Begin
     FMyNumber := FAdjustNumber.FormatOut(PValue);
     if Assigned(FOnGetMyNumber) then
+    begin
        FOnGetMyNumber(Self);
+       FrmConsole.setIntervalEnd;
+    end;
   end;
 
 
@@ -1257,8 +1260,8 @@ begin
   Begin
     if PTypeHeader = Th_Connected then
     begin
-       SetAuth(True);
        FrmConsole.setIntervalEnd;
+       SetAuth(True);
     end else
       begin
          SetAuth(False);

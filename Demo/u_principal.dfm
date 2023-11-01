@@ -3949,7 +3949,6 @@ object frmPrincipal: TfrmPrincipal
           Height = 69
           Anchors = [akLeft, akTop, akBottom]
           TabOrder = 1
-          ExplicitHeight = 68
         end
         object btSendTextAndFile: TButton
           AlignWithMargins = True
@@ -3963,7 +3962,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 2
           OnClick = btSendTextAndFileClick
-          ExplicitTop = 313
         end
         object btSendText: TButton
           AlignWithMargins = True
@@ -3977,7 +3975,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 3
           OnClick = btSendTextClick
-          ExplicitTop = 282
         end
         object ed_num: TComboBox
           Left = 4
@@ -4015,7 +4012,6 @@ object frmPrincipal: TfrmPrincipal
           ImageIndex = 0
           Images = ImageList1
           TabOrder = 5
-          ExplicitTop = 468
         end
         object btSendContact: TButton
           AlignWithMargins = True
@@ -4029,7 +4025,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 6
           OnClick = btSendContactClick
-          ExplicitTop = 344
         end
         object btCheckNumber: TButton
           AlignWithMargins = True
@@ -4043,7 +4038,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 7
           OnClick = btCheckNumberClick
-          ExplicitTop = 437
         end
         object btIsConnected: TButton
           AlignWithMargins = True
@@ -4057,7 +4051,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 8
           OnClick = btIsConnectedClick
-          ExplicitTop = 189
         end
         object btSendLocation: TButton
           AlignWithMargins = True
@@ -4071,7 +4064,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 9
           OnClick = btSendLocationClick
-          ExplicitTop = 406
         end
         object btSendLinkWithPreview: TButton
           AlignWithMargins = True
@@ -4085,7 +4077,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 10
           OnClick = btSendLinkWithPreviewClick
-          ExplicitTop = 375
         end
         object ed_videoLink: TEdit
           Left = 5
@@ -4106,7 +4097,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 12
           OnClick = btSendTextButtonClick
-          ExplicitTop = 251
         end
         object btSendButtonList: TButton
           AlignWithMargins = True
@@ -4120,7 +4110,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 13
           OnClick = btSendButtonListClick
-          ExplicitTop = 220
         end
       end
       object Panel1: TPanel
@@ -4133,8 +4122,6 @@ object frmPrincipal: TfrmPrincipal
         Caption = 'Panel1'
         ShowCaption = False
         TabOrder = 1
-        ExplicitWidth = 835
-        ExplicitHeight = 498
         object Splitter1: TSplitter
           Left = 481
           Top = 0
@@ -4156,7 +4143,6 @@ object frmPrincipal: TfrmPrincipal
           Font.Style = []
           ParentFont = False
           TabOrder = 0
-          ExplicitHeight = 498
           object Button3: TButton
             AlignWithMargins = True
             Left = 5
@@ -4193,7 +4179,6 @@ object frmPrincipal: TfrmPrincipal
             ViewStyle = vsSmallIcon
             OnClick = listaChatsClick
             OnDblClick = listaChatsDblClick
-            ExplicitHeight = 444
           end
         end
         object groupListaContatos: TGroupBox
@@ -4203,7 +4188,6 @@ object frmPrincipal: TfrmPrincipal
           Height = 499
           Align = alLeft
           TabOrder = 1
-          ExplicitHeight = 498
           object Panel4: TPanel
             Left = 2
             Top = 15
@@ -4249,7 +4233,6 @@ object frmPrincipal: TfrmPrincipal
             ViewStyle = vsSmallIcon
             OnClick = listaContatosClick
             OnDblClick = listaContatosDblClick
-            ExplicitHeight = 444
           end
         end
         object GroupBox2: TGroupBox
@@ -4259,7 +4242,6 @@ object frmPrincipal: TfrmPrincipal
           Height = 499
           Align = alLeft
           TabOrder = 2
-          ExplicitHeight = 498
           object lblNumeroConectado: TLabel
             Left = 2
             Top = 112
@@ -4326,7 +4308,6 @@ object frmPrincipal: TfrmPrincipal
             Images = ImageList1
             TabOrder = 0
             OnClick = btCleanChatClick
-            ExplicitTop = 406
           end
           object btGetMe: TButton
             AlignWithMargins = True
@@ -4340,7 +4321,6 @@ object frmPrincipal: TfrmPrincipal
             Images = ImageList1
             TabOrder = 1
             OnClick = btGetMeClick
-            ExplicitTop = 468
           end
           object btnTestCheckNumber: TButton
             AlignWithMargins = True
@@ -4354,7 +4334,6 @@ object frmPrincipal: TfrmPrincipal
             Images = ImageList1
             TabOrder = 2
             OnClick = btnTestCheckNumberClick
-            ExplicitTop = 437
           end
           object btGetSeveralStatus: TButton
             AlignWithMargins = True
@@ -4368,7 +4347,6 @@ object frmPrincipal: TfrmPrincipal
             Images = ImageList1
             TabOrder = 3
             OnClick = btGetSeveralStatusClick
-            ExplicitTop = 375
           end
           object btGetStatus: TButton
             AlignWithMargins = True
@@ -4382,7 +4360,6 @@ object frmPrincipal: TfrmPrincipal
             Images = ImageList1
             TabOrder = 4
             OnClick = btGetStatusClick
-            ExplicitTop = 344
           end
           object Panel7: TPanel
             AlignWithMargins = True

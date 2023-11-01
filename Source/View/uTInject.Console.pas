@@ -97,6 +97,7 @@ type
       const params: ICefContextMenuParams; const model: ICefMenuModel);
     procedure Button2Click(Sender: TObject);
     procedure Image2Click(Sender: TObject);
+    procedure Lbl_CaptionClick(Sender: TObject);
   protected
     // You have to handle this two messages to call NotifyMoveOrResizeStarted or some page elements will be misaligned.
     procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
@@ -674,7 +675,7 @@ end;
 
 procedure TFrmConsole.setIntervalEnd();
 begin
-  ExecuteJS('intervalEnd = true', False);
+  ExecuteJS('intervalEnd = true', true);
 end;
 
 procedure TFrmConsole.ReadMessages(vID: string);
@@ -1683,6 +1684,11 @@ begin
   ExecuteJS(FrmConsole_JS_IsLoggedIn, false);
 end;
 
+
+procedure TFrmConsole.Lbl_CaptionClick(Sender: TObject);
+begin
+  ExecuteJS(FrmConsole_JS_refreshOnlyQRCode, true);
+end;
 
 procedure TFrmConsole.lbl_VersaoMouseEnter(Sender: TObject);
 const

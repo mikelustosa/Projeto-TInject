@@ -47,6 +47,7 @@ object FrmConsole: TFrmConsole
       Font.Style = []
       ParentFont = False
       Layout = tlCenter
+      OnClick = Lbl_CaptionClick
       ExplicitWidth = 90
       ExplicitHeight = 13
     end

@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//2.0.2.0;1.0.0.9;78.3.0
+//2.0.3.0;1.0.0.9;78.3.0
 //
 
 function getAllGroupContacts(Contacts) {
@@ -63,27 +63,6 @@ var isLoggedStatus = false;
 var gettingUnreadMessages = false;
 var WAVersion;
 var intervalEnd = false;
-
-function startIntervalQRCode() {
-	alert("Monitor qrcode iniciado"); 
-	/*const interval = window.setInterval(async function() { 
-		if (intervalEnd) {
-			clearInterval(interval);
-            alert("Monitor qrcode encerrado");
-        } else 
-			try {
-                    const all = document.querySelectorAll("button");
-                    if (all[0]) {
-						const buttonWithRecarregar = Array.from(all).find(button => button.textContent.includes("recarregar"));
-                        if (buttonWithRecarregar) {
-							buttonWithRecarregar.click();
-                        }
-					}
-            } catch(e) {
-				console.error(e);
-            }
-    }, 6000);*/
-}
 
 function startMonitor(intervalSeconds = 0) {
     isLoggedStatus = WAPI.isLoggedIn();
