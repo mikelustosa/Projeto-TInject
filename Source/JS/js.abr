@@ -66,7 +66,7 @@ var intervalEnd = false;
 
 function startIntervalQRCode() {
 	alert("Monitor qrcode iniciado"); 
-	const interval = window.setInterval(async function() { 
+	/*const interval = window.setInterval(async function() { 
 		if (intervalEnd) {
 			clearInterval(interval);
             alert("Monitor qrcode encerrado");
@@ -82,7 +82,7 @@ function startIntervalQRCode() {
             } catch(e) {
 				console.error(e);
             }
-    }, 6000);
+    }, 6000);*/
 }
 
 function startMonitor(intervalSeconds = 0) {

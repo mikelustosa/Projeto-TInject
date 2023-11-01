@@ -1387,8 +1387,6 @@ end;
 
 procedure TFrmConsole.Chromium1TitleChange(Sender: TObject;
   const browser: ICefBrowser; const title: ustring);
-var
-  LJS: string;
 begin
   LPaginaId := LPaginaId + 1;
   if (LPaginaId > 3) and (LPaginaId < 10) then
@@ -1400,9 +1398,7 @@ begin
   if (LPaginaId <= 3) and (FFormType = Ft_Http) then
     SetZoom(-2);
 
-  LJS := FrmConsole_JS_refreshOnlyQRCode;
-  FrmConsole_JS_AlterVar(LJS, '', '');
-  ExecuteJS(TRIM(LJS), false);
+  ExecuteJS(FrmConsole_JS_refreshOnlyQRCode, true);
 end;
 
 function TFrmConsole.ConfigureNetWork: Boolean;
