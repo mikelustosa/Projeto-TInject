@@ -2,8 +2,8 @@ object FrmConsole: TFrmConsole
   Left = 0
   Top = 0
   Caption = 'TInject component'
-  ClientHeight = 517
-  ClientWidth = 877
+  ClientHeight = 516
+  ClientWidth = 873
   Color = clBtnFace
   DoubleBuffered = True
   Font.Charset = DEFAULT_CHARSET
@@ -22,8 +22,8 @@ object FrmConsole: TFrmConsole
   object Pnl_Top: TPanel
     AlignWithMargins = True
     Left = 3
-    Top = 492
-    Width = 871
+    Top = 491
+    Width = 867
     Height = 22
     Align = alBottom
     BorderStyle = bsSingle
@@ -32,13 +32,11 @@ object FrmConsole: TFrmConsole
     ParentBackground = False
     ParentCtl3D = False
     TabOrder = 0
-    ExplicitTop = 493
-    ExplicitWidth = 875
     object Lbl_Caption: TLabel
       Left = 1
       Top = 1
-      Width = 90
-      Height = 13
+      Width = 773
+      Height = 18
       Align = alClient
       Alignment = taCenter
       Caption = 'TInject component'
@@ -49,10 +47,12 @@ object FrmConsole: TFrmConsole
       Font.Style = []
       ParentFont = False
       Layout = tlCenter
+      ExplicitWidth = 90
+      ExplicitHeight = 13
     end
     object lbl_Versao: TLabel
       AlignWithMargins = True
-      Left = 785
+      Left = 777
       Top = 4
       Width = 82
       Height = 12
@@ -440,8 +440,8 @@ object FrmConsole: TFrmConsole
     AlignWithMargins = True
     Left = 3
     Top = 1
-    Width = 871
-    Height = 485
+    Width = 867
+    Height = 484
     Margins.Top = 1
     Align = alClient
     BevelOuter = bvNone
@@ -450,12 +450,10 @@ object FrmConsole: TFrmConsole
     ParentDoubleBuffered = False
     ShowCaption = False
     TabOrder = 1
-    ExplicitWidth = 875
-    ExplicitHeight = 486
     object CEFWindowParent1: TCEFWindowParent
       Left = 0
       Top = 0
-      Width = 875
+      Width = 867
       Height = 121
       Align = alTop
       TabOrder = 0
@@ -472,8 +470,8 @@ object FrmConsole: TFrmConsole
     OnBeforeClose = Chromium1BeforeClose
     OnClose = Chromium1Close
     OnOpenUrlFromTab = Chromium1OpenUrlFromTab
-    Left = 56
-    Top = 136
+    Left = 48
+    Top = 152
   end
   object CEFSentinel1: TCEFSentinel
     OnClose = CEFSentinel1Close

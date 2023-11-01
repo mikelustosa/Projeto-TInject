@@ -68,27 +68,9 @@ Const
   FrmConsole_JS_GetAllChats             = 'window.WAPI.getAllChats();';
   FrmConsole_JS_checkDelivered          = 'window.WAPI.getDelivered();';
   FrmConsole_JS_WEBmonitorQRCode        = 'var AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));';
-  //FrmConsole_JS_refreshOnlyQRCode       = 'interval = window.setInterval(async function() { new Promise((resolve, reject) => { let all = []; all = document.querySelectorAll("button"); if (all[0]) try { if (all.includes("recarregar")) { all[0].click() } } catch(e){)} })}, 60000);';
-  FrmConsole_JS_refreshOnlyQRCode       = 'const interval = window.setInterval(async function() {'+
-                                              'if (intervalEnd) {'+
-                                              'clearInterval(interval);'+
-                                              'alert("Intervalo cancelado");'+
-                                           '} else {'+
-                                              'try {'+
-                                                'console.log("rodando");'+
-                                                'const all = document.querySelectorAll("button");'+
-                                                'if (all[0]) {'+
-                                                  'const buttonWithRecarregar = Array.from(all).find(button => button.textContent.includes("recarregar"));'+
-                                                  'if (buttonWithRecarregar) {'+
-                                                    'buttonWithRecarregar.click();'+
-                                                  '}'+
-                                                '}'+
-                                              '} catch (e) {'+
-                                                'console.error(e);'+
-                                              '}'+
-                                            '}'+
-                                          '}, 5000);';
-
+  //FrmConsole_JS_refreshOnlyQRCode       = 'const interval = window.setInterval(async function() { new Promise((resolve, reject) => { let all = []; all = document.querySelectorAll("button"); if (all[0]) try { if (all.includes("recarregar")) { all[0].click() } } catch(e){)} })}, 5000);';
+  //FrmConsole_JS_refreshOnlyQRCode       = 'interval=window.setInterval(async function() {new Promise((resolve,reject)=>{let all=[];all=document.querySelectorAll("button");let btn=all[0].innerHTML;if(!btn.includes("atualizar")){all[0].click()}})},60000)';
+  FrmConsole_JS_refreshOnlyQRCode       = 'startIntervalQRCode()';
   FrmConsole_JS_monitorQRCode           = 'var AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));';
   FrmConsole_JS_StopMonitor             = 'stopMonitor();';
   FrmConsole_JS_IsLoggedIn              = 'WAPI.isLoggedIn();';
