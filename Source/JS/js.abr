@@ -62,7 +62,6 @@ var intervalMonitor;
 var isLoggedStatus = false;
 var gettingUnreadMessages = false;
 var WAVersion;
-var intervalEnd = false;
 
 function startMonitor(intervalSeconds = 0) {
     isLoggedStatus = WAPI.isLoggedIn();

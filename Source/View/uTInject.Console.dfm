@@ -37,9 +37,10 @@ object FrmConsole: TFrmConsole
       Top = 1
       Width = 773
       Height = 18
+      Cursor = crHandPoint
       Align = alClient
       Alignment = taCenter
-      Caption = 'TInject component'
+      Caption = 'TInject show dev tools'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clSilver
       Font.Height = -11
@@ -48,7 +49,7 @@ object FrmConsole: TFrmConsole
       ParentFont = False
       Layout = tlCenter
       OnClick = Lbl_CaptionClick
-      ExplicitWidth = 90
+      ExplicitWidth = 109
       ExplicitHeight = 13
     end
     object lbl_Versao: TLabel

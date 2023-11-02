@@ -1630,6 +1630,7 @@ procedure TFrmConsole.FormShow(Sender: TObject);
 begin
   Lbl_Caption.Caption      := Text_FrmConsole_Caption;
   Lbl_Versao.Caption       := 'V. ' + TInjectVersion;
+  ExecuteJS('let intervalEnd = false;', false);
 end;
 
 procedure TFrmConsole.Form_Normal;
@@ -1686,8 +1687,12 @@ end;
 
 
 procedure TFrmConsole.Lbl_CaptionClick(Sender: TObject);
+var
+  tp: Tpoint;
 begin
-  ExecuteJS(FrmConsole_JS_refreshOnlyQRCode, true);
+  tp.X := FrmConsole.Width;
+  tp.Y := FrmConsole.Height;
+  FrmConsole.Chromium1.ShowDevTools(tp, nil);
 end;
 
 procedure TFrmConsole.lbl_VersaoMouseEnter(Sender: TObject);
