@@ -138,6 +138,7 @@ type
     SpeedButton7: TSpeedButton;
     btnSendPool: TButton;
     btSendButtonList: TButton;
+    btnConsoleClear: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btSendTextClick(Sender: TObject);
@@ -215,6 +216,7 @@ type
     procedure btSendTextButtonClick(Sender: TObject);
     procedure TInject1GetIncomingCall(const incomingCall: TReturnIncomingCall);
     procedure btSendButtonListClick(Sender: TObject);
+    procedure btnConsoleClearClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -613,6 +615,14 @@ begin
 end;
 
 
+
+procedure TfrmPrincipal.btnConsoleClearClick(Sender: TObject);
+begin
+  if not TInject1.Auth then
+       Exit;
+
+  TInject1.ConsoleClear;
+end;
 
 procedure TfrmPrincipal.btnRemoveGroupLinkClick(Sender: TObject);
 begin

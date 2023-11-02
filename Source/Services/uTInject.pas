@@ -173,7 +173,7 @@ type
     procedure GroupDemoteParticipant(PIDGroup, PNumber: string);
     procedure GroupLeave(PIDGroup: string);
     procedure GroupDelete(PIDGroup: string);
-
+    procedure ConsoleClear();
     procedure GroupJoinViaLink(PLinkGroup: string);
     procedure GroupRemoveInviteLink(PIDGroup: string);
     procedure SetProfileName(vName : String);
@@ -388,6 +388,12 @@ begin
 
 end;
 
+
+procedure TInject.ConsoleClear;
+begin
+  if Assigned(FrmConsole) then
+    FrmConsole.ConsoleClear;
+end;
 
 function TInject.ConsolePronto: Boolean;
 begin
@@ -1184,7 +1190,6 @@ begin
     if Assigned(FOnGetMyNumber) then
     begin
        FOnGetMyNumber(Self);
-       FrmConsole.setIntervalEnd;
     end;
   end;
 
@@ -1260,11 +1265,10 @@ begin
   Begin
     if PTypeHeader = Th_Connected then
     begin
-       FrmConsole.setIntervalEnd;
        SetAuth(True);
     end else
       begin
-         SetAuth(False);
+        SetAuth(False);
         LimparQrCodeInterno;
         Exit;
       end;

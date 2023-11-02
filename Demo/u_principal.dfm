@@ -32,8 +32,8 @@ object frmPrincipal: TfrmPrincipal
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1092
-    ExplicitHeight = 526
+    ExplicitLeft = -2
+    ExplicitTop = 0
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o / Authentication'
       object Pnl_Config: TPanel
@@ -4401,6 +4401,21 @@ object frmPrincipal: TfrmPrincipal
               TabOrder = 2
               TextHint = 'Inf. Desejada Aqui'
             end
+          end
+          object btnConsoleClear: TButton
+            AlignWithMargins = True
+            Left = 5
+            Top = 314
+            Width = 242
+            Height = 25
+            Align = alBottom
+            Caption = 'Limpar console / console clear'
+            ImageIndex = 0
+            Images = ImageList1
+            TabOrder = 6
+            OnClick = btnConsoleClearClick
+            ExplicitLeft = 10
+            ExplicitTop = 322
           end
         end
       end

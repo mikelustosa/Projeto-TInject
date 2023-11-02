@@ -98,6 +98,7 @@ type
     procedure Button2Click(Sender: TObject);
     procedure Image2Click(Sender: TObject);
     procedure Lbl_CaptionClick(Sender: TObject);
+    procedure Img_LogoInjectClick(Sender: TObject);
   protected
     // You have to handle this two messages to call NotifyMoveOrResizeStarted or some page elements will be misaligned.
     procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
@@ -194,7 +195,7 @@ type
     procedure GroupLeave(vIDGroup: string);
     procedure GroupDelete(vIDGroup: string);
     procedure GroupJoinViaLink(vLinkGroup: string);
-
+    procedure consoleClear();
     procedure getGroupInviteLink(vIDGroup: string);
     procedure revokeGroupInviteLink(vIDGroup: string);
     procedure setNewName(newName: string);
@@ -1508,6 +1509,11 @@ begin
   end;
 end;
 
+procedure TFrmConsole.consoleClear;
+begin
+  ExecuteJS(Frmconsole_JS_consoleClear, true);
+end;
+
 procedure TFrmConsole.CreateGroup(vGroupName, PParticipantNumber: string);
 var
   Ljs: string;
@@ -1652,6 +1658,11 @@ begin
  TempPoint.Y := 200;
 
  Chromium1.ShowDevTools(TempPoint, nil);
+end;
+
+procedure TFrmConsole.Img_LogoInjectClick(Sender: TObject);
+begin
+  Chromium1.Browser.MainFrame.ExecuteJavaScript('console.clear();', '', 0);
 end;
 
 procedure TFrmConsole.Int_FrmQRCodeClose(Sender: TObject);

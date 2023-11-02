@@ -367,6 +367,7 @@ object FrmConsole: TFrmConsole
         426082}
       Proportional = True
       Transparent = True
+      OnClick = Img_LogoInjectClick
       OnMouseEnter = lbl_VersaoMouseEnter
     end
     object Img_Brasil: TImage
