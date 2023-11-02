@@ -68,16 +68,7 @@ Const
   FrmConsole_JS_GetAllChats             = 'window.WAPI.getAllChats();';
   FrmConsole_JS_checkDelivered          = 'window.WAPI.getDelivered();';
   FrmConsole_JS_WEBmonitorQRCode        = 'try {let AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCodeWEB","result":{AQrCode}}));}catch(e){console.log("carregando qrcode...")}';
-
- // FrmConsole_JS_refreshOnlyQRCode         = 'try {const keywords=["RECARREGAR", "RELOAD", "CLICK"];}catch(e){};interval=window.setInterval(async function() {console.log("Monitorando qrcode..");if(intervalEnd){clearInterval(interval)}else{'+
-                                           // 'try{const all=document.querySelectorAll("button");if (all[0]){const buttonToClick=Array.from(all).find(button => keywords.some(keyword => button.textContent.includes(keyword)));'+
-                                           // 'if(buttonToClick){buttonToClick.click()}}}catch(e){}}},60000);';
-
-//  FrmConsole_JS_refreshOnlyQRCode       = 'try {const keywords=["RECARREGAR", "RELOAD", "CLICK"];}catch(e){}; interval=window.setInterval(function() {new Promise((resolve,reject)=>{ console.log("monitorando...");'+
-//                                          'if(intervalEnd){clearInterval(interval)} else {try{const all=document.querySelectorAll("button");if (all[0]){const buttonToClick=Array.from(all).find(button => keywords.some(keyword => button.textContent.includes(keyword)));'+
-//                                          'if(buttonToClick){buttonToClick.click()}}}catch(e){}}})},5000)';
   FrmConsole_JS_refreshOnlyQRCode       = '';
-
   FrmConsole_JS_monitorQRCode           = 'try {let AQrCode = document.getElementsByTagName("canvas")[0].toDataURL("image/png");console.log(JSON.stringify({"name":"getQrCode","result":{AQrCode}}));}catch(e){console.log("Carregando qrcode web")}';
   FrmConsole_JS_StopMonitor             = 'stopMonitor();';
   FrmConsole_JS_IsLoggedIn              = 'WAPI.isLoggedIn();';
