@@ -97,6 +97,8 @@ type
       const params: ICefContextMenuParams; const model: ICefMenuModel);
     procedure Button2Click(Sender: TObject);
     procedure Image2Click(Sender: TObject);
+    procedure Lbl_CaptionClick(Sender: TObject);
+    procedure Img_LogoInjectClick(Sender: TObject);
   protected
     // You have to handle this two messages to call NotifyMoveOrResizeStarted or some page elements will be misaligned.
     procedure WMMove(var aMessage : TWMMove); message WM_MOVE;
@@ -153,7 +155,6 @@ type
     Procedure Form_Start;
     Procedure Form_Normal;
 
-
     public
     { Public declarations }
     Function  ConfigureNetWork:Boolean;
@@ -194,7 +195,7 @@ type
     procedure GroupLeave(vIDGroup: string);
     procedure GroupDelete(vIDGroup: string);
     procedure GroupJoinViaLink(vLinkGroup: string);
-
+    procedure consoleClear();
     procedure getGroupInviteLink(vIDGroup: string);
     procedure revokeGroupInviteLink(vIDGroup: string);
     procedure setNewName(newName: string);
@@ -1508,6 +1509,11 @@ begin
   end;
 end;
 
+procedure TFrmConsole.consoleClear;
+begin
+  ExecuteJS(Frmconsole_JS_consoleClear, true);
+end;
+
 procedure TFrmConsole.CreateGroup(vGroupName, PParticipantNumber: string);
 var
   Ljs: string;
@@ -1654,6 +1660,11 @@ begin
  Chromium1.ShowDevTools(TempPoint, nil);
 end;
 
+procedure TFrmConsole.Img_LogoInjectClick(Sender: TObject);
+begin
+  Chromium1.Browser.MainFrame.ExecuteJavaScript('console.clear();', '', 0);
+end;
+
 procedure TFrmConsole.Int_FrmQRCodeClose(Sender: TObject);
 begin
   if FFormType = Ft_Desktop then
@@ -1678,6 +1689,15 @@ begin
   ExecuteJS(FrmConsole_JS_IsLoggedIn, false);
 end;
 
+
+procedure TFrmConsole.Lbl_CaptionClick(Sender: TObject);
+var
+  tp: Tpoint;
+begin
+  tp.X := FrmConsole.Width;
+  tp.Y := FrmConsole.Height;
+  FrmConsole.Chromium1.ShowDevTools(tp, nil);
+end;
 
 procedure TFrmConsole.lbl_VersaoMouseEnter(Sender: TObject);
 const

@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//2.0.2.0;1.0.0.9;78.3.0
+//2.0.3.0;1.0.0.9;78.3.0
 //
 
 function getAllGroupContacts(Contacts) {
@@ -1577,9 +1577,7 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption) {
         return Store.FindChat.findChat(idUser).then((chat) => {
                     var mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
             var mc = new Store.MediaCollection(chat);
-            
-			console.log('WAVersion: ', WAVersion);
-			
+            			
 			if (WAVersion >= 223409)	{
 				mc.processAttachments([{file: mediaBlob}, 1], 1, chat).then(() => {
 					let media = mc._models[0];

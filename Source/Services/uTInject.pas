@@ -173,7 +173,7 @@ type
     procedure GroupDemoteParticipant(PIDGroup, PNumber: string);
     procedure GroupLeave(PIDGroup: string);
     procedure GroupDelete(PIDGroup: string);
-
+    procedure ConsoleClear();
     procedure GroupJoinViaLink(PLinkGroup: string);
     procedure GroupRemoveInviteLink(PIDGroup: string);
     procedure SetProfileName(vName : String);
@@ -388,6 +388,12 @@ begin
 
 end;
 
+
+procedure TInject.ConsoleClear;
+begin
+  if Assigned(FrmConsole) then
+    FrmConsole.ConsoleClear;
+end;
 
 function TInject.ConsolePronto: Boolean;
 begin
@@ -1135,11 +1141,12 @@ begin
   if PTypeHeader = Th_Initialized then
   Begin
     FStatus := Inject_Initialized;
+
     if Assigned(FOnAfterInitialize) then
        FOnAfterInitialize(Self);
 
     if Assigned(fOnGetStatus ) then
-       fOnGetStatus(Self);
+      fOnGetStatus(Self);
   end;
 
 
@@ -1150,7 +1157,6 @@ begin
 
     FrmConsole.GetMyNumber;
     SleepNoFreeze(40);
-
 
     FrmConsole.GetAllContacts(true);
     if Assigned(fOnGetStatus ) then
@@ -1182,7 +1188,9 @@ begin
   Begin
     FMyNumber := FAdjustNumber.FormatOut(PValue);
     if Assigned(FOnGetMyNumber) then
+    begin
        FOnGetMyNumber(Self);
+    end;
   end;
 
 
@@ -1256,10 +1264,14 @@ begin
   if PTypeHeader in [Th_Connected, Th_Disconnected]  then
   Begin
     if PTypeHeader = Th_Connected then
-       SetAuth(True) else
-       SetAuth(False);
-    LimparQrCodeInterno;
-    Exit;
+    begin
+       SetAuth(True);
+    end else
+      begin
+        SetAuth(False);
+        LimparQrCodeInterno;
+        Exit;
+      end;
   end;
 
 
