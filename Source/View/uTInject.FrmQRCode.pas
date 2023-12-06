@@ -30,7 +30,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   System.UiTypes,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.Imaging.GIFImg,
-  uTInject.Constant;
+  uTInject.Constant, Vcl.Imaging.jpeg;
 
 type
   TFrmQRCode = class(TForm)
@@ -43,7 +43,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure FormHide(Sender: TObject);
   private
-    FShow           : Boolean;
+    FShow: Boolean;
     FPodeFechar: Boolean;
     FCLoseForm: TNotifyEvent;
     FFormQrCodeType: TFormQrCodeType;
@@ -63,7 +63,7 @@ var
 
 implementation
 
-uses System.NetEncoding, Vcl.Imaging.jpeg, Vcl.Imaging.pngimage,
+uses System.NetEncoding, Vcl.Imaging.pngimage,
   uTInject.ConfigCEF, uTInject.Console;
 
 {$R *.dfm}
@@ -98,15 +98,15 @@ end;
 
 procedure TFrmQRCode.FormCreate(Sender: TObject);
 begin
-  Timg_QrCode.Picture   := Nil;
+  //Timg_QrCode.Picture   := Nil;
   FShow                 := False;
   AutoSize              := False;
-  Timg_Animacao.Visible := True;
-  Timg_QrCode.Visible   := False;
-  FpodeFechar           := False;
-  (Timg_Animacao.Picture.Graphic as TGIFImage).AnimationSpeed  := 400;
-  (Timg_Animacao.Picture.Graphic as TGIFImage).Animate         := True;
 
+//  Timg_Animacao.Visible := True;
+  Timg_QrCode.Visible   := true;
+  FpodeFechar           := False;
+//  (Timg_Animacao.Picture.Graphic as TGIFImage).AnimationSpeed  := 400;
+//  (Timg_Animacao.Picture.Graphic as TGIFImage).Animate         := True;
 
   FTimerGetQrCode          := TTimer.Create(nil);
   FTimerGetQrCode.Interval := 300;
@@ -156,7 +156,7 @@ begin
   finally
     if not Timg_QrCode.Visible then
     begin
-      LImage  := Timg_Animacao;
+      LImage  := Timg_QrCode;
       Caption := Text_FrmQRCode_CaptionStart;
       Timg_QrCode.Picture := Nil;
     end else

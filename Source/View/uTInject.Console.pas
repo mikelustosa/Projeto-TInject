@@ -446,7 +446,7 @@ begin
     If Assigned(TInject(FOwner).OnGetQrCode) then
        TInject(FOwner).OnGetQrCode(self, LResultQrCode);
   Except
-    FrmQRCode.SetView(FrmQRCode.Timg_Animacao);
+    //FrmQRCode.SetView(FrmQRCode.Timg_Animacao);
   end;
 end;
 
