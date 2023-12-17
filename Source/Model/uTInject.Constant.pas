@@ -150,7 +150,7 @@ resourcestring
   Text_FrmClose_Label                  = '';
   Text_FrmClose_WarningClose           = '';
   Text_FrmQRCode_CaptionStart          = '';
-  Text_FrmQRCode_CaptionSucess         = '';
+  Text_FrmQRCode_CaptionSucess         = 'Gerando QRCode...';
   Text_FrmQRCode_OnCLose               = '';
   MSG_ExceptPhoneNumberError           = '';
   MSG_ExceptAlterDesigner              = '';

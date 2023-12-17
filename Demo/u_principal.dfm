@@ -32,8 +32,8 @@ object frmPrincipal: TfrmPrincipal
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = -2
-    ExplicitTop = 0
+    ExplicitWidth = 1092
+    ExplicitHeight = 526
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o / Authentication'
       object Pnl_Config: TPanel
