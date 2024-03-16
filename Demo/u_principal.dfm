@@ -32,8 +32,6 @@ object frmPrincipal: TfrmPrincipal
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
-    ExplicitWidth = 1092
-    ExplicitHeight = 526
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o / Authentication'
       object Pnl_Config: TPanel
@@ -49,8 +47,6 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 0
-        ExplicitWidth = 706
-        ExplicitHeight = 492
         DesignSize = (
           708
           491)
@@ -446,7 +442,6 @@ object frmPrincipal: TfrmPrincipal
           Margins.Bottom = 8
           Align = alTop
           TabOrder = 0
-          ExplicitWidth = 686
           DesignSize = (
             690
             113)
@@ -504,7 +499,6 @@ object frmPrincipal: TfrmPrincipal
             Anchors = [akLeft, akTop, akRight]
             TabOrder = 3
             OnExit = Edt_DDIPDRExit
-            ExplicitWidth = 480
           end
         end
         object Pnl_FONE: TPanel
@@ -593,7 +587,6 @@ object frmPrincipal: TfrmPrincipal
         ParentCtl3D = False
         ShowCaption = False
         TabOrder = 1
-        ExplicitHeight = 492
         DesignSize = (
           364
           491)
@@ -4414,8 +4407,6 @@ object frmPrincipal: TfrmPrincipal
             Images = ImageList1
             TabOrder = 6
             OnClick = btnConsoleClearClick
-            ExplicitLeft = 10
-            ExplicitTop = 322
           end
         end
       end
@@ -5449,8 +5440,6 @@ object frmPrincipal: TfrmPrincipal
         Text = 'Offline'
         Width = 50
       end>
-    ExplicitTop = 545
-    ExplicitWidth = 1098
   end
   object OpenDialog1: TOpenDialog
     Filter = 'Imagens|*jpg;*.jpg;*.bmp;*.png;*.pdf;*.mp4;*.mp3;*.rar'
@@ -5540,6 +5529,7 @@ object frmPrincipal: TfrmPrincipal
     OnGetQrCode = TInject1GetQrCode
     OnGetChatList = TInject1GetChatList
     OnGetUnReadMessages = TInject1GetUnReadMessages
+    OnGetUnReadMessagesFromMe = TInject1GetUnReadMessagesFromMe
     OnGetAllGroupContacts = TInject1GetAllGroupContacts
     OnGetStatus = TInject1GetStatus
     OnGetBatteryLevel = TInject1GetBatteryLevel

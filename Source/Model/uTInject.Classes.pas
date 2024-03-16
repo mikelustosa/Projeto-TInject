@@ -37,7 +37,7 @@ uses Generics.Collections, Rest.Json, uTInject.FrmQRCode, Vcl.Graphics, System.I
     Vcl.IdAntiFreeze,
   {$ENDIF}
   IdBaseComponent, IdComponent, IdTCPConnection, IdTCPClient, Vcl.Imaging.jpeg,
-  IdSSLOpenSSL, UrlMon;
+  IdSSLOpenSSL, UrlMon, system.JSON;
 
 type
 
@@ -95,6 +95,7 @@ type
     Property JsonOption  : TJsonOptions   Read FJsonOption;
     Property JsonString  : String         Read FJsonString;
     function ToJsonString: string;
+    procedure RemoveObjectsFromJson(var json: TJSONObject);
   end;
 
   TClassPadraoString = class(TClassPadrao)
@@ -831,7 +832,8 @@ implementation
 
 
 uses
-  System.JSON, System.SysUtils, Vcl.Dialogs, System.NetEncoding,
+  //System.JSON, System.SysUtils, Vcl.Dialogs, System.NetEncoding,
+  System.SysUtils, Vcl.Dialogs, System.NetEncoding,
   Vcl.Imaging.pngimage, uTInject.ConfigCEF, Vcl.Forms, Winapi.Windows,
   uTInject.Diversos;
 
@@ -1125,6 +1127,33 @@ end;
 constructor TClassPadrao.Create(pAJsonString: string; PJsonOption: TJsonOptions);
 var
   lAJsonObj: TJSONValue;
+
+  //Autor: Daniel Valmir Serafim -->
+  function IsResultArray(const jsonString: string): Boolean;
+  var
+    jsonObject: TJSONObject;
+    resultValue: TJSONValue;
+    resultArray: TJSONArray;
+  begin
+    Result := False;
+
+    // Converte a string JSON para um objeto JSON
+    jsonObject := TJSONObject.ParseJSONValue(jsonString) as TJSONObject;
+
+    try
+      // Verifica se o objeto JSON possui a chave "result"
+      if Assigned(jsonObject) and jsonObject.TryGetValue<TJSONValue>('result', resultValue) then
+      begin
+        // Verifica se o valor associado à chave "result" é um array
+        if Assigned(resultValue) and (resultValue is TJSONArray) then
+          Result := True;
+      end;
+    finally
+      jsonObject.Free;
+    end;
+  end;
+  //Autor: Daniel Valmir Serafim <--
+
 begin
   lAJsonObj      := TJSONObject.ParseJSONValue(pAJsonString);
   FInjectWorking := False;
@@ -1133,6 +1162,11 @@ begin
    try
     if NOT Assigned(lAJsonObj) then
        Exit;
+
+    {$IFDEF VER360}
+    if IsResultArray(pAJsonString) then
+      RemoveObjectsFromJson(TJSONObject(lAJsonObj));
+    {$ENDIF}
 
     TJson.JsonToObject(Self, TJSONObject(lAJsonObj) ,PJsonOption);
 
@@ -1151,6 +1185,47 @@ begin
     FreeAndNil(lAJsonObj);
   end;
 end;
+
+//Autor: Daniel Valmir Serafim -->
+procedure TClassPadrao.RemoveObjectsFromJson(var json: TJSONObject);
+var
+  resultArray: TJsonArray;
+  chatObject, messageObject: TJSONObject;
+  messageArray: TJSONArray;
+begin
+  try
+  // Verifica se o JSON contém a chave "result" e se é um array
+  if json.TryGetValue<TJsonArray>('result', resultArray) then
+  begin
+    // Itera sobre os elementos do array
+    for var i := 0 to resultArray.Count - 1 do
+    begin
+      // Obtém o objeto de chat
+      chatObject := resultArray.Items[i] as TJSONObject;
+      // Remove os objetos específicos do chat
+      chatObject.RemovePair('tcToken');
+//      chatObject.RemovePair('chat');
+      // Verifica se o chat contém mensagens
+      if chatObject.TryGetValue<TJsonArray>('messages', messageArray) then
+      begin
+        // Itera sobre as mensagens do chat
+        for var j := 0 to messageArray.Count - 1 do
+        begin
+          // Obtém o objeto de mensagem
+          messageObject := messageArray.Items[j] as TJSONObject;
+          // Remove o objeto de mediaData da mensagem
+          messageObject.RemovePair('mediaData');
+          messageObject.RemovePair('chat');
+        end;
+      end;
+    end;
+  end;
+  Except
+     on E : Exception do
+       LogAdd(e.Message, 'ERROR ' + SELF.ClassName);
+   end;
+end;
+//Autor: Daniel Valmir Serafim <--
 
 destructor TClassPadrao.Destroy;
 begin
@@ -1178,8 +1253,14 @@ begin
         {$ENDIF}
 
         {$IFDEF VER340}
-		// var a: TArray<TClassPadrao>;  
-		// a := TArray<TClassPadrao>(PArray);
+          freeAndNil(TArray<TClassPadrao>(PArray)[i]);
+        {$ENDIF}
+
+        {$IFDEF VER350}
+          freeAndNil(TArray<TClassPadrao>(PArray)[i]);
+        {$ENDIF}
+
+        {$IFDEF VER360}
           freeAndNil(TArray<TClassPadrao>(PArray)[i]);
         {$ENDIF}
    finally
