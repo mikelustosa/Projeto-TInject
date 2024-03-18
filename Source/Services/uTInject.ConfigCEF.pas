@@ -63,7 +63,6 @@ type
     FPathResourcesDirPath: String;
     FPathLocalesDirPath  : String;
     FPathCache           : String;
-    FPathUserDataPath    : String;
     FPathLogFile         : String;
     FPathJS              : String;
     FStartTimeOut        : Cardinal;
@@ -80,7 +79,6 @@ type
     procedure SetPathLocalesDirPath  (const Value: String);
     procedure SetPathLogFile         (const Value: String);
     procedure SetPathResourcesDirPath(const Value: String);
-    procedure SetPathUserDataPath    (const Value: String);
     function  TestaOk                (POldValue, PNewValue: String): Boolean;
     procedure SetChromium            (const Value: TChromium);
     Function  VersaoCEF4Aceita: Boolean;
@@ -106,7 +104,6 @@ type
     property   PathResourcesDirPath : String       Read FPathResourcesDirPath Write SetPathResourcesDirPath;
     property   PathLocalesDirPath   : String       Read FPathLocalesDirPath   Write SetPathLocalesDirPath;
     property   PathCache            : String       Read FPathCache            Write SetPathCache;
-    property   PathUserDataPath     : String       Read FPathUserDataPath     Write SetPathUserDataPath;
     property   PathLogFile          : String       Read FPathLogFile          Write SetPathLogFile;
     property   PathJs               : String       Read FPathJS;
     property   LogConsole           : String       Read FLogConsole           Write SetLogConsole;
@@ -219,7 +216,6 @@ begin
     PathResourcesDirPath    := FIniFIle.ReadString('Path Defines', 'Binary',    '');
     PathLocalesDirPath      := FIniFIle.ReadString('Path Defines', 'Locales',   '');
     Pathcache               := FIniFIle.ReadString('Path Defines', 'Cache',     '');
-    PathUserDataPath        := FIniFIle.ReadString('Path Defines', 'Data User', '');
     PathLogFile             := FIniFIle.ReadString('Path Defines', 'Log File',  '');
     LogConsole              := FIniFIle.ReadString('Path Defines', 'Log Console',  '');
     if LogConsole = '' then
@@ -229,7 +225,6 @@ begin
   Self.ResourcesDirPath   := '';
   Self.LocalesDirPath     := 'locales';
   Self.cache              := 'cache';
-  Self.UserDataPath       := 'User Data';
 end;
 
 
@@ -326,13 +321,6 @@ begin
   FPathCache            := Value;
 end;
 
-procedure TCEFConfig.SetPathUserDataPath(const Value: String);
-begin
-  if not TestaOk(FPathUserDataPath, Value) Then
-     Exit;
-  FPathUserDataPath   := Value;
-end;
-
 function TCEFConfig.StartMainProcess: boolean;
 var
   Linicio: Cardinal;
@@ -385,8 +373,6 @@ begin
      Self.LocalesDirPath      := PathLocalesDirPath;
   If Pathcache            <> '' then
      Self.cache               := Pathcache;
-  If PathUserDataPath     <> '' then
-     Self.UserDataPath        := PathUserDataPath;
   If PathLogFile          <> '' then
      Self.LogFile             := PathLogFile;
   If SetLogSeverity then
@@ -397,7 +383,6 @@ begin
   UpdateIniFile('Path Defines', 'Binary',        Self.ResourcesDirPath);
   UpdateIniFile('Path Defines', 'Locales',       Self.LocalesDirPath);
   UpdateIniFile('Path Defines', 'Cache',         Self.cache);
-  UpdateIniFile('Path Defines', 'Data User',     Self.UserDataPath);
   UpdateIniFile('Path Defines', 'Log File',      Self.LogFile);
   UpdateIniFile('Path Defines', 'Log Console',   LogConsole);
 
