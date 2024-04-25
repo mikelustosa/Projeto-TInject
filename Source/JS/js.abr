@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.0.0.0;1.0.0.9;78.3.0
+//3.0.1.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -55,6 +55,7 @@ function SetConsoleMessage(jsName, resultValue) {
         result: '{"result":' + resultValue + '}'
     }
     console.log(JSON.stringify(Obj));
+	console.clear();
 }
 
 var intervalMonitor;
@@ -1189,7 +1190,7 @@ window.WAPI.getMe = function(done) {
 
 window.WAPI.isLoggedIn = function(done) {
     // Contact always exists when logged in
-    const isLogged = window.Store.Contact && window.Store.Contact.checksum !== undefined;
+	const isLogged = window.Store.Contact || window.Store.Contact._contactHashes !== undefined;
 
     if (done !== undefined) done(isLogged);
     return isLogged;
