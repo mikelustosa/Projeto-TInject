@@ -1231,9 +1231,8 @@ begin
     begin
       for AMessage in AChat.messages do
       begin
-        if not AChat.isGroup then //Não exibe mensages de grupos
+        if AChat.groupMetadata = nil then //Não exibe mensages de grupos
         begin
-
           if not AMessage.fromMe then  //Não exibe mensages enviadas por mim
           begin
             memo_unReadMessage.Clear;
