@@ -745,7 +745,14 @@ end;
 TResultQRCodeClass = class(TClassPadrao)
 private
   FAQrCode: String;
+
+  {$IF CompilerVersion > 31}
   FAQrCodeImage: TPicture;
+  {$ELSE}
+  FAQrCodeImage: TBitmap;
+  {$ENDIF}
+
+
   FAQrCodeImageStream: TMemoryStream;
   FAQrCodeSucess: Boolean;
   FAImageDif    : Boolean;
@@ -757,7 +764,13 @@ public
 
   property  AQrCode: String                    read FAQrCode                      write FAQrCode;
   property  AQrCodeImageStream: TMemoryStream  Read FAQrCodeImageStream;
+
+  {$IF CompilerVersion > 31}
   property  AQrCodeImage: TPicture             read FAQrCodeImage;
+  {$ELSE}
+  property  AQrCodeImage: TBitmap              read FAQrCodeImage;
+  {$ENDIF}
+
   property  AQrCodeSucess: Boolean             read FAQrCodeSucess;
   property  AImageDif:  Boolean                read FAImageDif;
   Function  AQrCodeQuestion: Boolean;
@@ -883,7 +896,15 @@ end;
 
 constructor TResultQRCodeClass.Create(pAJsonString: string);
 begin
-  FAQrCodeImage       := TPicture.Create;
+
+  {$IF CompilerVersion > 31}
+  FAQrCodeImage := TPicture.Create;
+  {$ELSE}
+  FAQrCodeImage := Vcl.Graphics.TBitmap.Create;
+  {$ENDIF}
+
+
+
   FAQrCodeImageStream := TMemoryStream.Create;
   FAQrCodeSucess      := False;
   FAImageDif          := False;
@@ -892,10 +913,8 @@ begin
 end;
 
 function TResultQRCodeClass.CreateImage: Boolean;
-{$IF CompilerVersion >= 31}
 var
-    PNG: TpngImage;
-{$ENDIF}
+  PNG: TpngImage;
 begin
   Result := False;
   try
@@ -903,19 +922,28 @@ begin
        Exit;
 
     FreeAndNil(FAQrCodeImage);
+
+
+    {$IF CompilerVersion > 31}
     FAQrCodeImage  := TPicture.Create;
+    {$ELSE}
+    FAQrCodeImage  := Vcl.Graphics.TBitmap.Create;
+    {$ENDIF}
+
+
     FAQrCodeImageStream.Position := 0;
 
-   {$IF CompilerVersion >= 31}
+   {$IF CompilerVersion > 31}
+
       FAQrCodeImage.LoadFromStream(FAQrCodeImageStream);
       result := True;
    {$ENDIF}
 
-   {$IF CompilerVersion < 31}
+   {$IF CompilerVersion <= 31}
       PNG := TPngImage.Create;
       try
         Png.LoadFromStream(FAQrCodeImageStream);
-        FAQrCodeImage.Graphic := PNG;
+        FAQrCodeImage.Assign(PNG)
         result := True;
       finally
         PNG.Free;
@@ -1192,13 +1220,14 @@ var
   resultArray: TJsonArray;
   chatObject, messageObject: TJSONObject;
   messageArray: TJSONArray;
+  i,j : integer;
 begin
   try
   // Verifica se o JSON contém a chave "result" e se é um array
   if json.TryGetValue<TJsonArray>('result', resultArray) then
   begin
     // Itera sobre os elementos do array
-    for var i := 0 to resultArray.Count - 1 do
+    for i := 0 to resultArray.Count - 1 do
     begin
       // Obtém o objeto de chat
       chatObject := resultArray.Items[i] as TJSONObject;
@@ -1209,7 +1238,7 @@ begin
       if chatObject.TryGetValue<TJsonArray>('messages', messageArray) then
       begin
         // Itera sobre as mensagens do chat
-        for var j := 0 to messageArray.Count - 1 do
+        for j := 0 to messageArray.Count - 1 do
         begin
           // Obtém o objeto de mensagem
           messageObject := messageArray.Items[j] as TJSONObject;

@@ -1111,8 +1111,16 @@ end;
 procedure TfrmPrincipal.TInject1GetQrCode(Const Sender: TObject;  const QrCode: TResultQRCodeClass);
 begin
   if TInject1.FormQrCodeType = TFormQrCodeType(Ft_none) then
-     Image1.Picture := QrCode.AQrCodeImage else
-     Image1.Picture := nil; //Limpa foto
+  begin
+    {$IF CompilerVersion > 31}
+    Image1.Picture := QrCode.AQrCodeImage;
+    {$ELSE}
+    Image1.Picture.Bitmap := QrCode.AQrCodeImage;
+    {$ENDIF}
+  end else
+    begin
+       Image1.Picture := nil;
+    end;
 end;
 
 procedure TfrmPrincipal.TInject1GetStatus(Sender: TObject);//Const PStatus : TStatusType; Const PFormQrCode: TFormQrCodeType);
