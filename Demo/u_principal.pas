@@ -1381,11 +1381,19 @@ begin
 end;
 
 procedure TfrmPrincipal.listaGruposClick(Sender: TObject);
+var
+  InputText, AfterCommaText: string;
 begin
   if listaGrupos.ItemIndex <>  - 1 then
   begin
-    lbl_idGroup.Caption :=  Copy(listaGrupos.Items[listaGrupos.Selected.Index].SubItems[1], 0,
+
+    InputText := Copy(listaGrupos.Items[listaGrupos.Selected.Index].SubItems[1], 0,
       Pos('@', listaGrupos.Items[listaGrupos.Selected.Index].SubItems[1]))+'g.us';
+
+    AfterCommaText := GetTextAfterComma(InputText);
+
+    lbl_idGroup.Caption :=  Copy(AfterCommaText, 0,
+      Pos('@', listaGrupos.Items[listaGrupos.Selected.Index].SubItems[1]));
 
     if not TInject1.Auth then
       Exit;

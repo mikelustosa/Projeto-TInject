@@ -1496,6 +1496,11 @@ begin
   FNumbers.Text := StringReplace(FNumbers.Text, '"' , '',    [rfReplaceAll]);
   FNumbers.Text := StringReplace(FNumbers.Text, '{result:[' , '',    [rfReplaceAll]);
   FNumbers.Text := StringReplace(FNumbers.Text, ']}' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, 'id' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, 'subject' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, ':' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '}' , '',    [rfReplaceAll]);
+  FNumbers.Text := StringReplace(FNumbers.Text, '{' , '',    [rfReplaceAll]);
 end;
 
 destructor TRetornoAllGroups.Destroy;

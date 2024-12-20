@@ -42,6 +42,7 @@ function AjustNameFile(texto : String) : String;
 Function Convert_Base64ToFile(Const PInBase64, FileSaveName: string):Boolean;
 Procedure WarningDesenv(Pvalor:String);
 Function  TrazApenasNumeros(PValor:String):String;
+function GetTextAfterComma(const Input: string): string;
 
 
 implementation
@@ -49,6 +50,20 @@ implementation
 uses
   System.JSON, REST.Json, Vcl.Imaging.GIFImg,   Vcl.Graphics, System.NetEncoding, System.SysUtils,
   Vcl.Imaging.pngimage, Vcl.Dialogs, uTInject.Constant;
+
+function GetTextAfterComma(const Input: string): string;
+var
+  CommaPos: Integer;
+begin
+  // Encontra a posição da vírgula na string
+  CommaPos := Pos(',', Input);
+
+  // Se a vírgula for encontrada, retorna o texto após a vírgula
+  if CommaPos > 0 then
+    Result := Copy(Input, CommaPos + 1, Length(Input) - CommaPos)
+  else
+    Result := ''; // Retorna uma string vazia se não houver vírgula
+end;
 
 Procedure WarningDesenv(Pvalor:String);
 begin
