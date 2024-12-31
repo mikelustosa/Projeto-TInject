@@ -1318,6 +1318,12 @@ procedure TFrmConsole.Chromium1ConsoleMessage(Sender: TObject;
 var
   AResponse  : TResponseConsoleMessage;
 begin
+  if message = 'Uncaught ReferenceError: WAPI is not defined' then
+  begin
+    //Perdeu referencia do comandos iniciais (atualizou pagina) Mauricio Parizotto 2022-08-17
+    //Executa novamente scripts
+    ExecuteJSDir(TInject(FOwner).InjectJS.JSScript.Text);
+  end;
 
  //testa se e um JSON de forma RAPIDA!
   if (Copy(message, 0, 2) <> '{"') then
