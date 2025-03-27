@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.0.3.0;1.0.0.9;78.3.0
+//3.0.4.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -1798,78 +1798,48 @@ window.WAPI.getBufferedNewMessages = function(done) {
 };
 /** End new messages observable functions **/
 
-/*
-window.WAPI.sendImage = function(imgBase64, chatid, filename, caption) {
+window.WAPI.firstContact = async (id) => {
+	try {
+		const contact = await window.API.findJidFromNumber(id);
+		if (contact.status === 404) return false;
 
-    var idUser = new Store.WidFactory.createWid(chatid, {
-        intentionallyUsePrivateConstructor: true
-    });
-	
-    
-        return Store.FindChat.findOrCreateLatestChat(idUser).then((chat) => {
-                    var mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
-            var mc = new Store.MediaCollection(chat);
+		return await window.API.findChatFromId(contact.jid);
+	} catch (error) {
+		console.log('Error in firstContact', error)
+		return null;
+	}
+}
+
+window.WAPI.sendImage = async function(imgBase64, chatid, filename, caption) {
+	try {
+		window.WAPI.findJidFromNumber(chatid).then(contact => {
+			if (contact.status === 404) {
+				console.log('1. Contact not found in forceSendMessageToID', err)
+			} else {
+				window.WAPI.findChatFromId(contact.jid).then(chat => {
+					
+					let mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
             
-			mc.processAttachments([{file: mediaBlob}, 1], 1, chat).then(() => {
-					let media = mc._models[0];
-					media.sendToChat(chat, {caption:caption});
-					return true;
-				});            
-        });
-    
-}*/
+					let mc = new Store.MediaCollection(chat);
+            
+					mc.processAttachments([{file: mediaBlob}, 1], 1, chat).then(() => {
+						let media = mc._models[0];
+						media.sendToChat(chat, {caption:caption});
+						return true;
+					});					
+					
+				}).catch(reject => {
+					console.log('2. Error in forceSendMessageToID, chat not found')
+				});
+			}
+		}).catch((err) => {
+			console.log('3. Error in forceSendMessageToID, chat not found', err)
+		})
+	} catch (e) {
+		console.log('4. Error in forceSendMessageToID, chat not found', err)
+	}    
+}
 
-window.WAPI.sendImage = function (imgBase64, chatid, filename, caption) {
-    try {
-        var idUser = new Store.WidFactory.createWid(chatid, {
-            intentionallyUsePrivateConstructor: true
-        });
-
-        return Store.FindChat.findOrCreateLatestChat(idUser)
-            .then((chat) => {
-                if (!chat) {
-                    console.error("Erro: chat não encontrado.");
-                    return false;
-                }
-
-                try {
-                    var mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
-                    var mc = new Store.MediaCollection(chat);
-
-                    return mc.processAttachments([{ file: mediaBlob }, 1], 1, chat)
-                        .then(() => {
-                            if (!mc._models || mc._models.length === 0) {
-                                console.error("Erro: Nenhum modelo de mídia encontrado.");
-                                return false;
-                            }
-
-                            try {
-                                let media = mc._models[0];
-                                media.sendToChat(chat, { caption: caption });
-                                return true;
-                            } catch (error) {
-                                console.error("Erro ao enviar mídia para o chat:", error);
-                                return false;
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Erro ao processar anexos:", error);
-                            return false;
-                        });
-                } catch (error) {
-                    console.error("Erro ao criar o objeto de mídia:", error);
-                    return false;
-                }
-            })
-            .catch(error => {
-                console.error("Erro ao encontrar ou criar o chat:", error);
-                return false;
-            });
-    } catch (error) {
-        console.error("Erro inesperado no sendImage:", error);
-        return false;
-    }
-};
 
 window.WAPI.findJidFromNumber = (number) => {
 	try {
@@ -1901,8 +1871,6 @@ window.WAPI.findChatFromId = (id) => {
 
 window.WAPI.sendMessageToID = function(chatid, msgText) {
     
-	//window.WAPI.sendMessage(chatid, msgText)
-	
 	try {
 		window.WAPI.findJidFromNumber(chatid).then(contact => {
 			if (contact.status === 404) {
@@ -1920,24 +1888,6 @@ window.WAPI.sendMessageToID = function(chatid, msgText) {
 	} catch (e) {
 		console.log('4. Error in forceSendMessageToID, chat not found', err)
 	}
-	
-	
-	
-	/*
-	var idUser = new window.Store.UserConstructor(chatid, {
-        intentionallyUsePrivateConstructor: true
-    });
-
-    console.log(idUser)
-
-    const teste = Store.FindChat.findOrCreateLatestChat(idUser)
-        .then(chatid => {
-            console.log(teste)
-            var mc = new Store.SendTextMsgToChat(chatid, msgText);
-            return true;
-        })
-
-    return teste*/
 
 }
 
