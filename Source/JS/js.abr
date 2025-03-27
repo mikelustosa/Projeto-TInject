@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.0.2.1;1.0.0.9;78.3.0
+//3.0.3.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -119,6 +119,23 @@ function monitorUnReadMessages() {
     gettingUnreadMessages = false;
 }
 
+const fixObjectsStore = () => {
+	try {
+		console.log('fixObjectsStore start')
+
+		if (!window.Store.Chat._find || !window.Store.Chat.findImpl) {
+			window.Store.Chat._find = e => {
+				const target = window.Store.Chat.get(e);
+				return target ? Promise.resolve(target) : Promise.resolve({
+					id: e
+				});
+			};
+			window.Store.Chat.findImpl = window.Store.Chat._find;
+		}
+	} catch (error) {
+		console.log('Error in function fixObjectsStore', error)
+	}
+}
 
 const newMakeStore = () => {
   if (!window.Store) {
@@ -283,8 +300,9 @@ const newMakeStore = () => {
         //console.log(window.Store)
         return window.Store;
     }
-
+	
     getStore(modulesFactory);
+	fixObjectsStore();
   }
 }
 
@@ -1383,47 +1401,6 @@ window.WAPI.ReplyMessage = function(idMessage, message, done) {
     }
 };
 
-window.WAPI.sendMessage = function(id, message, done) {
-    var chat = WAPI.getChat(id);
-    if (chat !== undefined) {
-        if (done !== undefined) {
-            chat.sendMessage(message).then(function() {
-                function sleep(ms) {
-                    return new Promise(resolve => setTimeout(resolve, ms));
-                }
-
-                var trials = 0;
-
-                function check() {
-                    for (let i = chat.msgs.models.length - 1; i >= 0; i--) {
-                        let msg = chat.msgs.models[i];
-
-                        if (!msg.senderObj.isMe || msg.body != message) {
-                            continue;
-                        }
-                        done(WAPI._serializeMessageObj(msg));
-                        return True;
-                    }
-                    trials += 1;
-                    console.log(trials);
-                    if (trials > 30) {
-                        done(true);
-                        return;
-                    }
-                    sleep(500).then(check);
-                }
-                check();
-            });
-            return true;
-        } else {
-            chat.sendMessage(message);
-            return true;
-        }
-    } else {
-        if (done !== undefined) done(false);
-        return false;
-    }
-};
 
 window.WAPI.sendMessage2 = function(id, message, done) {
     var chat = WAPI.getChat(id);
@@ -1821,6 +1798,7 @@ window.WAPI.getBufferedNewMessages = function(done) {
 };
 /** End new messages observable functions **/
 
+/*
 window.WAPI.sendImage = function(imgBase64, chatid, filename, caption) {
 
     var idUser = new Store.WidFactory.createWid(chatid, {
@@ -1839,12 +1817,111 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption) {
 				});            
         });
     
+}*/
+
+window.WAPI.sendImage = function (imgBase64, chatid, filename, caption) {
+    try {
+        var idUser = new Store.WidFactory.createWid(chatid, {
+            intentionallyUsePrivateConstructor: true
+        });
+
+        return Store.FindChat.findOrCreateLatestChat(idUser)
+            .then((chat) => {
+                if (!chat) {
+                    console.error("Erro: chat não encontrado.");
+                    return false;
+                }
+
+                try {
+                    var mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
+                    var mc = new Store.MediaCollection(chat);
+
+                    return mc.processAttachments([{ file: mediaBlob }, 1], 1, chat)
+                        .then(() => {
+                            if (!mc._models || mc._models.length === 0) {
+                                console.error("Erro: Nenhum modelo de mídia encontrado.");
+                                return false;
+                            }
+
+                            try {
+                                let media = mc._models[0];
+                                media.sendToChat(chat, { caption: caption });
+                                return true;
+                            } catch (error) {
+                                console.error("Erro ao enviar mídia para o chat:", error);
+                                return false;
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Erro ao processar anexos:", error);
+                            return false;
+                        });
+                } catch (error) {
+                    console.error("Erro ao criar o objeto de mídia:", error);
+                    return false;
+                }
+            })
+            .catch(error => {
+                console.error("Erro ao encontrar ou criar o chat:", error);
+                return false;
+            });
+    } catch (error) {
+        console.error("Erro inesperado no sendImage:", error);
+        return false;
+    }
+};
+
+window.WAPI.findJidFromNumber = (number) => {
+	try {
+		number = number.replace("@c.us", "").replace("+", "");
+		return Store.QueryExist.queryExist({ type: "phone", phone: number }).then(value => {
+			return {
+				status: 200,
+				jid: value.wid
+			}
+		})
+	} catch (error) {
+		console.log('Error in findJidFromNumber',  error + ' - ' + number);
+		return {};
+	}
+}
+
+window.WAPI.findChatFromId = (id) => {
+	try {
+		console.log('findChatFromId start', id);
+		const wid = window.Store.WidFactory.createWid(id);
+		console.log('wid: ', id);
+		return window.Store.Chat.find(wid);
+	} catch (error) {
+		console.log('Error in findChatFromId', error)
+		return null;
+	}
 }
 
 
 window.WAPI.sendMessageToID = function(chatid, msgText) {
     
-	window.WAPI.sendMessage(chatid, msgText)
+	//window.WAPI.sendMessage(chatid, msgText)
+	
+	try {
+		window.WAPI.findJidFromNumber(chatid).then(contact => {
+			if (contact.status === 404) {
+				console.log('1. Contact not found in forceSendMessageToID', err)
+			} else {
+				window.WAPI.findChatFromId(contact.jid).then(chat => {
+					chat.sendMessage(msgText);
+				}).catch(reject => {
+					console.log('2. Error in forceSendMessageToID, chat not found')
+				});
+			}
+		}).catch((err) => {
+			console.log('3. Error in forceSendMessageToID, chat not found', err)
+		})
+	} catch (e) {
+		console.log('4. Error in forceSendMessageToID, chat not found', err)
+	}
+	
+	
 	
 	/*
 	var idUser = new window.Store.UserConstructor(chatid, {
@@ -1863,6 +1940,51 @@ window.WAPI.sendMessageToID = function(chatid, msgText) {
     return teste*/
 
 }
+
+
+window.WAPI.sendMessage = function(id, message, done) {
+    var chat = WAPI.getChat(id);
+    if (chat !== undefined) {
+        if (done !== undefined) {
+            chat.sendMessage(message).then(function() {
+                function sleep(ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                }
+
+                var trials = 0;
+
+                function check() {
+                    for (let i = chat.msgs.models.length - 1; i >= 0; i--) {
+                        let msg = chat.msgs.models[i];
+
+                        if (!msg.senderObj.isMe || msg.body != message) {
+                            continue;
+                        }
+                        done(WAPI._serializeMessageObj(msg));
+                        return True;
+                    }
+                    trials += 1;
+                    console.log(trials);
+                    if (trials > 30) {
+                        done(true);
+                        return;
+                    }
+                    sleep(500).then(check);
+                }
+                check();
+            });
+            return true;
+        } else {
+            chat.sendMessage(message);
+            return true;
+        }
+    } else {
+        if (done !== undefined) done(false);
+        return false;
+    }
+};
+
+
 
 window.WAPI.base64ImageToFile = function(b64Data, filename) {
     var arr = b64Data.split(',');
