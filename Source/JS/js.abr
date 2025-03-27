@@ -64,7 +64,11 @@ var gettingUnreadMessages = false;
 var WAVersion;
 
 function startMonitor(intervalSeconds = 0) {
-    isLoggedStatus = WAPI.isLoggedIn();
+    if (intervalMonitor) {
+        clearInterval(intervalMonitor);
+    }
+	
+	isLoggedStatus = WAPI.isLoggedIn();
 	window.WAPI.onIncomingCall();
 	window.WAPI.onGetUnReadMessageFromMe();
 	WAVersion = WAPI.getWAVersion();
@@ -1453,6 +1457,17 @@ window.WAPI.sendSeen = async function (id) {
     return false;
 };
 
+//Funcao adicionada em 09/03/2025 by Mike
+window.WAPI.markUnRead = async function (id) {
+    if (!id) return false;
+    var chat = window.WAPI.getChat(id);
+    if (chat !== undefined) {
+            await Store.ReadSeen.markUnread(chat, true);
+            return true;
+    }
+    return false;
+};
+
 function isChatMessage(message) {
     if (message.isSentByMe) {
         return false;
@@ -1828,7 +1843,11 @@ window.WAPI.sendImage = function(imgBase64, chatid, filename, caption) {
 
 
 window.WAPI.sendMessageToID = function(chatid, msgText) {
-    var idUser = new window.Store.UserConstructor(chatid, {
+    
+	window.WAPI.sendMessage(chatid, msgText)
+	
+	/*
+	var idUser = new window.Store.UserConstructor(chatid, {
         intentionallyUsePrivateConstructor: true
     });
 
@@ -1841,7 +1860,7 @@ window.WAPI.sendMessageToID = function(chatid, msgText) {
             return true;
         })
 
-    return teste
+    return teste*/
 
 }
 

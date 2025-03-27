@@ -54,12 +54,13 @@ Type
 
     FReceiveAttachmentAuto: Boolean;
     FZoom: SmallInt;
-    procedure SetSecondsMonitor(const Value: integer);
+
     procedure SetLowBattery(const Value: SmallInt);
     procedure SetControlSendTimeSec(const Value: SmallInt);
     procedure SetReceiveAttachmentPath(const Value: String);
     procedure SetReceiveAttachmentAuto(const Value: Boolean);
     procedure SetZoom(const Value: SmallInt);
+    procedure SetSecondsMonitor(const Value: integer);
   public
      constructor Create(AOwner: TComponent);
      Property  OnNotificationCenter : TNotificationCenter  Read FOnNotificationCenter      Write FOnNotificationCenter;
@@ -159,8 +160,8 @@ procedure TInjectConfig.SetSecondsMonitor(const Value: integer);
 begin
   FSecondsMonitor := Value;
   //Não permitir que fique zero ou negativo.
-  if Value < 0.1 then
-     FSecondsMonitor := 3;
+//  if Value < 0.1 then
+//     FSecondsMonitor := 3;
 end;
 
 procedure TInjectConfig.SetZoom(const Value: SmallInt);

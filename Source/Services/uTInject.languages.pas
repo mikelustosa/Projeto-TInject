@@ -113,7 +113,7 @@ begin
   SetResourceString(@Text_Status_Serv_ConnectingReaderQR  , 'Aguardando leitura QR Code');
   SetResourceString(@Text_Status_Serv_TimeOut             , 'Erro ao conectar (TimeOut)');
   SetResourceString(@Text_Status_Serv_Destroying          , 'Destruindo e fechando Tinject');
-  SetResourceString(@Text_Status_Serv_Destroy             , 'TInject finalizado');
+  SetResourceString(@Text_Status_Serv_Destroy             , 'TInject finalizado. Aguarde o fechamento automático da aplicação.');
   SetResourceString(@MSG_WarningNothingtoSend             , 'Não existe nenhum conteúdo a ser enviado na mensagem');
 
   SetResourceString(@MSG_Except_Data_TypeObj              , 'Tipo de objeto não é compatível');

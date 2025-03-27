@@ -155,7 +155,7 @@ type
     Procedure Form_Start;
     Procedure Form_Normal;
 
-    public
+  public
     { Public declarations }
     Function  ConfigureNetWork:Boolean;
     Procedure SetZoom(Pvalue: Integer);
@@ -204,7 +204,6 @@ type
     procedure CleanChat(vTelefone: string);
     procedure fGetMe;
     procedure NewCheckIsValidNumber(vNumber:String);
-
     procedure GetAllChats;
     procedure GetUnreadMessages;
     procedure GetBatteryLevel;
@@ -217,6 +216,7 @@ type
 
     //Para monitorar o qrcode via REST
     procedure ReadMessages(vID: string);
+    procedure MarkUnread(vID: string);
     procedure DeleteMessages(vID: string);
     procedure ReadMessagesAndDelete(vID: string);
 
@@ -686,6 +686,14 @@ var
   LJS: String;
 begin
   LJS := FrmConsole_JS_VAR_DeleteMessages;
+  ExecuteJS(FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#', Trim(vID)), False);
+end;
+
+procedure TFrmConsole.MarkUnread(vID: string);
+var
+  LJS: String;
+begin
+  LJS := FrmConsole_JS_VAR_MarkUnread;
   ExecuteJS(FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#', Trim(vID)), False);
 end;
 

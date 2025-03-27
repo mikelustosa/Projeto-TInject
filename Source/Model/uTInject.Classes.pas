@@ -1223,32 +1223,32 @@ var
   i,j : integer;
 begin
   try
-  // Verifica se o JSON contém a chave "result" e se é um array
-  if json.TryGetValue<TJsonArray>('result', resultArray) then
-  begin
-    // Itera sobre os elementos do array
-    for i := 0 to resultArray.Count - 1 do
+    // Verifica se o JSON contém a chave "result" e se é um array
+    if json.TryGetValue<TJsonArray>('result', resultArray) then
     begin
-      // Obtém o objeto de chat
-      chatObject := resultArray.Items[i] as TJSONObject;
-      // Remove os objetos específicos do chat
-      chatObject.RemovePair('tcToken');
-//      chatObject.RemovePair('chat');
-      // Verifica se o chat contém mensagens
-      if chatObject.TryGetValue<TJsonArray>('messages', messageArray) then
+      // Itera sobre os elementos do array
+      for i := 0 to resultArray.Count - 1 do
       begin
-        // Itera sobre as mensagens do chat
-        for j := 0 to messageArray.Count - 1 do
+        // Obtém o objeto de chat
+        chatObject := resultArray.Items[i] as TJSONObject;
+        // Remove os objetos específicos do chat
+        chatObject.RemovePair('tcToken');
+  //      chatObject.RemovePair('chat');
+        // Verifica se o chat contém mensagens
+        if chatObject.TryGetValue<TJsonArray>('messages', messageArray) then
         begin
-          // Obtém o objeto de mensagem
-          messageObject := messageArray.Items[j] as TJSONObject;
-          // Remove o objeto de mediaData da mensagem
-          messageObject.RemovePair('mediaData');
-          messageObject.RemovePair('chat');
+          // Itera sobre as mensagens do chat
+          for j := 0 to messageArray.Count - 1 do
+          begin
+            // Obtém o objeto de mensagem
+            messageObject := messageArray.Items[j] as TJSONObject;
+            // Remove o objeto de mediaData da mensagem
+            messageObject.RemovePair('mediaData');
+            messageObject.RemovePair('chat');
+          end;
         end;
       end;
     end;
-  end;
   Except
      on E : Exception do
        LogAdd(e.Message, 'ERROR ' + SELF.ClassName);
@@ -1272,28 +1272,33 @@ var
   I: Integer;
 begin
    try
-    for i:= Length(PArray)-1 downto 0 do
-        {$IFDEF VER300}
-          freeAndNil(PArray[i]);
-        {$ENDIF}
+     try
+      for i:= Length(PArray)-1 downto 0 do
+          {$IFDEF VER300}
+            freeAndNil(PArray[i]);
+          {$ENDIF}
 
-        {$IFDEF VER330}
-          freeAndNil(PArray[i]);
-        {$ENDIF}
+          {$IFDEF VER330}
+            freeAndNil(PArray[i]);
+          {$ENDIF}
 
-        {$IFDEF VER340}
-          freeAndNil(TArray<TClassPadrao>(PArray)[i]);
-        {$ENDIF}
+          {$IFDEF VER340}
+            freeAndNil(TArray<TClassPadrao>(PArray)[i]);
+          {$ENDIF}
 
-        {$IFDEF VER350}
-          freeAndNil(TArray<TClassPadrao>(PArray)[i]);
-        {$ENDIF}
+          {$IFDEF VER350}
+            freeAndNil(TArray<TClassPadrao>(PArray)[i]);
+          {$ENDIF}
 
-        {$IFDEF VER360}
-          freeAndNil(TArray<TClassPadrao>(PArray)[i]);
-        {$ENDIF}
-   finally
-     SetLength(PArray, 0);
+          {$IFDEF VER360}
+            freeAndNil(TArray<TClassPadrao>(PArray)[i]);
+          {$ENDIF}
+     finally
+       SetLength(PArray, 0);
+     end;
+   except
+     on E : Exception do
+         LogAdd(e.Message, 'ERROR ' + SELF.ClassName);
    end;
 end;
 
@@ -1334,6 +1339,8 @@ end;
 
 constructor TUrlIndy.Create;
 begin
+  try
+
   {$IFDEF DELPHI25_UP}
     inherited;
   {$ELSE}
@@ -1368,18 +1375,28 @@ begin
     SSLOptions.Mode := sslmUnassigned;
   end;
 
+  except
+    on E : Exception do
+       LogAdd(e.Message, 'ERROR ' + SELF.ClassName);
+  end;
+
 end;
 
 destructor TUrlIndy.Destroy;
 begin
-  FTImeOutIndy.Enabled       := False;
-  FreeandNil(FReturnUrl);
-  FreeandNil(FTImeOutIndy);
-  FreeandNil(SSIOHandler);
-  {$IFDEF DELPHI25_UP}
-     FreeandNil(FIdAntiFreeze);
-  {$ENDIF}
-  inherited;
+  try
+    FTImeOutIndy.Enabled       := False;
+    FreeandNil(FReturnUrl);
+    FreeandNil(FTImeOutIndy);
+    FreeandNil(SSIOHandler);
+    {$IFDEF DELPHI25_UP}
+       FreeandNil(FIdAntiFreeze);
+    {$ENDIF}
+    inherited;
+  except
+    on E : Exception do
+       LogAdd(e.Message, 'ERROR ' + SELF.ClassName);
+  end;
 end;
 
 function TUrlIndy.DownLoadInternetFile(Source, Dest: String): Boolean;

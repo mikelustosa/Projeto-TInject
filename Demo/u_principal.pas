@@ -139,6 +139,8 @@ type
     btnSendPool: TButton;
     btSendButtonList: TButton;
     btnConsoleClear: TButton;
+    btMarkUnRead: TButton;
+    chk_ativaLeitura: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure btSendTextClick(Sender: TObject);
@@ -218,6 +220,8 @@ type
     procedure btSendButtonListClick(Sender: TObject);
     procedure btnConsoleClearClick(Sender: TObject);
     procedure TInject1GetUnReadMessagesFromMe(const Chats: TChatList);
+    procedure btMarkUnReadClick(Sender: TObject);
+    procedure chk_ativaLeituraClick(Sender: TObject);
 
   private
     { Private declarations }
@@ -465,6 +469,19 @@ begin
 end;
 
 
+procedure TfrmPrincipal.btMarkUnReadClick(Sender: TObject);
+begin
+  try
+    if not TInject1.Auth then
+       Exit;
+
+    TInject1.markUnRead(ed_num.Text);
+  finally
+    ed_num.SelectAll;
+    ed_num.SetFocus;
+  end;
+end;
+
 {procedure TfrmPrincipal.btNewCheckNumberClick(Sender: TObject);
 begin
 
@@ -557,65 +574,42 @@ end;
 
 procedure TfrmPrincipal.btGetMeClick(Sender: TObject);
 begin
-
   try
-
     if not TInject1.Auth then
        Exit;
 
     TInject1.GetMe();
   finally
-
   end;
-
 end;
-
-
 
 procedure TfrmPrincipal.Button19Click(Sender: TObject);
 begin
-
-   if not TInject1.Auth then
-
-     Exit;
+  if not TInject1.Auth then
+    exit;
 
   TInject1.GetGroupInviteLink(lbl_idGroup.Caption);//  '558192317066-1592044430@g.us'
-
 end;
-
-
 
 procedure TfrmPrincipal.btCleanChatClick(Sender: TObject);
 begin
-
   if not TInject1.Auth then
-
-     Exit;
-
+    exit;
 
   TInject1.CleanALLChat(ed_num.Text);
-
 end;
-
-
 
 procedure TfrmPrincipal.btGetStatusClick(Sender: TObject);
 begin
-
   try
-
     FStatus := true;
     if not TInject1.Auth then
-       Exit;
+      exit;
 
     TInject1.GetStatusContact(ed_num.Text);
   finally
-
   end;
-
 end;
-
-
 
 procedure TfrmPrincipal.btnConsoleClearClick(Sender: TObject);
 begin
@@ -630,44 +624,32 @@ begin
   if not TInject1.Auth then
        Exit;
 
-    TInject1.sendPool(edt_nomeGrupo.Text, 'TInject Community. Novo recurso de Enquete: Qual a melhor linguagem?', '["DELPHI", "JAVA", "C#", "PYTHON", "JAVASCRIPT", "PHP"]');
+  TInject1.sendPool(edt_nomeGrupo.Text, 'TInject Community. Novo recurso de Enquete: Qual a melhor linguagem?', '["DELPHI", "JAVA", "C#", "PYTHON", "JAVASCRIPT", "PHP"]');
 end;
 
 
 
 procedure TfrmPrincipal.btSetProfileNameClick(Sender: TObject);
 begin
-
   try
-
     if not TInject1.Auth then
        Exit;
 
     TInject1.SetProfileName(ed_profileData.Text);
   finally
-
   end;
-
 end;
-
-
 
 procedure TfrmPrincipal.btSetProfileStatusClick(Sender: TObject);
 begin
-
    try
-
     if not TInject1.Auth then
-       Exit;
+      exit;
 
     TInject1.SetStatus(ed_profileData.Text);
   finally
-
   end;
-
 end;
-
-
 
 procedure TfrmPrincipal.btnTestCheckNumberClick(Sender: TObject);
 begin
@@ -767,6 +749,16 @@ begin
      Exit;
 
   TInject1.groupDemoteParticipant(lbl_idGroup.Caption, ed_idParticipant.text);
+end;
+
+procedure TfrmPrincipal.chk_ativaLeituraClick(Sender: TObject);
+begin
+  try
+    if chk_ativaLeitura.Checked = true then
+      frmConsole.StartMonitor(3) else
+      frmConsole.StartMonitor(0);
+  except
+  end;
 end;
 
 procedure TfrmPrincipal.chk_3Click(Sender: TObject);
