@@ -85,12 +85,6 @@ type
     procedure ProcessGroupBook(PCommand: string);
     procedure FormShow(Sender: TObject);
     procedure App_EventMinimize(Sender: TObject);
-    procedure Chromium1BeforeDownload(Sender: TObject;
-      const browser: ICefBrowser; const downloadItem: ICefDownloadItem;
-      const suggestedName: ustring; const callback: ICefBeforeDownloadCallback);
-    procedure Chromium1DownloadUpdated(Sender: TObject;
-      const browser: ICefBrowser; const downloadItem: ICefDownloadItem;
-      const callback: ICefDownloadItemCallback);
     procedure lbl_VersaoMouseEnter(Sender: TObject);
     procedure Chromium1BeforeContextMenu(Sender: TObject;
       const browser: ICefBrowser; const frame: ICefFrame;
@@ -1037,29 +1031,10 @@ procedure TFrmConsole.Chromium1BeforeContextMenu(Sender: TObject;
   const browser: ICefBrowser; const frame: ICefFrame;
   const params: ICefContextMenuParams; const model: ICefMenuModel);
 begin
-  Model.Clear;
-end;
-
-procedure TFrmConsole.Chromium1BeforeDownload(Sender: TObject;
-  const browser: ICefBrowser; const downloadItem: ICefDownloadItem;
-  const suggestedName: ustring; const callback: ICefBeforeDownloadCallback);
-//Var
-//  LNameFile : String;
-begin
-{
-  if not(Chromium1.IsSameBrowser(browser)) or (downloadItem = nil) or not(downloadItem.IsValid) then
-     Exit;
-
-   LNameFile := FDownloadFila.SetNewStatus(downloadItem.OriginalUrl, TDw_Start);
-   if LNameFile = '' Then
-   Begin
-     Chromium1.StopLoad;
-     browser.StopLoad;
-     exit;
-   End;
-
-   callback.cont(LNameFile, False);
-}
+  try
+    Model.Clear;
+  except
+  end;
 end;
 
 procedure TFrmConsole.Chromium1BeforePopup(Sender: TObject;
@@ -1071,8 +1046,8 @@ procedure TFrmConsole.Chromium1BeforePopup(Sender: TObject;
   var noJavascriptAccess, Result: Boolean);
 begin
 // bloqueia todas as janelas pop-up e novas guias
-  ShellExecute(Handle, 'open', PChar(targetUrl), '', '', 1);
-  Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
+  //ShellExecute(Handle, 'open', PChar(targetUrl), '', '', 1);
+  //Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
 end;
 
 procedure TFrmConsole.Chromium1Close(Sender: TObject;
@@ -1326,59 +1301,38 @@ procedure TFrmConsole.Chromium1ConsoleMessage(Sender: TObject;
 var
   AResponse  : TResponseConsoleMessage;
 begin
-
- //testa se e um JSON de forma RAPIDA!
-  if (Copy(message, 0, 2) <> '{"') then
-  Begin
-    LogAdd(message, 'CONSOLE IGNORADO');
-    Exit;
-  End else
-  Begin
-    if (message = FrmConsole_JS_Ignorar) or (message = FrmConsole_JS_RetornoVazio)  then
-       Exit;
-  End;
-
- LogAdd(message, 'CONSOLE');
-
- if message <> 'Uncaught (in promise) TypeError: output.update is not a function' then
-
-
- AResponse := TResponseConsoleMessage.Create( message );
   try
-    if AResponse = nil then
-       Exit;
+   //testa se e um JSON de forma RAPIDA!
+    if (Copy(message, 0, 2) <> '{"') then
+    Begin
+      LogAdd(message, 'CONSOLE IGNORADO');
+      Exit;
+    End else
+    Begin
+      if (message = FrmConsole_JS_Ignorar) or (message = FrmConsole_JS_RetornoVazio)  then
+         Exit;
+    End;
 
-    ExecuteCommandConsole(AResponse);
-//    if Assigned(FControlSend) then
-//       FControlSend.Release;
-  finally
-    FreeAndNil(AResponse);
+   LogAdd(message, 'CONSOLE');
+
+   if message <> 'Uncaught (in promise) TypeError: output.update is not a function' then
+
+
+   AResponse := TResponseConsoleMessage.Create( message );
+    try
+      if AResponse = nil then
+         Exit;
+
+      ExecuteCommandConsole(AResponse);
+  //    if Assigned(FControlSend) then
+  //       FControlSend.Release;
+    finally
+      FreeAndNil(AResponse);
+    end;
+  except
   end;
 end;
 
-
-procedure TFrmConsole.Chromium1DownloadUpdated(Sender: TObject;
-  const browser: ICefBrowser; const downloadItem: ICefDownloadItem;
-  const callback: ICefDownloadItemCallback);
-begin
-
- {
-  if not(Chromium1.IsSameBrowser(browser)) then exit;
-  if not Assigned(FDownloadFila) then Exit;
-
-  if (not downloadItem.IsComplete) and (not downloadItem.IsCanceled) then
-     Exit;
-
-  try
-   if downloadItem.IsComplete then
-       FDownloadFila.SetNewStatus(downloadItem.Url, TDw_Completed) else
-       FDownloadFila.SetNewStatus(downloadItem.Url, TDw_CanceledErro);
-  Except
-     on E : Exception do
-        LogAdd(e.Message, 'ERROR DOWNLOAD ' + downloadItem.FullPath);
-  end;
-  }
-end;
 
 procedure TFrmConsole.Chromium1OpenUrlFromTab(Sender: TObject;
   const browser: ICefBrowser; const frame: ICefFrame; const targetUrl: ustring;
@@ -1386,23 +1340,26 @@ procedure TFrmConsole.Chromium1OpenUrlFromTab(Sender: TObject;
   out Result: Boolean);
 begin
  //Bloqueia popup do windows e novas abas
-  Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
+  //Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
 end;
 
 procedure TFrmConsole.Chromium1TitleChange(Sender: TObject;
   const browser: ICefBrowser; const title: ustring);
 begin
-  LPaginaId := LPaginaId + 1;
-  if (LPaginaId > 3) and (LPaginaId < 10) then
-  begin
-    Form_Normal;
-    If Assigned(OnNotificationCenter) then
-       SendNotificationCenterDirect(Th_Connected);
-  end;
-  if (LPaginaId <= 3) and (FFormType = Ft_Http) then
-    SetZoom(-2);
+  try
+    LPaginaId := LPaginaId + 1;
+    if (LPaginaId > 3) and (LPaginaId < 10) then
+    begin
+      Form_Normal;
+      If Assigned(OnNotificationCenter) then
+         SendNotificationCenterDirect(Th_Connected);
+    end;
+    if (LPaginaId <= 3) and (FFormType = Ft_Http) then
+      SetZoom(-2);
 
-  ExecuteJS(FrmConsole_JS_refreshOnlyQRCode, true);
+    ExecuteJS(FrmConsole_JS_refreshOnlyQRCode, true);
+  except
+  end;
 end;
 
 function TFrmConsole.ConfigureNetWork: Boolean;

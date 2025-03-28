@@ -482,53 +482,6 @@ begin
   end;
 end;
 
-{procedure TfrmPrincipal.btNewCheckNumberClick(Sender: TObject);
-begin
-
-
-
-end;
-
-
-
- Funcao nao utilizada
-function DownloadArquivo(const Origem, Destino: String): Boolean;
-const BufferSize = 1024;
-var
-  hSession, hURL: HInternet;
-  Buffer: array[1..BufferSize] of Byte;
-  BufferLen: DWORD;
-  f: File;
-  sAppName: string;
-begin
- Result   := False;
- sAppName := ExtractFileName(Application.ExeName);
- hSession := InternetOpen(PChar(sAppName),
-                INTERNET_OPEN_TYPE_PRECONFIG,
-               nil, nil, 0);
- try
-  hURL := InternetOpenURL(hSession,
-            PChar(Origem),
-            nil,0,0,0);
-  try
-   AssignFile(f, Destino);
-   Rewrite(f,1);
-   repeat
-    InternetReadFile(hURL, @Buffer,
-                     SizeOf(Buffer), BufferLen);
-    BlockWrite(f, Buffer, BufferLen)
-   until BufferLen = 0;
-   CloseFile(f);
-   Result:=True;
-  finally
-   InternetCloseHandle(hURL)
-  end
- finally
-  InternetCloseHandle(hSession)
- end
-end;}
-
-
 procedure TfrmPrincipal.Button10Click(Sender: TObject);
 begin
   if not TInject1.Auth then
@@ -555,7 +508,6 @@ end;
 
 procedure TfrmPrincipal.btGetSeveralStatusClick(Sender: TObject);
 begin
-
   try
 
     FStatus := false;
@@ -565,9 +517,7 @@ begin
     TInject1.GetStatusContact('558196988474@c.us');
     TInject1.GetStatusContact('558198007759@c.us');
   finally
-
   end;
-
 end;
 
 
@@ -1227,6 +1177,7 @@ var
   contato, telefone: string;
   injectDecrypt: TInjectDecryptFile;
 begin
+   try
    for AChat in Chats.result do
     begin
       for AMessage in AChat.messages do
@@ -1236,7 +1187,7 @@ begin
           if not AMessage.fromMe then  //Não exibe mensages enviadas por mim
           begin
             memo_unReadMessage.Clear;
-
+            injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'mp3', AChat.id); end
             //Tratando o tipo do arquivo recebido e faz o download para pasta \BIN\temp
             case AnsiIndexStr(UpperCase(AMessage.&type), ['PTT', 'IMAGE', 'VIDEO', 'AUDIO', 'DOCUMENT']) of
               0: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'mp3', AChat.id); end;
@@ -1267,6 +1218,12 @@ begin
         end;
       end;
     end;
+   except on e:exception do
+    begin
+      showMessage(e.Message);
+    end;
+
+   end;
 end;
 
 procedure TfrmPrincipal.TInject1GetUnReadMessagesFromMe(const Chats: TChatList);
@@ -1276,47 +1233,47 @@ var
   contato, telefone: string;
   injectDecrypt: TInjectDecryptFile;
 begin
-   for AChat in Chats.result do
-    begin
-      for AMessage in AChat.messages do
-      begin
-        if not AChat.isGroup then //Não exibe mensages de grupos
-        begin
-
-          if not AMessage.fromMe then  //Não exibe mensages enviadas por mim
-          begin
-            memo_unReadMessage.Clear;
-
-            //Tratando o tipo do arquivo recebido e faz o download para pasta \BIN\temp
-            case AnsiIndexStr(UpperCase(AMessage.&type), ['PTT', 'IMAGE', 'VIDEO', 'AUDIO', 'DOCUMENT']) of
-              0: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'mp3', AChat.id); end;
-              1: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'jpg', AChat.id); end;
-              2: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'mp4', AChat.id); end;
-              3: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'mp3', AChat.id); end;
-              4: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'pdf', AChat.id); end;
-            end;
-            sleepNoFreeze(100);
-            memo_unReadMessage.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
-              memo_unReadMessage.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
-            FChatID := AChat.id;
-
-            memo_unReadMessage.Lines.Add(PChar('Tipo mensagem: '      + AMessage.&type));
-            memo_unReadMessage.Lines.Add( StringReplace(AMessage.body, #$A, #13#10, [rfReplaceAll, rfIgnoreCase]));
-
-            telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
-            contato   :=  AMessage.Sender.pushName;
-
-            ed_profilePicThumbURL.text := AChat.contact.profilePicThumb;
-
-
-            TInject1.ReadMessages(AChat.id);
-
-            if chk_AutoResposta.Checked then
-               VerificaPalavraChave(AMessage.body, '', telefone, contato);
-          end;
-        end;
-      end;
-    end;
+//   for AChat in Chats.result do
+//    begin
+//      for AMessage in AChat.messages do
+//      begin
+//        if not AChat.isGroup then //Não exibe mensages de grupos
+//        begin
+//
+//          if not AMessage.fromMe then  //Não exibe mensages enviadas por mim
+//          begin
+//            memo_unReadMessage.Clear;
+//
+//            //Tratando o tipo do arquivo recebido e faz o download para pasta \BIN\temp
+//            case AnsiIndexStr(UpperCase(AMessage.&type), ['PTT', 'IMAGE', 'VIDEO', 'AUDIO', 'DOCUMENT']) of
+//              0: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'mp3', AChat.id); end;
+//              1: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'jpg', AChat.id); end;
+//              2: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'mp4', AChat.id); end;
+//              3: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'mp3', AChat.id); end;
+//              4: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'pdf', AChat.id); end;
+//            end;
+//            sleepNoFreeze(100);
+//            memo_unReadMessage.Lines.Add(PChar( 'Nome Contato: ' + Trim(AMessage.Sender.pushName)));
+//              memo_unReadMessage.Lines.Add(PChar( 'Chat Id     : ' + AChat.id));
+//            FChatID := AChat.id;
+//
+//            memo_unReadMessage.Lines.Add(PChar('Tipo mensagem: '      + AMessage.&type));
+//            memo_unReadMessage.Lines.Add( StringReplace(AMessage.body, #$A, #13#10, [rfReplaceAll, rfIgnoreCase]));
+//
+//            telefone  :=  Copy(AChat.id, 3, Pos('@', AChat.id) - 3);
+//            contato   :=  AMessage.Sender.pushName;
+//
+//            ed_profilePicThumbURL.text := AChat.contact.profilePicThumb;
+//
+//
+//            TInject1.ReadMessages(AChat.id);
+//
+//            if chk_AutoResposta.Checked then
+//               VerificaPalavraChave(AMessage.body, '', telefone, contato);
+//          end;
+//        end;
+//      end;
+//    end;
 
 end;
 

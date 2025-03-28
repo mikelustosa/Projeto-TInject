@@ -34,8 +34,6 @@ object frmPrincipal: TfrmPrincipal
     ActivePage = TabSheet1
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = -2
-    ExplicitTop = 0
     object TabSheet1: TTabSheet
       Caption = 'Autentica'#231#227'o / Authentication'
       object Pnl_Config: TPanel
@@ -4126,7 +4124,6 @@ object frmPrincipal: TfrmPrincipal
           Images = ImageList1
           TabOrder = 14
           OnClick = btMarkUnReadClick
-          ExplicitLeft = 4
         end
       end
       object Panel1: TPanel

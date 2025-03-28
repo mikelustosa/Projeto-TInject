@@ -468,8 +468,6 @@ object FrmConsole: TFrmConsole
     OnBeforeContextMenu = Chromium1BeforeContextMenu
     OnTitleChange = Chromium1TitleChange
     OnConsoleMessage = Chromium1ConsoleMessage
-    OnBeforeDownload = Chromium1BeforeDownload
-    OnDownloadUpdated = Chromium1DownloadUpdated
     OnBeforePopup = Chromium1BeforePopup
     OnAfterCreated = Chromium1AfterCreated
     OnBeforeClose = Chromium1BeforeClose
