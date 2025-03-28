@@ -616,8 +616,6 @@ begin
 
 end;
 
-
-
 procedure TfrmPrincipal.Button1Click(Sender: TObject);
 var
   JS: string;
@@ -1187,7 +1185,7 @@ begin
           if not AMessage.fromMe then  //Não exibe mensages enviadas por mim
           begin
             memo_unReadMessage.Clear;
-            injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'mp3', AChat.id); end
+
             //Tratando o tipo do arquivo recebido e faz o download para pasta \BIN\temp
             case AnsiIndexStr(UpperCase(AMessage.&type), ['PTT', 'IMAGE', 'VIDEO', 'AUDIO', 'DOCUMENT']) of
               0: begin injectDecrypt.download(AMessage.deprecatedMms3Url, AMessage.mediaKey, 'mp3', AChat.id); end;
