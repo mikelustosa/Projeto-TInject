@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.0.4.0;1.0.0.9;78.3.0
+//3.0.5.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -483,6 +483,7 @@ chooseFunction();
  
 window.WAPI = {};
 window._WAPI = {};
+window.WAPI.nop = () => { }
 
 window.WAPI._serializeRawObj = (obj) => {
     if (obj && obj.toJSON) {
@@ -1868,25 +1869,73 @@ window.WAPI.findChatFromId = (id) => {
 	}
 }
 
+window.WAPI.chat = (_id) => {
+	let result = null;
+	if (Store != undefined &&
+		Store.Chat != undefined &&
+		(Store.Chat.models != undefined ||
+			Store.Chat.getModelsArray())) {
+
+		(Store.Chat.models || Store.Chat.getModelsArray()).forEach(x => {
+			if (x.hasOwnProperty("__x_id") && x.__x_id == _id) {
+				result = x;
+			}
+		});
+	}
+	return result;
+}
+
 
 window.WAPI.sendMessageToID = function(chatid, msgText) {
-    
-	try {
-		window.WAPI.findJidFromNumber(chatid).then(contact => {
-			if (contact.status === 404) {
-				console.log('1. Contact not found in forceSendMessageToID', err)
-			} else {
-				window.WAPI.findChatFromId(contact.jid).then(chat => {
-					chat.sendMessage(msgText);
-				}).catch(reject => {
-					console.log('2. Error in forceSendMessageToID, chat not found')
-				});
-			}
-		}).catch((err) => {
-			console.log('3. Error in forceSendMessageToID, chat not found', err)
-		})
-	} catch (e) {
-		console.log('4. Error in forceSendMessageToID, chat not found', err)
+    if (chatid.includes('@c.us')) {		
+		try {
+			window.WAPI.findJidFromNumber(chatid).then(contact => {
+				if (contact.status === 404) {
+					console.log('Contact not found in findJidFromNumber', err)
+				} else {
+					window.WAPI.findChatFromId(contact.jid).then(chat => {
+						chat.sendMessage(msgText);
+					}).catch(reject => {
+						console.log('Error in findChatFromId, chat not found')
+					});
+				}
+			}).catch((err) => {
+				console.log('Error in chat.sendMessage, chat not found', err)
+			})
+		} catch (e) {
+			console.log('Error in findChatFromId, chat not found', err)
+		}		
+	} else if (chatid.includes('@g.us')) {	
+				try {					
+					let chat = WAPI.chat(chatid);
+
+					if (chat == null) {
+						let isHotnumber = settings?.phone?.hot_number ? true : false;
+
+						if (!isHotnumber) {
+							const totalChats = Store.Chat.models || Store.Chat.getModelsArray()
+							const chatsWithoutGroups = totalChats.filter(chat => chat.__x_isGroup === false)
+							isHotnumber = chatsWithoutGroups.length >= 50
+						}
+						
+						let WAVersion_ = WAPI.getWAVersion();
+						WAVersion_ = WAVersion_.replace(/\./g, '');
+												
+						if (WAVersion_ >= "230001021503949" && (isHotnumber)) {
+							window.WAPI.sendMessageToID(chatid, msgText)
+							return;
+						}
+
+						return;
+					}
+					
+					window.Store.SendTextMsgToChat(chat, msgText).then(function (e) {
+						(WAPI.nop)({ status: e });
+					});
+
+				} catch (error) {
+					console.error('Error in sendMessageToID', error);		
+				}
 	}
 
 }

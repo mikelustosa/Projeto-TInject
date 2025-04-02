@@ -230,6 +230,7 @@ type
     FNameContact:  string;
     FChatID: string;
     Procedure ExecuteFilter;
+    procedure DownloadAndRenameFile(imageURL: string);
 
   public
     { Public declarations }
@@ -616,14 +617,53 @@ begin
 
 end;
 
+procedure TfrmPrincipal.DownloadAndRenameFile(imageURL: string);
+const
+  TempFileName = 'file.enc';
+  FinalFileName = 'file.jpg';
+var
+  IdHTTP: TIdHTTP;
+  SSL: TIdSSLIOHandlerSocketOpenSSL;
+  FileStream: TFileStream;
+begin
+  IdHTTP := TIdHTTP.Create(nil);
+  SSL := TIdSSLIOHandlerSocketOpenSSL.Create(nil);
+  try
+    IdHTTP.IOHandler := SSL;
+    IdHTTP.HandleRedirects := True;
+
+    FileStream := TFileStream.Create(TempFileName, fmCreate);
+    try
+      IdHTTP.Get(imageURL, FileStream);
+    finally
+      FileStream.Free;
+    end;
+
+    // Renomear o arquivo após o download
+    if FileExists(TempFileName) then
+    begin
+      if FileExists(FinalFileName) then
+        DeleteFile(FinalFileName); // Remove o arquivo se já existir
+      RenameFile(TempFileName, FinalFileName);
+
+      Image2.Picture.LoadFromFile(FinalFileName);
+    end;
+  finally
+    IdHTTP.Free;
+    SSL.Free;
+  end;
+end;
+
 procedure TfrmPrincipal.Button1Click(Sender: TObject);
 var
   JS: string;
 begin
-  if (not TInject1.Auth)  then
-    Exit;
+  DownloadAndRenameFile(ed_profilePicThumbURL.Text);
 
-  TInject1.getProfilePicThumb(FChatID);
+//  if (not TInject1.Auth)  then
+//    Exit;
+
+//  TInject1.getProfilePicThumb(FChatID);
 end;
 
 procedure TfrmPrincipal.Button2Click(Sender: TObject);
