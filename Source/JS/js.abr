@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.0.5.0;1.0.0.9;78.3.0
+//3.0.6.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -837,8 +837,8 @@ window.WAPI.getAllGroups = function(done) {
     }
 
     // Exibe o resultado no console
-    //console.log(JSON.stringify(listGroups));
-	SetConsoleMessage("getAllGroups", JSON.stringify(listGroups));
+    console.log(JSON.stringify(listGroups));
+	//SetConsoleMessage("getAllGroups", JSON.stringify(listGroups));
 };
 
 //01/06/2020
@@ -1811,36 +1811,73 @@ window.WAPI.firstContact = async (id) => {
 	}
 }
 
+/*Mike 17/05/2025*/
 window.WAPI.sendImage = async function(imgBase64, chatid, filename, caption) {
-	try {
-		window.WAPI.findJidFromNumber(chatid).then(contact => {
-			if (contact.status === 404) {
-				console.log('1. Contact not found in forceSendMessageToID', err)
-			} else {
-				window.WAPI.findChatFromId(contact.jid).then(chat => {
-					
-					let mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
-            
-					let mc = new Store.MediaCollection(chat);
-            
-					mc.processAttachments([{file: mediaBlob}, 1], 1, chat).then(() => {
-						let media = mc._models[0];
-						media.sendToChat(chat, {caption:caption});
-						return true;
-					});					
-					
-				}).catch(reject => {
-					console.log('2. Error in forceSendMessageToID, chat not found')
-				});
-			}
-		}).catch((err) => {
-			console.log('3. Error in forceSendMessageToID, chat not found', err)
-		})
-	} catch (e) {
-		console.log('4. Error in forceSendMessageToID, chat not found', err)
-	}    
-}
+    try {
+        if (chatid.includes('@c.us')) {
+            const contact = await window.WAPI.findJidFromNumber(chatid);
+            if (!contact || contact.status === 404) {
+                console.log('1. Contact not found in findJidFromNumber');
+                return false;
+            }
 
+            const chat = await window.WAPI.findChatFromId(contact.jid);
+            if (!chat) {
+                console.log('2. Chat not found for contact');
+                return false;
+            }
+
+            const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
+            const mc = new Store.MediaCollection(chat);
+
+            await mc.processAttachments([{ file: mediaBlob }, 1], 1, chat);
+            const media = mc._models[0];
+            media.sendToChat(chat, { caption: caption });
+            return true;
+
+        } else if (chatid.includes('@g.us')) {
+            const chat = WAPI.chat(chatid);
+
+            if (!chat) {
+                let isHotnumber = settings?.phone?.hot_number ? true : false;
+
+                if (!isHotnumber) {
+                    const totalChats = Store.Chat.models || Store.Chat.getModelsArray();
+                    const chatsWithoutGroups = totalChats.filter(chat => chat.__x_isGroup === false);
+                    isHotnumber = chatsWithoutGroups.length >= 50;
+                }
+
+                let WAVersion_ = WAPI.getWAVersion().replace(/\./g, '');
+                if (WAVersion_ >= "230001021503949" && isHotnumber) {
+                    const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
+                    const mc = new Store.MediaCollection(chat);
+
+                    await mc.processAttachments([{ file: mediaBlob }, 1], 1, chat);
+                    const media = mc._models[0];
+                    media.sendToChat(chat, { caption: caption });
+                    return true;
+                } else {
+                    console.log('3. Version or hotnumber condition not met');
+                    return false;
+                }
+            } else {
+                const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
+                const mc = new Store.MediaCollection(chat);
+
+                await mc.processAttachments([{ file: mediaBlob }, 1], 1, chat);
+                const media = mc._models[0];
+                media.sendToChat(chat, { caption: caption });
+                return true;
+            }
+        } else {
+            console.log('4. chatid format not recognized');
+            return false;
+        }
+    } catch (err) {
+        console.error('5. Error in sendImage:', err);
+        return false;
+    }
+};
 
 window.WAPI.findJidFromNumber = (number) => {
 	try {
