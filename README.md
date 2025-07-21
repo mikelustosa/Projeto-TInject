@@ -5,7 +5,7 @@ Componente para criação de chatBots com delphi<br>
 
 ## INSTRUÇÕES PARA USO DO COMPONENTE<br></br>
 
-Delphi versions: Seattle, Berlin, Tokyo, Rio, Sydney, Alexandria.<br></br>
+Delphi versions: Seattle, Berlin, Tokyo, Rio, Sydney, Alexandria, Athens<br></br>
 
 ### Tutorial de instalação no youtube:<br>
 https://www.youtube.com/watch?v=EIxFdtenNxI&t=31s
@@ -19,25 +19,6 @@ https://youtu.be/07RoReOHaT4
 <br>
 https://youtu.be/cbWW7VNYwEo
 <br><br>
-
-Instalação manual:<br><br>
-### NOVO: Para usar com o delphi 11 Alexandria, incluir no library path 32 bits a pasta <b>Compilados</b> e suas subpastas.<br><br>
-1-Clonar o repositório Projeto-TInject
-<br></br>
-2-Baixar e instalar o CEF4Delphi em: http://www.softmaisbrasil.com.br/#blog
-<br></br>
-3-Baixar a pasta BIN em: http://www.softmaisbrasil.com.br/#blog
-<br></br>
-4-Copiar todo o conteúdo baixado da pasta BIN no passo 3 para a pasta BIN na raiz do projeto (Caso não exista a pasta BIN em seu projeto Crie)
-<br></br>
-5-Adicione ao libary path do Delphi a pasta TInject-whatsapp-delphi e todas as subpastas
-<br><br>
-6-Clique no menu *Component* > *Install component*. Selecione a unit uTinject pasta(service) e selecionar a opção *install into a new package*. Por fim, digite o nome TInject em *Package name*.
-<br><br>
-7-Dê um Compile e depois dê um build
-<br><br>
-8-Abra o arquivo demo Tinject.dproj
-<br></br>
 
 ## Star History
 
