@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.0.6.0;1.0.0.9;78.3.0
+//3.0.7.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -1830,7 +1830,7 @@ window.WAPI.sendImage = async function(imgBase64, chatid, filename, caption) {
             const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
             const mc = new Store.MediaCollection(chat);
 
-            await mc.processAttachments([{ file: mediaBlob }, 1], 1, chat);
+            await mc.processAttachmentsForChat ([{ file: mediaBlob }, 1], 1, chat);
             const media = mc._models[0];
             media.sendToChat(chat, { caption: caption });
             return true;
@@ -1852,7 +1852,7 @@ window.WAPI.sendImage = async function(imgBase64, chatid, filename, caption) {
                     const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
                     const mc = new Store.MediaCollection(chat);
 
-                    await mc.processAttachments([{ file: mediaBlob }, 1], 1, chat);
+                    await mc.processAttachmentsForChat ([{ file: mediaBlob }, 1], 1, chat);
                     const media = mc._models[0];
                     media.sendToChat(chat, { caption: caption });
                     return true;
