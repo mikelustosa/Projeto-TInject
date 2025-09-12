@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.0.7.0;1.0.0.9;78.3.0
+//3.0.7.1;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -792,53 +792,39 @@ window.WAPI.getAllNewMessages = async function () {
  * @returns {Array|*} List of chats
  */
  
-/*Deprecated 
+//MIKE 11/09/2025
 window.WAPI.getAllGroups = function(done) {
-    let groups = window.Store.Chat.filter((chat) => chat.isGroup);
+    try {
+			// Verifica se window.Store e GroupMetadata estão definidos
+			if (!window.Store || !window.Store.GroupMetadata) {
+				console.error("Não foi possível acessar os grupos. Verifique se o objeto Store está definido.");
+				return; // Sai da função caso os dados não estejam disponíveis
+			}
 
-	if (done !== undefined) done(groups);
-	
+			// Atribui o valor de GroupMetadata, garantindo que não seja null ou undefined
+			let groups = window.Store.GroupMetadata || [];
 
-	let arrGroups = [];
-	let arr = groups;
-	arr.forEach((v , i) => {
-		arrGroups.push(arr[i]['id']['_serialized']+' '+arr[i]['formattedTitle']);
-	})
-	
-	SetConsoleMessage("getAllGroups", JSON.stringify(arrGroups));
-}; */
+			// Verifica se groups está vazio
+			if (groups.length === 0) {
+				console.warn("Nenhum grupo encontrado.");
+				return; // Sai da função se não houver grupos
+			}
 
-//MIKE 17/12/2024
-window.WAPI.getAllGroups = function(done) {
-    // Verifica se window.Store e GroupMetadata estão definidos
-    if (!window.Store || !window.Store.GroupMetadata) {
-        console.error("Não foi possível acessar os grupos. Verifique se o objeto Store está definido.");
-        return; // Sai da função caso os dados não estejam disponíveis
-    }
+			// Criação da lista de grupos, com segurança contra valores inesperados
+			const listGroups = groups.map(group => ({
+				id: group.id || "ID não disponível",  // Valor de fallback caso id não exista
+				subject: group.subject || "Sem título" // Valor de fallback caso subject não exista
+			}));
 
-    // Atribui o valor de GroupMetadata, garantindo que não seja null ou undefined
-    let groups = window.Store.GroupMetadata || [];
+			// Se a função 'done' for fornecida, chama-a com a lista de grupos
+			if (done !== undefined) {
+				done(listGroups);
+			}
 
-    // Verifica se groups está vazio
-    if (groups.length === 0) {
-        console.warn("Nenhum grupo encontrado.");
-        return; // Sai da função se não houver grupos
-    }
-
-    // Criação da lista de grupos, com segurança contra valores inesperados
-    const listGroups = groups.map(group => ({
-        id: group.id || "ID não disponível",  // Valor de fallback caso id não exista
-        subject: group.subject || "Sem título" // Valor de fallback caso subject não exista
-    }));
-
-    // Se a função 'done' for fornecida, chama-a com a lista de grupos
-    if (done !== undefined) {
-        done(listGroups);
-    }
-
-    // Exibe o resultado no console
-    console.log(JSON.stringify(listGroups));
-	//SetConsoleMessage("getAllGroups", JSON.stringify(listGroups));
+			SetConsoleMessage("getAllGroups", JSON.stringify(listGroups));
+	} catch(e) {
+		console.log(e);	
+	}
 };
 
 //01/06/2020
