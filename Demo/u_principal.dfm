@@ -5566,7 +5566,7 @@ object frmPrincipal: TfrmPrincipal
     OnGetMe = TInject1GetMe
     OnNewGetNumber = TInject1NewGetNumber
     OnGetIncomingCall = TInject1GetIncomingCall
-    Left = 360
-    Top = 256
+    Left = 272
+    Top = 304
   end
 end
