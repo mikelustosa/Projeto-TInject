@@ -59,7 +59,6 @@ type
     LabeledEdit2: TLabeledEdit;
     LabeledEdit1: TLabeledEdit;
     chk_apagarMsg: TCheckBox;
-    btStatusBat: TButton;
     Rdb_FormaConexao: TRadioGroup;
     SpeedButton1: TSpeedButton;
     Image1: TImage;
@@ -178,7 +177,6 @@ type
     procedure TInject1GetCheckIsValidNumber(Sender: TObject; Number: string;      IsValid: Boolean);
     procedure btIsConnectedClick(Sender: TObject);
     procedure TInject1IsConnected(Sender: TObject; Connected: Boolean);
-    procedure TInject1GetBatteryLevel(Sender: TObject);
     procedure btSendLinkWithPreviewClick(Sender: TObject);
     procedure btSendLocationClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -360,7 +358,6 @@ begin
   if not TInject1.Auth then
      Exit;
 
-  //TInject1.CheckIsValidNumber(ed_num.Text); deprecated
   TInject1.NewCheckIsValidNumber(ed_num.Text);
 end;
 
@@ -936,11 +933,6 @@ begin
 
 end;
 
-procedure TfrmPrincipal.TInject1GetBatteryLevel(Sender: TObject);
-begin
-  Lbl_Avisos.Caption  := 'O telefone '  + TInject(Sender).MyNumber + ' está com '+ TInject(Sender).BatteryLevel.ToString + '% de bateria';
-  btStatusBat.caption := 'Status da bateria (' + TInject(Sender).BatteryLevel.ToString + '%)';
-end;
 
 procedure TfrmPrincipal.TInject1GetChatList(const Chats: TChatList);
 var

@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.0.7.2;1.0.0.9;78.3.0
+//3.0.8.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -301,6 +301,91 @@ const newMakeStore = () => {
         return window.Store;
     }
 	
+	
+	
+	// =====================================================================================
+// === INJEÇÃO DE DEPENDÊNCIAS ESSENCIAIS (TRADUÇÃO DO MÓDULO INICIAL DO WPPCONNECT) ===
+// =====================================================================================
+
+(function() {
+    if (typeof window.Store === 'undefined' || Object.keys(window.Store).length === 0) {
+        window.Store = {};
+    }
+
+    // Função que varre os módulos internos do WhatsApp Web (Webpack)
+    const findModule = (predicate, attempts = 10, interval = 1000) => new Promise((resolve) => {
+        const check = () => {
+            const modules = Object.values(window.webpackChunkwhatsapp_web_client || {}).flatMap(chunk => 
+                Object.values(chunk.exports || {}).flatMap(exp => Object.values(exp)
+            ));
+
+            for (const m of modules) {
+                if (m && typeof m.default === 'object' && predicate(m.default)) {
+                    return resolve(m.default);
+                }
+                if (m && typeof m === 'object' && predicate(m)) {
+                    return resolve(m);
+                }
+            }
+
+            if (attempts-- > 0) {
+                setTimeout(check, interval);
+            } else {
+                console.warn('Módulo do WhatsApp Store não encontrado após tentativas.');
+                resolve(null);
+            }
+        };
+        check();
+    });
+
+    // 1. Procurando o módulo 'User' (que contém getMe)
+    findModule((m) => m.getMe && m.getUserWid).then(UserModule => {
+        if (UserModule) {
+            window.Store.User = UserModule;
+            console.log('Módulo Store.User (getMe) encontrado.');
+        }
+    });
+
+    // 2. Procurando o módulo 'WidFactory'
+    findModule((m) => m.createWid && m.isWid).then(WidFactoryModule => {
+        if (WidFactoryModule) {
+            window.Store.WidFactory = WidFactoryModule;
+        }
+    });
+
+    // 3. Procurando o módulo 'Msg' (para criar a mensagem)
+    findModule((m) => m.create && m.type).then(MsgModule => {
+        if (MsgModule) {
+            window.Store.Msg = MsgModule;
+        }
+    });
+
+    // 4. Procurando o módulo 'MsgKey' (para criar o ID da mensagem)
+    findModule((m) => m.newId && m.fromString).then(MsgKeyModule => {
+        if (MsgKeyModule) {
+            window.Store.MsgKey = MsgKeyModule;
+        }
+    });
+
+    // 5. Procurando o módulo 'Chat' (para encontrar a conversa)
+    findModule((m) => m.find && m.get).then(ChatModule => {
+        if (ChatModule) {
+            window.Store.Chat = ChatModule;
+        }
+    });
+    
+    // 6. Procurando o módulo de ENVIAR MENSAGEM (addAndSendMsgToChat - O mais crítico)
+    findModule((m) => m.addAndSendMsgToChat).then(SendMsgModule => {
+        if (SendMsgModule && SendMsgModule.addAndSendMsgToChat) {
+            window.Store.addAndSendMsgToChat = SendMsgModule.addAndSendMsgToChat;
+        }
+    });
+})();
+
+// =====================================================================================
+// === FIM DO BLOCO DE INJEÇÃO DE DEPENDÊNCIAS ===
+// =====================================================================================
+	
     getStore(modulesFactory);
 	fixObjectsStore();
   }
@@ -446,6 +531,94 @@ const oldMakeStore = () => {
         
         return window.Store;
     }
+
+
+
+	// =====================================================================================
+// === INJEÇÃO DE DEPENDÊNCIAS ESSENCIAIS (TRADUÇÃO DO MÓDULO INICIAL DO WPPCONNECT) ===
+// =====================================================================================
+
+(function() {
+    if (typeof window.Store === 'undefined' || Object.keys(window.Store).length === 0) {
+        window.Store = {};
+    }
+
+    // Função que varre os módulos internos do WhatsApp Web (Webpack)
+    const findModule = (predicate, attempts = 10, interval = 1000) => new Promise((resolve) => {
+        const check = () => {
+            const modules = Object.values(window.webpackChunkwhatsapp_web_client || {}).flatMap(chunk => 
+                Object.values(chunk.exports || {}).flatMap(exp => Object.values(exp)
+            ));
+
+            for (const m of modules) {
+                if (m && typeof m.default === 'object' && predicate(m.default)) {
+                    return resolve(m.default);
+                }
+                if (m && typeof m === 'object' && predicate(m)) {
+                    return resolve(m);
+                }
+            }
+
+            if (attempts-- > 0) {
+                setTimeout(check, interval);
+            } else {
+                console.warn('Módulo do WhatsApp Store não encontrado após tentativas.');
+                resolve(null);
+            }
+        };
+        check();
+    });
+
+    // 1. Procurando o módulo 'User' (que contém getMe)
+    findModule((m) => m.getMe && m.getUserWid).then(UserModule => {
+        if (UserModule) {
+            window.Store.User = UserModule;
+            console.log('Módulo Store.User (getMe) encontrado.');
+        }
+    });
+
+    // 2. Procurando o módulo 'WidFactory'
+    findModule((m) => m.createWid && m.isWid).then(WidFactoryModule => {
+        if (WidFactoryModule) {
+            window.Store.WidFactory = WidFactoryModule;
+        }
+    });
+
+    // 3. Procurando o módulo 'Msg' (para criar a mensagem)
+    findModule((m) => m.create && m.type).then(MsgModule => {
+        if (MsgModule) {
+            window.Store.Msg = MsgModule;
+        }
+    });
+
+    // 4. Procurando o módulo 'MsgKey' (para criar o ID da mensagem)
+    findModule((m) => m.newId && m.fromString).then(MsgKeyModule => {
+        if (MsgKeyModule) {
+            window.Store.MsgKey = MsgKeyModule;
+        }
+    });
+
+    // 5. Procurando o módulo 'Chat' (para encontrar a conversa)
+    findModule((m) => m.find && m.get).then(ChatModule => {
+        if (ChatModule) {
+            window.Store.Chat = ChatModule;
+        }
+    });
+    
+    // 6. Procurando o módulo de ENVIAR MENSAGEM (addAndSendMsgToChat - O mais crítico)
+    findModule((m) => m.addAndSendMsgToChat).then(SendMsgModule => {
+        if (SendMsgModule && SendMsgModule.addAndSendMsgToChat) {
+            window.Store.addAndSendMsgToChat = SendMsgModule.addAndSendMsgToChat;
+        }
+    });
+})();
+
+// =====================================================================================
+// === FIM DO BLOCO DE INJEÇÃO DE DEPENDÊNCIAS ===
+// =====================================================================================
+
+
+
 
         if (typeof webpackJsonp === 'function') {
             webpackJsonp([], {'parasite': (x, y, z) => getStore(z)}, ['parasite']);
@@ -1797,128 +1970,6 @@ window.WAPI.firstContact = async (id) => {
 	}
 }
 
-/*Mike 17/05/2025  Deprecated*/
-/*window.WAPI.sendImage = async function(imgBase64, chatid, filename, caption) {
-    try {
-        if (chatid.includes('@c.us')) {
-            const contact = await window.WAPI.findJidFromNumber(chatid);
-            if (!contact || contact.status === 404) {
-                console.log('1. Contact not found in findJidFromNumber');
-                return false;
-            }
-
-            const chat = await window.WAPI.findChatFromId(contact.jid);
-            if (!chat) {
-                console.log('2. Chat not found for contact');
-                return false;
-            }
-
-            const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
-            const mc = new Store.MediaCollection(chat);
-
-            await mc.processAttachmentsForChat ([{ file: mediaBlob }, 1], 1, chat);
-            const media = mc._models[0];
-            media.sendToChat(chat, { caption: caption });
-            return true;
-
-        } else if (chatid.includes('@g.us')) {
-            const chat = WAPI.chat(chatid);
-
-            if (!chat) {
-                let isHotnumber = settings?.phone?.hot_number ? true : false;
-
-                if (!isHotnumber) {
-                    const totalChats = Store.Chat.models || Store.Chat.getModelsArray();
-                    const chatsWithoutGroups = totalChats.filter(chat => chat.__x_isGroup === false);
-                    isHotnumber = chatsWithoutGroups.length >= 50;
-                }
-
-                let WAVersion_ = WAPI.getWAVersion().replace(/\./g, '');
-                if (WAVersion_ >= "230001021503949" && isHotnumber) {
-                    const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
-                    const mc = new Store.MediaCollection(chat);
-
-                    await mc.processAttachmentsForChat ([{ file: mediaBlob }, 1], 1, chat);
-                    const media = mc._models[0];
-                    media.sendToChat(chat, { caption: caption });
-                    return true;
-                } else {
-                    console.log('3. Version or hotnumber condition not met');
-                    return false;
-                }
-            } else {
-                const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
-                const mc = new Store.MediaCollection(chat);
-
-                await mc.processAttachments([{ file: mediaBlob }, 1], 1, chat);
-                const media = mc._models[0];
-                media.sendToChat(chat, { caption: caption });
-                return true;
-            }
-        } else {
-            console.log('4. chatid format not recognized');
-            return false;
-        }
-    } catch (err) {
-        console.error('5. Error in sendImage:', err);
-        return false;
-    }
-};*/
-
-
-//Mike 20/09/2025
-window.WAPI.sendImage = async function(imgBase64, chatid, filename, caption) {
-    try {
-        if (chatid.includes('@c.us')) {
-            const contact = await window.WAPI.findJidFromNumber(chatid);
-            if (!contact || contact.status === 404) {
-                console.log('1. Contact not found in findJidFromNumber');
-                return false;
-            }
-
-            const chat = await window.WAPI.findChatFromId(contact.jid);
-            if (!chat) {
-                console.log('2. Chat not found for contact');
-                return false;
-            }
-
-            const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
-            const mc = new Store.MediaCollection(chat);
-
-            await mc.processAttachmentsForChat ([{ file: mediaBlob }, 1], 1, chat);
-            const media = mc._models[0];
-            media.sendToChat(chat, { caption: caption });
-            return true;
-
-        } else if (chatid.includes('@g.us')) {
-			// pega o chat diretamente do Store
-			const chat = await window.WAPI.findChatFromId(chatid);
-			if (!chat) {
-				console.log('Grupo não encontrado:', chatid);
-				return false;
-			}
-
-			// converte base64 -> Blob
-			const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
-
-			// usa MediaCollection como no @c.us
-			const mc = new Store.MediaCollection(chat);
-
-			await mc.processAttachmentsForChat([{ file: mediaBlob }, 1], 1, chat);
-
-			const media = mc._models[0];
-			media.sendToChat(chat, { caption: caption });
-
-			return true;
-		} else {
-            console.log('4. chatid format not recognized');
-            return false;
-        }
-    } catch (err) {
-        console.error('5. Error in sendImage:', err);
-        return false;
-    }
-};
 
 /* Mike - Em testes...
 window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption) {
@@ -2005,59 +2056,216 @@ window.WAPI.chat = (_id) => {
 }
 
 
-window.WAPI.sendMessageToID = function(chatid, msgText) {
-    if (chatid.includes('@c.us')) {		
-		try {
-			window.WAPI.findJidFromNumber(chatid).then(contact => {
-				if (contact.status === 404) {
-					console.log('Contact not found in findJidFromNumber', err)
+//Mike 23/11/2025
+window.WAPI.sendMessageToID = function (chatid, msgText, done) {
+	try {
+
+	  chatid = chatid.replace(/\s/g, '').trim();
+	  
+	  var wid = window.Store.WidFactory.createWid(chatid);
+	  
+	  if (!wid) {
+		console.error('[WAPI] Erro ao criar Wid');
+		if (done) done(false);
+		return;
+	  }
+
+	  // Força a criação do chat com LID
+	  window.Store.FindChat.findOrCreateLatestChat(wid)
+		.then(function(result) {
+		  
+		  var chat = result.chat || result;
+
+		  if (typeof chat.sendMessage !== 'function') {
+			
+			setTimeout(function() {
+			  var chatAlt = window.Store.Chat.get(wid);
+			  
+			  if (!chatAlt || typeof chatAlt.sendMessage !== 'function') {
+				chatAlt = window.Store.Chat.get(chatid);
+			  }
+			  
+			  if (!chatAlt || typeof chatAlt.sendMessage !== 'function') {
+				var allChats = window.Store.Chat.models;
+				for (var i = 0; i < allChats.length; i++) {
+				  var c = allChats[i];
+				  if (c.contact && c.contact.id && c.contact.id._serialized === chatid) {
+					chatAlt = c;
+					break;
+				  }
+				}
+			  }
+			  
+			  if (!chatAlt || typeof chatAlt.sendMessage !== 'function') {
+				if (done) done(false);
+				return;
+			  }
+			  			  
+			  try {
+				var sendResult = chatAlt.sendMessage(msgText);
+				
+				if (sendResult && typeof sendResult.then === 'function') {
+				  sendResult
+					.then(function() {
+					  if (done) done(true);
+					})
+					.catch(function(err) {
+					  if (done) done(false);
+					});
 				} else {
-					window.WAPI.findChatFromId(contact.jid).then(chat => {
-						chat.sendMessage(msgText);
-					}).catch(reject => {
-						console.log('Error in findChatFromId, chat not found')
-					});
+				  if (done) done(true);
 				}
-			}).catch((err) => {
-				console.log('Error in chat.sendMessage, chat not found', err)
-			})
-		} catch (e) {
-			console.log('Error in findChatFromId, chat not found', err)
-		}		
-	} else if (chatid.includes('@g.us')) {	
-				try {					
-					let chat = WAPI.chat(chatid);
-
-					if (chat == null) {
-						let isHotnumber = settings?.phone?.hot_number ? true : false;
-
-						if (!isHotnumber) {
-							const totalChats = Store.Chat.models || Store.Chat.getModelsArray()
-							const chatsWithoutGroups = totalChats.filter(chat => chat.__x_isGroup === false)
-							isHotnumber = chatsWithoutGroups.length >= 50
-						}
-						
-						let WAVersion_ = WAPI.getWAVersion();
-						WAVersion_ = WAVersion_.replace(/\./g, '');
-												
-						if (WAVersion_ >= "230001021503949" && (isHotnumber)) {
-							window.WAPI.sendMessageToID(chatid, msgText)
-							return;
-						}
-
-						return;
-					}
-					
-					window.Store.SendTextMsgToChat(chat, msgText).then(function (e) {
-						(WAPI.nop)({ status: e });
+			  } catch (sendErr) {
+				if (done) done(false);
+			  }
+			  
+			}, 2500);
+		  } else {
+			// Chat do result tem sendMessage
+			setTimeout(function() {
+			  try {
+				var sendResult = chat.sendMessage(msgText);
+				
+				if (sendResult && typeof sendResult.then === 'function') {
+				  sendResult
+					.then(function() {
+					  if (done) done(true);
+					})
+					.catch(function(err) {
+					  if (done) done(false);
 					});
-
-				} catch (error) {
-					console.error('Error in sendMessageToID', error);		
+				} else {
+				  if (done) done(true);
 				}
+			  } catch (sendErr) {
+				if (done) done(false);
+			  }
+			}, 1500);
+		  }
+		})
+		.catch(function(err) {
+		  if (done) done(false);
+		});
+
+	} catch (e) {
+	  if (done) done(false);
 	}
+};
 
-}
+//Mike 20/09/2025 - Obsoleto
+/*
+window.WAPI.sendImage = async function(imgBase64, chatid, filename, caption) {
+    try {
+        if ((chatid.includes('@c.us')) || (chatid.includes('@lid'))) {
+            const contact = await window.WAPI.findJidFromNumber(chatid);
+            if (!contact || contact.status === 404) {
+                console.log('1. Contact not found in findJidFromNumber');
+                return false;
+            }
+
+            const chat = await window.WAPI.findChatFromId(contact.jid);
+            if (!chat) {
+                console.log('2. Chat not found for contact');
+                return false;
+            }
+
+            const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
+            const mc = new Store.MediaCollection(chat);
+
+            await mc.processAttachmentsForChat ([{ file: mediaBlob }, 1], 1, chat);
+            const media = mc._models[0];
+            media.sendToChat(chat, { caption: caption });
+            return true;
+
+        } else if (chatid.includes('@g.us')) {
+			// pega o chat diretamente do Store
+			const chat = await window.WAPI.findChatFromId(chatid);
+			if (!chat) {
+				console.log('Grupo não encontrado:', chatid);
+				return false;
+			}
+
+			// converte base64 -> Blob
+			const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
+
+			// usa MediaCollection como no @c.us
+			const mc = new Store.MediaCollection(chat);
+
+			await mc.processAttachmentsForChat([{ file: mediaBlob }, 1], 1, chat);
+
+			const media = mc._models[0];
+			media.sendToChat(chat, { caption: caption });
+
+			return true;
+		} else {
+            console.log('4. chatid format not recognized');
+            return false;
+        }
+    } catch (err) {
+        console.error('5. Error in sendImage:', err);
+        return false;
+    }
+};*/
+
+// Mike 24/11/2025
+window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, done) {
+    try {
+        chatid = chatid.replace(/\s/g, '').trim();
+
+        const wid = window.Store.WidFactory.createWid(chatid);
+
+        if (!wid) {
+            console.error('[WAPI] Erro ao criar Wid para imagem:', chatid);
+            if (done) done(false);
+            return false;
+        }
+
+        // Garante criação ou recuperação do chat
+        const result = await window.Store.FindChat.findOrCreateLatestChat(wid);
+        const chat = result.chat || result;
+
+        if (!chat) {
+            console.error('[WAPI] Chat não encontrado após findOrCreate:', chatid);
+            if (done) done(false);
+            return false;
+        }
+
+
+        const mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
+
+        const mc = new Store.MediaCollection(chat);
+
+        await mc.processAttachmentsForChat([{ file: mediaBlob }, 1], 1, chat);
+
+        const media = mc._models[0];
+
+        if (!media) {
+            console.error('[WAPI] Falha ao processar imagem');
+            if (done) done(false);
+            return false;
+        }
+
+        // delay para chats novos
+        setTimeout(() => {
+            try {
+                media.sendToChat(chat, { caption: caption || '' });
+
+                if (done) done(true);
+            } catch (err) {
+                console.error('[WAPI] Erro ao enviar imagem:', err);
+                if (done) done(false);
+            }
+        }, 1500);
+
+        return true;
+
+    } catch (err) {
+        console.error('[WAPI] Erro geral no sendImage:', err);
+        if (done) done(false);
+        return false;
+    }
+};
+
 
 
 window.WAPI.sendMessage = function(id, message, done) {

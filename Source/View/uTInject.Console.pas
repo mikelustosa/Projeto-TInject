@@ -216,6 +216,7 @@ type
 
     procedure StartMonitor(Seconds: Integer);
     procedure StopMonitor;
+//    procedure IsOnline;
   end;
 
 var
@@ -228,6 +229,18 @@ uses
   Data.DB, uTInject.FrmConfigNetWork, Winapi.ShellAPI;
 
 {$R *.dfm}
+
+//procedure TFrmConsole.IsOnline;
+//var
+//  Ljs: string;
+//begin
+//  if not FConectado then
+//    raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
+//
+//  LJS   := FrmConsole_JS_VAR_GetIsOnline;
+//
+//  ExecuteJS(LJS, true);
+//end;
 
 procedure TFrmConsole.App_EventMinimize(Sender: TObject);
 begin
@@ -958,7 +971,6 @@ begin
     raise Exception.Create(MSG_ConfigCEF_ExceptConnetServ);
 
   vText := CaractersWeb(vText);
-  //LJS   := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendMsg;
   LJS   := FrmConsole_JS_VAR_SendMsg;
   FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',       Trim(vNum));
   FrmConsole_JS_AlterVar(LJS, '#MSG_CORPO#',       Trim(vText));
@@ -1045,7 +1057,7 @@ procedure TFrmConsole.Chromium1BeforePopup(Sender: TObject;
   var settings: TCefBrowserSettings; var extra_info: ICefDictionaryValue;
   var noJavascriptAccess, Result: Boolean);
 begin
-// bloqueia todas as janelas pop-up e novas guias
+  //bloqueia todas as janelas pop-up e novas guias
   //ShellExecute(Handle, 'open', PChar(targetUrl), '', '', 1);
   //Result := (targetDisposition in [WOD_NEW_FOREGROUND_TAB, WOD_NEW_BACKGROUND_TAB, WOD_NEW_POPUP, WOD_NEW_WINDOW]);
 end;
@@ -1092,7 +1104,7 @@ begin
 
    Case PResponse.TypeHeader of
 
-    Th_getAllContacts   : Begin
+    Th_getAllContacts     : Begin
                             ProcessPhoneBook(LResultStr);
                             Exit;
                           End;
@@ -1116,7 +1128,7 @@ begin
                             end;
                           end;
 
-    Th_getAllChats      : Begin
+    Th_getAllChats        : Begin
                             if Assigned(FChatList) then
                                FChatList.Free;
 
@@ -1125,7 +1137,7 @@ begin
                             FgettingChats := False;
                           End;
 
-    Th_getUnreadMessages: begin
+    Th_getUnreadMessages    : begin
                             LOutClass := TChatList.Create(LResultStr);
                             try
                               SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
@@ -1145,7 +1157,7 @@ begin
                             FgettingChats := False;
                           end;
 
-    Th_GetAllGroupContacts: begin
+    Th_GetAllGroupContacts  : begin
                               LOutClass := TClassAllGroupContacts.Create(LResultStr);
                               try
                                 SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
@@ -1155,7 +1167,7 @@ begin
                             end;
 
     Th_getQrCodeWEB,
-    Th_getQrCodeForm :    Begin
+    Th_getQrCodeForm      : begin
                             LOutClass := TQrCodeClass.Create(PResponse.JsonString, [], []);
                             try
                               ProcessQrCode(LOutClass);
@@ -1166,7 +1178,7 @@ begin
                           End;
 
 
-    Th_GetBatteryLevel  : begin
+    Th_GetBatteryLevel    : begin
                             If Assigned(FOnNotificationCenter) Then
                             Begin
                               LOutClass := TResponseBattery.Create(LResultStr);
@@ -1175,8 +1187,8 @@ begin
                             End;
                           end;
 
-    //Mike teste
-    Th_getIsDelivered:    begin
+
+    Th_getIsDelivered     : begin
                             If Assigned(FOnNotificationCenter) Then
                             Begin
                               LOutClass := TResponseIsDelivered.Create(LResultStr);
@@ -1186,7 +1198,7 @@ begin
                           end;
 
 
-    Th_getMyNumber      : Begin
+    Th_getMyNumber        : Begin
                             If Assigned(FOnNotificationCenter) Then
                             Begin
                               LOutClass := TResponseMyNumber.Create(LResultStr);
@@ -1196,7 +1208,7 @@ begin
                           End;
 
 
-    Th_GetCheckIsValidNumber  : begin
+    Th_GetCheckIsValidNumber    : begin
                                   If Assigned(FOnNotificationCenter) Then
                                   Begin
                                     LOutClass := TResponseCheckIsValidNumber.Create(LResultStr);
@@ -1205,7 +1217,7 @@ begin
                                   End;
                                 end;
 
-    Th_GetProfilePicThumb     : begin
+    Th_GetProfilePicThumb       : begin
                                   If Assigned(FOnNotificationCenter) Then
                                   Begin
                                     LOutClass := TResponseGetProfilePicThumb.Create(LResultStr);
@@ -1215,8 +1227,7 @@ begin
                                 end;
 
 
-
-    Th_GetCheckIsConnected : begin
+    Th_GetCheckIsConnected: begin
                             If Assigned(FOnNotificationCenter) Then
                             Begin
                               LOutClass := TResponseCheckIsConnected.Create(LResultStr);
@@ -1226,7 +1237,7 @@ begin
                           end;
 
 
-    Th_OnChangeConnect  : begin
+    Th_OnChangeConnect      : begin
                             LOutClass := TOnChangeConnect.Create(LResultStr);
                             LClose    := TOnChangeConnect(LOutClass).Result;
                             FreeAndNil(LOutClass);
@@ -1242,7 +1253,7 @@ begin
                           end;
 
 
-    Th_GetStatusMessage   : begin
+    Th_GetStatusMessage    : begin
                             LResultStr := copy(LResultStr, 11, length(LResultStr)); //REMOVENDO RESULT
                             LResultStr := copy(LResultStr, 0, length(LResultStr)-1); // REMOVENDO }
                             LOutClass := TResponseStatusMessage.Create(LResultStr);
@@ -1254,12 +1265,12 @@ begin
                            end;
 
 
-    Th_GetGroupInviteLink : begin
+    Th_GetGroupInviteLink   : begin
                             if Assigned(TInject(FOwner).OnGetInviteGroup) then
                               TInject(FOwner).OnGetInviteGroup(LResultStr);
                             end;
 
-    Th_GetMe              : begin
+    Th_GetMe                : begin
                               LResultStr := copy(LResultStr, 11, length(LResultStr)); //REMOVENDO RESULT
                               LResultStr := copy(LResultStr, 0, length(LResultStr)-1); // REMOVENDO }
                               LOutClass := TGetMeClass.Create(LResultStr);
@@ -1269,7 +1280,8 @@ begin
                                 FreeAndNil(LOutClass);
                               end;
                             end;
-    Th_NewCheckIsValidNumber : begin
+
+    Th_NewCheckIsValidNumber: begin
                               LResultStr := copy(LResultStr, 11, length(LResultStr)); //REMOVENDO RESULT
                               LResultStr := copy(LResultStr, 0, length(LResultStr)-1); // REMOVENDO }
                              LOutClass := TReturnCheckNumber.Create(LResultStr);
@@ -1280,14 +1292,13 @@ begin
                               end;
                             end;
 
-    Th_GetIncomingCall        : begin
+    Th_GetIncomingCall      : begin
                                 LOutClass := TReturnIncomingCall.Create(LResultStr);
                               try
                                 SendNotificationCenterDirect(PResponse.TypeHeader, LOutClass);
                               finally
                                 FreeAndNil(LOutClass);
                               end;
-
 
                             end;
    end;
@@ -1320,7 +1331,7 @@ begin
 
    AResponse := TResponseConsoleMessage.Create( message );
     try
-      if AResponse = nil then
+      if (AResponse = nil) or (pos('CANNOT READ PROPERTIES OF UNDEFINED (READING ''GETISONLINE2'')', AnsiUpperCase(Trim(message))) > 0) then
          Exit;
 
       ExecuteCommandConsole(AResponse);

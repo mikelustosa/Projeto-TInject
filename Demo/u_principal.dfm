@@ -31,7 +31,7 @@ object frmPrincipal: TfrmPrincipal
     Top = 3
     Width = 1096
     Height = 569
-    ActivePage = TabSheet1
+    ActivePage = TabSheet3
     Align = alClient
     TabOrder = 0
     object TabSheet1: TTabSheet
@@ -3954,7 +3954,7 @@ object frmPrincipal: TfrmPrincipal
         object btSendTextAndFile: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 325
+          Top = 356
           Width = 239
           Height = 25
           Align = alBottom
@@ -3967,7 +3967,7 @@ object frmPrincipal: TfrmPrincipal
         object btSendText: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 294
+          Top = 325
           Width = 239
           Height = 25
           Align = alBottom
@@ -4002,81 +4002,69 @@ object frmPrincipal: TfrmPrincipal
           TabOrder = 4
           OnClick = Edt_DDIPDRExit
         end
-        object btStatusBat: TButton
-          AlignWithMargins = True
-          Left = 5
-          Top = 511
-          Width = 239
-          Height = 25
-          Align = alBottom
-          Caption = 'Status da Bateria / Battery status'
-          ImageIndex = 0
-          Images = ImageList1
-          TabOrder = 5
-        end
         object btSendContact: TButton
-          AlignWithMargins = True
-          Left = 5
-          Top = 356
-          Width = 239
-          Height = 25
-          Align = alBottom
-          Caption = 'Enviar contato / Send contact'
-          ImageIndex = 0
-          Images = ImageList1
-          TabOrder = 6
-          OnClick = btSendContactClick
-        end
-        object btCheckNumber: TButton
-          AlignWithMargins = True
-          Left = 5
-          Top = 449
-          Width = 239
-          Height = 25
-          Align = alBottom
-          Caption = 'Verificar n'#250'mero / Check number'
-          ImageIndex = 0
-          Images = ImageList1
-          TabOrder = 7
-          OnClick = btCheckNumberClick
-        end
-        object btIsConnected: TButton
-          AlignWithMargins = True
-          Left = 5
-          Top = 201
-          Width = 239
-          Height = 25
-          Align = alBottom
-          Caption = 'Checar conex'#227'o / Check connection'
-          ImageIndex = 0
-          Images = ImageList1
-          TabOrder = 8
-          OnClick = btIsConnectedClick
-        end
-        object btSendLocation: TButton
-          AlignWithMargins = True
-          Left = 5
-          Top = 418
-          Width = 239
-          Height = 25
-          Align = alBottom
-          Caption = 'Enviar localiza'#231#227'o / Send location'
-          ImageIndex = 0
-          Images = ImageList1
-          TabOrder = 9
-          OnClick = btSendLocationClick
-        end
-        object btSendLinkWithPreview: TButton
           AlignWithMargins = True
           Left = 5
           Top = 387
           Width = 239
           Height = 25
           Align = alBottom
+          Caption = 'Enviar contato / Send contact'
+          ImageIndex = 0
+          Images = ImageList1
+          TabOrder = 5
+          OnClick = btSendContactClick
+        end
+        object btCheckNumber: TButton
+          AlignWithMargins = True
+          Left = 5
+          Top = 480
+          Width = 239
+          Height = 25
+          Align = alBottom
+          Caption = 'Verificar n'#250'mero / Check number'
+          ImageIndex = 0
+          Images = ImageList1
+          TabOrder = 6
+          OnClick = btCheckNumberClick
+        end
+        object btIsConnected: TButton
+          AlignWithMargins = True
+          Left = 5
+          Top = 232
+          Width = 239
+          Height = 25
+          Align = alBottom
+          Caption = 'Checar conex'#227'o / Check connection'
+          ImageIndex = 0
+          Images = ImageList1
+          TabOrder = 7
+          OnClick = btIsConnectedClick
+        end
+        object btSendLocation: TButton
+          AlignWithMargins = True
+          Left = 5
+          Top = 449
+          Width = 239
+          Height = 25
+          Align = alBottom
+          Caption = 'Enviar localiza'#231#227'o / Send location'
+          ImageIndex = 0
+          Images = ImageList1
+          TabOrder = 8
+          OnClick = btSendLocationClick
+        end
+        object btSendLinkWithPreview: TButton
+          AlignWithMargins = True
+          Left = 5
+          Top = 418
+          Width = 239
+          Height = 25
+          Align = alBottom
           Caption = 'Enviar link pr'#233'via / Send link preview'
           ImageIndex = 0
           Images = ImageList1
-          TabOrder = 10
+          TabOrder = 9
           OnClick = btSendLinkWithPreviewClick
         end
         object ed_videoLink: TEdit
@@ -4084,45 +4072,45 @@ object frmPrincipal: TfrmPrincipal
           Top = 151
           Width = 238
           Height = 21
-          TabOrder = 11
+          TabOrder = 10
         end
         object btSendTextButton: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 263
+          Top = 294
           Width = 239
           Height = 25
           Align = alBottom
           Caption = 'Enviar Texto com bot'#245'es / Buttons text'
           ImageIndex = 0
           Images = ImageList1
-          TabOrder = 12
+          TabOrder = 11
           OnClick = btSendTextButtonClick
         end
         object btSendButtonList: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 232
+          Top = 263
           Width = 239
           Height = 25
           Align = alBottom
           Caption = 'Enviar bot'#227'o com lista / Send button with list'
           ImageIndex = 0
           Images = ImageList1
-          TabOrder = 13
+          TabOrder = 12
           OnClick = btSendButtonListClick
         end
         object btMarkUnRead: TButton
           AlignWithMargins = True
           Left = 5
-          Top = 480
+          Top = 511
           Width = 239
           Height = 25
           Align = alBottom
           Caption = 'Marcar n'#227'o lida / Mark unReadMessage'
           ImageIndex = 0
           Images = ImageList1
-          TabOrder = 14
+          TabOrder = 13
           OnClick = btMarkUnReadClick
         end
       end
@@ -5553,7 +5541,6 @@ object frmPrincipal: TfrmPrincipal
     OnGetUnReadMessagesFromMe = TInject1GetUnReadMessagesFromMe
     OnGetAllGroupContacts = TInject1GetAllGroupContacts
     OnGetStatus = TInject1GetStatus
-    OnGetBatteryLevel = TInject1GetBatteryLevel
     OnIsConnected = TInject1IsConnected
     OnGetCheckIsValidNumber = TInject1GetCheckIsValidNumber
     OnGetProfilePicThumb = TInject1GetProfilePicThumb
