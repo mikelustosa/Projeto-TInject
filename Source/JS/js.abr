@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.0.8.0;1.0.0.9;78.3.0
+//3.0.9.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -303,8 +303,8 @@ const newMakeStore = () => {
 	
 	
 	
-	// =====================================================================================
-// === INJEÇÃO DE DEPENDÊNCIAS ESSENCIAIS (TRADUÇÃO DO MÓDULO INICIAL DO WPPCONNECT) ===
+// =====================================================================================
+// === INJEÇÃO DE DEPENDÊNCIAS ESSENCIAIS ===
 // =====================================================================================
 
 (function() {
@@ -535,7 +535,7 @@ const oldMakeStore = () => {
 
 
 	// =====================================================================================
-// === INJEÇÃO DE DEPENDÊNCIAS ESSENCIAIS (TRADUÇÃO DO MÓDULO INICIAL DO WPPCONNECT) ===
+// === INJEÇÃO DE DEPENDÊNCIAS ESSENCIAIS ===
 // =====================================================================================
 
 (function() {
@@ -1444,6 +1444,29 @@ window.WAPI.getProfilePicSmallFromId = async function (id) {
     })
 };
 
+//gutembergscosta - 25/11/2025
+window.WAPI.extractRealNumberFromContact = function (info) {
+    let contact = Store.Contact.get(info.id);
+	
+	if (!contact) return null;
+
+    // Multi-device → número real armazenado neste campo interno
+    if (contact.__x_phoneNumber && contact.__x_phoneNumber._serialized) {
+		return contact.__x_phoneNumber;
+    }
+
+    // Legado → phoneNumber tradicional
+    if (contact.phoneNumber && contact.phoneNumber._serialized) {
+	return contact.phoneNumber;
+    }
+
+    // Como último recurso: se já for c.us, é o número real
+    if (contact.id && contact.id._serialized && contact.id._serialized.endsWith("@c.us")) {
+	return contact.id;
+    }
+
+    return null;
+};
 
 window.WAPI.processMessageObj = function(messageObj, includeMe, includeNotifications) {
     if (messageObj.isNotification) {
@@ -1631,6 +1654,11 @@ window.WAPI.getUnreadMessages = function(includeMe, includeNotifications, use_un
         let messageGroup = WAPI._serializeChatObj(messageGroupObj);
 
         messageGroup.messages = [];
+		
+		//( Gabriel Rocha - 05/12/2025 Mudar o id do chat de lid para telefone
+		if (messageGroup.id._serialized.includes('@lid')) {
+			messageGroup.id = WAPI.extractRealNumberFromContact(messageGroup.contact);
+		}
 
         const messages = messageGroupObj.msgs._models;
         for (let i = messages.length - 1; i >= 0; i--) {
@@ -3076,8 +3104,32 @@ window.WAPI.onGetUnReadMessageFromMe = function () {
 
 //Mike W. Lustosa 14/11/2022
 window.WAPI.onIncomingCallCallback = async function() {
-	SetConsoleMessage('getIncomingCall', window.Store.Call._models[0].__x_peerJid.user)
-	window.Store.Call._models = []
+	const call = window.Store.Call && window.Store.Call._models && window.Store.Call._models[0];
+    if (!call) return;
+
+    // tenta pegar o contato direto da call
+    let contact = call.contact || call.__x_contact || null;
+
+    // se não vier, tenta resolver via peerWid/peerJid
+    if (!contact) {
+        const wid = call.peerWid || call.__x_peerJid || call.peerJid;
+        if (wid && window.Store.Contact) {
+            contact = window.Store.Contact.get(wid) || window.Store.Contact.get(wid.toString());
+        }
+    }
+
+	// Usando a função de gutembergscosta 
+    let real = window.WAPI.extractRealNumberFromContact(contact)._serialized;
+
+    // se vier algo tipo 55119xxxxxxx@c.us, tira o sufixo
+    if (real && real.endsWith('@c.us')) {
+        real = real.split('@')[0];
+    }
+
+    // aqui você manda pro Delphi só o número real, não o LID
+    SetConsoleMessage('getIncomingCall', real || '');
+
+    window.Store.Call._models = [];
 }
 
 window.WAPI.getchatId = async function (chatId) {
