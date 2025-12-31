@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.1.0.0;1.0.0.9;78.3.0
+//3.1.1.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -1606,8 +1606,7 @@ window.WAPI.sendMessage2 = function(id, message, done) {
     return false;
 };
 
-//Funcao adicionada em 18/06/2020 by Mike deprecated
-/*
+//Funcao adicionada em 18/06/2020 by Mike
 window.WAPI.sendSeen = async function (id) {
     if (!id) return false;
     var chat = window.WAPI.getChat(id);
@@ -1616,34 +1615,6 @@ window.WAPI.sendSeen = async function (id) {
             return true;
     }
     return false;
-};*/
-
-//Funcao adicionada em 17/12/2025 by Mike
-window.WAPI.sendSeen = async function (id) {
-    if (!id) return false;
-
-    let chatId = id;
-
-    //Se vier @lid, tenta resolver para @c.us via Contact
-    if (id.endsWith('@lid')) {
-        const contact = Store.Contact.get(id);
-
-        if (
-            contact &&
-            contact.__x_phoneNumber &&
-            contact.__x_phoneNumber._serialized
-        ) {
-            chatId = contact.__x_phoneNumber._serialized; // @c.us real
-        } else {
-            return false; // não existe chat para marcar como lido
-        }
-    }
-
-    const chat = window.WAPI.getChat(chatId);
-    if (!chat) return false;
-
-    await Store.ReadSeen.sendSeen(chat, false);
-    return true;
 };
 
 //Funcao adicionada em 09/03/2025 by Mike
