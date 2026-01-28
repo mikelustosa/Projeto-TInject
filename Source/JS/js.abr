@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.1.1.0;1.0.0.9;78.3.0
+//3.1.3.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -69,7 +69,7 @@ function startMonitor(intervalSeconds = 0) {
     }
 	
 	isLoggedStatus = WAPI.isLoggedIn();
-	window.WAPI.onIncomingCall();
+
 	window.WAPI.onGetUnReadMessageFromMe();
 	WAVersion = WAPI.getWAVersion();
 	WAVersion = WAVersion.replace(/\./g, '');
@@ -798,77 +798,93 @@ window.WAPI._serializeProfilePicThumb = (obj) => {
     });
 }
 
-const sendCreateGroup = async (groupName, participants) => {
-    return await Store.Wap.createGroup(groupName, participants).then((e) => ({
-        gid: e.wid,
-        participants: e.participants.map((e) => ({
-            userWid: e.wid,
-            code: null != e.error ? e.error.toString() : '200',
-            invite_code: e.invite_code,
-            invite_code_exp: e.invite_code_exp,
-        })),
-    }));
+function getMeWid() {
+    if (Store.User && typeof Store.User.getMaybeMeUser === 'function') {
+        return Store.User.getMaybeMeUser();
+    }
+
+    if (Store.Conn && Store.Conn.me) {
+        return Store.Conn.me;
+    }
+
+    throw new Error('Não foi possível obter o wid do usuário logado');
 }
 
-window.WAPI.createGroup = async function (groupName, participantsIds) {
-    var _a;
-    if (!Array.isArray(participantsIds)) {
-        participantsIds = [participantsIds];
+//Mike 03/01/2026
+function createWidSafe(id) {
+    try {
+        if (window.WidFactory?.createWid) {
+            return WidFactory.createWid(id);
+        }
+        return assertWid(id);
+    } catch (e) {
+        return null;
     }
-    const participantsWids = participantsIds.map(assertWid);
-    const meWid = Store.UserPrefs.getMaybeMeUser();
-    const wids = [];
-    for (const wid of participantsWids) {
-        if (meWid.equals(wid)) {
-            continue;
-        }
-        const contact = Store.Contact.get(wid);
-        if (contact) {
-            wids.push(contact.id);
-            continue;
-        }
-        const info = await Store.WapQueryMD.queryExists(wid);
-        if (!info) {
-            throw new Error('Participant not exists, id:' + wid);
-        }
-        if (meWid.equals(info.wid)) {
-            continue;
-        }
-        wids.push(info.wid);
-    }
-    const result = await sendCreateGroup(groupName, wids);
+}
 
-    const participants = {};
-    for (const r of result.participants || []) {
-        let userWid = null;
-        let code = null;
-        let invite_code = null;
-        let invite_code_exp = null;
-        if ('userWid' in r) {
-            userWid = r.userWid.toString();
-            code = r.code;
-            invite_code = r.invite_code;
-            invite_code_exp = r.invite_code_exp;
-        }
-        else {
-            userWid = Object.keys(r)[0];
-            const d = r[userWid];
-            code = d.code;
-            invite_code = d.invite_code;
-            invite_code_exp = d.invite_code_exp;
-        }
-        participants[userWid] = {
-            wid: userWid,
-            code: Number(code),
-            invite_code: invite_code,
-            invite_code_exp: Number(invite_code_exp) || null,
-        };
+
+//Mike 03/01/2026
+function getMeWidSilent() {
+    try {
+        return Store.User.getMeUser()?.wid || null;
+    } catch (e) {
+        return null;
     }
-    return {
-        gid: result.gid,
-        participants,
-    };
+}
+
+//Mike 03/01/2026
+window.WAPI.createGroup = async function (groupName, participantsIds) {
+
+    try {
+        if (!groupName) return null;
+
+        if (!Array.isArray(participantsIds)) {
+            participantsIds = [participantsIds];
+        }
+
+        const meWid = getMeWidSilent();
+        if (!meWid) return null;
+
+        const participants = participantsIds
+            .map(createWidSafe)
+            .filter(wid => wid && !wid.equals(meWid));
+
+        if (!participants.length) return null;
+
+
+        const result = await Store.GroupMetadata.create(
+            groupName,
+            participants
+        );
+
+        if (!result?.id) return null;
+
+        const gid = result.id.toString();
+        const users = {};
+
+        (result.participants || []).forEach(p => {
+            const wid = p.id?.toString?.();
+            if (!wid) return;
+
+            users[wid] = {
+                wid,
+                code: p.error ? Number(p.error) : 200,
+                invite_code: p.invite_code || null,
+                invite_code_exp: Number(p.invite_code_exp) || null
+            };
+        });
+
+        return {
+            gid,
+            participants: users
+        };
+
+    } catch (e) {
+        return null;
+    }
 };
+
+
 
 window.WAPI.leaveGroup = function(groupId) {
     groupId = typeof groupId == "string" ? groupId : groupId._serialized;
@@ -1606,16 +1622,230 @@ window.WAPI.sendMessage2 = function(id, message, done) {
     return false;
 };
 
-//Funcao adicionada em 18/06/2020 by Mike
-window.WAPI.sendSeen = async function (id) {
-    if (!id) return false;
-    var chat = window.WAPI.getChat(id);
-    if (chat !== undefined) {
-            await Store.ReadSeen.sendSeen(chat, false);
-            return true;
+window.WAPI.sendSeen = async function (chatId) {
+    try {
+        
+        if (!chatId) {
+            return false;
+        }
+
+        let normalizedChatId = chatId;
+        
+        if (chatId.includes('@lid')) {
+             
+            const lidMatch = chatId.match(/^(\d+)@lid/);
+            if (lidMatch && lidMatch[1]) {
+                normalizedChatId = lidMatch[1] + '@c.us';
+            }
+        }
+        
+        if (!normalizedChatId.includes('@c.us') && !normalizedChatId.includes('@g.us')) {
+            if (/^\d+$/.test(normalizedChatId)) {
+                normalizedChatId = normalizedChatId + '@c.us';
+            }
+        }
+
+        let chat = null;
+        let searchPaths = [
+            () => window.Store.Chat.get(normalizedChatId),
+            () => window.Store.Chat.get(chatId),
+            () => {
+                try {
+                    const wid = window.Store.WidFactory?.createWid?.(normalizedChatId);
+                    return wid ? window.Store.Chat.get(wid) : null;
+                } catch { return null; }
+            },
+            () => {
+                try {
+                    const wid = window.Store.WidFactory?.createWid?.(normalizedChatId);
+                    if (!wid) return null;
+                    
+                    return new Promise(resolve => {
+                        window.Store.FindChat.findOrCreateLatestChat(wid)
+                            .then(result => resolve(result.chat || result))
+                            .catch(() => resolve(null));
+                    });
+                } catch { return null; }
+            },
+            () => {
+                const allChats = window.Store.Chat.models || [];
+                return allChats.find(c => {
+                    const chatIdStr = c.id?._serialized || c.id || '';
+                    return chatIdStr === normalizedChatId || 
+                           chatIdStr === chatId ||
+                           chatIdStr.includes(chatId.replace('@lid', ''));
+                });
+            }
+        ];
+
+        for (const tryFind of searchPaths) {
+            try {
+                const result = typeof tryFind() === 'object' && 'then' in tryFind() 
+                    ? await tryFind() 
+                    : tryFind();
+                
+                if (result) {
+                    chat = result;
+                    break;
+                }
+            } catch (e) {
+                // Continuar para próxima tentativa
+            }
+        }
+
+        if (!chat) {
+            return false;
+        }
+
+        chat.unreadCount = 0;
+        
+        if (chat.msgs && chat.msgs._models) {
+            chat.msgs._models.forEach(msg => {
+                if (msg) {
+                    msg.isNewMsg = false;
+                    msg.__x_isNewMsg = false;
+                    msg._isNewMsg = false;
+                }
+            });
+        }
+
+        let serverMarked = false;
+        
+        if (window.Store.ReadSeen && window.Store.ReadSeen.sendSeen) {
+            try {
+                await window.Store.ReadSeen.sendSeen(chat, true); // true = enviar para servidor
+                serverMarked = true;
+            } catch (e) {
+
+            }
+        }
+        
+        if (!serverMarked && window.Store.SendSeen && window.Store.SendSeen.sendSeen) {
+            try {
+                await window.Store.SendSeen.sendSeen(chat);
+                serverMarked = true;
+            } catch (e) {
+            }
+        }
+        
+        if (!serverMarked && chat.sendSeen && typeof chat.sendSeen === 'function') {
+            try {
+                await chat.sendSeen();
+                serverMarked = true;
+            } catch (e) {
+
+            }
+        }
+        
+        if (!serverMarked) {
+            try {
+                
+                const lastMsg = chat.msgs && chat.msgs._models 
+                    ? chat.msgs._models[chat.msgs._models.length - 1]
+                    : null;
+                
+                if (lastMsg && lastMsg.id) {
+                    const ackData = {
+                        id: lastMsg.id,
+                        to: chat.id,
+                        type: 'read'
+                    };
+                    
+                    if (window.Store.Msg.sendRead) {
+                        await window.Store.Msg.sendRead(ackData);
+                        serverMarked = true;
+                    }
+                    else if (window.Store.Conn && window.Store.Conn.sendMessageAck) {
+                        await window.Store.Conn.sendMessageAck(ackData);
+                        serverMarked = true;
+                    }
+                }
+                
+            } catch (e) {
+            }
+        }
+
+        if (!serverMarked) {
+            
+            try {
+                if (window.Store.Sync && window.Store.Sync.sendChatState) {
+                    await window.Store.Sync.sendChatState(chat.id, 'read');
+                }
+            } catch (e) {
+            }
+        }
+
+        setTimeout(() => {
+            try {
+                if (chat.trigger) {
+                    chat.trigger('change:unreadCount', 0);
+                    chat.trigger('change');
+                }
+                
+                if (window.Store.AppState) {
+                    window.Store.AppState.emit('chat.update', {
+                        id: chat.id,
+                        unreadCount: 0
+                    });
+                }
+                
+            } catch (e) {
+            }
+        }, 100);
+
+        return {
+            success: true,
+            serverMarked: serverMarked,
+            chatId: chat.id?._serialized || chat.id,
+            originalChatId: chatId
+        };
+
+    } catch (error) {
+        console.error('ERRO CRÍTICO:', error);
+        
+        return {
+            success: false,
+            serverMarked: false,
+            error: error.message,
+            originalChatId: chatId
+        };
     }
-    return false;
 };
+
+window.WAPI.normalizeChatId = function(chatId) {
+    if (!chatId) return null;
+    
+    if (chatId.includes('@c.us') || chatId.includes('@g.us')) {
+        return chatId;
+    }
+    
+    if (chatId.includes('@lid')) {
+        const number = chatId.split('@')[0];
+        return number + '@c.us';
+    }
+    
+    if (/^\d+$/.test(chatId)) {
+        return chatId + '@c.us';
+    }
+    
+    return chatId;
+};
+
+window.WAPI.verifyAndMarkAsRead = async function(chatId) {    
+    const normalizedId = window.WAPI.normalizeChatId(chatId);
+    
+    const chat = window.Store.Chat.get(normalizedId);
+    if (!chat) {
+        
+        const contact = window.Store.Contact.get(normalizedId);
+        if (contact) {
+ 
+        }
+    }
+    
+    return await window.WAPI.sendSeen(chatId);
+};
+
 
 //Funcao adicionada em 09/03/2025 by Mike
 window.WAPI.markUnRead = async function (id) {
