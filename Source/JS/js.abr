@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.1.3.0;1.0.0.9;78.3.0
+//3.1.4.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -2314,6 +2314,8 @@ window.WAPI.chat = (_id) => {
 }
 
 
+
+
 //Mike 23/11/2025
 window.WAPI.sendMessageToID = function (chatid, msgText, done) {
 	try {
@@ -2465,6 +2467,7 @@ window.WAPI.sendImage = async function(imgBase64, chatid, filename, caption) {
     }
 };*/
 
+
 // Mike 24/11/2025
 window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, done) {
     try {
@@ -2506,8 +2509,12 @@ window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, do
         // delay para chats novos
         setTimeout(() => {
             try {
-                media.sendToChat(chat, { caption: caption || '' });
-
+				media.sendToChat({
+					chat: chat,
+					options: {
+					caption: caption
+					}
+					});
                 if (done) done(true);
             } catch (err) {
                 console.error('[WAPI] Erro ao enviar imagem:', err);
