@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.1.4.0;1.0.0.9;78.3.0
+//3.1.4.1;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -1900,7 +1900,13 @@ window.WAPI.getUnreadMessages = function(includeMe, includeNotifications, use_un
                 //Miro Emidio - 05/Dez/2019 Alterado para funcionamento em WHATS empresarial/pessoal
                 let message = WAPI.processMessageObj(messageObj, includeMe, false); //includeNotifications);// MUDAR PARA "FALSE" AQUI
                 if (message) {
-                    messageGroup.messages.push(message);
+					//Gabriel Rocha - 23/02/2026
+					message.chatId = messageGroup.id;
+					message.from = messageGroup.id;
+					message.sender.id = messageGroup.id;
+                    //Gabriel Rocha - 23/02/2026
+					
+					messageGroup.messages.push(message);
                 }
             }
         }
