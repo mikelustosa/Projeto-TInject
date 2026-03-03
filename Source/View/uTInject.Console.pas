@@ -812,14 +812,12 @@ begin
        LLine := LLine + LBase64[i];
     vBase64 := LLine;
 
-
-    //LJS := FrmConsole_JS_VAR_SendTyping + FrmConsole_JS_VAR_SendBase64;
     LJS := FrmConsole_JS_VAR_SendBase64;
-    FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',       Trim(vNum));
-    FrmConsole_JS_AlterVar(LJS, '#MSG_NOMEARQUIVO#', Trim(vFileName));
-    FrmConsole_JS_AlterVar(LJS, '#MSG_CORPO#',       Trim(vText));
-    FrmConsole_JS_AlterVar(LJS, '#MSG_BASE64#',      Trim(vBase64));
-    //FrmConsole_JS_AlterVar(LJS, '#MSG_BASE64#',      vBase64);
+    FrmConsole_JS_AlterVar(LJS, '#MSG_BASE64#',   Trim(vBase64));
+    FrmConsole_JS_AlterVar(LJS, '#MSG_PHONE#',  Trim(vNum));
+    FrmConsole_JS_AlterVar(LJS, '#MSG_NOMEARQUIVO#',   Trim(vFileName));
+    FrmConsole_JS_AlterVar(LJS, '#MSG_CORPO#',  Trim(vText));
+
 
     ExecuteJS(LJS, True);
   finally

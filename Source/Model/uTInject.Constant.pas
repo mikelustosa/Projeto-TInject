@@ -34,7 +34,7 @@ Uses Winapi.Messages, System.SysUtils, typinfo, REST.Json, StrUtils, EncdDecd;
 Const
   //Uso GLOBAL
                                   //Version updates I=HIGH, II=MEDIUM, III=LOW, IV=VERY LOW
-  TInjectVersion                  = '4.0.5.0'; //  23/11/2025  //Alterado por Mike Lustosa
+  TInjectVersion                  = '4.0.6.0'; //  23/11/2025  //Alterado por Mike Lustosa
   CardContact                     = '@c.us';
   CardGroup                       = '@g.us';
   CardList                        = '@broadcast';

@@ -1459,8 +1459,6 @@ begin
           begin
             FrmConsole.ReadMessages(PNumberPhone); //Marca como lida a mensagem
             FrmConsole.sendBase64(LBase64, PNumberPhone, PFileName, PMessage);
-            //FrmConsole.sendBase64(PFileName, PNumberPhone, PFileName, PMessage);
-
           end;
         end);
       end);

@@ -37,8 +37,8 @@ object FrmConsole: TFrmConsole
     object Lbl_Caption: TLabel
       Left = 1
       Top = 1
-      Width = 773
-      Height = 18
+      Width = 109
+      Height = 13
       Cursor = crHandPoint
       Align = alClient
       Alignment = taCenter
@@ -51,8 +51,6 @@ object FrmConsole: TFrmConsole
       ParentFont = False
       Layout = tlCenter
       OnClick = Lbl_CaptionClick
-      ExplicitWidth = 109
-      ExplicitHeight = 13
     end
     object lbl_Versao: TLabel
       AlignWithMargins = True
