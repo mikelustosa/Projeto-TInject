@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.2.0.0;1.0.0.9;78.3.0
+//3.2.0.1;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -2237,137 +2237,20 @@ window.WAPI.firstContact = async (id) => {
 
 //Mike 27/02/2026
 window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, done) {   
-    try {
-        chatid = chatid.replace(/\s/g, '').trim();
-	
-		if (typeof done !== 'function') {
-            done = function(result) {
-                console.log('Callback done executado com resultado:', result);
-            };
-        }        
-        
-        let wid;
-        try {
-            wid = window.Store.WidFactory.createWid(chatid);
-        } catch (e) {
-            if (done) done(false);
-            return false;
-        }
-        
-        let chat = null;
-        let contact = null;
-
-        // Primeiro, tentar obter o contato
-        try {
-            contact = window.Store.Contact?.get(wid);
-        } catch (e) {
-            console.error('Erro ao obter contato:', e);
-        }
-
-        if (!chat) {
-            try {
-
-                if (window.Store.FindChat?.findOrCreateLatestChat) {
-                    const result = await window.Store.FindChat.findOrCreateLatestChat(wid);
-                    chat = result.chat || result;
-                } else {
-                    console.log('findOrCreateLatestChat não disponível');
-                }
-            } catch (e) {
-                console.error('Erro no findOrCreateLatestChat:', e.message);
-            }
-        }
-
-
-        if (!chat) {
-            try {
-
-                if (window.Store.Chat?.get) {
-                    chat = window.Store.Chat.get(wid);
-
-                }
-            } catch (e) {
-                console.error('Erro no Store.Chat.get:', e.message);
-            }
-        }
-
-
-        if (!chat && contact && window.Store.Chat?.create) {
-
-            try {
-                chat = window.Store.Chat.create({
-                    id: wid,
-                    contact: contact,
-                    kind: 'chat',
-                    isUser: true,
-                    isGroup: false,
-                    unreadCount: 0,
-                    mute: { expiration: null, isMuted: false },
-                    archive: false,
-                    pin: 0
-                });
-                
-                if (window.Store.Chat?.add) {
-                    window.Store.Chat.add(chat);
-                }
-            } catch (e) {
-                console.error('Erro na criação com construtor:', e);
-            }
-        }
-
-        if (!chat) {
-
-            try {
-                chat = {
-                    id: wid,
-                    _serialized: wid._serialized,
-                    kind: 'chat',
-                    isUser: true,
-                    isGroup: false,
-                    unreadCount: 0,
-                    archive: false,
-                    pin: 0,
-                    mute: {
-                        expiration: null,
-                        isMuted: false,
-                        canMute: function() { return true; },
-                        mute: function() {},
-                        unmute: function() {}
-                    },
-                    contact: contact || {
-                        id: wid,
-                        _serialized: wid._serialized,
-                        formattedName: wid.user || chatid.split('@')[0],
-                        pushname: wid.user || chatid.split('@')[0],
-                        isUser: true,
-                        isMyContact: false
-                    },
-                    msgs: {
-                        _models: [],
-                        get: function() { return null; },
-                        add: function() {},
-                        on: function() {}
-                    },
-                    sendMessage: function(text) {
-                        if (window.WAPI?.sendMessage2) {
-                            return window.WAPI.sendMessage2(this.id._serialized, text);
-                        }
-                        return Promise.resolve(false);
-                    }
-                };
-
-            } catch (e) {
-                console.error('Erro na criação manual:', e);
-            }
-        }
-
-        // Verificação final
-        if (!chat) {
-            if (done) done(false);
-            return false;
-        }
-
-
+    try {		
+		//( Delphiano - 02/03/2026
+		let contact = await WAPI.checkNumberStatus(chatid);
+		let contactId = contact.id._serialized ? contact.id._serialized : contact.id;
+		var chat = WAPI.getChat(contactId);		
+		
+		if (chat == undefined) {
+			let idUser = new window.Store.UserConstructor(contactId, {
+				intentionallyUsePrivateConstructor: true
+			});
+			let newChat = await Store.FindChat.findOrCreateLatestChat(idUser);
+			let lidChat = newChat.chat.accountLid._serialized;
+			chat = WAPI.getChat(lidChat);
+		} //)
         
         let mediaBlob;
         try {
