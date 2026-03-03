@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.2.0.1;1.0.0.9;78.3.0
+//3.2.0.2;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -2239,7 +2239,7 @@ window.WAPI.firstContact = async (id) => {
 window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, done) {   
     try {		
 		//( Delphiano - 02/03/2026
-		let contact = await WAPI.checkNumberStatus(chatid);
+		let contact = await WAPI.checkNumberStatusIsolate(chatid);
 		let contactId = contact.id._serialized ? contact.id._serialized : contact.id;
 		var chat = WAPI.getChat(contactId);		
 		
@@ -3152,6 +3152,32 @@ window.WAPI.checkNumberStatus = async function (id) {
 		
     } catch (e) {
 			SetConsoleMessage("NewCheckIsValidNumber", JSON.stringify({ id : id,  valid : false}));
+			return window.WAPI._serializeNumberStatusObj({
+                status: e,
+                jid: id
+            });
+    }
+};
+
+window.WAPI.checkNumberStatusIsolate = async function (id) {
+    try {
+        let isMd = true
+		let result
+		try {
+			 result = await window.Store.WapQueryMD.queryPhoneExists(id);
+			
+		}
+		catch(e){		
+			isMd = false
+		}
+		result = isMd ? result : await window.Store.WapQuery.queryPhoneExists(id);
+				
+		let data = isMd ? window.WAPI._serializeNumberStatusObjMD(result) :  window.WAPI._serializeNumberStatusObj(result)
+		
+	 
+	 return data;
+		
+    } catch (e) {
 			return window.WAPI._serializeNumberStatusObj({
                 status: e,
                 jid: id
