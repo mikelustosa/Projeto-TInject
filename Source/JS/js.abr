@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.2.0.2;1.0.0.9;78.3.0
+//3.2.0.3;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -2238,19 +2238,89 @@ window.WAPI.firstContact = async (id) => {
 //Mike 27/02/2026
 window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, done) {   
     try {		
-		//( Delphiano - 02/03/2026
-		let contact = await WAPI.checkNumberStatusIsolate(chatid);
-		let contactId = contact.id._serialized ? contact.id._serialized : contact.id;
-		var chat = WAPI.getChat(contactId);		
+		chatid = chatid.replace(/\s/g, '').trim();
 		
-		if (chat == undefined) {
-			let idUser = new window.Store.UserConstructor(contactId, {
-				intentionallyUsePrivateConstructor: true
-			});
-			let newChat = await Store.FindChat.findOrCreateLatestChat(idUser);
-			let lidChat = newChat.chat.accountLid._serialized;
-			chat = WAPI.getChat(lidChat);
-		} //)
+		if (chatid.includes('@c.us')) {
+			let contact = await WAPI.checkNumberStatusIsolate(chatid);
+			chatid = contact.id._serialized ? contact.id._serialized : contact.id;
+		}
+        
+        if (typeof done !== 'function') {
+            done = function(result) {
+            };
+        }
+
+        if (!window.Store) {
+            console.error('Store não disponível');
+            done(false);
+            return;
+        }
+
+        let wid;
+        try {
+            if (window.Store.WidFactory && window.Store.WidFactory.createWid) {
+                wid = window.Store.WidFactory.createWid(chatid);
+            } else {
+                const [user, server] = chatid.split('@');
+                wid = {
+                    _serialized: chatid,
+                    server: server || 'c.us',
+                    user: user,
+                    toString: function() { return this._serialized; },
+                    equals: function(other) { 
+                        return this._serialized === (other?._serialized || other); 
+                    },
+                    isUser: function() { return this.server === 'c.us' || this.server === 'lid'; },
+                    isGroup: function() { return this.server === 'g.us'; },
+                    isLid: function() { return this.server === 'lid'; },
+                    isBroadcast: function() { return this.server === 'broadcast'; }
+                };
+            }
+        } catch (e) {
+            const parts = chatid.split('@');
+            wid = {
+                _serialized: chatid,
+                server: parts[1] || 'c.us',
+                user: parts[0],
+                toString: function() { return this._serialized; }
+            };
+        }
+
+        if (!wid) {
+            done(false);
+            return;
+        }
+
+        let chat = null;
+        
+        if (window.Store.Chat && window.Store.Chat.get) {
+            try {
+                chat = window.Store.Chat.get(wid);
+            } catch (e) {
+                console.log('Erro no get:', e);
+            }
+        }
+
+        if (!chat && window.Store.FindChat && window.Store.FindChat.findOrCreateLatestChat) {
+            try {
+                window.Store.FindChat.findOrCreateLatestChat(wid)
+                    .then(function(result) {
+                        const foundChat = result.chat || result;
+                        if (foundChat) {
+                            enviarMensagem(foundChat, msgText, done);
+                        } else {
+                            buscarChatManual(wid, chatid, msgText, done);
+                        }
+                    })
+                    .catch(function(err) {
+                        console.log('[WAPI] Erro no findOrCreateLatestChat:', err);
+                        buscarChatManual(wid, chatid, msgText, done);
+                    });
+                return; 
+            } catch (e) {
+                console.log('Erro ao chamar findOrCreateLatestChat:', e);
+            }
+        }
         
         let mediaBlob;
         try {
@@ -2337,9 +2407,14 @@ window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, do
 
 
 //Mike 27/02/2026
-window.WAPI.sendMessageToID = function(chatid, msgText, done) {
+window.WAPI.sendMessageToID = async function(chatid, msgText, done) {
     try {
         chatid = chatid.replace(/\s/g, '').trim();
+		
+		if (chatid.includes('@c.us')) {
+			let contact = await WAPI.checkNumberStatusIsolate(chatid);
+			chatid = contact.id._serialized ? contact.id._serialized : contact.id;
+		}
         
         if (typeof done !== 'function') {
             done = function(result) {
