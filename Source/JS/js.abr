@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.2.0.3;1.0.0.9;78.3.0
+//3.2.0.4;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -2240,7 +2240,7 @@ window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, do
     try {		
 		chatid = chatid.replace(/\s/g, '').trim();
 		
-		if (chatid.includes('@c.us')) {
+		if (chatid.includes('@c.us') || chatid.includes('@lid')) {
 			let contact = await WAPI.checkNumberStatusIsolate(chatid);
 			chatid = contact.id._serialized ? contact.id._serialized : contact.id;
 		}
@@ -2411,7 +2411,7 @@ window.WAPI.sendMessageToID = async function(chatid, msgText, done) {
     try {
         chatid = chatid.replace(/\s/g, '').trim();
 		
-		if (chatid.includes('@c.us')) {
+		if (chatid.includes('@c.us') || chatid.includes('@lid')) {
 			let contact = await WAPI.checkNumberStatusIsolate(chatid);
 			chatid = contact.id._serialized ? contact.id._serialized : contact.id;
 		}
