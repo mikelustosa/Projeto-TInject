@@ -1,5 +1,5 @@
 //Version_JS;Version_TInjectMin;Version_CEF4Min;
-//3.2.1.0;1.0.0.9;78.3.0
+//3.3.0.0;1.0.0.9;78.3.0
 
 function getAllGroupContacts(Contacts) {
 	SetConsoleMessage("GetAllGroupContacts", JSON.stringify(Contacts));	
@@ -2234,9 +2234,10 @@ window.WAPI.firstContact = async (id) => {
 	}
 }
 
-//Mike 06/03/2025
+//Mike 10/03/2025
 window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, done) {   
     try {		
+        
         chatid = chatid.replace(/\s/g, '').trim();
         
         const isLid = chatid.includes('@lid');
@@ -2244,20 +2245,22 @@ window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, do
         if (chatid.includes('@c.us') || isLid) {
             try {
                 let contact = await WAPI.checkNumberStatusIsolate(chatid);
+                
                 if (contact && contact.id) {
                     chatid = contact.id._serialized ? contact.id._serialized : contact.id;
                 }
             } catch (e) {
-                // Mantém o chatid original se falhar
+                console.log('Erro ao verificar status (mantendo chatid original):', e);
             }
         }
         
         if (typeof done !== 'function') {
-            done = function(result) {};
+            done = function(result) {
+            //Fluxo padrao
+            };
         }
 
         if (!window.Store) {
-            console.error('Store não disponível');
             done(false);
             return;
         }
@@ -2296,18 +2299,113 @@ window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, do
             done(false);
             return;
         }
-
-        let chat = null;
-        
-        if (window.Store.Chat && window.Store.Chat.get) {
-            try {
-                chat = window.Store.Chat.get(wid);
-            } catch (e) {
-                console.log('Erro no get:', e);
+		
+        const processarEEnviarImagem = async (chatObj) => {           
+            if (!chatObj) {
+                if (done) done(false);
+                return false;
             }
-        }
 
-        const criarChatDeLid = async (lidWid) => {
+            try {
+                if (window.Store.Chat && window.Store.Chat.get) {
+                    const realChat = window.Store.Chat.get(chatObj.id);
+                    if (realChat) {
+                        chatObj = realChat;
+                    }
+                }
+
+                let mediaBlob;
+                try {
+                    mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
+                } catch (e) {
+                    if (done) done(false);
+                    return false;
+                }
+
+                try {
+                    let mc = new window.Store.MediaCollection(chatObj);
+                    await mc.processAttachmentsForChat([{ file: mediaBlob }, 1], 1, chatObj);
+                    const media = mc._models[0];
+                    
+                    if (media && typeof media.sendToChat === 'function') {                        
+                        return new Promise((resolve) => {
+                            setTimeout(() => {
+                                try {
+                                    if (media.sendToChat.length === 1) {
+                                        media.sendToChat({
+                                            chat: chatObj,
+                                            options: { caption: caption }
+                                        });
+                                    } else {
+                                        media.sendToChat(chatObj, { caption: caption });
+                                    }
+                                    if (done) done(true);
+                                    resolve(true);
+                                } catch (err) {
+                                    if (done) done(false);
+                                    resolve(false);
+                                }
+                            }, 1000);
+                        });
+                    }
+                } catch (e) {
+                    //Funcao padrao fim
+                }
+
+                if (typeof chatObj.sendImage === 'function') {
+                    try {
+                        await chatObj.sendImage(imgBase64, filename, caption);
+                        if (done) done(true);
+                        return true;
+                    } catch (sendError) {
+                        console.error('Erro no chat.sendImage:', sendError);
+                    }
+                }
+
+                if (window.Store && window.Store.sendImage) {
+                    try {
+                        await window.Store.sendImage(chatObj.id, imgBase64, filename, caption);
+                        if (done) done(true);
+                        return true;
+                    } catch (storeError) {
+                        console.error('Erro no Store.sendImage:', storeError);
+                    }
+                }
+
+                if (window.Store && window.Store.Message && window.Store.Message.create) {
+                    try {
+                        const mediaMessage = await window.Store.Message.create({
+                            chat: chatObj,
+                            type: 'image',
+                            caption: caption,
+                            media: {
+                                data: imgBase64,
+                                filename: filename,
+                                mimetype: 'image/png'
+                            }
+                        });
+                        
+                        if (mediaMessage && typeof mediaMessage.sendToChat === 'function') {
+                            await mediaMessage.sendToChat(chatObj);
+                            if (done) done(true);
+                            return true;
+                        }
+                    } catch (msgError) {
+                        console.error('Erro no Message.create:', msgError);
+                    }
+                }
+
+                if (done) done(false);
+                return false;
+                
+            } catch (e) {
+                console.error('Erro ao processar arquivo:', e);
+                if (done) done(false);
+                return false;
+            }
+        };
+
+        const criarChatDeLid = async (lidWid) => {            
             try {
                 if (window.Store.FindChat && window.Store.FindChat.findOrCreateLatestChat) {
                     const result = await window.Store.FindChat.findOrCreateLatestChat(lidWid).catch(err => {
@@ -2317,7 +2415,13 @@ window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, do
                     
                     if (result) {
                         const foundChat = result.chat || result;
-                        if (foundChat) {
+                        if (foundChat) {                            
+                            if (window.Store.Chat && window.Store.Chat.get) {
+                                const realChat = window.Store.Chat.get(foundChat.id);
+                                if (realChat) {
+                                    return realChat;
+                                }
+                            }
                             return foundChat;
                         }
                     }
@@ -2325,9 +2429,10 @@ window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, do
                 
                 if (window.Store.Lid && window.Store.Lid.getUserHash) {
                     try {
-                        const userHash = await window.Store.Lid.getUserHash(lidWid);
+                        const userHash = await window.Store.Lid.getUserHash(lidWid);                        
                         if (userHash) {
                             const realWid = window.Store.WidFactory.createWid(userHash + '@c.us');
+                            
                             if (realWid && window.Store.Chat.get) {
                                 const realChat = window.Store.Chat.get(realWid);
                                 if (realChat) {
@@ -2340,170 +2445,72 @@ window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, do
                     }
                 }
                 
-                if (window.Store.UserConstructor) {
-                    const user = new window.Store.UserConstructor(lidWid, {
-                        intentionallyUsePrivateConstructor: true
-                    });
-                    
-                    if (window.Store.Chat && window.Store.Chat.find) {
-                        const chats = window.Store.Chat.find(user);
-                        if (chats && chats.length > 0) {
-                            return chats[0];
-                        }
-                    }
-                    
-                    return {
-                        id: lidWid,
-                        kind: 'chat',
-                        isGroup: false,
-                        isUser: true,
-                        isLid: true
-                    };
-                }
+                return null;
             } catch (e) {
-                console.error('Erro ao criar chat de LID:', e);
+                console.error('Erro ao criar chat LID:', e);
+                return null;
             }
-            return null;
         };
 
         const criarChatManual = async (wid, chatid) => {
+            
             try {
-                if (window.Store.UserConstructor) {
-                    const user = new window.Store.UserConstructor(wid, {
-                        intentionallyUsePrivateConstructor: true
+                if (window.Store.FindChat && window.Store.FindChat.findOrCreateLatestChat) {
+                    const result = await window.Store.FindChat.findOrCreateLatestChat(wid).catch(err => {
+                        console.log('Erro no findOrCreateLatestChat:', err);
+                        return null;
                     });
                     
-                    if (window.Store.Chat && window.Store.Chat.find) {
-                        const chats = window.Store.Chat.find(user);
-                        if (chats && chats.length > 0) {
-                            return chats[0];
+                    if (result) {
+                        const foundChat = result.chat || result;
+                        if (foundChat) {                            
+                            if (window.Store.Chat && window.Store.Chat.get) {
+                                const realChat = window.Store.Chat.get(foundChat.id);
+                                if (realChat) {
+                                    return realChat;
+                                }
+                            }
+                            return foundChat;
                         }
                     }
-                    
-                    return {
-                        id: wid,
-                        kind: 'chat',
-                        isGroup: false,
-                        isUser: true,
-                        isLid: isLid
-                    };
                 }
+                
+                if (window.Store.Chat && window.Store.Chat.get) {
+                    const existingChat = window.Store.Chat.get(wid);
+                    if (existingChat) {
+                        return existingChat;
+                    }
+                }
+                
+                return null;
             } catch (e) {
                 console.error('Erro ao criar chat manual:', e);
+                return null;
             }
-            return null;
         };
 
-        const processarEEnviarImagem = async (chatObj) => {
-            if (!chatObj) {
-                if (done) done(false);
-                return false;
-            }
-
-            let mediaBlob;
+        let chat = null;
+        
+        if (window.Store.Chat && window.Store.Chat.get) {
             try {
-                mediaBlob = window.WAPI.base64ImageToFile(imgBase64, filename);
+                chat = window.Store.Chat.get(wid);
             } catch (e) {
-                console.error('Erro ao converter base64:', e);
-                if (done) done(false);
-                return false;
+                console.log('Erro no get:', e);
             }
-
-            let mc;
-            try {
-                mc = new window.Store.MediaCollection(chatObj);
-            } catch (e) {
-                console.error('Erro ao criar MediaCollection:', e);
-                
-                try {
-                    if (chatObj.sendImage) {
-                        await chatObj.sendImage(imgBase64, filename, caption);
-                        if (done) done(true);
-                        return true;
-                    }
-                } catch (err2) {
-                    console.error('Fallback também falhou:', err2);
-                }
-                
-                if (done) done(false);
-                return false;
-            }
-
-            try {
-                await mc.processAttachmentsForChat([{ file: mediaBlob }, 1], 1, chatObj);
-            } catch (e) {
-                console.error('Erro ao processar anexos:', e);
-                if (done) done(false);
-                return false;
-            }
-
-            const media = mc._models[0];
-     
-            if (!media) {
-                console.error('Falha ao processar imagem - media é null/undefined');
-                if (done) done(false);
-                return false;
-            }
-
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    try {
-                        if (typeof media.sendToChat === 'function') {
-                            if (media.sendToChat.length === 1) {
-                                media.sendToChat({
-                                    chat: chatObj,
-                                    options: { caption: caption }
-                                });
-                            } else {
-                                media.sendToChat(chatObj, { caption: caption });
-                            }
-
-                            if (done) {
-                                done(true);
-                            }
-                            resolve(true);
-                        } else {
-                            throw new Error('media.sendToChat não é uma função');
-                        }
-                    } catch (err) {
-                        console.error('ERRO ao enviar imagem:', err);
-                        if (done) {
-                            done(false);
-                        }
-                        resolve(false);
-                    }
-                }, 500);
-            });
-        };
+        }
 
         if (!chat) {
             let chatCriado = null;
             
             if (isLid) {
                 chatCriado = await criarChatDeLid(wid);
-            } else if (window.Store.FindChat && window.Store.FindChat.findOrCreateLatestChat) {
-                try {
-                    const result = await window.Store.FindChat.findOrCreateLatestChat(wid).catch(err => {
-                        console.log('[WAPI] Erro no findOrCreateLatestChat:', err);
-                        return null;
-                    });
-                    
-                    if (result) {
-                        chatCriado = result.chat || result;
-                    }
-                } catch (e) {
-                    console.log('Erro ao chamar findOrCreateLatestChat:', e);
-                }
-            }
-            
-            if (!chatCriado) {
+            } else {
                 chatCriado = await criarChatManual(wid, chatid);
             }
             
             if (chatCriado) {
                 await processarEEnviarImagem(chatCriado);
             } else {
-                console.error('Não foi possível criar chat para:', chatid);
                 if (done) done(false);
             }
         } else {
@@ -2521,30 +2528,34 @@ window.WAPI.sendImage = async function (imgBase64, chatid, filename, caption, do
     }
 };
 
-//Mike 06/03/2026
+//Mike 10/03/2026
 window.WAPI.sendMessageToID = async function(chatid, msgText, done) {
     try {
+        
         chatid = chatid.replace(/\s/g, '').trim();
         
         const isLid = chatid.includes('@lid');
         
         if (chatid.includes('@c.us') || isLid) {
             try {
+                console.log('Verificando status do número:', chatid);
                 let contact = await WAPI.checkNumberStatusIsolate(chatid);
+                
                 if (contact && contact.id) {
                     chatid = contact.id._serialized ? contact.id._serialized : contact.id;
                 }
             } catch (e) {
-                // Mantém o chatid original se falhar
+                console.log('Erro ao verificar status (mantendo chatid original):', e);
             }
         }
         
         if (typeof done !== 'function') {
-            done = function(result) {};
+            done = function(result) {
+			//funcao padrao
+            };
         }
 
         if (!window.Store) {
-            console.error('Store não disponível');
             done(false);
             return;
         }
@@ -2580,50 +2591,67 @@ window.WAPI.sendMessageToID = async function(chatid, msgText, done) {
         }
 
         if (!wid) {
+            console.error('Falha ao criar wid');
             done(false);
             return;
         }
 
-        const enviarMensagem = async (chatObj, texto, callback) => {
+        const enviarMensagem = async (chatObj, texto, callback) => {            
             if (!chatObj) {
                 if (callback) callback(false);
                 return false;
             }
 
             try {
-                if (chatObj.isGroup && chatObj.groupMetadata) {
-                    if (!chatObj.groupMetadata.participants && chatObj.groupMetadata.getParticipants) {
-                        await chatObj.groupMetadata.getParticipants();
+                if (window.Store.Chat && window.Store.Chat.get) {
+                    const realChat = window.Store.Chat.get(chatObj.id);
+                    if (realChat) {
+                        chatObj = realChat;
                     }
                 }
-
+                
                 if (typeof chatObj.sendMessage === 'function') {
-                    const result = await chatObj.sendMessage(texto);
-                    if (callback) callback(true);
-                    return true;
+                    try {
+                        await chatObj.sendMessage(texto);
+                        if (callback) callback(true);
+                        return true;
+                    } catch (sendError) {
+                        console.error('Erro no chat.sendMessage:', sendError);
+                    }
                 }
                 
                 if (window.Store && window.Store.sendMessage) {
-                    const result = await window.Store.sendMessage(chatObj.id, texto);
-                    if (callback) callback(true);
-                    return true;
-                }
-
-                if (window.Store && window.Store.Message && window.Store.Message.create) {
-                    const message = await window.Store.Message.create({
-                        chat: chatObj,
-                        body: texto,
-                        type: 'chat'
-                    });
-                    
-                    if (message && typeof message.sendToChat === 'function') {
-                        await message.sendToChat(chatObj);
+                    try {
+                        await window.Store.sendMessage(chatObj.id, texto);
                         if (callback) callback(true);
                         return true;
+                    } catch (storeError) {
+                        console.error('Erro no Store.sendMessage:', storeError);
                     }
                 }
 
-                throw new Error('Nenhum método de envio disponível');
+                if (window.Store && window.Store.Message && typeof window.Store.Message.send === 'function') {
+                    try {
+                        await window.Store.Message.send(chatObj.id, texto);
+                        if (callback) callback(true);
+                        return true;
+                    } catch (msgError) {
+                        console.error('Erro no Store.Message.send:', msgError);
+                    }
+                }
+
+                if (window.Store && window.Store.addAndSendMsg) {
+                    try {
+                        await window.Store.addAndSendMsg(chatObj, texto);
+                        if (callback) callback(true);
+                        return true;
+                    } catch (addError) {
+                        console.error('Erro no addAndSendMsg:', addError);
+                    }
+                }
+
+                if (callback) callback(false);
+                return false;
                 
             } catch (e) {
                 console.error('Erro ao enviar mensagem:', e);
@@ -2632,7 +2660,7 @@ window.WAPI.sendMessageToID = async function(chatid, msgText, done) {
             }
         };
 
-        const criarChatDeLid = async (lidWid) => {
+        const criarChatDeLid = async (lidWid) => {            
             try {
                 if (window.Store.FindChat && window.Store.FindChat.findOrCreateLatestChat) {
                     const result = await window.Store.FindChat.findOrCreateLatestChat(lidWid).catch(err => {
@@ -2643,6 +2671,13 @@ window.WAPI.sendMessageToID = async function(chatid, msgText, done) {
                     if (result) {
                         const foundChat = result.chat || result;
                         if (foundChat) {
+                            
+                            if (window.Store.Chat && window.Store.Chat.get) {
+                                const realChat = window.Store.Chat.get(foundChat.id);
+                                if (realChat) {
+                                    return realChat;
+                                }
+                            }
                             return foundChat;
                         }
                     }
@@ -2651,8 +2686,10 @@ window.WAPI.sendMessageToID = async function(chatid, msgText, done) {
                 if (window.Store.Lid && window.Store.Lid.getUserHash) {
                     try {
                         const userHash = await window.Store.Lid.getUserHash(lidWid);
+                        
                         if (userHash) {
                             const realWid = window.Store.WidFactory.createWid(userHash + '@c.us');
+                            
                             if (realWid && window.Store.Chat.get) {
                                 const realChat = window.Store.Chat.get(realWid);
                                 if (realChat) {
@@ -2665,70 +2702,48 @@ window.WAPI.sendMessageToID = async function(chatid, msgText, done) {
                     }
                 }
                 
-                if (window.Store.UserConstructor) {
-                    const user = new window.Store.UserConstructor(lidWid, {
-                        intentionallyUsePrivateConstructor: true
-                    });
-                    
-                    if (window.Store.Chat && window.Store.Chat.find) {
-                        const chats = window.Store.Chat.find(user);
-                        if (chats && chats.length > 0) {
-                            return chats[0];
-                        }
-                    }
-                    
-                    return {
-                        id: lidWid,
-                        kind: 'chat',
-                        isGroup: false,
-                        isUser: true,
-                        isLid: true,
-                        sendMessage: async (text) => {
-                            if (window.Store && window.Store.sendMessage) {
-                                return await window.Store.sendMessage(lidWid, text);
-                            }
-                            return false;
-                        }
-                    };
-                }
+                return null;
             } catch (e) {
                 console.error('Erro ao criar chat de LID:', e);
+                return null;
             }
-            return null;
         };
 
-        const criarChatManual = async (wid, chatid) => {
+        const criarChatManual = async (wid, chatid) => {            
             try {
-                if (window.Store.UserConstructor) {
-                    const user = new window.Store.UserConstructor(wid, {
-                        intentionallyUsePrivateConstructor: true
+                if (window.Store.FindChat && window.Store.FindChat.findOrCreateLatestChat) {
+                    const result = await window.Store.FindChat.findOrCreateLatestChat(wid).catch(err => {
+                        console.log('Erro no findOrCreateLatestChat:', err);
+                        return null;
                     });
                     
-                    if (window.Store.Chat && window.Store.Chat.find) {
-                        const chats = window.Store.Chat.find(user);
-                        if (chats && chats.length > 0) {
-                            return chats[0];
+                    if (result) {
+                        const foundChat = result.chat || result;
+                        if (foundChat) {
+                           
+                            if (window.Store.Chat && window.Store.Chat.get) {
+                                const realChat = window.Store.Chat.get(foundChat.id);
+                                if (realChat) {
+                                    return realChat;
+                                }
+                            }
+                            return foundChat;
                         }
                     }
-                    
-                    return {
-                        id: wid,
-                        kind: 'chat',
-                        isGroup: false,
-                        isUser: true,
-                        isLid: isLid,
-                        sendMessage: async (text) => {
-                            if (window.Store && window.Store.sendMessage) {
-                                return await window.Store.sendMessage(wid, text);
-                            }
-                            return false;
-                        }
-                    };
                 }
+                
+                if (window.Store.Chat && window.Store.Chat.get) {
+                    const existingChat = window.Store.Chat.get(wid);
+                    if (existingChat) {
+                        return existingChat;
+                    }
+                }
+                
+                return null;
             } catch (e) {
                 console.error('Erro ao criar chat manual:', e);
+                return null;
             }
-            return null;
         };
 
         let chat = null;
@@ -2746,26 +2761,23 @@ window.WAPI.sendMessageToID = async function(chatid, msgText, done) {
             
             if (isLid) {
                 chatCriado = await criarChatDeLid(wid);
-            } else if (window.Store.FindChat && window.Store.FindChat.findOrCreateLatestChat) {
-                try {
-                    const result = await window.Store.FindChat.findOrCreateLatestChat(wid).catch(err => {
-                        console.log('Erro no findOrCreateLatestChat:', err);
-                        return null;
-                    });
-                    
-                    if (result) {
-                        chatCriado = result.chat || result;
-                    }
-                } catch (e) {
-                    console.log('Erro ao chamar findOrCreateLatestChat:', e);
-                }
-            }
-            
-            if (!chatCriado) {
+            } else {
                 chatCriado = await criarChatManual(wid, chatid);
             }
             
             if (chatCriado) {
+                
+                // Fallback direto para Store.sendMessage se necessário
+                if (typeof chatCriado.sendMessage !== 'function' && window.Store.sendMessage) {
+                    try {
+                        await window.Store.sendMessage(chatCriado.id, msgText);
+                        if (done) done(true);
+                        return true;
+                    } catch (e) {
+                        console.error('Erro ao enviar via Store.sendMessage direto:', e);
+                    }
+                }
+                
                 await enviarMensagem(chatCriado, msgText, done);
             } else {
                 console.error('Não foi possível criar chat para:', chatid);
@@ -2780,8 +2792,6 @@ window.WAPI.sendMessageToID = async function(chatid, msgText, done) {
         if (done) done(false);
     }
 };
-
-
 
 function buscarChatManual(wid, chatid, msgText, done) { 
     let chatEncontrado = null;
