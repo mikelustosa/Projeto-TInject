@@ -22,7 +22,7 @@ https://youtu.be/cbWW7VNYwEo
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=mikelustosa/Projeto-TInject&type=Date)](https://star-history.com/#mikelustosa/Projeto-TInject&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=mikelustosa/Projeto-TInject&type=Date)](https://star-history.dera.page/#mikelustosa/Projeto-TInject&Date)
 
 
 ### Recursos / Resources<br><br>
